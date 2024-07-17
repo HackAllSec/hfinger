@@ -1,0 +1,95 @@
+package cmd
+
+import (
+    "github.com/spf13/cobra"
+    "github.com/fatih/color"
+    "os"
+	"time"
+
+	"hfinger/config"
+	"hfinger/models"
+	"hfinger/utils"
+)
+
+var RootCmd = &cobra.Command{
+    Use:   "hfinger",
+    Short: "A high-performance command-line tool for web framework and CMS fingerprinting",
+    Run: func(cmd *cobra.Command, args []string) {
+        url, _ := cmd.Flags().GetString("url")
+        file, _ := cmd.Flags().GetString("file")
+		outputJSON, _ := cmd.Flags().GetString("output-json")
+		outputXML, _ := cmd.Flags().GetString("output-xml")
+		outputXLSX, _ := cmd.Flags().GetString("output-xlsx")
+		
+		if url != "" {
+			models.ProcessURL(url)
+        }
+
+        if file != "" {
+            models.ProcessFile(file)
+        }
+
+		formats := make(map[string]string)
+		if outputJSON != "" {
+			formats["json"] = outputJSON
+		}
+		if outputXML != "" {
+			formats["xml"] = outputXML
+		}
+		if outputXLSX != "" {
+			formats["xlsx"] = outputXLSX
+		}
+		err := models.WriteOutputs(formats)
+		if err != nil {
+			color.Red("[%s] [!] Error: %v", time.Now().Format("01-02 15:04:05"), err)
+			os.Exit(1)
+		}
+    },
+    PreRun: func(cmd *cobra.Command, args []string) {
+        url, _ := cmd.Flags().GetString("url")
+        file, _ := cmd.Flags().GetString("file")
+		proxy, _ := cmd.Flags().GetString("proxy")
+		thread, _ := cmd.Flags().GetInt64("thread")
+
+        if url == "" && file == "" {
+            cmd.Help()
+            color.Red("[%s] [!] Error: The - u or - f parameter must be specified!", time.Now().Format("01-02 15:04:05"))
+            os.Exit(1)
+        }
+        if url != "" && file != "" {
+            color.Red("[%s] [!] Error: You can only choose one between -u and -f.", time.Now().Format("01-02 15:04:05"))
+            os.Exit(1)
+        }
+		if url != "" {
+			_, err := utils.GetBaseURL(url)
+			if err != nil {
+				color.Red("[%s] [!] %v", time.Now().Format("01-02 15:04:05"),err)
+			}
+		}
+		err := config.LoadConfig("data/finger.json")
+		if err != nil {
+			color.Red("[%s] [!] Error: Failed to load fingerprint library.", time.Now().Format("01-02 15:04:05"))
+		}
+		err = utils.InitializeHTTPClient(proxy, 10*time.Second)
+        if err != nil {
+            color.Red("[%s] [!] %v", time.Now().Format("01-02 15:04:05"), err)
+            os.Exit(1)
+        }
+		if thread < 1 {
+			color.Red("[%s] [!] Error: The number of threads cannot be less than 1.", time.Now().Format("01-02 15:04:05"))
+			os.Exit(1)
+		}
+		models.SetThread(thread)
+    },
+}
+
+func init() {
+    PrintBanner()
+    RootCmd.Flags().StringP("url", "u", "", "Specify the recognized target,example: https://www.example.com")
+    RootCmd.Flags().StringP("file", "f", "", "Read assets from local files for fingerprint recognition, with one target per line")
+    RootCmd.Flags().StringP("output-json", "j", "", "Output all results to a JSON file")
+    RootCmd.Flags().StringP("output-xml", "x", "", "Output all results to a XML file")
+    RootCmd.Flags().StringP("output-xlsx", "s", "", "Output all results to a Excel file")
+    RootCmd.Flags().StringP("proxy", "p", "", "Specify the proxy for accessing the target, supporting HTTP and SOCKS, example: http://127.0.0.1:8080")
+    RootCmd.Flags().Int64P("thread", "t", 100, "Number of fingerprint recognition threads")
+}
