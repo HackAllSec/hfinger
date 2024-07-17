@@ -4,11 +4,11 @@ import (
     "github.com/spf13/cobra"
     "github.com/fatih/color"
     "os"
-	"time"
+    "time"
 
-	"hfinger/config"
-	"hfinger/models"
-	"hfinger/utils"
+    "hfinger/config"
+    "hfinger/models"
+    "hfinger/utils"
 )
 
 var RootCmd = &cobra.Command{
@@ -17,39 +17,39 @@ var RootCmd = &cobra.Command{
     Run: func(cmd *cobra.Command, args []string) {
         url, _ := cmd.Flags().GetString("url")
         file, _ := cmd.Flags().GetString("file")
-		outputJSON, _ := cmd.Flags().GetString("output-json")
-		outputXML, _ := cmd.Flags().GetString("output-xml")
-		outputXLSX, _ := cmd.Flags().GetString("output-xlsx")
-		
-		if url != "" {
-			models.ProcessURL(url)
+        outputJSON, _ := cmd.Flags().GetString("output-json")
+        outputXML, _ := cmd.Flags().GetString("output-xml")
+        outputXLSX, _ := cmd.Flags().GetString("output-xlsx")
+        
+        if url != "" {
+            models.ProcessURL(url)
         }
 
         if file != "" {
             models.ProcessFile(file)
         }
 
-		formats := make(map[string]string)
-		if outputJSON != "" {
-			formats["json"] = outputJSON
-		}
-		if outputXML != "" {
-			formats["xml"] = outputXML
-		}
-		if outputXLSX != "" {
-			formats["xlsx"] = outputXLSX
-		}
-		err := models.WriteOutputs(formats)
-		if err != nil {
-			color.Red("[%s] [!] Error: %v", time.Now().Format("01-02 15:04:05"), err)
-			os.Exit(1)
-		}
+        formats := make(map[string]string)
+        if outputJSON != "" {
+            formats["json"] = outputJSON
+        }
+        if outputXML != "" {
+            formats["xml"] = outputXML
+        }
+        if outputXLSX != "" {
+            formats["xlsx"] = outputXLSX
+        }
+        err := models.WriteOutputs(formats)
+        if err != nil {
+            color.Red("[%s] [!] Error: %v", time.Now().Format("01-02 15:04:05"), err)
+            os.Exit(1)
+        }
     },
     PreRun: func(cmd *cobra.Command, args []string) {
         url, _ := cmd.Flags().GetString("url")
         file, _ := cmd.Flags().GetString("file")
-		proxy, _ := cmd.Flags().GetString("proxy")
-		thread, _ := cmd.Flags().GetInt64("thread")
+        proxy, _ := cmd.Flags().GetString("proxy")
+        thread, _ := cmd.Flags().GetInt64("thread")
 
         if url == "" && file == "" {
             cmd.Help()
@@ -60,26 +60,26 @@ var RootCmd = &cobra.Command{
             color.Red("[%s] [!] Error: You can only choose one between -u and -f.", time.Now().Format("01-02 15:04:05"))
             os.Exit(1)
         }
-		if url != "" {
-			_, err := utils.GetBaseURL(url)
-			if err != nil {
-				color.Red("[%s] [!] %v", time.Now().Format("01-02 15:04:05"),err)
-			}
-		}
-		err := config.LoadConfig("data/finger.json")
-		if err != nil {
-			color.Red("[%s] [!] Error: Failed to load fingerprint library.", time.Now().Format("01-02 15:04:05"))
-		}
-		err = utils.InitializeHTTPClient(proxy, 10*time.Second)
+        if url != "" {
+            _, err := utils.GetBaseURL(url)
+            if err != nil {
+                color.Red("[%s] [!] %v", time.Now().Format("01-02 15:04:05"),err)
+            }
+        }
+        err := config.LoadConfig("data/finger.json")
+        if err != nil {
+            color.Red("[%s] [!] Error: Failed to load fingerprint library.", time.Now().Format("01-02 15:04:05"))
+        }
+        err = utils.InitializeHTTPClient(proxy, 10*time.Second)
         if err != nil {
             color.Red("[%s] [!] %v", time.Now().Format("01-02 15:04:05"), err)
             os.Exit(1)
         }
-		if thread < 1 {
-			color.Red("[%s] [!] Error: The number of threads cannot be less than 1.", time.Now().Format("01-02 15:04:05"))
-			os.Exit(1)
-		}
-		models.SetThread(thread)
+        if thread < 1 {
+            color.Red("[%s] [!] Error: The number of threads cannot be less than 1.", time.Now().Format("01-02 15:04:05"))
+            os.Exit(1)
+        }
+        models.SetThread(thread)
     },
 }
 
