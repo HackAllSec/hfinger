@@ -130,7 +130,7 @@ func ProcessURL(url string) {
     defer mu.Unlock()
 
     if len(matchedCMS) == 0 && !errOccurred {
-        color.White("[%s] [*] [%s] [Not Matched] [%d] [%s] [%s]", time.Now().Format("01-02 15:04:05"), url, statuscode, server, title)
+        color.White("[%s] [*] [%s] [%s] [%d] [%s] [%s]", time.Now().Format("01-02 15:04:05"), url, cms, statuscode, server, title)
     }
 
     resultsLock.Lock()
