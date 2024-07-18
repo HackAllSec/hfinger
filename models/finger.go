@@ -35,11 +35,10 @@ func ProcessURL(url string) {
     var wg sync.WaitGroup
     var mu sync.Mutex
     var errOccurred bool
-    var once sync.Once
-    resultsChannel := make(chan config.Result, workerCount)
-    matched := false
+    var matchedCMS map[string]bool = make(map[string]bool)
     var cms, server, title string
     statuscode := 0
+    resultsChannel := make(chan config.Result, workerCount)
 
     process := func(reqFunc func(string) (*http.Response, error)) {
         defer wg.Done()
@@ -50,11 +49,12 @@ func ProcessURL(url string) {
 
         resp, err := reqFunc(url)
         if err != nil {
-            once.Do(func() {
+            mu.Lock()
+            if !errOccurred {
                 errOccurred = true
-                matched = true
                 handleError(err, url)
-            })
+            }
+            mu.Unlock()
             return
         }
         defer resp.Body.Close()
@@ -108,10 +108,12 @@ func ProcessURL(url string) {
         mu.Lock()
         defer mu.Unlock()
 
-        if ismatched && !matched {
-            matched = true
-            resultsChannel <- result
-            color.Green("[%s] [+] [%s] [%s] [%d] [%s] [%s]", time.Now().Format("01-02 15:04:05"), url, cms, statuscode, server, title)
+        if ismatched {
+            if !matchedCMS[cms] {
+                matchedCMS[cms] = true
+                resultsChannel <- result
+                color.Green("[%s] [+] [%s] [%s] [%d] [%s] [%s]", time.Now().Format("01-02 15:04:05"), url, cms, statuscode, server, title)
+            }
         }
     }
 
@@ -124,8 +126,11 @@ func ProcessURL(url string) {
     wg.Wait()
     close(resultsChannel)
 
-    if !matched {
-        color.White("[%s] [*] [%s] [%s] [%d] [%s] [%s]", time.Now().Format("01-02 15:04:05"), url, cms, statuscode, server, title)
+    mu.Lock()
+    defer mu.Unlock()
+
+    if len(matchedCMS) == 0 && !errOccurred {
+        color.White("[%s] [*] [%s] [Not Matched] [%d] [%s] [%s]", time.Now().Format("01-02 15:04:05"), url, statuscode, server, title)
     }
 
     resultsLock.Lock()
@@ -135,7 +140,6 @@ func ProcessURL(url string) {
         results = append(results, result)
     }
 }
-
 
 func handleError(err error, url string) {
     if strings.Contains(err.Error(), "dial tcp: lookup") {
