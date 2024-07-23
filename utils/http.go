@@ -9,6 +9,10 @@ import (
     "net/url"
     "strings"
     "time"
+    "os"
+    "io"
+    "io/ioutil"
+    "encoding/json"
 
     "github.com/PuerkitoBio/goquery"
 )
@@ -72,37 +76,20 @@ func InitializeHTTPClient(proxy string, timeout time.Duration) error {
     return nil
 }
 
-func Get(url string) (*http.Response, error) {
-    if httpClient == nil {
-        return nil, fmt.Errorf("Error: HTTP client not initialized")
-    }
-
-    req, err := http.NewRequest("GET", url, nil)
+func Head(url string, headers map[string]string) (*http.Response, error) {
+    req, err := http.NewRequest("HEAD", url, nil)
     if err != nil {
         return nil, err
     }
+
     req.Header.Set("User-Agent", RandomUserAgent())
     req.Header.Set("Accept", "*/*;q=0.8")
-    resp, err := httpClient.Do(req)
-    if err != nil {
-        return nil, err
-    }
 
-    return resp, nil
-}
-
-func Get2(url string) (*http.Response, error) {
-    if httpClient == nil {
-        return nil, fmt.Errorf("Error: HTTP client not initialized")
+    if headers != nil {
+        for key, value := range headers {
+            req.Header.Set(key, value)
+        }
     }
-
-    req, err := http.NewRequest("GET", url, nil)
-    if err != nil {
-        return nil, err
-    }
-    req.Header.Set("User-Agent", RandomUserAgent())
-    req.Header.Set("Accept", "*/*;q=0.8")
-    req.Header.Set("Cookie", "rememberMe=1")
 
     resp, err := httpClient.Do(req)
     if err != nil {
@@ -112,21 +99,106 @@ func Get2(url string) (*http.Response, error) {
     return resp, nil
 }
 
-func Get3(url string) (*http.Response, error) {
+func Get(url string, headers map[string]string) (*http.Response, error) {
     if httpClient == nil {
         return nil, fmt.Errorf("Error: HTTP client not initialized")
     }
-    randomSuffix := fmt.Sprintf("/%d", rand.Int())
-    if url[len(url)-1] == '/' {
-        randomSuffix = fmt.Sprintf("%d", rand.Int())
-    }
-    newURL := url + randomSuffix
-    req, err := http.NewRequest("GET", newURL, nil)
+
+    req, err := http.NewRequest("GET", url, nil)
     if err != nil {
         return nil, err
     }
+
     req.Header.Set("User-Agent", RandomUserAgent())
     req.Header.Set("Accept", "*/*;q=0.8")
+
+    if headers != nil {
+        for key, value := range headers {
+            req.Header.Set(key, value)
+        }
+    }
+
+    resp, err := httpClient.Do(req)
+    if err != nil {
+        return nil, err
+    }
+
+    return resp, nil
+}
+
+func Post(turl string, data interface{}, headers map[string]string) (*http.Response, error) {
+    var body io.Reader
+    var contentType string
+    switch v := data.(type) {
+    case string:
+        body = bytes.NewBufferString(v)
+        contentType = "text/plain; charset=utf-8"
+    case map[string]string:
+        formData := url.Values{}
+        for key, value := range v {
+            formData.Add(key, value)
+        }
+        body = strings.NewReader(formData.Encode())
+        contentType = "application/x-www-form-urlencoded"
+    case *os.File:
+        fileData, err := ioutil.ReadAll(v)
+        if err != nil {
+            return nil, err
+        }
+        body = bytes.NewBuffer(fileData)
+        contentType = http.DetectContentType(fileData)
+    default:
+        jsonData, err := json.Marshal(v)
+        if err != nil {
+            return nil, err
+        }
+        body = bytes.NewBuffer(jsonData)
+        contentType = "application/json"
+    }
+
+    req, err := http.NewRequest("POST", turl, body)
+    if err != nil {
+        return nil, err
+    }
+    req.Header.Set("Content-Type", contentType)
+    req.Header.Set("User-Agent", RandomUserAgent())
+    req.Header.Set("Accept", "*/*;q=0.8")
+
+    if headers != nil {
+        for key, value := range headers {
+            req.Header.Set(key, value)
+        }
+    }
+
+    resp, err := httpClient.Do(req)
+    if err != nil {
+        return nil, err
+    }
+
+    return resp, nil
+}
+
+func Put(url string, data interface{}, headers map[string]string) (*http.Response, error) {
+    jsonStr, err := json.Marshal(data)
+    if err != nil {
+        return nil, err
+    }
+
+    req, err := http.NewRequest("PUT", url, bytes.NewBuffer(jsonStr))
+    if err != nil {
+        return nil, err
+    }
+
+    // Set headers
+    req.Header.Set("Content-Type", "application/json")
+    req.Header.Set("User-Agent", RandomUserAgent())
+    req.Header.Set("Accept", "*/*;q=0.8")
+
+    if headers != nil {
+        for key, value := range headers {
+            req.Header.Set(key, value)
+        }
+    }
 
     resp, err := httpClient.Do(req)
     if err != nil {
