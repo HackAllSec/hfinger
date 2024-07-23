@@ -9,11 +9,8 @@ import (
     "net/url"
     "strings"
     "time"
-    "os"
-    "io"
-    "io/ioutil"
-    "encoding/json"
 
+    "golang.org/x/net/http2"
     "github.com/PuerkitoBio/goquery"
 )
 
@@ -59,6 +56,10 @@ func InitializeHTTPClient(proxy string, timeout time.Duration) error {
         TLSClientConfig: &tls.Config{
             InsecureSkipVerify: true,
         },
+        // Enable HTTP/2
+        MaxIdleConns:          100,
+        IdleConnTimeout:       90 * time.Second,
+        TLSHandshakeTimeout:   10 * time.Second,
     }
 
     if proxy != "" {
@@ -69,10 +70,16 @@ func InitializeHTTPClient(proxy string, timeout time.Duration) error {
         transport.Proxy = http.ProxyURL(proxyURL)
     }
 
+    err := http2.ConfigureTransport(transport)
+    if err != nil {
+        return err
+    }
+
     httpClient = &http.Client{
         Transport: transport,
         Timeout:   timeout,
     }
+
     return nil
 }
 
@@ -126,44 +133,16 @@ func Get(url string, headers map[string]string) (*http.Response, error) {
     return resp, nil
 }
 
-func Post(turl string, data interface{}, headers map[string]string) (*http.Response, error) {
-    var body io.Reader
-    var contentType string
-    switch v := data.(type) {
-    case string:
-        body = bytes.NewBufferString(v)
-        contentType = "text/plain; charset=utf-8"
-    case map[string]string:
-        formData := url.Values{}
-        for key, value := range v {
-            formData.Add(key, value)
-        }
-        body = strings.NewReader(formData.Encode())
-        contentType = "application/x-www-form-urlencoded"
-    case *os.File:
-        fileData, err := ioutil.ReadAll(v)
-        if err != nil {
-            return nil, err
-        }
-        body = bytes.NewBuffer(fileData)
-        contentType = http.DetectContentType(fileData)
-    default:
-        jsonData, err := json.Marshal(v)
-        if err != nil {
-            return nil, err
-        }
-        body = bytes.NewBuffer(jsonData)
-        contentType = "application/json"
-    }
-
-    req, err := http.NewRequest("POST", turl, body)
+func Post(url string, data []byte, headers map[string]string) (*http.Response, error) {
+    req, err := http.NewRequest("POST", url, bytes.NewBuffer(data))
     if err != nil {
         return nil, err
     }
-    req.Header.Set("Content-Type", contentType)
+
     req.Header.Set("User-Agent", RandomUserAgent())
     req.Header.Set("Accept", "*/*;q=0.8")
-
+    req.Header.Set("Content-Type", "application/octet-stream")
+    
     if headers != nil {
         for key, value := range headers {
             req.Header.Set(key, value)
@@ -178,19 +157,13 @@ func Post(turl string, data interface{}, headers map[string]string) (*http.Respo
     return resp, nil
 }
 
-func Put(url string, data interface{}, headers map[string]string) (*http.Response, error) {
-    jsonStr, err := json.Marshal(data)
+func Put(url string, data []byte, headers map[string]string) (*http.Response, error) {
+    req, err := http.NewRequest("PUT", url, bytes.NewBuffer(data))
     if err != nil {
         return nil, err
     }
 
-    req, err := http.NewRequest("PUT", url, bytes.NewBuffer(jsonStr))
-    if err != nil {
-        return nil, err
-    }
-
-    // Set headers
-    req.Header.Set("Content-Type", "application/json")
+    req.Header.Set("Content-Type", "application/octet-stream")
     req.Header.Set("User-Agent", RandomUserAgent())
     req.Header.Set("Accept", "*/*;q=0.8")
 
