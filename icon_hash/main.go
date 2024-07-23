@@ -4,7 +4,8 @@ import (
     "flag"
     "fmt"
     "io/ioutil"
-    "hfinger/utils"
+    "crypto/tls"
+    "net/http"
     "hfinger/models"
 )
 
@@ -25,18 +26,31 @@ func main() {
         flag.Usage()
         return
     }
+    client := &http.Client{
+        Transport: &http.Transport{
+            TLSClientConfig: &tls.Config{
+                InsecureSkipVerify: true,
+            },
+        },
+    }
 
     if *url != "" {
-        resp, _ := utils.Get(*url)
+        resp, err := client.Get(*url)
+        if err != nil {
+            fmt.Printf("[!] Error: %v",err)
+        }
         defer resp.Body.Close()
-        body, _ := ioutil.ReadAll(resp.Body)
+        body, err := ioutil.ReadAll(resp.Body)
+        if err != nil {
+            fmt.Printf("[!] Error: %v",err)
+        }
         icon_hash := models.Mmh3Hash32(models.StandBase64(body))
-        fmt.Sprintf("[+]The icon_hash is: %d",icon_hash)
+        fmt.Println("[+]The icon_hash is:",icon_hash)
     }
     if *base64data != "" {
         icondata := []byte(*base64data)
         icon_hash := models.Mmh3Hash32(icondata)
-        fmt.Sprintf("[+]The icon_hash is: %d",icon_hash)
+        fmt.Println("[+]The icon_hash is:",icon_hash)
     }
     
 }
