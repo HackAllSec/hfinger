@@ -7,6 +7,7 @@ import (
     "strings"
     "sync"
     "time"
+    "math/rand"
 
     "hfinger/config"
     "hfinger/utils"
@@ -40,14 +41,14 @@ func ProcessURL(url string) {
     statuscode := 0
     resultsChannel := make(chan config.Result, workerCount)
 
-    process := func(reqFunc func(string) (*http.Response, error)) {
+    process := func(url string, headers map[string]string) {
         defer wg.Done()
 
         if errOccurred {
             return
         }
 
-        resp, err := reqFunc(url)
+        resp, err := utils.Get(url, headers)
         if err != nil {
             mu.Lock()
             if !errOccurred {
@@ -80,7 +81,7 @@ func ProcessURL(url string) {
             if faviconpath[0] == '/' {
                 faviconurl = baseurl + faviconpath
             }
-            favicon, err := utils.Get(faviconurl)
+            favicon, err := utils.Get(faviconurl, nil)
             if err == nil && favicon.StatusCode == http.StatusOK {
                 defer favicon.Body.Close()
                 faviconbody, err = ioutil.ReadAll(favicon.Body)
@@ -117,15 +118,21 @@ func ProcessURL(url string) {
         }
     }
 
-    wg.Add(3)
-
-    go process(utils.Get3)
-    go process(utils.Get2)
-    go process(utils.Get)
-
+    wg.Add(2)
+    go process(url, nil)
+    go process(url, map[string]string{"Cookie": "rememberMe=1"})
     wg.Wait()
-    close(resultsChannel)
 
+    wg.Add(1)
+    suffix := fmt.Sprintf("/%d", rand.Int())
+    if url[len(url)-1] == '/' {
+        suffix = fmt.Sprintf("%d", rand.Int())
+    }
+    url = url + suffix
+    go process(url, nil)
+    wg.Wait()
+
+    close(resultsChannel)
     mu.Lock()
     defer mu.Unlock()
 
