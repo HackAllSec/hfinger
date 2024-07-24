@@ -7,6 +7,7 @@ import (
     "time"
 
     "hfinger/config"
+    "hfinger/output"
     "hfinger/models"
     "hfinger/utils"
 )
@@ -17,9 +18,7 @@ var RootCmd = &cobra.Command{
     Run: func(cmd *cobra.Command, args []string) {
         url, _ := cmd.Flags().GetString("url")
         file, _ := cmd.Flags().GetString("file")
-        outputJSON, _ := cmd.Flags().GetString("output-json")
-        outputXML, _ := cmd.Flags().GetString("output-xml")
-        outputXLSX, _ := cmd.Flags().GetString("output-xlsx")
+        listen,_ := cmd.Flags().GetString("listen")
         
         if url != "" {
             models.ProcessURL(url)
@@ -29,35 +28,27 @@ var RootCmd = &cobra.Command{
             models.ProcessFile(file)
         }
 
-        formats := make(map[string]string)
-        if outputJSON != "" {
-            formats["json"] = outputJSON
-        }
-        if outputXML != "" {
-            formats["xml"] = outputXML
-        }
-        if outputXLSX != "" {
-            formats["xlsx"] = outputXLSX
-        }
-        err := models.WriteOutputs(formats)
-        if err != nil {
-            color.Red("[%s] [!] Error: %v", time.Now().Format("01-02 15:04:05"), err)
-            os.Exit(1)
+        if listen != "" {
+            models.MitmServer(listen)
         }
     },
     PreRun: func(cmd *cobra.Command, args []string) {
         url, _ := cmd.Flags().GetString("url")
         file, _ := cmd.Flags().GetString("file")
+        listen,_ := cmd.Flags().GetString("listen")
         proxy, _ := cmd.Flags().GetString("proxy")
         thread, _ := cmd.Flags().GetInt64("thread")
+        outputJSON, _ := cmd.Flags().GetString("output-json")
+        outputXML, _ := cmd.Flags().GetString("output-xml")
+        outputXLSX, _ := cmd.Flags().GetString("output-xlsx")
 
-        if url == "" && file == "" {
+        if url == "" && file == "" && listen == "" {
             cmd.Help()
-            color.Red("[%s] [!] Error: The - u or - f parameter must be specified!", time.Now().Format("01-02 15:04:05"))
+            color.Red("[%s] [!] Error: Must specify one of the -u, -f, or -l parameters!", time.Now().Format("01-02 15:04:05"))
             os.Exit(1)
         }
-        if url != "" && file != "" {
-            color.Red("[%s] [!] Error: You can only choose one between -u and -f.", time.Now().Format("01-02 15:04:05"))
+        if url != "" && file != "" && listen != "" {
+            color.Red("[%s] [!] Error: You can only choose one of the -u, -f or -l parameters!", time.Now().Format("01-02 15:04:05"))
             os.Exit(1)
         }
         if url != "" {
@@ -70,7 +61,7 @@ var RootCmd = &cobra.Command{
         if err != nil {
             color.Red("[%s] [!] Error: Failed to load fingerprint library.", time.Now().Format("01-02 15:04:05"))
         }
-        err = utils.InitializeHTTPClient(proxy, 10*time.Second)
+        err = utils.InitializeHTTPClient(proxy, 30*time.Second)
         if err != nil {
             color.Red("[%s] [!] %v", time.Now().Format("01-02 15:04:05"), err)
             os.Exit(1)
@@ -80,6 +71,18 @@ var RootCmd = &cobra.Command{
             os.Exit(1)
         }
         models.SetThread(thread)
+        if outputJSON != "" {
+            err = output.SetOutput("json",outputJSON)
+        }
+        if outputXML != "" {
+            err = output.SetOutput("xml",outputXML)
+        }
+        if outputXLSX != "" {
+            err = output.SetOutput("xlsx",outputXLSX)
+        }
+        if err != nil {
+            color.Red("[%s] [!] Error: %v", time.Now().Format("01-02 15:04:05"), err)
+        }
     },
 }
 
@@ -87,6 +90,7 @@ func init() {
     PrintBanner()
     RootCmd.Flags().StringP("url", "u", "", "Specify the recognized target,example: https://www.example.com")
     RootCmd.Flags().StringP("file", "f", "", "Read assets from local files for fingerprint recognition, with one target per line")
+    RootCmd.Flags().StringP("listen", "l", "", "Using a proxy resource collector to retrieve targets, example: 127.0.0.1:6789")
     RootCmd.Flags().StringP("output-json", "j", "", "Output all results to a JSON file")
     RootCmd.Flags().StringP("output-xml", "x", "", "Output all results to a XML file")
     RootCmd.Flags().StringP("output-xlsx", "s", "", "Output all results to a Excel file")
