@@ -2,13 +2,17 @@ package models
 
 import (
     "bufio"
+    "bytes"
     "crypto/tls"
     "io"
+    "io/ioutil"
     "net"
     "net/http"
     "net/http/httputil"
     "time"
     "strings"
+    "compress/gzip"
+    "compress/zlib"
 
     "hfinger/config"
     "hfinger/output"
@@ -45,7 +49,10 @@ func MitmServer(listenAddr string) {
             continue
         }
 
-        go handleConnection(conn, tlsConfig)
+        go func(conn net.Conn) {
+            defer conn.Close()
+            handleConnection(conn, tlsConfig)
+        }(conn)
     }
 }
 
@@ -121,12 +128,20 @@ func handleHTTP(conn net.Conn, req *http.Request) error {
         return nil
     }
     defer resp.Body.Close()
+    body, err := io.ReadAll(resp.Body)
+    if err != nil {
+        return err
+    }
+    resp.Body = ioutil.NopCloser(bytes.NewReader(body))
     responseDump, err := httputil.DumpResponse(resp, true)
     if err != nil {
         return err
     }
-    conn.Write(responseDump)
-    MitmMatchFingerprint(url, resp)
+    _, err = conn.Write(responseDump)
+    if err != nil {
+        return err
+    }
+    MitmMatchFingerprint(url, resp.StatusCode, resp.Header, body)
     return nil
 }
 
@@ -190,6 +205,11 @@ func handleHTTPS(conn net.Conn, req *http.Request, tlsConfig *tls.Config) error 
         return nil
     }
     defer resp.Body.Close()
+    body, err := io.ReadAll(resp.Body)
+    if err != nil {
+        return err
+    }
+    resp.Body = ioutil.NopCloser(bytes.NewReader(body))
     responseDump, err := httputil.DumpResponse(resp, true)
     if err != nil {
         return err
@@ -198,32 +218,30 @@ func handleHTTPS(conn net.Conn, req *http.Request, tlsConfig *tls.Config) error 
     if err != nil {
         return err
     }
-    MitmMatchFingerprint(url, resp)
+    MitmMatchFingerprint(url, resp.StatusCode,resp.Header, body)
     return nil
 }
 
-func MitmMatchFingerprint(url string, resp *http.Response) {
+func MitmMatchFingerprint(url string, statuscode int, header http.Header, body []byte) {
     var matched bool
     cfg := config.GetConfig()
-    cms := "None"
-    statuscode := resp.StatusCode
-    header := resp.Header
-    server := resp.Header.Get("Server")
+    server := header.Get("Server")
     if server == "" {
         server = "None"
     }
-    body, err := io.ReadAll(resp.Body)
-    if err != nil {
-        color.Red("[%s] [!] Error: %v", time.Now().Format("01-02 15:04:05"), err)
-    }
+    cms := "None"
     title := utils.FetchTitle(body)
     if title == "" {
         title = "None"
     }
-    faviconurl := utils.FetchFavicon(body)
-    if strings.Contains(url, faviconurl) && resp.StatusCode == http.StatusOK {
+    debody, err := DecodeBody(header.Get("Content-Encoding"), body)
+    if err != nil {
+        color.Red("[%s] [!] Error: %s", time.Now().Format("01-02 15:04:05"), err)
+    }
+    faviconurl := utils.FetchFavicon(debody)
+    if strings.Contains(url, faviconurl) && statuscode == http.StatusOK {
         for _, fingerprint := range cfg.Finger {
-            matched = matchKeywords(nil, header, title, body, fingerprint)
+            matched = matchKeywords(nil, header, title, debody, fingerprint)
             if matched {
                 cms = fingerprint.CMS
                 if !matchedCMS[cms] {
@@ -240,13 +258,13 @@ func MitmMatchFingerprint(url string, resp *http.Response) {
                 }
             }
         }
-        err = output.WriteOutputs()
+        err := output.WriteOutputs()
         if err != nil {
             color.Red("[%s] [!] Error: %s", time.Now().Format("01-02 15:04:05"), err)
         }
     } else {
         for _, fingerprint := range cfg.Finger {
-            matched = matchKeywords(body, header, title, nil, fingerprint)
+            matched = matchKeywords(debody, header, title, nil, fingerprint)
             if matched {
                 cms = fingerprint.CMS
                 if !matchedCMS[cms] {
@@ -263,9 +281,40 @@ func MitmMatchFingerprint(url string, resp *http.Response) {
                 }
             }
         }
-        err = output.WriteOutputs()
+        err := output.WriteOutputs()
         if err != nil {
             color.Red("[%s] [!] Error: %s", time.Now().Format("01-02 15:04:05"), err)
         }
     }
+}
+
+func DecodeBody(contentEncoding string, body []byte) ([]byte, error) {
+    var reader io.ReadCloser
+    var err error
+
+    // 根据 content-encoding 创建相应的解码器
+    switch strings.ToLower(contentEncoding) {
+    case "gzip":
+        reader, err = gzip.NewReader(bytes.NewReader(body))
+        if err != nil {
+            return nil, err
+        }
+    case "deflate":
+        reader, err = zlib.NewReader(bytes.NewReader(body))
+        if err != nil {
+            return nil, err
+        }
+    case "identity", "":
+        return body, nil
+    default:
+        return body, nil
+    }
+
+    defer reader.Close()
+    decodedBody, err := ioutil.ReadAll(reader)
+    if err != nil {
+        return nil, err
+    }
+
+    return decodedBody, nil
 }
