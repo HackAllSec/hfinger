@@ -7,11 +7,12 @@ import (
     "crypto/x509/pkix"
     "crypto/rand"
     "encoding/pem"
-    "log"
     "math/big"
     "os"
     "path/filepath"
     "time"
+
+    "github.com/fatih/color"
 )
 
 const (
@@ -29,7 +30,7 @@ func EnsureCerts() error {
     keyPath := filepath.Join(certsDir, caKeyFile)
 
     if _, err := os.Stat(certsPath); os.IsNotExist(err) {
-        log.Println("Certificates not found, generating new ones...")
+        color.Yellow("[%s] [-] Warning: Certificates not found, generating new ones...", time.Now().Format("01-02 15:04:05"))
         if err := generateSelfSignedCert(certsPath, keyPath); err != nil {
             return err
         }
