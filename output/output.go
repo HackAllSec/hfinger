@@ -46,7 +46,7 @@ func WriteOutputs() error {
             return err
         }
     default:
-        return fmt.Errorf("This type of file is not supported: %s", filetype)
+        return nil
     }
     return nil
 }
