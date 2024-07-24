@@ -11,13 +11,15 @@ import (
 func matchKeywords(body []byte, header map[string][]string, title string, favicon []byte, fingerprint config.Fingerprint) bool {
     switch fingerprint.Method {
     case "keyword":
-        switch fingerprint.Location {
-        case "body":
-            return matchBody(body, fingerprint)
-        case "header":
-            return matchHeader(header, fingerprint)
-        case "title":
-            return matchTitle(title, fingerprint)
+        if body != nil {
+            switch fingerprint.Location {
+            case "body":
+                return matchBody(body, fingerprint)
+            case "header":
+                return matchHeader(header, fingerprint)
+            case "title":
+                return matchTitle(title, fingerprint)
+            }
         }
     case "faviconhash":
         if favicon != nil {
