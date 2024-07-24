@@ -17,7 +17,6 @@ import (
 
 var (
     workerCount int64
-    results     []config.Result
     resultsLock sync.Mutex
 )
 
@@ -144,7 +143,12 @@ func ProcessURL(url string) {
     defer resultsLock.Unlock()
 
     for result := range resultsChannel {
-        results = append(results, result)
+        //results = append(results, result)
+        output.AddResults(result)
+    }
+    err := output.WriteOutputs()
+    if err != nil {
+        color.Red("[%s] [!] Error: %s", time.Now().Format("01-02 15:04:05"), err)
     }
 }
 
@@ -195,31 +199,6 @@ func ProcessFile(filePath string) {
 
     wg.Wait()
     close(sem)
-}
-
-func WriteOutputs(formats map[string]string) error {
-    resultsLock.Lock()
-    defer resultsLock.Unlock()
-
-    for format, path := range formats {
-        switch format {
-        case "json":
-            if err := output.WriteJSONOutput(path, results); err != nil {
-                return err
-            }
-        case "xml":
-            if err := output.WriteXMLOutput(path, results); err != nil {
-                return err
-            }
-        case "xlsx":
-            if err := output.WriteXLSXOutput(path, results); err != nil {
-                return err
-            }
-        default:
-            return fmt.Errorf("This type of file is not supported: %s", format)
-        }
-    }
-    return nil
 }
 
 func SetThread(thread int64) {
