@@ -202,21 +202,6 @@ func handleHTTPS(conn net.Conn, req *http.Request, tlsConfig *tls.Config) error 
     return nil
 }
 
-func transferData(dst io.Writer, src io.Reader) error {
-    _, err := io.Copy(dst, src)
-    return err
-}
-
-// sendRequest
-func sendRequest(conn net.Conn, req *http.Request) error {
-    reqBytes, err := httputil.DumpRequest(req, true)
-    if err != nil {
-        return err
-    }
-    _, err = conn.Write(reqBytes)
-    return err
-}
-
 func MitmMatchFingerprint(url string, resp *http.Response) {
     var matched bool
     cfg := config.GetConfig()
