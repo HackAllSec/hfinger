@@ -1,7 +1,7 @@
 ---
 name: "【报告Bug】Bug report"
 about: "【告诉我们Bug详情】Create a report to help us improve"
-title: ''
+title: "【Bug】"
 labels: ''
 assignees: ''
 
@@ -28,8 +28,10 @@ Steps to reproduce the behavior:
 If applicable, add screenshots to help explain your problem.
 
 **【运行环境】Runtime Environment:**
- - 【操作系统】OS: [e.g. iOS]
- - 【程序版本】Version [e.g. 22]
+ - 【操作系统】OS:
+<!-- Windows可执行：chcp 65001 && systeminfo | findstr /C:"OS Name" /C:"OS Version" -->
+<!-- Linux可执行：cat /etc/os-release -->
+ - 【程序版本】Version
 
 **【其它内容】Additional context**
 【添加一些附件等等】Add any other context about the problem here.
