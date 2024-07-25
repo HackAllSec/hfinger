@@ -23,10 +23,11 @@ func matchKeywords(body []byte, header map[string][]string, title string, favico
         }
     case "faviconhash":
         if favicon != nil {
-            icon_hash := Mmh3Hash32(StandBase64(favicon))
+            icon_hash := mmh3Hash32(favicon)
+            inticon_hash,_ := strconv.ParseInt(icon_hash, 10, 32)
             for _, rule := range fingerprint.Rule {
                 intrule,_ := strconv.ParseInt(rule, 10, 32)
-                if icon_hash == int32(intrule) {
+                if int32(inticon_hash) == int32(intrule) {
                     return true
                 }
             }
