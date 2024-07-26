@@ -2,12 +2,16 @@
 
 ![](https://github.com/HackAllSec/hfinger/blob/main/images/logo.png)
 
-**hfinger** 是一个**高性能**、**准确**的命令行指纹识别工具，用于红队打点时快速准确识别指定目标的 Web 框架和 CMS 等信息。受[EHole](https://github.com/EdgeSecurityTeam/EHole)启发开发此工具，它根据 `finger.json` 文件中定义的指纹进行匹配，优化原有文件结构，支持自定义匹配逻辑，支持关键词匹配和 favicon hash 匹配，并支持多线程和代理。
+**hfinger** 是一个**高性能**、**准确**的命令行指纹识别工具，用于红队打点时快速准确识别指定目标的 Web 框架和 CMS 等信息。由于[EHole](https://github.com/EdgeSecurityTeam/EHole)很久没更新了，且存在一些缺点（误报、漏报），开发此工具进行扩展，它根据 `finger.json` 文件中定义的指纹进行匹配，优化原有文件结构，支持自定义匹配逻辑，支持关键词匹配和 favicon hash 匹配，支持多线程和代理。
+
+虽然是重复造轮子了，但是造轮子的意义就在于优化和改进。后期会不断优化指纹库，改进程序。
 
 ## 特性
 
-- 高性能、准确的请求目标
+- 高性能、精准的识别目标
 - 支持同一目标匹配多个框架指纹识别
+- 支持主动模式和被动模式
+- 支持根据错误页识别
 - 根据响应 Header、body 和 title 与 finger.json 中定义的指纹进行匹配
 - finger.json支持自定义匹配逻辑
 - 支持多线程，线程数可通过 -t 参数调整
@@ -29,7 +33,7 @@ go build
 
 ### 命令行参数
 
-```
+```bash
 
  █████         ██████   ███
 ▒▒███         ███▒▒███ ▒▒▒
@@ -61,6 +65,8 @@ Flags:
 
 ### 使用示例
 
+#### 主动模式
+
 单个 URL 识别:
 ```bash
 hfinger -u https://www.hackall.cn
@@ -86,10 +92,32 @@ hfinger -u https://www.hackall.cn -x output.xml
 hfinger -u https://www.hackall.cn -s output.xlsx
 ```
 
+#### 被动模式
+
+用法和`Xray`类似，包括启动监听、添加上游代理，工具联动等等。
+启动监听即可：
+```bash 
+hfinger -l 127.0.0.1:8888 -s res.xlsx
+```
+![](https://github.com/HackAllSec/hfinger/blob/main/images/passivemode.png)
+![](https://github.com/HackAllSec/hfinger/blob/main/images/passive.png)
+
+要支持HTTPS需要将`certs`目录下的证书导入浏览器。
+联动`Xray`或其它工具有两种方式。
+方式一:  `Target -> Xray -> hfinger`
+在上边的基础上浏览器设置代理经过`Xray`或`Burp`，然后在`Xray`或`Burp`配置上游代理为`hfinger`的监听地址即可。
+方式二: `Target -> hfinger -> Xray`
+启动`hfinger`被动模式，使用`-p`参数设置上游代理，浏览器设置代理为`hfinger`的监听地址即可。
+```bash
+hfinger -l 127.0.0.1:8888 -p http://127.0.0.1:7777 -s res.xlsx
+```
+
 ### 输出示例
 
 实时输出:
+
 ![](https://github.com/HackAllSec/hfinger/blob/main/images/output.png)
+
 JSON 输出格式:
 ```json
 [
@@ -126,6 +154,8 @@ XLSX输出格式：
 |-|-|-|-|-|
 |https://blog.hackall.cn|Typecho|cloudflare|200|Hack All Sec的博客 - Hack All Sec's Blog|
 
+![](https://github.com/HackAllSec/hfinger/blob/main/images/xlsx.png)
+
 ## 目录结构
 
 ```
@@ -134,6 +164,7 @@ hfinger/
 |-- cmd/                  // 命令行相关代码
 |   |-- banner.go
 |   |-- args.go
+|-- icon                  // 图标文件
 |-- config/
 |   |-- config.go         // 配置文件
 |-- data/
@@ -142,13 +173,31 @@ hfinger/
 |   |-- finger.go         // 核心指纹扫描逻辑
 |   |-- faviconhash.go    // favicon hash计算
 |   |-- matcher.go        // 匹配逻辑
+|   |-- mitm.go           // 中间人代理服务
 |-- output
 |   |-- jsonoutput.go     // 输出json文件
 |   |-- xmloutput.go      // 输出xml文件
 |   |-- xlsxoutput.go     // 输出xlsx文件
 |-- utils/
 |   |-- http.go           // HTTP请求相关
+|   |-- certs.go          // 证书相关
 ```
+
+## 变更记录
+
+### v1.0.0
+
+- 优化了部分指纹，解决EHole识别不到某些二次开发的CMS
+- 增加同一目标匹配多个框架指纹识别
+- 增加了finger.go自定义规则匹配逻辑
+- 增加了XML文件输出
+
+### v1.0.1
+
+- 优化了部分指纹，增加了部分指纹
+- 修复一些Bug
+- 增加被动识别模式
+- 重新实现icon_hash
 
 ## 贡献
 
