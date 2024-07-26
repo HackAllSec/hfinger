@@ -210,6 +210,7 @@ hfinger/
 ## 贡献
 
 欢迎提交 PR 、Issues 和指纹库。
+可以在`data`目录下创建`XXXCMS.json`通过PR提交指纹。
 
 ## 许可
 
