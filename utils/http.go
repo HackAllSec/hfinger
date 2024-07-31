@@ -65,9 +65,23 @@ func InitializeHTTPClient(proxy string, timeout time.Duration) error {
     if proxy != "" {
         proxyURL, err := url.Parse(proxy)
         if err != nil {
-            return fmt.Errorf("Error: %v", err)
+            return err
         }
-        transport.Proxy = http.ProxyURL(proxyURL)
+
+        user := proxyURL.User.Username()
+        password, hasPassword := proxyURL.User.Password()
+        if hasPassword {
+            // Encode credentials to handle special characters
+            encodedAuth := base64.StdEncoding.EncodeToString([]byte(user + ":" + password))
+            transport.Proxy = func(req *http.Request) (*url.URL, error) {
+                req.Header.Add("Proxy-Authorization", "Basic "+encodedAuth)
+                return proxyURL, nil
+            }
+        } else {
+            transport.Proxy = func(req *http.Request) (*url.URL, error) {
+                return proxyURL, nil
+            }
+        }
     }
 
     err := http2.ConfigureTransport(transport)
@@ -108,7 +122,7 @@ func Head(url string, headers map[string]string) (*http.Response, error) {
 
 func Get(url string, headers map[string]string) (*http.Response, error) {
     if httpClient == nil {
-        return nil, fmt.Errorf("Error: HTTP client not initialized")
+        return nil, fmt.Errorf("HTTP client not initialized.")
     }
 
     req, err := http.NewRequest("GET", url, nil)
@@ -215,7 +229,7 @@ func FetchFavicon(body []byte) string {
 func GetBaseURL(fullURL string) (string, error) {
     parsedURL, err := url.Parse(fullURL)
     if err != nil {
-        return "", fmt.Errorf("Error: %w", err)
+        return "", err
     }
 
     baseURL := fmt.Sprintf("%s://%s", parsedURL.Scheme, parsedURL.Host)
