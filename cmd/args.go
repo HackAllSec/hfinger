@@ -54,7 +54,7 @@ var RootCmd = &cobra.Command{
         if url != "" {
             _, err := utils.GetBaseURL(url)
             if err != nil {
-                color.Red("[%s] [!] %v", time.Now().Format("01-02 15:04:05"),err)
+                color.Red("[%s] [!] Error: %v", time.Now().Format("01-02 15:04:05"),err)
             }
         }
         err := config.LoadConfig("data/finger.json")
@@ -63,7 +63,7 @@ var RootCmd = &cobra.Command{
         }
         err = utils.InitializeHTTPClient(proxy, 30*time.Second)
         if err != nil {
-            color.Red("[%s] [!] %v", time.Now().Format("01-02 15:04:05"), err)
+            color.Red("[%s] [!] Error: %v", time.Now().Format("01-02 15:04:05"), err)
             os.Exit(1)
         }
         if thread < 1 {
