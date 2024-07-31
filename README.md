@@ -207,6 +207,10 @@ hfinger/
 - 增加被动识别模式
 - 重新实现icon_hash
 
+### v1.0.2 (todo)
+
+- 上游代理支持身份认证，用户名密码中特殊字符需要进行url编码，如`-p http://admin:admin%40123@proxyhost:proxyport`
+
 ## 贡献
 
 欢迎提交 PR 、Issues 和指纹库。
