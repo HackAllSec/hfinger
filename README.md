@@ -103,6 +103,7 @@ hfinger -u https://www.hackall.cn -s output.xlsx
 #### 被动模式
 
 用法和`Xray`类似，包括启动监听、添加上游代理，工具联动等等。被动模式可以识别主动模式无法识别的指纹，且比主动扫描更加全面。
+
 启动监听即可：
 ```bash 
 hfinger -l 127.0.0.1:8888 -s res.xlsx
@@ -111,10 +112,17 @@ hfinger -l 127.0.0.1:8888 -s res.xlsx
 ![](https://github.com/HackAllSec/hfinger/blob/main/images/passive.png)
 
 要支持HTTPS需要将`certs`目录下的证书导入浏览器。
-联动`Xray`或其它工具有两种方式。
-方式一:  `Target -> Xray -> hfinger`
+
+**联动其它工具**
+
+联动`Xray`或其它工具有两种方式：
+
+方式一:  `Target -> Xray/Burp -> hfinger`
+
 在上边的基础上浏览器设置代理经过`Xray`或`Burp`，然后在`Xray`或`Burp`配置上游代理为`hfinger`的监听地址即可。
+
 方式二: `Target -> hfinger -> Xray`
+
 启动`hfinger`被动模式，使用`-p`参数设置上游代理，浏览器设置代理为`hfinger`的监听地址即可。
 ```bash
 hfinger -l 127.0.0.1:8888 -p http://127.0.0.1:7777 -s res.xlsx
