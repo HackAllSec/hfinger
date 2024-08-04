@@ -4356,11 +4356,11 @@
         "logic": "and",
         "rule": ["<title>Welcome to CentOS</title>","img/centos-logo.png","centos.org"]
      }, {
-        "cms": "百度 ueditor编辑器",
+        "cms": "Ueditor编辑器",
         "method": "keyword",
         "location": "body",
         "logic": "and",
-        "rule": ["ueditor.all.js","UE.getEditor"]
+        "rule": ["/ueditor.css"]
      }, {
         "cms": "蓝凌EIS智慧协同平台",
         "method": "keyword",
