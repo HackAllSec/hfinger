@@ -303,8 +303,8 @@
         "cms": "Spring env",
         "method": "keyword",
         "location": "body",
-        "logic": "and",
-        "rule": ["servletContextInitParams"]
+        "logic": "or",
+        "rule": ["servletContextInitParams","logback"]
     }, {
         "cms": "微三云管理系统",
         "method": "keyword",
@@ -329,12 +329,6 @@
         "location": "body",
         "logic": "and",
         "rule": ["科迈RAS","CmxGoUrl.php"]
-    }, {
-        "cms": "Spring env",
-        "method": "keyword",
-        "location": "body",
-        "logic": "and",
-        "rule": ["logback"]
     }, {
         "cms": "Weblogic",
         "method": "keyword",
@@ -888,11 +882,17 @@
         "logic": "and",
         "rule": ["99395752"]
     }, {
-        "cms": "spring-boot",
+        "cms": "Spring Boot",
         "method": "faviconhash",
         "location": "body",
         "logic": "and",
         "rule": ["116323821"]
+    }, {
+        "cms": "Spring Boot",
+        "method": "keyword",
+        "location": "body",
+        "logic": "and",
+        "rule": ["Whitelabel Error Page","This application has no explicit mapping"]
     }, {
         "cms": "Jenkins",
         "method": "faviconhash",
