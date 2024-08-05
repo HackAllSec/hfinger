@@ -9,7 +9,6 @@ import (
     "encoding/pem"
     "math/big"
     "os"
-    "path/filepath"
     "time"
 
     "hfinger/config"
