@@ -1,7 +1,7 @@
 package cmd
 
 import (
-    "hfinger/utils"
+    "hfinger/config"
     "github.com/fatih/color"
 )
 
@@ -17,7 +17,7 @@ func PrintBanner() {
 ▒▒▒▒ ▒▒▒▒▒  ▒▒▒▒▒     ▒▒▒▒▒ ▒▒▒▒ ▒▒▒▒▒  ▒▒▒▒▒███ ▒▒▒▒▒▒  ▒▒▒▒▒     
                                         ███ ▒███                   
                                        ▒▒██████                    
-                                        ▒▒▒▒▒▒                     ` + utils.GetVersion() + ` By:Hack All Sec
+                                        ▒▒▒▒▒▒                     ` + config.Version + ` By:Hack All Sec
 
 `
     color.Green(banner)
