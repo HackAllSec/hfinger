@@ -32,6 +32,15 @@ type Result struct {
 var (
     config *FingerprintConfig
     once   sync.Once
+    Version = "v1.0.2"
+    CertsDir   = "certs"
+    CaCertFile = "ca.crt"
+    CaKeyFile  = "ca.key"
+    CertsPath = filepath.Join(CertsDir, CaCertFile)
+    KeyPath = filepath.Join(CertsDir, CaKeyFile)
+    Datapath = "data"
+    Fingerfile = "finger.json"
+    Fingerfullpath = filepath.Join(Datapath, Fingerfile)
 )
 
 // LoadConfig 加载并缓存指纹配置
