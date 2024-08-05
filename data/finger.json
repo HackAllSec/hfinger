@@ -303,8 +303,8 @@
         "cms": "Spring env",
         "method": "keyword",
         "location": "body",
-        "logic": "and",
-        "rule": ["servletContextInitParams"]
+        "logic": "or",
+        "rule": ["servletContextInitParams","logback"]
     }, {
         "cms": "微三云管理系统",
         "method": "keyword",
@@ -329,12 +329,6 @@
         "location": "body",
         "logic": "and",
         "rule": ["科迈RAS","CmxGoUrl.php"]
-    }, {
-        "cms": "Spring env",
-        "method": "keyword",
-        "location": "body",
-        "logic": "and",
-        "rule": ["logback"]
     }, {
         "cms": "Weblogic",
         "method": "keyword",
@@ -888,11 +882,17 @@
         "logic": "and",
         "rule": ["99395752"]
     }, {
-        "cms": "spring-boot",
+        "cms": "Spring Boot",
         "method": "faviconhash",
         "location": "body",
         "logic": "and",
         "rule": ["116323821"]
+    }, {
+        "cms": "Spring Boot",
+        "method": "keyword",
+        "location": "body",
+        "logic": "and",
+        "rule": ["Whitelabel Error Page"]
     }, {
         "cms": "Jenkins",
         "method": "faviconhash",
@@ -4356,11 +4356,11 @@
         "logic": "and",
         "rule": ["<title>Welcome to CentOS</title>","img/centos-logo.png","centos.org"]
      }, {
-        "cms": "百度 ueditor编辑器",
+        "cms": "Ueditor编辑器",
         "method": "keyword",
         "location": "body",
         "logic": "and",
-        "rule": ["ueditor.all.js","UE.getEditor"]
+        "rule": ["/ueditor.css"]
      }, {
         "cms": "蓝凌EIS智慧协同平台",
         "method": "keyword",
