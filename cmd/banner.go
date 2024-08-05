@@ -1,11 +1,12 @@
 package cmd
 
 import (
-	"github.com/fatih/color"
+    "hfinger/utils"
+    "github.com/fatih/color"
 )
 
 func PrintBanner() {
-	banner := `
+    banner := `
  █████         ██████   ███                                        
 ▒▒███         ███▒▒███ ▒▒▒                                         
  ▒███████    ▒███ ▒▒▒  ████  ████████    ███████  ██████  ████████ 
@@ -16,8 +17,8 @@ func PrintBanner() {
 ▒▒▒▒ ▒▒▒▒▒  ▒▒▒▒▒     ▒▒▒▒▒ ▒▒▒▒ ▒▒▒▒▒  ▒▒▒▒▒███ ▒▒▒▒▒▒  ▒▒▒▒▒     
                                         ███ ▒███                   
                                        ▒▒██████                    
-                                        ▒▒▒▒▒▒                     V1.0.1 By: Hack All Sec
+                                        ▒▒▒▒▒▒                     ` + utils.GetVersion() + ` By:Hack All Sec
 
 `
-	color.Green(banner)
+    color.Green(banner)
 }
