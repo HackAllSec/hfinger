@@ -16,7 +16,7 @@ func PrintBanner() {
 ▒▒▒▒ ▒▒▒▒▒  ▒▒▒▒▒     ▒▒▒▒▒ ▒▒▒▒ ▒▒▒▒▒  ▒▒▒▒▒███ ▒▒▒▒▒▒  ▒▒▒▒▒     
                                         ███ ▒███                   
                                        ▒▒██████                    
-                                        ▒▒▒▒▒▒                     By:Hack All Sec
+                                        ▒▒▒▒▒▒                     V1.0.1 By: Hack All Sec
 
 `
 	color.Green(banner)
