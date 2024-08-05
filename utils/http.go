@@ -9,6 +9,7 @@ import (
     "net/url"
     "strings"
     "time"
+    "encoding/base64"
 
     "golang.org/x/net/http2"
     "github.com/PuerkitoBio/goquery"
