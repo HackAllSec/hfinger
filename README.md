@@ -218,7 +218,9 @@ hfinger/
 
 ### v1.0.2 (todo)
 
+- 优化了部分指纹，增加了部分指纹
 - 上游代理支持身份认证，用户名密码中特殊字符需要进行url编码，如`-p http://admin:admin%40123@proxyhost:proxyport`
+- 新增升级功能
 
 ## 贡献
 
