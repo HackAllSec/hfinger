@@ -83,7 +83,11 @@ var RootCmd = &cobra.Command{
                 color.Red("[%s] [!] Error: %v", time.Now().Format("01-02 15:04:05"),err)
             }
         }
-        err = config.LoadConfig("data/finger.json")
+         _, err = os.Stat(config.Fingerfullpath)
+        if os.IsNotExist(err) {
+            utils.Update()
+        }
+        err = config.LoadConfig(config.Fingerfullpath)
         if err != nil {
             color.Red("[%s] [!] Error: Failed to load fingerprint library.", time.Now().Format("01-02 15:04:05"))
         }
