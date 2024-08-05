@@ -42,6 +42,7 @@ var RootCmd = &cobra.Command{
         outputXML, _ := cmd.Flags().GetString("output-xml")
         outputXLSX, _ := cmd.Flags().GetString("output-xlsx")
         versionFlag, _ := cmd.Flags().GetBool("version")
+        updateFlag,_ := cmd.Flags().GetBool("update")
         upgradeFlag,_ := cmd.Flags().GetBool("upgrade")
         
         if versionFlag {
@@ -55,6 +56,11 @@ var RootCmd = &cobra.Command{
             os.Exit(1)
         }
 
+        if updateFlag {
+            utils.Update()
+            os.Exit(0)
+        }
+        
         if upgradeFlag {
             utils.Upgrade()
             os.Exit(0)
@@ -112,6 +118,7 @@ func init() {
     RootCmd.Flags().StringP("output-xlsx", "s", "", "Output all results to a Excel file")
     RootCmd.Flags().StringP("proxy", "p", "", "Specify the proxy for accessing the target, supporting HTTP and SOCKS, example: http://127.0.0.1:8080")
     RootCmd.Flags().Int64P("thread", "t", 100, "Number of fingerprint recognition threads")
+    RootCmd.Flags().BoolP("update", "", false, "Update fingerprint database")
     RootCmd.Flags().BoolP("upgrade", "", false, "Upgrade to the latest version")
     RootCmd.Flags().BoolP("version", "v", false, "Display the current version of the tool")
 }
