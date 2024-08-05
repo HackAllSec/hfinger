@@ -14,7 +14,7 @@ import (
 )
 
 var (
-    version = "v1.0.0"
+    version = "v1.0.2"
 )
 
 type GitHubReleaseAsset struct {
