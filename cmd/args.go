@@ -46,7 +46,7 @@ var RootCmd = &cobra.Command{
         upgradeFlag,_ := cmd.Flags().GetBool("upgrade")
         
         if versionFlag {
-            color.Green("hfinger version: %s", utils.GetVersion())
+            color.Green("hfinger version: %s", config.Version)
             os.Exit(0)
         }
 
