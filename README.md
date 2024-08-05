@@ -216,12 +216,12 @@ hfinger/
 - 增加被动识别模式
 - 重新实现icon_hash
 
-### v1.0.2 (todo)
+### v1.0.2
 
 - 优化了部分指纹，增加了部分指纹
 - 上游代理支持身份认证，用户名密码中特殊字符需要进行url编码，如`-p http://admin:admin%40123@proxyhost:proxyport`
-- 新增更新指纹库功能`--update`
-- 新增升级功能`--upgrade`
+- 新增更新指纹库功能`--update`，更新失败请检查是否可以访问Github
+- 新增升级功能`--upgrade`，升级失败请检查是否可以访问Github
 
 ## 贡献
 
