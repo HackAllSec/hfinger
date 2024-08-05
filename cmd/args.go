@@ -41,6 +41,26 @@ var RootCmd = &cobra.Command{
         outputJSON, _ := cmd.Flags().GetString("output-json")
         outputXML, _ := cmd.Flags().GetString("output-xml")
         outputXLSX, _ := cmd.Flags().GetString("output-xlsx")
+        versionFlag, _ := cmd.Flags().GetBool("version")
+        upgradeFlag,_ := cmd.Flags().GetBool("upgrade")
+        
+        if versionFlag {
+            color.Green("hfinger version: %s", utils.GetVersion())
+            os.Exit(0)
+        }
+
+        err := utils.InitializeHTTPClient(proxy, 30*time.Second)
+        if err != nil {
+            color.Red("[%s] [!] Error: %v", time.Now().Format("01-02 15:04:05"), err)
+            os.Exit(1)
+        }
+
+        if upgradeFlag {
+            utils.Upgrade()
+            os.Exit(0)
+        }
+
+        utils.CheckForUpdates()
 
         if url == "" && file == "" && listen == "" {
             cmd.Help()
@@ -57,15 +77,11 @@ var RootCmd = &cobra.Command{
                 color.Red("[%s] [!] Error: %v", time.Now().Format("01-02 15:04:05"),err)
             }
         }
-        err := config.LoadConfig("data/finger.json")
+        err = config.LoadConfig("data/finger.json")
         if err != nil {
             color.Red("[%s] [!] Error: Failed to load fingerprint library.", time.Now().Format("01-02 15:04:05"))
         }
-        err = utils.InitializeHTTPClient(proxy, 30*time.Second)
-        if err != nil {
-            color.Red("[%s] [!] Error: %v", time.Now().Format("01-02 15:04:05"), err)
-            os.Exit(1)
-        }
+        
         if thread < 1 {
             color.Red("[%s] [!] Error: The number of threads cannot be less than 1.", time.Now().Format("01-02 15:04:05"))
             os.Exit(1)
@@ -96,4 +112,6 @@ func init() {
     RootCmd.Flags().StringP("output-xlsx", "s", "", "Output all results to a Excel file")
     RootCmd.Flags().StringP("proxy", "p", "", "Specify the proxy for accessing the target, supporting HTTP and SOCKS, example: http://127.0.0.1:8080")
     RootCmd.Flags().Int64P("thread", "t", 100, "Number of fingerprint recognition threads")
+    RootCmd.Flags().BoolP("upgrade", "", false, "Upgrade to the latest version")
+    RootCmd.Flags().BoolP("version", "v", false, "Display the current version of the tool")
 }
