@@ -10,11 +10,8 @@ import (
     "path/filepath"
     "time"
 
+    "hfinger/config"
     "github.com/fatih/color"
-)
-
-var (
-    version = "v1.0.2"
 )
 
 type GitHubReleaseAsset struct {
@@ -25,10 +22,6 @@ type GitHubReleaseAsset struct {
 type GitHubReleaseResponse struct {
     TagName string               `json:"tag_name"`
     Assets  []GitHubReleaseAsset `json:"assets"`
-}
-
-func GetVersion() string {
-    return version
 }
 
 func getLatestRelease() (*GitHubReleaseResponse, error) {
@@ -111,8 +104,8 @@ func CheckForUpdates() {
     }
 
     latestVersion := release.TagName
-    if latestVersion != version {
-        color.Blue("[*] Your current hfinger %s are outdated. Latest is %s.You can use the --upgrade option to upgrade.", version, latestVersion)
+    if latestVersion != config.Version {
+        color.Blue("[*] Your current hfinger %s are outdated. Latest is %s.You can use the --upgrade option to upgrade.", config.Version, latestVersion)
     }
 }
 
@@ -138,7 +131,7 @@ func Upgrade() {
     }
 
     latestVersion := release.TagName
-    if latestVersion != version {
+    if latestVersion != config.Version {
         var assetName string
         switch runtime.GOOS {
         case "windows":
