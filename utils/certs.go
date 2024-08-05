@@ -83,12 +83,12 @@ func generateSelfSignedCert(certPath, keyPath string) error {
 }
 
 func LoadCertificate() (*tls.Config, error) {
-    caCert, err := os.ReadFile(config.CaCertPath)
+    caCert, err := os.ReadFile(config.CertsPath)
     if err != nil {
         return nil, err
     }
 
-    caKey, err := os.ReadFile(config.CaKeyPath)
+    caKey, err := os.ReadFile(config.KeyPath)
     if err != nil {
         return nil, err
     }
