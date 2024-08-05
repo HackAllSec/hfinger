@@ -12,26 +12,18 @@ import (
     "path/filepath"
     "time"
 
+    "hfinger/config"
     "github.com/fatih/color"
 )
 
-const (
-    certsDir   = "certs"
-    caCertFile = "ca.crt"
-    caKeyFile  = "ca.key"
-)
-
 func EnsureCerts() error {
-    if err := os.MkdirAll(certsDir, 0755); err != nil {
+    if err := os.MkdirAll(config.CertsDir, 0755); err != nil {
         return err
     }
 
-    certsPath := filepath.Join(certsDir, caCertFile)
-    keyPath := filepath.Join(certsDir, caKeyFile)
-
-    if _, err := os.Stat(certsPath); os.IsNotExist(err) {
+    if _, err := os.Stat(config.CertsPath); os.IsNotExist(err) {
         color.Yellow("[%s] [-] Warning: Certificates not found, generating new ones...", time.Now().Format("01-02 15:04:05"))
-        if err := generateSelfSignedCert(certsPath, keyPath); err != nil {
+        if err := generateSelfSignedCert(config.CertsPath, config.KeyPath); err != nil {
             return err
         }
     }
@@ -92,15 +84,12 @@ func generateSelfSignedCert(certPath, keyPath string) error {
 }
 
 func LoadCertificate() (*tls.Config, error) {
-    caCertPath := filepath.Join(certsDir, caCertFile)
-    caKeyPath := filepath.Join(certsDir, caKeyFile)
-
-    caCert, err := os.ReadFile(caCertPath)
+    caCert, err := os.ReadFile(config.CaCertPath)
     if err != nil {
         return nil, err
     }
 
-    caKey, err := os.ReadFile(caKeyPath)
+    caKey, err := os.ReadFile(config.CaKeyPath)
     if err != nil {
         return nil, err
     }
