@@ -116,6 +116,21 @@ func CheckForUpdates() {
     }
 }
 
+func Update() {
+    url := "https://raw.githubusercontent.com/HackAllSec/hfinger/main/data/finger.json"
+    err := os.MkdirAll("data", os.ModePerm)
+    if err != nil {
+        return
+    }
+    destPath := "data/finger.json"
+    err = downloadFile(url, destPath)
+    if err != nil {
+        color.Red("[%s] [!] Error: %v", time.Now().Format("01-02 15:04:05"), err)
+        return
+    }
+    color.Green("[%s] [+] Update finger.json success.", time.Now().Format("01-02 15:04:05"))
+}
+
 func Upgrade() {
     release, err := getLatestRelease()
     if err != nil {
