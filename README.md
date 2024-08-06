@@ -66,12 +66,16 @@ Usage:
 Flags:
   -f, --file string          Read assets from local files for fingerprint recognition, with one target per line
   -h, --help                 help for hfinger
+  -l, --listen string        Using a proxy resource collector to retrieve targets, example: 127.0.0.1:6789
   -j, --output-json string   Output all results to a JSON file
   -s, --output-xlsx string   Output all results to a Excel file
   -x, --output-xml string    Output all results to a XML file
   -p, --proxy string         Specify the proxy for accessing the target, supporting HTTP and SOCKS, example: http://127.0.0.1:8080
   -t, --thread int           Number of fingerprint recognition threads (default 100)
+      --update               Update fingerprint database
+      --upgrade              Upgrade to the latest version
   -u, --url string           Specify the recognized target,example: https://www.example.com
+  -v, --version              Display the current version of the tool
 ```
 
 ### 使用示例
