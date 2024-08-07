@@ -121,7 +121,7 @@ func Update() {
         color.Red("[%s] [!] Error: %v", time.Now().Format("01-02 15:04:05"), err)
         return
     }
-    color.Green("[%s] [+] Update finger.json success.", time.Now().Format("01-02 15:04:05"))
+    color.Green("[%s] [+] Update finger.json successfully.", time.Now().Format("01-02 15:04:05"))
 }
 
 func Upgrade() {
