@@ -126,6 +126,12 @@
         "logic": "and",
         "rule": ["快云服务器助手"]
     }, {
+        "cms": "快云服务器小助手",
+        "method": "keyword",
+        "location": "body",
+        "logic": "and",
+        "rule": ["快云服务器助手-登录"]
+    }, {
         "cms": "禅道 zentao",
         "method": "keyword",
         "location": "title",
@@ -480,6 +486,178 @@
         "logic": "and",
         "rule": ["1183274548"]
     }, {
+        "cms": "用友致远oa",
+        "method": "keyword",
+        "location": "body",
+        "logic": "and",
+        "rule": ["/seeyon/USER-DATA/IMAGES/LOGIN/login.gif"]
+    }, {
+        "cms": "用友致远oa",
+        "method": "keyword",
+        "location": "body",
+        "logic": "and",
+        "rule": ["/yyoa/"]
+    }, {
+        "cms": "用友软件",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["UFIDA Software CO.LTD all rights reserved","logo/images/ufida_ehr_disable.png","logo/images/ufida_ehr.png","logo/images/ufida_ebs_disable.png"]
+    }, {
+        "cms": "用友NC",
+        "method": "keyword",
+        "location": "body",
+        "logic": "and",
+        "rule": ["logo/images/ufida_nc.png","用友NC"]
+    }, {
+        "cms": "用友NC",
+        "method": "keyword",
+        "location": "body",
+        "logic": "and",
+        "rule": ["uclient.yonyou.com", "UClient"]
+    }, {
+        "cms": "用友NC",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["/web/icc/js/chat-msg.js","/js/ext/resources/css/xtheme-blue.css","href=\"logo/images/ufida.ico\">"]
+    }, {
+        "cms": "用友 NC Cloud",
+        "method": "keyword",
+        "location": "body",
+        "logic": "and",
+        "rule": ["platform/pub/welcome.do"]
+     }, {
+        "cms": "用友GRP-U8 新政府会计制度专版",
+        "method": "faviconhash",
+        "location": "body",
+        "logic": "and",
+        "rule": ["-299520369"]
+     }, {
+        "cms": "用友-畅捷通OEM",
+        "method": "keyword",
+        "location": "body",
+        "logic": "and",
+        "rule": ["GNRemote.dll","Web_sc/login.gn"]
+     }, {
+        "cms": "用友-时空KSOA",
+        "method": "keyword",
+        "location": "body",
+        "logic": "and",
+        "rule": ["/images_index/productKSOA.jpg"]
+    }, {
+        "cms": "用友商战实践平台",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["Login_Owner","Login_Main_BG"]
+    }, {
+        "cms": "用友erp-nc",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["/nc/servlet/nc.ui.iufo.login.Index"]
+    }, {
+        "cms": "用友U8",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["getFirstU8Accid"]
+    }, {
+        "cms": "用友ufida",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["/System/Login/Login.asp?AppID="]
+    }, {
+        "cms": "用友 E-HR",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["用友 E-HR"]
+    }, {
+        "cms": "用友TurboCRM",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["用友TurboCRM"]
+    }, {
+        "cms": "用友GRP-U8(财务系统)",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["用友GRP-U8(财务系统)"]
+    }, {
+        "cms": "用友优普U8系统",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["用友优普U8系统"]
+    }, {
+        "cms": "用友优普U8系统",
+        "method": "keyword",
+        "location": "title",
+        "logic": "or",
+        "rule": ["用友优普U8系统"]
+    }, {
+        "cms": "用友-商战实践平台",
+        "method": "keyword",
+        "location": "title",
+        "logic": "or",
+        "rule": [
+            "用友 商战实践平台"
+        ]
+    }, {
+        "cms": "用友-商战实践平台",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": [
+            "用友 商战实践平台"
+        ]
+    }, {
+        "cms": "用友-FE协同办公平台",
+        "method": "keyword",
+        "location": "title",
+        "logic": "or",
+        "rule": ["用友 FE协同办公平台"]
+    }, {
+        "cms": "用友-FE协同办公平台",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["用友 FE协同办公平台"]
+    }, {
+        "cms": "yonyou-shop",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["北京用友政务软件股份有限公司"]
+    }, {
+        "cms": "用友-UFIDA-NC",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["nc.sfbase.applet.NCApplet.class"]
+    }, {
+        "cms": "用友GRP-U8",
+        "method": "faviconhash",
+        "location": "body",
+        "logic": "and",
+        "rule": ["3995446927"]
+    }, {
+        "cms": "用友A6",
+        "method": "keyword",
+        "location": "title",
+        "logic": "and",
+        "rule": ["用友A6"]
+    }, {
+        "cms": "用友GRP-RMIS系统",
+        "method": "keyword",
+        "location": "title",
+        "logic": "or",
+        "rule": ["用友GRP-RMIS系统"]
+    }, {
         "cms": "流量通 流量平台",
         "method": "faviconhash",
         "location": "body",
@@ -507,8 +685,8 @@
         "cms": "万户ezOFFICE",
         "method": "faviconhash",
         "location": "body",
-        "logic": "and",
-        "rule": ["-1827521324"]
+        "logic": "or",
+        "rule": ["-1827521324","2467445972"]
     }, {
         "cms": "信锐物联平台",
         "method": "faviconhash",
@@ -630,6 +808,24 @@
         "logic": "and",
         "rule": ["/vpn/common/js/leadsec.js", "/vpn/user/common/custom/auth_home.css"]
     }, {
+        "cms": "Leadsec-SSL-VPN",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["欢迎使用leadsec网御ssl vpn","/ssl/down/usbkey.exe","content=\"ssl,vpn,sslvpn","/ssl/down/images_pc/"]
+    }, {
+        "cms": "Leadsec-SSL-VPN",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["xdaemon"]
+    }, {
+        "cms": "Leadsec-WAF",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["<div id=\"divlogin\">","网御waf"]
+    }, {
         "cms": "Typecho",
         "method": "keyword",
         "location": "body",
@@ -705,14 +901,74 @@
         "cms": "金蝶云星空",
         "method": "keyword",
         "location": "body",
-        "logic": "and",
-        "rule": ["HTML5/content/themes/kdcss.min.css"]
+        "logic": "or",
+        "rule": ["HTML5/content/themes/kdcss.min.css","/ClientBin/Kingdee.BOS.XPF.App.xap"]
     }, {
-        "cms": "金蝶云星空",
+        "cms": "金蝶云星空 移动应用管理平台",
+        "method": "keyword",
+        "location": "header",
+        "logic": "and",
+        "rule": ["金蝶云星空 移动应用管理平台"]
+    }, {
+        "cms": "金蝶 EAS",
         "method": "keyword",
         "location": "body",
         "logic": "and",
-        "rule": ["/ClientBin/Kingdee.BOS.XPF.App.xap"]
+        "rule": ["eassso","portalClientHelper.jsp"]
+    }, {
+        "cms": "金蝶 EAS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "and",
+        "rule": ["EAS系统登录","easSessionId"]
+    }, {
+        "cms": "金蝶Apusic应用服务器",
+        "method": "keyword",
+        "location": "body",
+        "logic": "and",
+        "rule": ["欢迎使用Apusic应用服务器"]
+    }, {
+        "cms": "kingdee-K3-cloud",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["金蝶国际软件集团有限公司版权所有","var formidafterlogin = '\"bos_mainconsolesutra\"","class=\"kd-div-loading-ct\""]
+    },  {
+        "cms": "金蝶政务GSiS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "and",
+        "rule": ["/kdgs/script/kdgs.js"]
+    }, {
+        "cms": "金蝶K/3 Cloud",
+        "method": "keyword",
+        "location": "header",
+        "logic": "and",
+        "rule": ["金蝶K/3 Cloud"]
+    }, {
+        "cms": "金蝶K/3 Cloud",
+        "method": "keyword",
+        "location": "title",
+        "logic": "and",
+        "rule": ["金蝶K/3 Cloud"]
+    }, {
+        "cms": "金蝶OA",
+        "method": "keyword",
+        "location": "body",
+        "logic": "and",
+        "rule": ["EAS系统登录","金蝶国际软件集团有限公司"]
+    }, {
+        "cms": "金蝶OA",
+        "method": "keyword",
+        "location": "title",
+        "logic": "and",
+        "rule": ["金蝶OA"]
+    }, {
+        "cms": "金蝶协作办公系统",
+        "method": "keyword",
+        "location": "title",
+        "logic": "and",
+        "rule": ["金蝶协作办公系统"]
     }, {
         "cms": "CoreMail",
         "method": "keyword",
@@ -804,24 +1060,6 @@
         "logic": "and",
         "rule": ["zentaosid"]
     }, {
-        "cms": "用友软件",
-        "method": "keyword",
-        "location": "body",
-        "logic": "and",
-        "rule": ["UFIDA Software CO.LTD all rights reserved"]
-    }, {
-        "cms": "用友NC",
-        "method": "keyword",
-        "location": "body",
-        "logic": "and",
-        "rule": ["logo/images/ufida_nc.png","用友NC"]
-    }, {
-        "cms": "用友NC",
-        "method": "keyword",
-        "location": "body",
-        "logic": "and",
-        "rule": ["uclient.yonyou.com", "UClient"]
-    }, {
         "cms": "宝塔-BT.cn",
         "method": "keyword",
         "location": "body",
@@ -838,7 +1076,7 @@
         "method": "keyword",
         "location": "body",
         "logic": "and",
-        "rule": ["zabbix", "Zabbix SIA"]
+        "rule": ["zabbix", "Zabbix SIA","images/general/zabbix.ico"]
     }, {
         "cms": "联软准入",
         "method": "keyword",
@@ -862,7 +1100,37 @@
         "method": "keyword",
         "location": "body",
         "logic": "and",
-        "rule": ["img/inspur_logo.png", "Management System"]
+        "rule": ["img/inspur_logo.png", "Management System","<!-- add by zhchhong","<frame src=\"./page/blank.html\" name=\"mainframe\" id=\"mainframe\" scrolling=\"no\" noresize=\"false\"></frame>"]
+    }, {
+        "cms": "Inspur-as5600",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["class=\"logininputlabel\"","id=\"loginbtnarea\""]
+    }, {
+        "cms": "Inspur-AS5500G2",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["\"productname\": \"inspur as5500g2\""]
+    }, {
+        "cms": "Inspur-EC-Government-Approval-Platform",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["onlinequery/querylist.aspx","langchao.ecgap.outportal"]
+    }, {
+        "cms": "Inspur-InCloud-Sphere",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["class=\"easyui-layout"]
+    }, {
+        "cms": "Inspur-Storage-",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["<td align=\"left\">浪潮存储 您身边的存储专家</td>"]
     }, {
         "cms": "RegentApi_v2.0",
         "method": "keyword",
@@ -1284,6 +1552,18 @@
         "logic": "and",
         "rule": ["-297069493"]
     }, {
+        "cms": "Apache Tomcat",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["<h3>Apache Tomcat","<h1>HTTP Status 404 – Not Found</h1><hr class=\"line\" />"]
+    }, {
+        "cms": "Apache Tomcat",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["apache-coyote"]
+    }, {
         "cms": "OpenVPN",
         "method": "faviconhash",
         "location": "body",
@@ -1614,12 +1894,6 @@
         "logic": "and",
         "rule": ["-1933493443"]
     }, {
-        "cms": "cPanel Login",
-        "method": "faviconhash",
-        "location": "body",
-        "logic": "and",
-        "rule": ["1993518473"]
-    }, {
         "cms": "Arris",
         "method": "faviconhash",
         "location": "body",
@@ -1860,6 +2134,18 @@
         "logic": "and",
         "rule": ["603314"]
     }, {
+        "cms": "Redmine",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["_redmine_session="]
+    }, {
+        "cms": "Redmine",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["authenticity_token","content=\"redmine","powered by <a href=\"http://www.redmine.org/"]
+    }, {
         "cms": "phpMyAdmin",
         "method": "faviconhash",
         "location": "body",
@@ -1872,11 +2158,23 @@
         "logic": "and",
         "rule": ["-646322113"]
     }, {
-        "cms": "Jetty 404",
+        "cms": "Jetty",
         "method": "faviconhash",
         "location": "body",
         "logic": "and",
         "rule": ["-629047854"]
+    }, {
+        "cms": "Jetty",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["jetty"]
+    }, {
+        "cms": "Jetty",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["jetty_banner.gif","Powered by Jetty"]
     }, {
         "cms": "Luma Surveillance",
         "method": "faviconhash",
@@ -2298,12 +2596,6 @@
         "logic": "and",
         "rule": ["-374235895"]
     }, {
-        "cms": "cPanel Login",
-        "method": "faviconhash",
-        "location": "body",
-        "logic": "and",
-        "rule": ["1544230796"]
-    }, {
         "cms": "D-Link (router/network)",
         "method": "faviconhash",
         "location": "body",
@@ -2454,12 +2746,6 @@
         "logic": "and",
         "rule": ["1157789622"]
     }, {
-        "cms": "cPanel Login",
-        "method": "faviconhash",
-        "location": "body",
-        "logic": "and",
-        "rule": ["1244636413"]
-    }, {
         "cms": "WorldClient for Mdaemon",
         "method": "faviconhash",
         "location": "body",
@@ -2541,8 +2827,8 @@
         "cms": "Joomla",
         "method": "faviconhash",
         "location": "body",
-        "logic": "and",
-        "rule": ["1627330242"]
+        "logic": "or",
+        "rule": ["1627330242","1747282642"]
     }, {
         "cms": "SmarterMail",
         "method": "faviconhash",
@@ -3962,9 +4248,15 @@
     }, {
         "cms": "骑士 74CMS",
         "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["QSCMS"]
+    }, {
+        "cms": "骑士 74CMS",
+        "method": "keyword",
         "location": "body",
-        "logic": "and",
-        "rule": ["74cms","qscms.root","index.php"]
+        "logic": "or",
+        "rule": ["content=\"骑士cms","content=\"74cms.com","/templates/default/css/common.css","powered by <a href=\"http://www.74cms.com/\"","qscms.root"]
     }, {
         "cms": "Apache2 Debian 默认页",
         "method": "keyword",
@@ -3993,8 +4285,8 @@
         "cms": "若依(RuoYi)-管理系统",
         "method": "keyword",
         "location": "body",
-        "logic": "and",
-        "rule": ["ry-ui","username","rememberme"]
+        "logic": "or",
+        "rule": ["/ry-ui","/ruoyi/"]
     }, {
         "cms": "中新金盾信息安全管理系统",
         "method": "keyword",
@@ -4110,6 +4402,41 @@
         "logic": "and",
         "rule": ["流媒体管理服务器","MSHTML","login"]
     }, {
+        "cms": "海康威视（Hikvision）",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["_goaheadwebSessionId","DVRDVS-Webs"]
+    }, {
+        "cms": "Hikvision-Cameras-and-Surveillance",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["realm=\"hikvision","app-webs/","dnvrs-webs","dvrdvs-webs"]
+    }, {
+        "cms": "Hikvision-Cameras-and-Surveillance",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": [
+            "/hikgis/",
+            "/ui/css/ui.css?version=\" + new date",
+            "ng-bind=\"olan.anonymous\" ng-click=\"login",
+            "clsid:f030f48f-cd67-45d1-b622-a5d88a7bcfe9\" id=\"hcnetvideo",
+            "clsid:7b43048f-da7a-458f-af35-d825bdbb6816",
+            "var syslanguage= navigator.browserlanguage.tolowercase(",
+            "var szlanguage = syslanguage.substring",
+            "/codebase/netvideoocx.cab",
+            "id=\"divanonymous\"",
+            "<form action=\"/goform/formcobralogin"
+        ]
+    }, {
+        "cms": "Hikvision--V2.3-Control",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["if(m_bdvrcontrol.stoptalk())","hikvision v2.3控件网页demo"]
+    }, {
         "cms": "noVNC 远程访问",
         "method": "keyword",
         "location": "body",
@@ -4210,7 +4537,13 @@
         "method": "keyword",
         "location": "header",
         "logic": "and",
-        "rule": ["ThinkPHP"]
+        "rule": ["ThinkPHP","think_template","thinkphp"]
+    }, {
+        "cms": "ThinkPHP",
+        "method": "faviconhash",
+        "location": "body",
+        "logic": "or",
+        "rule": ["1165838194"]
     }, {
         "cms": "SuperMap iServer Web Manager",
         "method": "faviconhash",
@@ -4560,12 +4893,6 @@
         "logic": "and",
         "rule": ["Res/Images/logo_va.png","panel_login"]
      }, {
-        "cms": "用友 NC Cloud",
-        "method": "keyword",
-        "location": "body",
-        "logic": "and",
-        "rule": ["platform/pub/welcome.do"]
-     }, {
         "cms": "GitBook",
         "method": "keyword",
         "location": "body",
@@ -4613,12 +4940,6 @@
         "location": "body",
         "logic": "and",
         "rule": ["title>EAP","eap.css","JBoss"]
-     }, {
-        "cms": "若依",
-        "method": "keyword",
-        "location": "body",
-        "logic": "and",
-        "rule": ["ruoyi","若依","login"]
      }, {
         "cms": "万户 OA",
         "method": "keyword",
@@ -4858,7 +5179,7 @@
         "method": "keyword",
         "location": "title",
         "logic": "and",
-        "rule": ["360天擎"]
+        "rule": ["360天擎","360entinst"]
      }, {
         "cms": "博华网龙信息安全一体机",
         "method": "keyword",
@@ -5148,12 +5469,18 @@
         "logic": "and",
         "rule": ["872805507"]
      }, {
-        "cms": "用友GRP-U8 新政府会计制度专版",
-        "method": "faviconhash",
+        "cms": "悟空CRM",
+        "method": "keyword",
         "location": "body",
-        "logic": "and",
-        "rule": ["-299520369"]
-     }, {
+        "logic": "or",
+        "rule": ["/public/js/5kcrm.js"]
+    }, {
+        "cms": "悟空CRM",
+        "method": "keyword",
+        "location": "title",
+        "logic": "or",
+        "rule": ["悟空crm"]
+    }, {
         "cms": "e-cology 运维管理平台",
         "method": "faviconhash",
         "location": "body",
@@ -5166,6 +5493,12 @@
         "logic": "and",
         "rule": ["DownLoad.XGI","realor.cn","dvLogin"]
      }, {
+        "cms": "瑞友天翼应用虚拟化系统",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["href=\"static/css/font-awesome.min.css"]
+    }, {
         "cms": "H3C SecPath 运维审计系统",
         "method": "faviconhash",
         "location": "body",
@@ -5249,12 +5582,6 @@
         "location": "body",
         "logic": "and",
         "rule": ["img/logo.gif","Maintain","unamexx","img/12.png"]
-     }, {
-        "cms": "用友-畅捷通OEM",
-        "method": "keyword",
-        "location": "body",
-        "logic": "and",
-        "rule": ["GNRemote.dll","Web_sc/login.gn"]
      }, {
         "cms": "华为AR Web管理平台",
         "method": "keyword",
@@ -5596,7 +5923,67 @@
         "method": "keyword",
         "location": "body",
         "logic": "and",
-        "rule": ["dist/jquery.js","home/locationIndex.action"]
+        "rule": ["home/locationIndex.action"]
+    }, {
+        "cms": "Hikvision-iVMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": [
+            "tab-border code-iivms\">",
+            "/license!getexpiredateofdays.action';",
+            "2b73083e-9b29-4005-a123-1d4ec47a36d5",
+            "//caoshiyan modify 2015-06-30 中转页面",
+            "download/ivms-"
+        ]
+    }, {
+        "cms": "HIKVISION-iVMS-4200",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["<div class=\"enname\">ivms-4200","name=\"laRemPassword\"","var g_szCacheTime"]
+    }, {
+        "cms": "Hikvision iVMS-5060",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["Hikvision iVMS-5060"]
+    }, {
+        "cms": "HIKVISION-iVMS-7200",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["onkeydown=\"return cms.util.keydownpermit"]
+    }, {
+        "cms": "Hikvision iVMS-8300",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["Hikvision iVMS-8300"]
+    }, {
+        "cms": "Hikvision-iVMS-8700",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["src=\"/portal/common/js/commonvar.js","/views/home/file/installPackage.rar"]
+    }, {
+        "cms": "HIKVISION-SG",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["src=\"./webui/js/jquerylib/jquery-1.7.2.min.js\""]
+    }, {
+        "cms": "Hikvision-TV-Wall",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["tvwall_newtvwall"]
+    }, {
+        "cms": "Hikvision--UDE",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["hikvision"]
     }, {
         "cms": "海纳CMS-HituxCMS",
         "method": "keyword",
@@ -5627,12 +6014,6 @@
         "location": "body",
         "logic": "and",
         "rule": ["e5style/login1.css","e5workspace/security/captcha.do"]
-    }, {
-        "cms": "金蝶 EAS",
-        "method": "keyword",
-        "location": "body",
-        "logic": "and",
-        "rule": ["eassso","portalClientHelper.jsp"]
     }, {
         "cms": "极通 EWEBS 应用虚拟化",
         "method": "keyword",
@@ -5787,8 +6168,8 @@
         "cms": "红海eHR人力资源管理系统",
         "method": "faviconhash",
         "location": "body",
-        "logic": "and",
-        "rule": ["-1015496453"]
+        "logic": "or",
+        "rule": ["-1015496453","3279470843"]
     }, {
         "cms": "MobileIron --Log4j",
         "method": "keyword",
@@ -5850,11 +6231,35 @@
         "logic": "and",
         "rule": ["j_spring_cas_security_check"]
     }, {
-        "cms": "cPanel",
+        "cms": "cPanel-Login",
+        "method": "faviconhash",
+        "location": "body",
+        "logic": "or",
+        "rule": ["1244636413","1544230796","1993518473"]
+    }, {
+        "cms": "cPanel-Login",
+        "method": "keyword",
+        "location": "header",
+        "logic": "and",
+        "rule": ["cpsession"]
+    }, {
+        "cms": "LiteSpeed",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["LiteSpeed"]
+    }, {
+        "cms": "cPanel-WHM",
         "method": "keyword",
         "location":"body",
         "logic": "and",
         "rule": ["/cPanel_magic_revision"]
+    }, {
+        "cms": "cPanel-WHM",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["whostmgrsession"]
     }, {
         "cms": "ThinkPHP",
         "method": "keyword",
@@ -5993,5 +6398,2127 @@
         "location":"body",
         "logic": "and",
         "rule": ["SolrCore Initialization Failures", "Solr Admin"]
+    }, {
+        "cms": "Redmi 路由器",
+        "method": "keyword",
+        "location": "title",
+        "logic": "or",
+        "rule": ["小米路由器","Redmi路由器"]
+    }, {
+        "cms": "Tenda 路由器",
+        "method": "keyword",
+        "location": "title",
+        "logic": "and",
+        "rule": ["Tenda"]
+    }, {
+        "cms": "Sapido-路由器",
+        "method": "keyword",
+        "location": "body",
+        "logic": "and",
+        "rule": ["<script>MML(\"change password\");</script>","><script>MML('Traditional Chinese'"]
+    }, {
+        "cms": "DrayTek Vigor 路由器",
+        "method": "keyword",
+        "location": "body",
+        "logic": "and",
+        "rule": ["Vigor 2960","2229695"]
+    }, {
+        "cms": "VMware Workspace ONE Access",
+        "method": "keyword",
+        "location": "body",
+        "logic": "and",
+        "rule": ["VMware Workspace","Access"]
+    }, {
+        "cms": "极限OA网络智能办公系统",
+        "method": "faviconhash",
+        "location": "body",
+        "logic": "and",
+        "rule": ["1967132225"]
+    }, {
+        "cms": "金和 OA",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["金和网络","Jinher Software","jinher network","c6/jhsoft.web.login"]
+    }, {
+        "cms": "金和OA",
+        "method": "keyword",
+        "location": "title",
+        "logic": "or",
+        "rule": ["金和OA","金和协同管理平台"]
+    }, {
+        "cms": "JC6金和协同管理平台",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["JC6金和协同管理平台"]
+    }, {
+        "cms": "JC6金和协同管理平台",
+        "method": "keyword",
+        "location": "title",
+        "logic": "or",
+        "rule": ["JC6金和协同管理平台"]
+    }, {
+        "cms": "金和协同管理平台",
+        "method": "keyword",
+        "location": "title",
+        "logic": "and",
+        "rule": ["c6/jhsoft.web.login","closewindownoask"]
+    }, {
+        "cms": "金和网络",
+        "method": "keyword",
+        "location": "title",
+        "logic": "and",
+        "rule": ["金和网络"]
+    }, {
+        "cms": "致翔 OA",
+        "method": "keyword",
+        "location": "body",
+        "logic": "and",
+        "rule": ["obj.src = \"CreateCheckCode.aspx?id\" + strMath;"]
+    }, {
+        "cms": "PB-CMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "and",
+        "rule": ["Powered by <a href=\"https://www.puboot.com\""]
+    }, {
+        "cms": "EnjoySCM 供应链管理系统",
+        "method": "keyword",
+        "location": "body",
+        "logic": "and",
+        "rule": ["供应商网上服务厅"]
+    }, {
+        "cms": "红帆-ioffice OA",
+        "method": "keyword",
+        "location": "body",
+        "logic": "and",
+        "rule": ["/iOffice/prg/welcome/welcomeShow.aspx?mode=login"]
+    }, {
+        "cms": "红帆-ioffice OA",
+        "method": "keyword",
+        "location": "title",
+        "logic": "and",
+        "rule": ["iOffice.net"]
+    }, {
+        "cms": "iOffice(红帆oa)",
+        "rule": ["iOffice(红帆oa)"],
+        "location": "header",
+        "method": "keyword"
+    }, {
+        "cms": "iOffice(红帆oa)",
+        "method": "keyword",
+        "location": "title",
+        "logic": "and",
+        "rule": ["iOffice(红帆oa)"]
+    }, {
+        "cms": "MinIO",
+        "method": "keyword",
+        "location": "body",
+        "logic": "and",
+        "rule": ["MinIO Console"]
+    }, {
+        "cms": "帆软报表 V8",
+        "method": "keyword",
+        "location": "body",
+        "logic": "and",
+        "rule": ["isSupportForgetPwd"]
+    }, {
+        "cms": "WinWebMail邮件系统",
+        "method": "keyword",
+        "location": "body",
+        "logic": "and",
+        "rule": ["images/hrefbt.css","WinWebMail"]
+    }, {
+        "cms": "宏景HCM管理系统",
+        "method": "keyword",
+        "location": "body",
+        "logic": "and",
+        "rule": ["人力与人才信息管理系统"]
+    }, {
+        "cms": "WSO2API Manager",
+        "method": "keyword",
+        "location": "body",
+        "logic": "and",
+        "rule": ["WSO2 API MANAGER"]
+    }, {
+        "cms": "D_Link-DCS-4622",
+        "method": "keyword",
+        "location": "body",
+        "logic": "and",
+        "rule": ["Document Error: Unauthorized"]
+    }, {
+        "cms": "Casbin",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["Casbin","casbin"]
+    }, {
+        "cms": "深信服终端检测响应平台EDR",
+        "method": "keyword",
+        "location": "body",
+        "logic": "and",
+        "rule": ["SANGFOR终端检测响应平台"]
+    }, {
+        "cms": "齐治科技-堡垒机",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["/xfpverifyExec.jsp","function DLLRegistered(strID)"]
+    }, {
+        "cms": "EasyImage",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["简单图床 - EasyImage"]
+    }, {
+        "cms": "EasyImage",
+        "method": "faviconhash",
+        "location": "body",
+        "logic": "or",
+        "rule": [
+            "1661694747"
+        ]
+    }, {
+        "cms": "Coremail",
+        "method": "faviconhash",
+        "location": "body",
+        "logic": "and",
+        "rule": ["541942600"]
+    }, {
+        "cms": "和信创天云桌面系统",
+        "method": "keyword",
+        "location": "body",
+        "logic": "and",
+        "rule": ["和信下一代云桌面VENGD"]
+    }, {
+        "cms": "GlassFish",
+        "method": "keyword",
+        "location": "body",
+        "logic": "and",
+        "rule": ["/theme/com/sun/webui/jsf/suntheme/images/login/gradlogtop.jpg"]
+    }, {
+        "cms": "08CMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["content=\"08cms","typeof(_08cms"]
+    }, {
+        "cms": "8cms",
+        "method": "keyword",
+        "location": "body",
+        "logic": "and",
+        "rule": ["http://www.itf4.cn","liangjing.org","/tpl/templets"]
+    }, {
+        "cms": "php168CMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "and",
+        "rule": ["var system = 'cms"]
+    }, {
+        "cms": "TUTUCMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["content=\"TUTUCMS","Powered by TUTUCMS"]
+    }, {
+        "cms": "八哥CMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "and",
+        "rule": ["content=\"BageCMS"]
+    }, {
+        "cms": "IMGCms",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["content=\"IMGCMS","Powered by IMGCMS"]
+    }, {
+        "cms": "jieqi cms",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["content=\"jieqi cms"]
+    }, {
+        "cms": "eadmin",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["content=\"eAdmin"]
+    }, {
+        "cms": "OpenCMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["content=\"OpenCms","Powered by OpenCms"]
+    }, {
+        "cms": "PhpCMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["http://www.phpcms.cn","content=\"phpcms","powered by phpcms","data/configs.js","/index.php?m=content&c=index&a=lists","/index.php?m=content&amp;c=index&amp;a=lists"]
+    }, {
+        "cms": "Netious-CMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["netious.com"]
+    }, {
+        "cms": "Pligg-CMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["jQuery.jTwitter(\"pligg\", function (userdata) {"]
+    }, {
+        "cms": "BaiShiJia-CMS",
+        "method": "keyword",
+        "location": "title",
+        "logic": "or",
+        "rule": ["佰仕佳cms集群管理系统"]
+    }, {
+        "cms": "BaiShiJia-CMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["/resource/images/cms.ico"]
+    }, {
+        "cms": "YiYu-OPMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["903561702@qq.com","opms管理系统,织蝶-企业应用系统为您的企业保驾护航"]
+    }, {
+        "cms": "YiYu-OPMS",
+        "method": "keyword",
+        "location": "title",
+        "logic": "or",
+        "rule": ["opms管理系统"]
+    }, {
+        "cms": "BeeS-CMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": [
+            "template/default/images/slides.min.jquery.js","/default/images/xslider.js","/default/images/search_btn.gif","mx_form/mx_form.php"
+        ]
+    }, {
+        "cms": "Crow-Force-portal-CMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["中企动力提供技术支持"]
+    }, {
+        "cms": "CSCMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["/js/cscms.js","tag_adfo dis_wap"]
+    }, {
+        "cms": "Dayrui-CMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["dayrui/statics","/statics/admin/global/plugins/font-awesome/css/font-awesome.min.css"]
+    }, {
+        "cms": "Dayrui-CMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["dr_ci_session"]
+    }, {
+        "cms": "Apache Druid",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["content=\"Apache Druid console\""]
+    }, {
+        "cms": "ApacheDruid",
+        "method": "keyword",
+        "location": "title",
+        "logic": "or",
+        "rule": ["Apache Druid"]
+    }, {
+        "cms": "Subdreamer-CMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["Subdreamer CMS","Subdreamer Admin Panel"]
+    }, {
+        "cms": "Ektron-CMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": [
+            "/java/ektron.js","/java/ektronJs.ashx?id=","/java/plugins/modal/ektron.modal.js"
+        ]
+    }, {
+        "cms": "Exponent-CMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["/themes/baycresttheme/jquery.min.js","/themes/baycresttheme/js/_0.js"]
+    }, {
+        "cms": "Hanwei-CMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["showsubpage.jsp"]
+    }, {
+        "cms": "GETSIMPLE-CMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["content=\"getsimple","Powered by  GetSimple","href=\"http://get-simple.info/\""]
+    }, {
+        "cms": "ICALL-CMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": [
+            "var img_obj = document.getelementbyid('showing');","var img_obj = document.getelementbyid(\"showing\");"
+        ]
+    }, {
+        "cms": "ICALL-CMS",
+        "method": "keyword",
+        "location": "title",
+        "logic": "or",
+        "rule": ["icall后台管理中心"]
+    }, {
+        "cms": "ImpressPages-CMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["content=\"ImpressPages CMS\"","/ip_themes/"]
+    }, {
+        "cms": "Informatics-CMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["content=\"Informatics"]
+    }, {
+        "cms": "Kentico-CMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["/CMSPages/GetResource.ashx","/Kentico.Resource/","CMSPreferredCulture"]
+    }, {
+        "cms": "Laysns-CMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": [
+            "alt=\"LAYSNS\"","/cate/","alt=\"laysns\""]
+    }, {
+        "cms": "Mambo-CMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["content=\"mambo","<div id=\"mambo"]
+    }, {
+        "cms": "NITC-CMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["nitc web marketing service","/images/nitc1.png"]
+    }, {
+        "cms": "Nucleus-CMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["content=\"Nucleus CMS","function MM_swapImgRestore()"]
+    }, {
+        "cms": "Nucleus-CMS",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["Nucleus CMS"]
+    }, {
+        "cms": "PowerCreator-CMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["Default.aspx?TP="]
+    }, {
+        "cms": "phpecms",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["www.pcfinal.cn","/plus/ui/","/channel.","?channel."]
+    }, {
+        "cms": "zychr-CMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["powered by zychr.com"]
+    }, {
+        "cms": "zychr-CMS",
+        "method": "keyword",
+        "location": "title",
+        "logic": "or",
+        "rule": ["powered by zychr.com"]
+    }, {
+        "cms": "Shunde-CMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["for=\"ctl00_cph_l_login_username\">crm帐号"]
+    }, {
+        "cms": "Yxcms",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["/css/yxcms.css","content=\"Yxcms"]
+    }, {
+        "cms": "Z-Blog",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["content=\"Z-Blog","/zb_users/"]
+    }, {
+        "cms": "ZCMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["_zcms_","zcms_skin","泽元网站内容管理系统"]
+    }, {
+        "cms": "S-CMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["content=\"S-CMS\"","/css/scms.css","type=newsinfo&S_id=","/?type="]
+    }, {
+        "cms": "Cabloy-CMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["content=\"Cabloy-CMS\""]
+    }, {
+        "cms": "Smart-CMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["name=\"formdoc\" action=\"/hz/sys/login/logined.jsp"]
+    }, {
+        "cms": "Subrion-CMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["content=\"Subrion CMS","ia_lightbox"]
+    }, {
+        "cms": "Subrion-CMS",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["Subrion CMS"]
+    }, {
+        "cms": "tiki-Wiki-CMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["jquerytiki = new object"]
+    }, {
+        "cms": "WQ-CMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["style/wangqi/style.css","powered by <a href=\"http://www.wqcms.com","inc/wqcms.js"]
+    }, {
+        "cms": "1039soft-JiaXiao",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["name=\"hid_qu_type\" id=\"hid_qu_type\"","/handler/validatecode.ashx?id="]
+    }, {
+        "cms": "17mail",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["//易企邮正式版发布"]
+    }, {
+        "cms": "263-Enterprise-Mailbox",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["net263.wm.custom_login.homepage_init","/custom_login/js/net263_wm_util.js"]
+    }, {
+        "cms": "263-Meeting",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["<frame src=\"/jsp/conference/meetinglist.jsp\" name=\"mainframe\"/>","263电话会议","263会议管理中心"]
+    }, {
+        "cms": "263-HRM",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["<p align=\"center\">请使用263em登陆!</p>"]
+    }, {
+        "cms": "1caitong",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["/custom/groupnewslist.aspx?groupid="]
+    }, {
+        "cms": "21grid",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["技术支持：网格（福建）智能科技有限公司"]
+    }, {
+        "cms": "30san-Email",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["30san.all rights reserved.</div>"]
+    }, {
+        "cms": "315soft-FileSystem",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": [">多可电子档案管理系统</div"]
+    }, {
+        "cms": "360-Secure-routing",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["360loginflag"]
+    }, {
+        "cms": "SEMCMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["powered by <a href=\"http://www.sem-cms.com\"","<b semcms php 2.9</b>","semcms php 3.9","sc_mid_c_left_c sc_mid_left_bt"]
+    }, {
+        "cms": "semcms外贸网站(多语言版)",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["semcms外贸网站(多语言版)"]
+    }, {
+        "cms": "semcms外贸网站(多语言版)",
+        "method": "keyword",
+        "location": "title",
+        "logic": "or",
+        "rule": ["semcms外贸网站(多语言版)"]
+    }, {
+        "cms": "YidaCMS免费开源网站管理系统",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["yidacms.css"]
+    }, {
+        "cms": "小苹果CMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["maccms:voddaycount"]
+    }, {
+        "cms": "VTS-CMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["errmag"]
+    }, {
+        "cms": "whfst-CMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["武汉富思特"]
+    }, {
+        "cms": "360-CDN",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["src=\"http://js.passport.qihucdn.com/\""]
+    }, {
+        "cms": "Yiqi-CMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["content=\"yiqicms"]
+    }, {
+        "cms": "zhuofansoft-CMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["session.infocss.infocssurl"]
+    }, {
+        "cms": "Fidion-CMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["<!-- fCMS-Template head.tpl begins","/_fWS/jsoninplainout/javascript/fcmsLib_Init/load/init.js"]
+    }, {
+        "cms": "Fidion-CMS",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["X-Fcms-Cache","fCMS"]
+    }, {
+        "cms": "FCMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["content=\"Ryan Haudenschilt","window.location.href='?lang='+this.options[this.selectedIndex].value","Family Connections"]
+    }, {
+        "cms": "Tiki-wiki CMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["jqueryTiki = new Object"]
+    }, {
+        "cms": "Ananyoo-CMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["content=\"http://www.ananyoo.com","Powered by: Amiro CMS","-= Amiro.CMS (c) =-","Copyright 2003-2008, Ananyoo CMS, a Anblik.com Project"]
+    }, {
+        "cms": "Artiphp-CMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["<!--  fin ArtiMenu horizontal -->","<!-- copyright Artiphp, merci de respecter notre travail en laissant notre signature -->"]
+    }, {
+        "cms": "Auto-CMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["content=\"AutoCMS","Powered by Auto CMS"]
+    }, {
+        "cms": "Contrexx-CMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["content=\"Contrexx","Powered by Contrexx","core_modules/frontendEditing/css/style.css","powered by Contrexx"]
+    }, {
+        "cms": "BrowserCMS",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["_bzh_web_app_session"]
+    }, {
+        "cms": "BrowserCMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["content=\"BrowserCMS","Powered by BrowserCMS","powered by browsercms"]
+    }, {
+        "cms": "Contentteller-CMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["content=\"Esselbach Contentteller CMS"]
+    }, {
+        "cms": "Macs-CMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["<title>Mac\"s CMS - Admin Login</title>","<a href=\"http://macs-framework.sourceforge.net/\"","<!-- START: This block contains all code that the framework generates -->"]
+    }, {
+        "cms": "Edito-CMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["content=\"edito"]
+    }, {
+        "cms": "CreateLive-Cms",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["AspooKill=kill="]
+    }, {
+        "cms": "CreateLive-Cms",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["<!--By CreateLiveCms"]
+    }, {
+        "cms": "CushyCMS",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["_cushy_session"]
+    }, {
+        "cms": "CushyCMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["Powered by CushyCMS","Powered by <a href=\"http://www.cushycms.com\">CushyCMS</a>"]
+    }, {
+        "cms": "Custom-CMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["content=\"CustomCMS Gaming","- Powered by CCMS</title>"]
+    }, {
+        "cms": "Ecomat-CMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["content=\"ECOMAT CMS"]
+    }, {
+        "cms": "EazyCMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["by <a href=\"http://www.eazycms.com\"","target=\"eazycms\">eazyCMS</a>","<a class=\"actionlink\" href=\"http://www.eazyCMS.com"]
+    }, {
+        "cms": "EasyConsole-CMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["Powered by EasyConsole CMS","by <a href=\"http://www.easyconsole.com"]
+    }, {
+        "cms": "DotCMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["/dotAsset/","/index.dot"]
+    }, {
+        "cms": "DBHcms",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["powered by DBHcms"]
+    }, {
+        "cms": "Elxis-CMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["content=\"Elxis","Powered by <a href=\"http://www.elxis.org\""]
+    }, {
+        "cms": "Fastpublish-CMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["content=\"fastpublish"]
+    }, {
+        "cms": "Hycus-CMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["content=\"Hycus","Powered By <a href=\"http://www.hycus.com"]
+    }, {
+        "cms": "Hotaru-CMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["content=\"Hotaru"]
+    }, {
+        "cms": "HoloCMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["Powered by HoloCMS","<div id=\"remember-me-notification\" class=\"bottom-bubble\" style=\"display:none;\">"]
+    }, {
+        "cms": "iGaming-CMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["Powered by <a href=\"http://www.igamingcms.com","<!-- iGaming CMS is free software, please do not remove the copyright message. -->"]
+    }, {
+        "cms": "Intraxxion-CMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["content=\"Intraxxion","<!-- site built by Intraxxion"]
+    }, {
+        "cms": "Kandidat-CMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["content=\"Kandidat-CMS"]
+    }, {
+        "cms": "PHPEIP-CMS内容管理系统",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["PHPEIP-CMS内容管理系统"]
+    }, {
+        "cms": "PHP_Enter_CMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["PHP_Enter_CMS"]
+    }, {
+        "cms": "WebsiteBaker-CMS",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["wb_session_id"]
+    }, {
+        "cms": "3KITS-CMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["href=\"http://www.3kits.com\"","3kits</a>"]
+    }, {
+        "cms": "Tele-Data-CMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": [
+            "<input name=\"txthomepassword\" type=\"password\"  size=\"22\" id=\"txthomepassword\" maxlength=\"200\" />",
+            "align=center class=\"tdi-errormessage\" style=\"height: 25px\"><script type=\"text/javascript\">showerror();</script></td>",
+            "<!--To reduce the gap between banner and content the below if condition is added-->",
+            "<iframe onload=\"postload(0);\" scrolling=\"no\" style=\"position:absolute;top:0;left:0;height:0;width:0;\" id=\"fraLH\" name=\"fraLH\" src=\"default.aspx\" frameborder=\"0\" marginheight=\"0\" marginwidth=\"0\"></iframe>"
+        ]
+    }, {
+        "cms": "XHP-CMS",
+        "method": "keyword",
+        "location": "title",
+        "logic": "or",
+        "rule": ["XHP installation"]
+    }, {
+        "cms": "Saurus-CMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["content=\"Saurus CMS","by <a href=\"http://www.saurus.info","href=\"/extensions/saurus4/images/favicon.ico\""]
+    }, {
+        "cms": "Mura-CMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["action=\"index.cfm?fuseaction=cLogin.main","Powered by <a href=\"http://www.getmura.com/\">Mura CMS</a>"]
+    }, {
+        "cms": "SQL-CMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["<link href=\"CSS/styles/default.css","id=\"ddlLanguage\" onchange=\"location.href=\"admin.aspx?lang="]
+    }, {
+        "cms": "1024-CMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["content=\"1024 CMS","<div id=\"otatfpowered\"><a href=\"http://www.1024cms.com","by 1024 CMS"]
+    }, {
+        "cms": "Diferior-CMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["&#8212; Powered by Diferior</title>"]
+    }, {
+        "cms": "Textpattern-CMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["by <a href=\"http://textpattern.com"]
+    }, {
+        "cms": "Barts-CMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["<meta name=\"author\" content=\"Bart Verstricht\" />"]
+    }, {
+        "cms": "Symphony-CMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["content=\"Symphony CMS","by <a href=\"http://www.symphony21.com","by <a href=\"http://symphony21.com","by <a href=\"http://symphony-cms.com","by <a href=\"http://www.symphony-cms.com"]
+    }, {
+        "cms": "Orbis-CMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["content=\"Orbis CMS","Powered by Orbis CMS","<!-- Give feedback if user enters incorrect password (GET value \"e=2) or logged out (GET value \"e=3\") -->"]
+    }, {
+        "cms": "LINK-CMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["<a href=\"http://www.link-softsolutions.com/SoftLink-Content-Management-System---CMS_20_1"]
+    }, {
+        "cms": "Pluck-CMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["powered by <a href=\"http://www.pluck-cms.org\">pluck</a>"]
+    }, {
+        "cms": "Allinta-CMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["<td align=\"right\" class=\"footerText\">Powered by allinta CMS</td>"]
+    }, {
+        "cms": "synType-CMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["content=\"synType CMS","powered by synType CMS"]
+    }, {
+        "cms": "Rumba-CMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["content=\"Rumba Easy","content=\"Rumba Wiki","content=\"http://rumba.net.ru\"","Powered by Rumba CMS","href=\"http://rumba.net.ru"]
+    }, {
+        "cms": "Amiro-CMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["target=_blank>Powered by: Amiro CMS"," target=_blank><FONT size=1><B>Powered by: Amiro CMS"]
+    }, {
+        "cms": "Ionize-CMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["content=\"HandMade","<div id=\"loginWindow\" class=\" clearfix\">","<p class=\"article-date\">07.09.2010</p>","<p class=\"note\">view : <b>default/article</b></p>"]
+    }, {
+        "cms": "JAMM-CMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["CONTENT=\"JAMM MEDIA","<!--- Content Management System JAMM CMS OWEN"]
+    }, {
+        "cms": "Pragyan-CMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["powered by <a href=\"http://sourceforge.net/projects/pragyan\">Pragyan CMS</a>"]
+    }, {
+        "cms": "Atomic-CMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["Powered by AtomicCms <a href=\"http://atomiccms.com/\" target=\"_blank\">content management"]
+    }, {
+        "cms": "Acidcat-CMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["class=\"ac_admin_main\"","admin/css/admin_import.css","Acidcat CMS Error"]
+    }, {
+        "cms": "JagoanStore-CMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["Toko Online</a> by <a href=\"http://www.jagoanstore.com"]
+    }, {
+        "cms": "Constructr-CMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["onclick=\"window.open(this.href);return false;\">phaziz interface design","Constructr CMS"]
+    }, {
+        "cms": "DiY-CMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["DIY-CMS</a>","admin_skin/default/images//admin_login.png"]
+    }, {
+        "cms": "Zimplit-CMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["<!-- YOU ARE ONLY ALLOWED TO HIDE, DELETE OR MODIFY \"POWERED BY ZIMPLIT CMS\" LINK, IF THE DOMAIN HAS BEEN REGISTERED WITH A COMMERCIAL LICENSE AT WWW.ZIMPLIT.ORG -->"]
+    }, {
+        "cms": "AB-WEB-CMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["onclick=\"maximize();\" class=\"hdp_z01_z03_l","onclick=\"imprfct();\" class=\"main_link"]
+    }, {
+        "cms": "Micro-CMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["\" method=\"post\"onsubmit=\"","<a href=\"http://microcms.kset.org/\">Micro CMS</a>"]
+    }, {
+        "cms": "NukeViet-CMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["<div id=\"run_cronjobs\" style=\"visibility: hidden; display: none;\">"]
+    }, {
+        "cms": "Log1-CMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["content=\"log1_cms","engine/styles/login.css.php","alt=\"log1 CMS logo","Log1 CMS</a>"]
+    }, {
+        "cms": "dir2web-CMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["default/styles/d2w_object_page.css","<div class=\"d2w-back_link\""]
+    }, {
+        "cms": "ReFlex-CMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["Resources/js/pngfix.js","alt=\"ReFlex Administration","document.getElementById(\"ctl00_cphMain_rfvUserName"]
+    }, {
+        "cms": "SpirePRO-CMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["<meta name=\"Spire-Last-Modified\" content=\"","<script xmlns:a=\"http://www.1stomni.com/spire/aml\" type=\"text/javascript\""]
+    }, {
+        "cms": "Video-CMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["by <a style=\"color:#aaaaaa\" href=\"http://www.codemight.com\" target=\"_blank\">Video CMS</a>"]
+    }, {
+        "cms": "远略内容管理系统YL-CMS",
+        "method": "keyword",
+        "location": "title",
+        "logic": "or",
+        "rule": ["远略内容管理系统 YL-CMS"]
+    }, {
+        "cms": "FLBLC-CMS",
+        "method": "keyword",
+        "location": "title",
+        "logic": "or",
+        "rule": ["FLBLC-CMS"]
+    }, {
+        "cms": "sytown-CMS",
+        "method": "keyword",
+        "location": "title",
+        "logic": "or",
+        "rule": ["尚医健康cms管理系统"]
+    }, {
+        "cms": "lepton-cms",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["content=\"LEPTON-CMS","Powered by LEPTON CMS"]
+    }, {
+        "cms": "cm3-cms",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["content=\"cm3 content manager","top.cm2_home.location.href","name=\"cm2_top\" id=\"cm2_top\"","name=\"cm25_main\""]
+    }, {
+        "cms": "cm3-cms",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["cm3session"]
+    }, {
+        "cms": "TPshop-cms",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["TPshop-cms"]
+    }, {
+        "cms": "adxstudio-cms",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["/PoweredByADX.gif","alt=\"Powered by Adxstudio\"","/poweredbyadx.png"]
+    }, {
+        "cms": "闪灵Flash网站系统F-cms",
+        "method": "keyword",
+        "location": "title",
+        "logic": "or",
+        "rule": ["闪灵Flash网站系统F-cms"]
+    }, {
+        "cms": "GV32-cms",
+        "method": "keyword",
+        "location": "title",
+        "logic": "or",
+        "rule": ["GV32-cms"]
+    }, {
+        "cms": "53客服",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["customer_service_language"]
+    }, {
+        "cms": "53客服",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["tb.53kf.com/code/","powered by 53kf","chat.53kf.com/company.php"]
+    }, {
+        "cms": "VCMS-维网科技",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["http://www.vwell.cn"]
+    }, {
+        "cms": "360主机卫士",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["X-Safe-Firewall"]
+    }, {
+        "cms": "a2b-Webserver",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["server: a2b webserver"]
+    }, {
+        "cms": "Aastra-5000",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["aastra 5000"]
+    }, {
+        "cms": "Aastra-6731i",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["aastra 6731i"]
+    }, {
+        "cms": "Aastra-6755i",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["aastra 6755i"]
+    }, {
+        "cms": "Aastra-6757i",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["aastra 6757i"]
+    }, {
+        "cms": "Aastra-A5000",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["aastra a5000"]
+    }, {
+        "cms": "35Mail",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["switchingserverpopup","images/mail/35pushmail.app.png","class=\"user_define_img_btn6\" href=\"http://help.mail.35.com/mailman/81.html"]
+    }, {
+        "cms": "35Mail",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["35Mail"]
+    }, {
+        "cms": "3Com-3CDSG8",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["content=\" 3cdsg8\""]
+    }, {
+        "cms": "3Com-NJ2000",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["content=\"3com intellijack nj2000\""]
+    }, {
+        "cms": "3CX-Phone-System-Management-Console",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["src=\"/public/vendor.26422846c5ea381c.js\"","src=\"/public/app.807e10d98cfac19e.js\""]
+    }, {
+        "cms": "3dusoft-eSalerSalesSystem",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["青岛叁度信息技术有限公司"]
+    }, {
+        "cms": "42gears-suremdm",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["astrocontacts","suremdm"]
+    }, {
+        "cms": "54-Customer-service",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["src=\"http://code.54kefu.net/"]
+    }, {
+        "cms": "5VTechnologies-BlueAngelSoftwareSuite",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["/cgi-bin/webctrl.cgi?action=index_page"]
+    }, {
+        "cms": "78OA",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["/resource/javascript/system/runtime.min.js","license.78oa.com","src=\"/module/index.php"]
+    }, {
+        "cms": "5iKQ",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["content=\"我爱考勤云平台","我爱考勤云平台</span>","<input type=\"text\" class=\"form-control\" name=\"mobilenumber\" value=\"\" placeholder=\"手机号码\" />"]
+    }, {
+        "cms": "DocMail-Cwindow",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["href=\"http://www.docmail.cn/android/app/docmail.apk","content=\"北京国信冠群技术有限公司,国信冠群,邮件","<a href=\"http://www.docmail.cn\" target=\"_blank\">"]
+    }, {
+        "cms": "xinnet-Mail",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["src=\"cgijson/getloginimg.php?img=logo","/webmail//cssv2/tamail.css"]
+    }, {
+        "cms": "Xitami",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["Xitami"]
+    }, {
+        "cms": "RackCache",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["RackCache"]
+    }, {
+        "cms": "Laterpay",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["Laterpay"]
+    }, {
+        "cms": "Supersized",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["Supersized"]
+    }, {
+        "cms": "IBMTivoliStorageManager",
+        "method": "keyword",
+        "location": "title",
+        "logic": "or",
+        "rule": ["IBM Tivoli Storage Manager"]
+    }, {
+        "cms": "ZURB Foundation",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["ZURB Foundation"]
+    }, {
+        "cms": "SoftTr",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["content=\"SoftTr"]
+    }, {
+        "cms": "Pagevamp",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["pagevamp"]
+    }, {
+        "cms": "Vigbo",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["_vigbo_device"]
+    }, {
+        "cms": "Vigbo",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["<!-- Vigbo-cms"]
+    }, {
+        "cms": "AList",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["content=\"AList"]
+    }, {
+        "cms": "365xxy-Examing",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["href=https://unpkg.com/element-ui/internal/theme-chalk/index.css",
+            "<title>云时政在线考试系统</title>"]
+    }, {
+        "cms": "3D-portrait-integrated-data-gate",
+        "method": "keyword",
+        "location": "body",
+        "logic": "and",
+        "rule": ["checkexplorer","/page/login_new"]
+    }, {
+        "cms": "6KBBS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["Powered by 6kbbs","content=\"6KBBS"]
+    }, {
+        "cms": "6KBBS",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["www6kbbs_styleid"]
+    }, {
+        "cms": "容联七陌-公司产品",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["class=\"ds_do_action domain_aboutus\"","/javascripts/qiniu/qiniu.js"]
+    }, {
+        "cms": "七陌·日志系统",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["handler.clog.control_main","mongo/mongo_main"]
+    }, {
+        "cms": "七陌运营系统",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["7moor bill app server"]
+    }, {
+        "cms": "Express-Node.js",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["Express"]
+    }, {
+        "cms": "Apache-OFBiz",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["OFBiz.Visitor="]
+    }, {
+        "cms": "Apache-OFBiz",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["Apache OFBiz","apache.ofbiz","Powered by OFBiz"]
+    }, {
+        "cms": "Apache-RocketMQ",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["title>RocketMq"]
+    }, {
+        "cms": "Apache-RocketMQ",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["rocketmq-console"]
+    }, {
+        "cms": "Atlassian Confluence",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["X-Confluence"]
+    }, {
+        "cms": "Atlassian Confluence",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["class=\"hover-footer-link\">Atlassian Confluence</a>"]
+    }, {
+        "cms": "Apache-Struts2",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["content=\"Struts2","org.apache.struts2","struts problem report","there is no action mapped for namespace","no result defined for action",".action?",".action",".do?",".do"]
+    }, {
+        "cms": "Stripes",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["net.sourceforge.stripes.exception"]
+    }, {
+        "cms": "aakuan-Attendance-System",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["aakuan.cn","href=\"scripts/popmodal.css\""]
+    }, {
+        "cms": "Abelcam",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["content=\"abelcam ","<h1>abelcam ","href=\"https://www.abelcam.com"]
+    }, {
+        "cms": "Abelcam",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["abelcam"]
+    }, {
+        "cms": "Django",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["django"]
+    }, {
+        "cms": "Django",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["csrfmiddlewaretoken","__admin_media_prefix__"]
+    }, {
+        "cms": "django CMS",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["django-cms"]
+    }, {
+        "cms": "django CMS",
+        "method": "faviconhash",
+        "location": "header",
+        "logic": "or",
+        "rule": ["1821679946"]
+    }, {
+        "cms": "django CMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["content=\"django CMS","content=\"Django CMS","/djangocms_admin"]
+    }, {
+        "cms": "Django REST framework",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["Django tried these URL patterns, in this order","<div id=\"summary\">","/static/rest_framework/"]
+    }, {
+        "cms": "Flask",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["flask"]
+    }, {
+        "cms": "ABO.CMS",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["ABO.CMS"]
+    }, {
+        "cms": "ABO.CMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "and",
+        "rule": ["padding: 10 0 4 0;","<div style=\"padding: 10 0 10 52\">"]
+    }, {
+        "cms": "Golang",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["golang","Golang"]
+    }, {
+        "cms": "ANECMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["content=\"Erwin Aligam","content=\"erwin aligam"]
+    }, {
+        "cms": "Appcms",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["Powerd by AppCMS","powerd by appcms"]
+    }, {
+        "cms": "HotelCMS(bookingeCMS)",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["HotelCMS","bookingeCMS"]
+    }, {
+        "cms": "didicms企业网站管理系统",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["didicms企业网站管理系统"]
+    }, {
+        "cms": "ZmCMS通用性企业网站建设管理系统",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["ZmCMS通用性企业网站建设管理系统"]
+    }, {
+        "cms": "iNethinkCMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["iNethinkCMS"]
+    }, {
+        "cms": "quoracms",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["quoracms"]
+    }, {
+        "cms": "XYHCMS",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["XYHCMS"]
+    }, {
+        "cms": "XYHCMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["/index.php?s=/List/"]
+    }, {
+        "cms": "云优CMS(YUNUCMS)",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["/css/yunu.css","/index/js/yunu.js"]
+    }, {
+        "cms": "ABUS-DVR",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["document.activex.url.value=\"172.7.76.84\""]
+    }, {
+        "cms": "Account Manager Exhibition System",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": [
+            "action=\"/system/login/login.shtml"
+        ]
+    }, {
+        "cms": "Accellion-Secure-File-Transfer",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["secured by accellion","action=\"mail_user_login_exec.html\" onsubmit=\"document.form1.submit.disabled=true;\">"]
+    }, {
+        "cms": "Accellion-Secure-File-Transfer",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["sfcurl=deleted;"]
+    }, {
+        "cms": "AccVisio",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["server: wweb"]
+    }, {
+        "cms": "AccVisio",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["src=\"cgictl.htm"]
+    }, {
+        "cms": "AChecker-Web-accessibility-evaluation-tool",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["content=\"achecker is a web accessibility"]
+    }, {
+        "cms": "acsoft-Cloud",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["sdiyun.com, all rights reserved","onrememberpasswordclick"]
+    }, {
+        "cms": "ACME-PLC-Wireless-Router",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["plc systems, inc.","lang_firmwarelogin"]
+    }, {
+        "cms": "ACTi-ACM-1231",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["url=/cgi-bin/videoconfiguration.cgi"]
+    }, {
+        "cms": "ACTi-Cameras-and-Surveillance",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["acti corporation all rights reserved","url=/cgi-bin/videoconfiguration.cgi"]
+    }, {
+        "cms": "Actiontec-MI424WR",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["</div> actiontec mi424wr"]
+    }, {
+        "cms": "Adaptec-maxView",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["action=\"/maxview/manager/login.xhtml"]
+    }, {
+        "cms": "Adobe-Connect",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["breezesession="]
+    }, {
+        "cms": "Adobe-Connect",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["/common/scripts/showcontent.js","/common/scripts/breezeUI.js"]
+    }, {
+        "cms": "Adobe-CQ5",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["_jcr_content"]
+    }, {
+        "cms": "Adobe-GoLive",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["generator\" content=\"adobe golive"]
+    }, {
+        "cms": "Adobe-RoboHelp",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["generator\" content=\"adobe robohelp"]
+    }, {
+        "cms": "adslr-NFW",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["href=\"/css/cover_admin.css\""]
+    }, {
+        "cms": "ADTRAN-MX408e",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["realm=\"adtran mx408e"]
+    }, {
+        "cms": "ADT-SJW74-VPN",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["src=\"./system/usbkey.js\""]
+    }, {
+        "cms": "ADT-SJW74-VPN",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["sjw74","src=\"./system/usbkey.js\""]
+    }, {
+        "cms": "Laravel",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["laravel_session="]
+    }, {
+        "cms": "Laravel",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["PhpDebugBar.Widgets.LaravelSQLQueriesWidget","<a href=\"https://laravel.com/docs\">Documentation</a>","<a href=\"https://laravel.com/docs\">Docs</a>","<a href=\"https://github.com/laravel/laravel\">GitHub</a>"]
+    }, {
+        "cms": "360新天擎",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["Location: /login?refer=%2F","Set-Cookie: SKYLAR"]
+    }, {
+        "cms": "shenri-elevator",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["copyright 2015 shenri habiliment co.,ltd. all rights reserved","images/login/btnmobile.gif","/frameworks/images/ico.ico"]
+    }, {
+        "cms": "Shenguyun-SGC8000",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["var granttype=\"authorization_code"]
+    }, {
+        "cms": "shiji-XMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["href=\"xmsenv.exe\">系统运行环境"]
+    }, {
+        "cms": "Shop7Z",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["class.asp?lx=tejia","images/cnhww_css.css","wq_stranjf.js","id=\"www_zzjs_net_loding\"","function www_zzjs_net_change"]
+    }, {
+        "cms": "Shop7Z",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["dmwh%5fuser","sitekeyword"]
+    }, {
+        "cms": "TightVNC",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["<applet archive=\"tightvnc-jviewer.jar\" ","<a href=\"http://www.tightvnc.com/\">www.tightvnc.com","js/thinvnc.sdk.js","js/thinvnc.app.js"]
+    }, {
+        "cms": "ThinVNC",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["ThinVNC"]
+    }, {
+        "cms": "Kyan-Design",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["<h1 id=\"bluesky_education_login","content=\"http://www.kyanmedia.com","platform - login"]
+    }, {
+        "cms": "BeeS_CMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["/default/images/search_btn.gif","/default/images/xslider.js","mx_form/mx_form.php","template/default/images/slides.min.jquery.js"]
+    }, {
+        "cms": "SuiteCRM",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["sugar.themes.theme_name","alt=\"suitecrm\"","src=\"custom/themes/default/images/company_logo.png","supercharged by suitecrm","javascript:void window.open\"http://support.sugarcrm.com"]
+    }, {
+        "cms": "SuiteCRM",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["sugar_user_theme=suitep","SuiteCRM"]
+    }, {
+        "cms": "OpenUI5",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["OpenUI5"]
+    }, {
+        "cms": "Tenon-iTools",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["mac os x","itools"]
+    }, {
+        "cms": "ASUS-Router",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["asus wl-","asus rt-","asus app","asuswrt"]
+    }, {
+        "cms": "ASUS-GT-AC2900",
+        "method": "keyword",
+        "location": "body",
+        "logic": "and",
+        "rule": [
+            "document.getelementsbyclassname","gt-ac2900"
+        ]
+    }, {
+        "cms": "ASUS-GT-AC2900_SH",
+        "method": "keyword",
+        "location": "body",
+        "logic": "and",
+        "rule": [
+            "document.getelementsbyclassname","gt-ac2900_sh"
+        ]
+    }, {
+        "cms": "ASUS-GT-AC5300",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["<div class=\"prod_madelname\">gt-ac5300","var based_modelid = \"gt-ac5300\"","innerhtml = \"gt-ac5300"]
+    }, {
+        "cms": "ASUS-R6400",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["<div class=\"prod_madelname\">r6400"]
+    }, {
+        "cms": "ASUS-R7000",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["<div class=\"prod_madelname\">r7000"]
+    }, {
+        "cms": "ASUS-R8000",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["<div class=\"prod_madelname\">r8000"]
+    }, {
+        "cms": "ASUS-RT-AC1200",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["<div class=\"prod_madelname\">rt-ac1200","class=\"prod_madelname\" style=\"margin-left:78px;\">rt-ac1200"]
+    }, {
+        "cms": "ASUS-RT-AC1200",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["rt-ac1200"]
+    }, {
+        "cms": "ASUS-RT-AC1300UHP",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["<div class=\"prod_madelname\">rt-ac1300uhp"]
+    }, {
+        "cms": "ASUS-RT-AC1750_B1",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["<div class=\"prod_madelname\">rt-ac1750_b1"]
+    }, {
+        "cms": "ASUS-RT-AC3100",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["<div class=\"prod_madelname\">rt-ac3100","asus rt-ac3100","var product_name=\"rt-ac3100\""]
+    }, {
+        "cms": "ASUS-RT-AC3100",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["realm=\"rt-ac3100"]
+    }, {
+        "cms": "ASUS-RT-AC3200",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": [
+            "<div class=\"prod_madelname\">rt-ac3200",
+            "class=\"prod_madelname\" style=\"margin-left:78px;\">rt-ac3200",
+            "status_router.sys_model</script></div>asus rt-ac3200"
+        ]
+    }, {
+        "cms": "ASUS-RT-AC3200",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["rt-ac3200"]
+    }, {
+        "cms": "ASUS-RT-AC51U",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["<div class=\"prod_madelname\">rt-ac51u"]
+    }, {
+        "cms": "ASUS-RT-AC51U",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["rt-ac51u"]
+    }, {
+        "cms": "ASUS-RT-AC52U_B1",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["<div class=\"prod_madelname\">rt-ac52u_b1"]
+    }, {
+        "cms": "ASUS-RT-AC52U",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["<div class=\"prod_madelname\">rt-ac52u"]
+    }, {
+        "cms": "ASUS-RT-AC52U",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["rt-ac52u"]
+    }, {
+        "cms": "ASUS-AiCloud",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["href=\"/smb/css/startup.png\""]
+    }, {
+        "cms": "ASUS-DSL-AC52U",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["<div class=\"prod_madelname\">dsl-ac52u"]
+    }, {
+        "cms": "ASUS-DSL-AC52U",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["realm=\"dsl-ac52u"]
+    }, {
+        "cms": "ASUS-DSL-N14U_B1",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["realm=\"dsl-n14u_b1"]
+    }, {
+        "cms": "ASUS-DSL-N55U",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["<div class=\"prod_madelname\">dsl-n55u"]
+    }, {
+        "cms": "ASUS-DSL-N55U",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["realm=\"dsl-n55u"]
+    }, {
+        "cms": "ASUS-Lyra-Trio",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["class=\"prod_madelname\">lyra_trio</div>"]
+    }, {
+        "cms": "ASUS-Modem",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["realm=\"aam6000ev","realm=\"aam6020vi","realm=\"aam6020bi","realm=\"aam6010ev"]
+    }, {
+        "cms": "ASUS-RT-AC5300",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["<div class=\"prod_madelname\">rt-ac5300","asus rt-ac5300"]
+    }, {
+        "cms": "ASUS-RT-AC5300",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["rt-ac5300"]
+    }, {
+        "cms": "ASUS-RT-AC53",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["<div class=\"prod_madelname\">rt-ac53"]
+    }, {
+        "cms": "ASUS-RT-AC53U",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["<div class=\"prod_madelname\">rt-ac53u"]
+    }, {
+        "cms": "ASUS-RT-AC53U",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["realm=\"rt-ac53u"]
+    }, {
+        "cms": "ASUS-RT-AC55UHP",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["<div class=\"prod_madelname\">rt-ac55uhp"]
+    }, {
+        "cms": "ASUS-RT-AC55UHP",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["rt-ac55uhp"]
+    }, {
+        "cms": "ASUS-RT-AC58U",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["<div class=\"prod_madelname\">rt-ac58u"]
+    }, {
+        "cms": "ASUS-RT-AC59U",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["class=\"prod_madelname\">rt-ac59u"]
+    }, {
+        "cms": "ASUS-RT-AC66R",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["<div class=\"prod_madelname\">rt-ac66r","class=\"prod_madelname\" style=\"margin-left:78px;\">rt-ac66r</div>"]
+    }, {
+        "cms": "ASUS-RT-AC66R",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["rt-ac66r"]
+    }, {
+        "cms": "ASUS-RT-AC66U_B1",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["<div class=\"prod_madelname\">rt-ac66u_b1","var product_name='rt-ac66u_b1'","class=\"prod_madelname\">jrs eco 100 on asus rt-ac66u_b1","rt-ac66u_b1"]
+    }, {
+        "cms": "ASUS-RT-AC66U_B1",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["realm=\"rt-ac66u_b1"]
+    }, {
+        "cms": "ASUS-RT-AC66U",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["class=\"prod_madelname\" style=\"margin-left:78px;\">rt-ac66u","prod_madelname\">rt-ac66u"]
+    }, {
+        "cms": "ASUS-RT-AC66U",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["rt-ac66u"]
+    }, {
+        "cms": "ASUS-RT-AC68P",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["<div class=\"prod_madelname\">rt-ac68p"]
+    }, {
+        "cms": "ASUS-RT-AC68P",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["rt-ac68p"]
+    }, {
+        "cms": "ACTi-NVR",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["var szproductbrand = 'acti'","var szproducttype = 'nvr'"]
+    }, {
+        "cms": "activeCollab",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["powered by activecollab","<p id=\"powered_by\"><a href=\"http://www.activecollab.com/\"","<form method=\"post\" id=\"system_form_2\" class=\"uniForm focusFirstField\">"]
+    }, {
+        "cms": "ActiveHTML",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["activehtml"]
+    }, {
+        "cms": "activeWeb-Content-Server",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": [
+            "awnocachebegin__awnocachebegin__awnocachebegin__awnocachebegin__awnocachebegin",
+            "AWNOCACHEBEGIN__AWNOCACHEBEGIN__AWNOCACHEBEGIN__AWNOCACHEBEGIN__AWNOCACHEBEGIN",
+            "activeWeb cache extension"
+        ]
+    }, {
+        "cms": "activeWeb-Content-Server",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["x-awcache"]
+    }, {
+        "cms": "AdiMoney",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["<img src=\"/img/logo.png\" alt=\"adimoney\"/>","content=\"adimoney.com mobile advertisement network. "]
+    }, {
+        "cms": "Adiscon-LogAnalyzer",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["adiscon loganalyzer","adiscon gmbh"]
+    }, {
+        "cms": "ADN",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["<title>交付应用</title>","src=\"http://res.wx.qq.com/open/js/jweixin"]
     }]
 }
