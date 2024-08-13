@@ -65,7 +65,11 @@ func extractZip(filePath, destDir string) error {
     defer zipReader.Close()
 
     for _, file := range zipReader.File {
-        fullPath := filepath.Join(destDir, file.Name)
+        cleanedName := filepath.Clean(file.Name)
+        if filepath.IsAbs(cleanedName) || strings.Contains(cleanedName, "../") {
+            continue
+        }
+        fullPath := filepath.Join(destDir, cleanedName)
 
         if file.FileInfo().IsDir() {
             if err := os.MkdirAll(fullPath, file.Mode()); err != nil {
