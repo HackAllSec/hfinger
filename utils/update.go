@@ -169,6 +169,7 @@ func Update() {
     if err != nil {
         return
     }
+    _ = os.Rename(config.Fingerfullpath, config.Fingerfullpath + ".bak")
     err = downloadFile(finger_url, config.Fingerfullpath)
     if err != nil {
         color.Red("[%s] [!] Error: %v", time.Now().Format("01-02 15:04:05"), err)
