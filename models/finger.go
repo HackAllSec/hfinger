@@ -224,5 +224,5 @@ func ShowFingerPrints() {
             uniqueCount++
         }
     }
-    color.Blue("[*] Number of web frameworks and CMS: %d\n", uniqueCount)
+    color.Blue("[*] Total number of products, web frameworks, and CMS: %d\n", uniqueCount)
 }
