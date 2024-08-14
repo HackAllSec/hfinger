@@ -204,6 +204,7 @@ hfinger/
 |-- utils/
 |   |-- http.go           // HTTP请求相关
 |   |-- certs.go          // 证书相关
+|   |-- update.go         // 升级与更新
 ```
 
 ## 变更记录
@@ -237,6 +238,7 @@ hfinger/
 ## 贡献
 
 欢迎提交 PR 、Issues 和指纹库。
+欢迎二次开发。
 可以在`data`目录下创建`XXXCMS.json`通过PR提交指纹。或提交Issues告诉我们不能识别的CMS或框架。
 
 ## 许可
