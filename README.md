@@ -2,7 +2,7 @@
 
 ![](https://github.com/HackAllSec/hfinger/blob/main/images/logo.png)
 
-**hfinger** 是一个**高性能**、**准确**的命令行指纹识别工具，用于红队打点时快速准确识别指定目标的 Web 框架和 CMS 等信息。由于[EHole](https://github.com/EdgeSecurityTeam/EHole)很久没更新了，且存在一些缺点（误报、漏报），开发此工具进行扩展，它根据 `finger.json` 文件中定义的指纹进行匹配，优化原有文件结构，支持自定义匹配逻辑，支持关键词匹配和 favicon hash 匹配，支持多线程和代理。
+**hfinger** 是一个**高性能**、**准确**的命令行指纹识别工具，用于红队打点时快速准确识别指定目标的 Web 框架和 CMS 等信息。由于[EHole](https://github.com/EdgeSecurityTeam/EHole)很久没更新了，且存在一些缺点（误报、漏报、匹配不太灵活等），此工具根据 `finger.json` 文件中定义的指纹进行匹配，优化原有文件结构，增加匹配逻辑，增加错误页识别和被动识别模式。
 
 虽然是重复造轮子了，但是造轮子的意义就在于优化和改进。后期会不断优化指纹库，认真做好每一个指纹。如果觉得不错的话，给个Star鼓励一下吧。
 
