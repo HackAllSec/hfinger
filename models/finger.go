@@ -51,8 +51,9 @@ func ProcessURL(url string) {
         if err != nil {
             mu.Lock()
             if !errOccurred {
-                errOccurred = true
-                handleError(err, url)
+                if handleError(err, url) {
+                    errOccurred = true
+                }
             }
             mu.Unlock()
             return
@@ -71,7 +72,7 @@ func ProcessURL(url string) {
         }
         faviconpath := utils.FetchFavicon(body)
         var faviconbody []byte
-        if faviconpath != "" {
+        if faviconpath != "" && resp.StatusCode == http.StatusOK {
             baseurl, _ := utils.GetBaseURL(url)
             faviconurl := baseurl + "/" + faviconpath
             if strings.HasPrefix(faviconpath, "http://") || strings.HasPrefix(faviconpath, "https://") {
@@ -152,15 +153,21 @@ func ProcessURL(url string) {
     }
 }
 
-func handleError(err error, url string) {
+func handleError(err error, url string) bool {
     if strings.Contains(err.Error(), "dial tcp: lookup") {
         color.Red("[%s] [!] Error: Domain name resolution failed %s", time.Now().Format("01-02 15:04:05"), url)
+        return true
     } else if strings.Contains(err.Error(), "No connection could be made") {
         color.Red("[%s] [!] Error: The target host rejected the connection request %s", time.Now().Format("01-02 15:04:05"), url)
+        return true
     } else if strings.Contains(err.Error(), "Client.Timeout") {
         color.Red("[%s] [!] Error: Request timeout %s", time.Now().Format("01-02 15:04:05"), url)
+        return true
+    } else if strings.Contains(err.Error(), "An existing connection was forcibly closed by the remote host") {
+        return false
     } else {
         color.Red("[%s] [!] Error: %s %s", time.Now().Format("01-02 15:04:05"), err, url)
+        return true
     }
 }
 
