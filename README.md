@@ -229,11 +229,20 @@ hfinger/
 - 新增更新指纹库功能`--update`，更新失败请检查是否可以访问Github
 - 新增升级功能`--upgrade`，升级失败请检查是否可以访问Github
 
+### v1.0.3 (todo)
+
+- 增加指纹，优化指纹
+- 新增指纹库更新检测功能
+
 ## 贡献
 
 欢迎提交 PR 、Issues 和指纹库。
-可以在`data`目录下创建`XXXCMS.json`通过PR提交指纹。
+可以在`data`目录下创建`XXXCMS.json`通过PR提交指纹。或提交Issues告诉我们不能识别的CMS或框架。
 
 ## 许可
 
 MIT License
+
+## Star History
+
+![](https://api.star-history.com/svg?repos=HackAllSec/hfinger&type=Date)
