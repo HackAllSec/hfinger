@@ -4,15 +4,20 @@ import (
     "archive/zip"
     "encoding/json"
     "io"
+    "io/ioutil"
     "os"
     "runtime"
     "strings"
     "path/filepath"
     "time"
+    "crypto/sha256"
+    "encoding/hex"
 
     "hfinger/config"
     "github.com/fatih/color"
 )
+
+var finger_url = "https://raw.githubusercontent.com/HackAllSec/hfinger/main/data/finger.json"
 
 type GitHubReleaseAsset struct {
     Name               string `json:"name"`
@@ -22,6 +27,44 @@ type GitHubReleaseAsset struct {
 type GitHubReleaseResponse struct {
     TagName string               `json:"tag_name"`
     Assets  []GitHubReleaseAsset `json:"assets"`
+}
+
+func calculateHash(data []byte) string {
+    sha := sha256.New()
+    sha.Write(data)
+    return hex.EncodeToString(sha.Sum(nil))
+}
+
+func getRemoteFileHash() string {
+    resp, err := Get(finger_url, nil)
+    if err != nil {
+        return ""
+    }
+    defer resp.Body.Close()
+    if resp.StatusCode != 200 {
+        return ""
+    }
+    body, err := ioutil.ReadAll(resp.Body)
+    if err != nil {
+        return ""
+    }
+
+    return calculateHash(body)
+}
+
+func getLocalFileHash() string {
+    file, err := os.Open("data/finger.json")
+    if err != nil {
+        return ""
+    }
+    defer file.Close()
+
+    body, err := ioutil.ReadAll(file)
+    if err != nil {
+        return ""
+    }
+
+    return calculateHash(body)
 }
 
 func getLatestRelease() (*GitHubReleaseResponse, error) {
@@ -109,18 +152,25 @@ func CheckForUpdates() {
 
     latestVersion := release.TagName
     if latestVersion != config.Version {
-        color.Blue("[*] Your current hfinger %s are outdated. Latest is %s.You can use the --upgrade option to upgrade.", config.Version, latestVersion)
+        color.Yellow("[*] Your current hfinger %s are outdated. Latest is %s.You can use the --upgrade option to upgrade.", config.Version, latestVersion)
     }
+    remotehash := getRemoteFileHash()
+    localhash := getLocalFileHash()
+    if remotehash != "" && localhash != "" {
+        if remotehash != localhash {
+            color.Yellow("[*] There is a new update to the hfinger fingerprint database, you can use the --update option to update it.")
+        }
+    }
+
 }
 
 func Update() {
-    url := "https://raw.githubusercontent.com/HackAllSec/hfinger/main/data/finger.json"
     err := os.MkdirAll("data", os.ModePerm)
     if err != nil {
         return
     }
     destPath := "data/finger.json"
-    err = downloadFile(url, destPath)
+    err = downloadFile(finger_url, destPath)
     if err != nil {
         color.Red("[%s] [!] Error: %v", time.Now().Format("01-02 15:04:05"), err)
         return
