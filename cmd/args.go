@@ -50,7 +50,7 @@ var RootCmd = &cobra.Command{
             os.Exit(0)
         }
 
-        err := utils.InitializeHTTPClient(proxy, 30*time.Second)
+        err := utils.InitializeHTTPClient(proxy, 20*time.Second)
         if err != nil {
             color.Red("[%s] [!] Error: %v", time.Now().Format("01-02 15:04:05"), err)
             os.Exit(1)
