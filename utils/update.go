@@ -53,7 +53,7 @@ func getRemoteFileHash() string {
 }
 
 func getLocalFileHash() string {
-    file, err := os.Open("data/finger.json")
+    file, err := os.Open(config.Fingerfullpath)
     if err != nil {
         return ""
     }
@@ -169,8 +169,7 @@ func Update() {
     if err != nil {
         return
     }
-    destPath := "data/finger.json"
-    err = downloadFile(finger_url, destPath)
+    err = downloadFile(finger_url, config.Fingerfullpath)
     if err != nil {
         color.Red("[%s] [!] Error: %v", time.Now().Format("01-02 15:04:05"), err)
         return
