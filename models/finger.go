@@ -211,3 +211,18 @@ func ProcessFile(filePath string) {
 func SetThread(thread int64) {
     workerCount = thread
 }
+
+func ShowFingerPrints() {
+    fingerprints := config.GetConfig()
+    fingerCount := len(fingerprints.Finger)
+    color.Blue("[*] Total number of fingerprints: %d\n", fingerCount)
+    uniqueCMSCount := make(map[string]struct{})
+    uniqueCount := 0
+    for _, fp := range fingerprints.Finger {
+        if _, exists := uniqueCMSCount[fp.CMS]; !exists {
+            uniqueCMSCount[fp.CMS] = struct{}{}
+            uniqueCount++
+        }
+    }
+    color.Blue("[*] Number of web frameworks and CMS: %d\n", uniqueCount)
+}
