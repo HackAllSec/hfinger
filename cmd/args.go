@@ -91,7 +91,7 @@ var RootCmd = &cobra.Command{
         if err != nil {
             color.Red("[%s] [!] Error: Failed to load fingerprint library.", time.Now().Format("01-02 15:04:05"))
         }
-        
+        models.ShowFingerPrints()
         if thread < 1 {
             color.Red("[%s] [!] Error: The number of threads cannot be less than 1.", time.Now().Format("01-02 15:04:05"))
             os.Exit(1)
