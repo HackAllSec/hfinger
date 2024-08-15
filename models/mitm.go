@@ -29,11 +29,6 @@ func MitmServer(listenAddr string) {
         color.Red("[%s] [!] Error: %v", time.Now().Format("01-02 15:04:05"), err)
     }
 
-    tlsConfig, err := utils.LoadCertificate()
-    if err != nil {
-        color.Red("[%s] [!] Error: %v", time.Now().Format("01-02 15:04:05"), err)
-    }
-
     listener, err := net.Listen("tcp", listenAddr)
     if err != nil {
         color.Red("[%s] [!] Error: %v", time.Now().Format("01-02 15:04:05"), err)
@@ -51,13 +46,13 @@ func MitmServer(listenAddr string) {
 
         go func(conn net.Conn) {
             defer conn.Close()
-            handleConnection(conn, tlsConfig)
+            handleConnection(conn)
         }(conn)
     }
 }
 
 // handleConnection
-func handleConnection(conn net.Conn, tlsConfig *tls.Config) {
+func handleConnection(conn net.Conn) {
     defer conn.Close()
     reader := bufio.NewReader(conn)
 
@@ -69,7 +64,7 @@ func handleConnection(conn net.Conn, tlsConfig *tls.Config) {
     }
 
     if req.Method == "CONNECT" {
-        if err := handleHTTPS(conn, req, tlsConfig); err != nil {
+        if err := handleHTTPS(conn, req); err != nil {
             color.Red("[%s] [!] Error: %v", time.Now().Format("01-02 15:04:05"), err)
         }
     } else {
@@ -146,21 +141,37 @@ func handleHTTP(conn net.Conn, req *http.Request) error {
 }
 
 // handleHTTPS
-func handleHTTPS(conn net.Conn, req *http.Request, tlsConfig *tls.Config) error {
-    var resp *http.Response
-    baseurl := "https://" + req.Host
-    _, err := conn.Write([]byte("HTTP/1.1 200 Connection established\r\n\r\n"))
+func handleHTTPS(conn net.Conn, req *http.Request) error {
+    defer conn.Close()
+    host := req.URL.Host
+    hostParts := strings.Split(host, ":")
+    if len(hostParts) > 0 {
+        host = hostParts[0]
+    }
+    // Generate server cert
+    serverCert, err := utils.GenerateServerCert(host)
     if err != nil {
         return err
     }
 
+    tlsConfig := &tls.Config{
+        Certificates: []tls.Certificate{*serverCert},
+    }
+    
+    var resp *http.Response
+    baseurl := "https://" + req.Host
+    _, err = conn.Write([]byte("HTTP/1.1 200 Connection established\r\n\r\n"))
+    if err != nil {
+        return err
+    }
+    
     tlsConn := tls.Server(conn, tlsConfig)
     err = tlsConn.Handshake()
     if err != nil {
         return err
     }
     defer tlsConn.Close()
-
+    
     // Read client http request
     reader := bufio.NewReader(tlsConn)
     clientReq, err := http.ReadRequest(reader)
