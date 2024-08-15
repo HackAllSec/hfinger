@@ -181,7 +181,6 @@ func handleHTTPS(conn net.Conn, req *http.Request) error {
 
     tlsConfig := &tls.Config{
         Certificates: []tls.Certificate{*serverCert},
-        NextProtos:   []string{"h2"},
     }
     
     var resp *http.Response
