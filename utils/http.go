@@ -148,6 +148,60 @@ func Get(url string, headers map[string]string) (*http.Response, error) {
     return resp, nil
 }
 
+func Options(url string, headers map[string]string) (*http.Response, error) {
+    if httpClient == nil {
+        return nil, fmt.Errorf("HTTP client not initialized.")
+    }
+
+    req, err := http.NewRequest("OPTIONS", url, nil)
+    if err != nil {
+        return nil, err
+    }
+
+    req.Header.Set("User-Agent", RandomUserAgent())
+    req.Header.Set("Accept", "*/*;q=0.8")
+
+    if headers != nil {
+        for key, value := range headers {
+            req.Header.Set(key, value)
+        }
+    }
+
+    resp, err := httpClient.Do(req)
+    if err != nil {
+        return nil, err
+    }
+
+    return resp, nil
+}
+
+func Trace(url string, headers map[string]string) (*http.Response, error) {
+    if httpClient == nil {
+        return nil, fmt.Errorf("HTTP client not initialized.")
+    }
+
+    req, err := http.NewRequest("TRACE", url, nil)
+    if err != nil {
+        return nil, err
+    }
+
+    req.Header.Set("User-Agent", RandomUserAgent())
+    req.Header.Set("Accept", "*/*;q=0.8")
+
+    if headers != nil {
+        for key, value := range headers {
+            req.Header.Set(key, value)
+        }
+    }
+
+    resp, err := httpClient.Do(req)
+    if err != nil {
+        return nil, err
+    }
+
+    return resp, nil
+}
+
 func Post(url string, data []byte, headers map[string]string) (*http.Response, error) {
     req, err := http.NewRequest("POST", url, bytes.NewBuffer(data))
     if err != nil {
@@ -156,7 +210,7 @@ func Post(url string, data []byte, headers map[string]string) (*http.Response, e
 
     req.Header.Set("User-Agent", RandomUserAgent())
     req.Header.Set("Accept", "*/*;q=0.8")
-    req.Header.Set("Content-Type", "application/octet-stream")
+    req.Header.Set("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8")
     
     if headers != nil {
         for key, value := range headers {
@@ -182,6 +236,30 @@ func Put(url string, data []byte, headers map[string]string) (*http.Response, er
     req.Header.Set("User-Agent", RandomUserAgent())
     req.Header.Set("Accept", "*/*;q=0.8")
 
+    if headers != nil {
+        for key, value := range headers {
+            req.Header.Set(key, value)
+        }
+    }
+
+    resp, err := httpClient.Do(req)
+    if err != nil {
+        return nil, err
+    }
+
+    return resp, nil
+}
+
+func Delete(url string, data []byte, headers map[string]string) (*http.Response, error) {
+    req, err := http.NewRequest("DELETE", url, bytes.NewBuffer(data))
+    if err != nil {
+        return nil, err
+    }
+
+    req.Header.Set("User-Agent", RandomUserAgent())
+    req.Header.Set("Accept", "*/*;q=0.8")
+    req.Header.Set("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8")
+    
     if headers != nil {
         for key, value := range headers {
             req.Header.Set(key, value)
