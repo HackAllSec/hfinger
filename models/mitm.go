@@ -98,6 +98,21 @@ func handleHTTP(conn net.Conn, req *http.Request) error {
         if err != nil {
             return err
         }
+    case "HEAD":
+        resp, err = utils.Head(url,headers)
+        if err != nil {
+            return err
+        }
+    case "OPTIONS":
+        resp, err = utils.Options(url,headers)
+        if err != nil {
+            return err
+        }
+    case "TRACE":
+        resp, err = utils.Trace(url,headers)
+        if err != nil {
+            return err
+        }
     case "POST":
         body, err := io.ReadAll(req.Body)
         if err != nil {
@@ -115,6 +130,16 @@ func handleHTTP(conn net.Conn, req *http.Request) error {
         }
         req.Body.Close()
         resp, err = utils.Put(url,body,headers)
+        if err != nil {
+            return err
+        }
+    case "DELETE":
+        body, err := io.ReadAll(req.Body)
+        if err != nil {
+            return err
+        }
+        req.Body.Close()
+        resp, err = utils.Delete(url,body,headers)
         if err != nil {
             return err
         }
@@ -191,6 +216,21 @@ func handleHTTPS(conn net.Conn, req *http.Request) error {
         if err != nil {
             return err
         }
+    case "HEAD":
+        resp, err = utils.Head(url,headers)
+        if err != nil {
+            return err
+        }
+    case "OPTIONS":
+        resp, err = utils.Options(url,headers)
+        if err != nil {
+            return err
+        }
+    case "TRACE":
+        resp, err = utils.Trace(url,headers)
+        if err != nil {
+            return err
+        }
     case "POST":
         body, err := io.ReadAll(clientReq.Body)
         if err != nil {
@@ -208,6 +248,16 @@ func handleHTTPS(conn net.Conn, req *http.Request) error {
         }
         clientReq.Body.Close()
         resp, err = utils.Put(url,body,headers)
+        if err != nil {
+            return err
+        }
+    case "DELETE":
+        body, err := io.ReadAll(clientReq.Body)
+        if err != nil {
+            return err
+        }
+        clientReq.Body.Close()
+        resp, err = utils.Delete(url,body,headers)
         if err != nil {
             return err
         }
