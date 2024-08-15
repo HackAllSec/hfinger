@@ -11,6 +11,7 @@ import (
     "os"
     "io/ioutil"
     "time"
+    "net"
 
     "hfinger/config"
     "github.com/fatih/color"
@@ -117,14 +118,23 @@ func GenerateServerCert(host string) (*tls.Certificate, error) {
         return nil, err
     }
 
+    ip := net.ParseIP(host)
+
     template := x509.Certificate{
-        SerialNumber:          big.NewInt(0).SetInt64(time.Now().UnixNano()),
-        Subject:               pkix.Name{CommonName: host},
-        NotBefore:             time.Now(),
-        NotAfter:              time.Now().AddDate(1, 0, 0),
-        KeyUsage:              x509.KeyUsageKeyEncipherment | x509.KeyUsageDigitalSignature,
-        ExtKeyUsage:           []x509.ExtKeyUsage{x509.ExtKeyUsageServerAuth},
-        DNSNames:  []string{host},
+        SerialNumber: big.NewInt(0).SetInt64(time.Now().UnixNano()),
+        Subject: pkix.Name{
+            CommonName: host,
+        },
+        NotBefore:   time.Now(),
+        NotAfter:    time.Now().AddDate(1, 0, 0),
+        KeyUsage:    x509.KeyUsageKeyEncipherment | x509.KeyUsageDigitalSignature,
+        ExtKeyUsage: []x509.ExtKeyUsage{x509.ExtKeyUsageServerAuth},
+    }
+
+    if ip != nil {
+        template.IPAddresses = []net.IP{ip}
+    } else {
+        template.DNSNames = []string{host}
     }
 
     caCert, err := x509.ParseCertificate(caTLSCert.Certificate[0])
@@ -133,7 +143,6 @@ func GenerateServerCert(host string) (*tls.Certificate, error) {
     }
 
     derBytes, err := x509.CreateCertificate(rand.Reader, &template, caCert, &privateKey.PublicKey, caTLSCert.PrivateKey)
-
     if err != nil {
         return nil, err
     }
