@@ -9,6 +9,7 @@ import (
     "encoding/pem"
     "math/big"
     "os"
+    "io/ioutil"
     "time"
 
     "hfinger/config"
@@ -37,12 +38,17 @@ func generateSelfSignedCert(certPath, keyPath string) error {
     }
 
     notBefore := time.Now()
-    notAfter := notBefore.Add(365 * 24 * time.Hour)
+    notAfter := notBefore.Add(5 * 365 * 24 * time.Hour)
 
     template := x509.Certificate{
         SerialNumber: big.NewInt(time.Now().UTC().UnixNano()),
         Subject: pkix.Name{
-            Organization: []string{"HackAllSec CA"},
+            CommonName:         "HackAllSec CA",
+            Organization:       []string{"HackAllSec"},
+            OrganizationalUnit: []string{"HackAllSec CA"},
+            Country:            []string{"CN"},
+            Province:           []string{"HackAllSec"},
+            Locality:           []string{"HackAllSec"},
         },
         NotBefore:             notBefore,
         NotAfter:              notAfter,
@@ -82,23 +88,58 @@ func generateSelfSignedCert(certPath, keyPath string) error {
     return nil
 }
 
-func LoadCertificate() (*tls.Config, error) {
-    caCert, err := os.ReadFile(config.CertsPath)
+func LoadCertificate(certPath, keyPath string) (*tls.Certificate, error) {
+    certPEMBlock, err := ioutil.ReadFile(certPath)
+    if err != nil {
+        return nil, err
+    }
+    keyPEMBlock, err := ioutil.ReadFile(keyPath)
     if err != nil {
         return nil, err
     }
 
-    caKey, err := os.ReadFile(config.KeyPath)
+    cert, err := tls.X509KeyPair(certPEMBlock, keyPEMBlock)
     if err != nil {
         return nil, err
     }
 
-    cert, err := tls.X509KeyPair(caCert, caKey)
+    return &cert, nil
+}
+
+func GenerateServerCert(host string) (*tls.Certificate, error) {
+    caTLSCert, err := LoadCertificate(config.CertsPath, config.KeyPath)
     if err != nil {
         return nil, err
     }
 
-    return &tls.Config{
-        Certificates: []tls.Certificate{cert},
+    privateKey, err := rsa.GenerateKey(rand.Reader, 2048)
+    if err != nil {
+        return nil, err
+    }
+
+    template := x509.Certificate{
+        SerialNumber:          big.NewInt(0).SetInt64(time.Now().UnixNano()),
+        Subject:               pkix.Name{CommonName: host},
+        NotBefore:             time.Now(),
+        NotAfter:              time.Now().AddDate(1, 0, 0),
+        KeyUsage:              x509.KeyUsageKeyEncipherment | x509.KeyUsageDigitalSignature,
+        ExtKeyUsage:           []x509.ExtKeyUsage{x509.ExtKeyUsageServerAuth},
+        DNSNames:  []string{host},
+    }
+
+    caCert, err := x509.ParseCertificate(caTLSCert.Certificate[0])
+    if err != nil {
+        return nil, err
+    }
+
+    derBytes, err := x509.CreateCertificate(rand.Reader, &template, caCert, &privateKey.PublicKey, caTLSCert.PrivateKey)
+
+    if err != nil {
+        return nil, err
+    }
+
+    return &tls.Certificate{
+        Certificate: [][]byte{derBytes},
+        PrivateKey:  privateKey,
     }, nil
 }
