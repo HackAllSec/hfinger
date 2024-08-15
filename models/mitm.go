@@ -59,7 +59,7 @@ func handleConnection(conn net.Conn) {
     // Read HTTP Request
     req, err := http.ReadRequest(reader)
     if err != nil {
-        color.Red("[%s] [!] Error: %v", time.Now().Format("01-02 15:04:05"), err)
+        //color.Red("[%s] [!] Error: %v", time.Now().Format("01-02 15:04:05"), err)
         return
     }
 
@@ -181,6 +181,7 @@ func handleHTTPS(conn net.Conn, req *http.Request) error {
 
     tlsConfig := &tls.Config{
         Certificates: []tls.Certificate{*serverCert},
+        NextProtos:   []string{"h2"},
     }
     
     var resp *http.Response
