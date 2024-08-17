@@ -1156,12 +1156,6 @@
         "logic": "and",
         "rule": ["116323821"]
     }, {
-        "cms": "Spring Boot",
-        "method": "keyword",
-        "location": "body",
-        "logic": "and",
-        "rule": ["Whitelabel Error Page"]
-    }, {
         "cms": "Jenkins",
         "method": "faviconhash",
         "location": "body",
@@ -1556,7 +1550,7 @@
         "method": "keyword",
         "location": "body",
         "logic": "or",
-        "rule": ["<h3>Apache Tomcat","<h1>HTTP Status 404 – Not Found</h1><hr class=\"line\" />"]
+        "rule": ["<h3>Apache Tomcat","<h1>HTTP Status 404 –"]
     }, {
         "cms": "Apache Tomcat",
         "method": "keyword",
@@ -6228,8 +6222,8 @@
         "cms": "Spring",
         "method": "keyword",
         "location":"body",
-        "logic": "and",
-        "rule": ["j_spring_cas_security_check"]
+        "logic": "or",
+        "rule": ["j_spring_cas_security_check","Whitelabel Error Page","org.springframework.web."]
     }, {
         "cms": "cPanel-Login",
         "method": "faviconhash",
@@ -7815,7 +7809,7 @@
         "method": "keyword",
         "location": "body",
         "logic": "or",
-        "rule": ["content=\"Struts2","org.apache.struts2","struts problem report","there is no action mapped for namespace","no result defined for action",".action?","index.action","login.action",".do?"]
+        "rule": ["content=\"Struts2","org.apache.struts2","struts problem report","there is no action mapped for namespace","no result defined for action","index.action?","login.action?","index.action","login.action","index.do?","login.do?"]
     }, {
         "cms": "Stripes",
         "method": "keyword",
@@ -8520,5 +8514,11 @@
         "location": "body",
         "logic": "or",
         "rule": ["<title>交付应用</title>","src=\"http://res.wx.qq.com/open/js/jweixin"]
+    }, {
+        "cms": "Decap CMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["/decap-cms"]
     }]
 }
