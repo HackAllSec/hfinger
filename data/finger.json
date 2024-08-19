@@ -7809,7 +7809,7 @@
         "method": "keyword",
         "location": "body",
         "logic": "or",
-        "rule": ["content=\"Struts2","org.apache.struts2","struts problem report","there is no action mapped for namespace","no result defined for action","/index.action?","/login.action?","/index.action","/login.action","/index.do?","/login.do?"]
+        "rule": ["content=\"Struts2","org.apache.struts2","struts problem report","there is no action mapped for namespace","no result defined for action","/index.action?","/login.action?","/index.action","/login.action","/index.do?","/login.do?","/index.do","/login.do"]
     }, {
         "cms": "Stripes",
         "method": "keyword",
