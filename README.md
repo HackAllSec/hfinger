@@ -93,7 +93,7 @@ Flags:
 ```bash
 hfinger -u https://www.hackall.cn
 ```
-从文件中读取目标并识别:
+从文件中读取目标并识别（每行一个url，需要添加协议，如http或https）:
 ```bash
 hfinger -f targets.txt
 ```
