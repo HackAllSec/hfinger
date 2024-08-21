@@ -32,7 +32,7 @@ type Result struct {
 var (
     Config *FingerprintConfig
     once   sync.Once
-    Version = "v1.0.4"
+    Version = "v1.0.5"
     CertsDir   = "certs"
     CaCertFile = "ca.crt"
     CaKeyFile  = "ca.key"
