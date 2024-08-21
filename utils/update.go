@@ -4,7 +4,6 @@ import (
     "archive/zip"
     "encoding/json"
     "io"
-    "io/ioutil"
     "os"
     "runtime"
     "strings"
@@ -44,7 +43,7 @@ func getRemoteFileHash() string {
     if resp.StatusCode != 200 {
         return ""
     }
-    body, err := ioutil.ReadAll(resp.Body)
+    body, err := io.ReadAll(resp.Body)
     if err != nil {
         return ""
     }
@@ -59,7 +58,7 @@ func getLocalFileHash() string {
     }
     defer file.Close()
 
-    body, err := ioutil.ReadAll(file)
+    body, err := io.ReadAll(file)
     if err != nil {
         return ""
     }
