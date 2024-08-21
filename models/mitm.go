@@ -27,6 +27,7 @@ var (
 )
 
 func MitmServer(listenAddr string) {
+    sem := make(chan struct{}, workerCount)
     if err := utils.EnsureCerts(); err != nil {
         color.Red("[%s] [!] Error: %v", time.Now().Format("01-02 15:04:05"), err)
     }
@@ -45,7 +46,9 @@ func MitmServer(listenAddr string) {
             color.Red("[%s] [!] Error: %v", time.Now().Format("01-02 15:04:05"), err)
             continue
         }
+        sem <- struct{}{}
         go func(conn net.Conn) {
+            defer func() { <-sem }()
             defer conn.Close()
             handleConnection(conn)
         }(conn)
