@@ -57,10 +57,10 @@ func InitializeHTTPClient(proxy string, timeout time.Duration) error {
         TLSClientConfig: &tls.Config{
             InsecureSkipVerify: true,
         },
-        // Enable HTTP/2
         MaxIdleConns:          100,
         IdleConnTimeout:       90 * time.Second,
         TLSHandshakeTimeout:   10 * time.Second,
+        MaxIdleConnsPerHost: 10,
     }
 
     if proxy != "" {
