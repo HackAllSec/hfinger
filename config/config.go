@@ -2,7 +2,7 @@ package config
 
 import (
     "encoding/json"
-    "io/ioutil"
+    "os"
     "path/filepath"
     "sync"
 )
@@ -41,34 +41,29 @@ var (
     Datapath = "data"
     Fingerfile = "finger.json"
     Fingerfullpath = filepath.Join(Datapath, Fingerfile)
+    Isconfig = false
 )
 
-// LoadConfig 加载并缓存指纹配置
-func LoadConfig(filePath string) error {
-    var err error
+func init() {
     once.Do(func() {
-        absPath, pathErr := filepath.Abs(filePath)
+        absPath, pathErr := filepath.Abs(Fingerfullpath)
         if pathErr != nil {
-            err = pathErr
             return
         }
 
-        data, readErr := ioutil.ReadFile(absPath)
+        data, readErr := os.ReadFile(absPath)
         if readErr != nil {
-            err = readErr
             return
         }
 
         var loadedConfig FingerprintConfig
         if unmarshalErr := json.Unmarshal(data, &loadedConfig); unmarshalErr != nil {
-            err = unmarshalErr
             return
         }
 
         config = &loadedConfig
+        Isconfig = true
     })
-
-    return err
 }
 
 // GetConfig 获取缓存的指纹配置
