@@ -10,7 +10,7 @@ import (
     "github.com/vincent-petithory/dataurl"
     "golang.org/x/net/html"
     "golang.org/x/net/html/atom"
-    "io/ioutil"
+    "io"
     "net/http"
     "net/url"
     "os"
@@ -74,7 +74,7 @@ func fetchURLContent(iconUrl string) (data []byte, contentType string, err error
 
     // read data
     defer resp.Body.Close()
-    data, err = ioutil.ReadAll(resp.Body)
+    data, err = io.ReadAll(resp.Body)
     if err != nil {
         return
     }
