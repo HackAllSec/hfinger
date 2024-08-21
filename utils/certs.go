@@ -9,7 +9,6 @@ import (
     "encoding/pem"
     "math/big"
     "os"
-    "io/ioutil"
     "time"
     "net"
 
@@ -90,11 +89,11 @@ func generateSelfSignedCert(certPath, keyPath string) error {
 }
 
 func LoadCertificate(certPath, keyPath string) (*tls.Certificate, error) {
-    certPEMBlock, err := ioutil.ReadFile(certPath)
+    certPEMBlock, err := os.ReadFile(certPath)
     if err != nil {
         return nil, err
     }
-    keyPEMBlock, err := ioutil.ReadFile(keyPath)
+    keyPEMBlock, err := os.ReadFile(keyPath)
     if err != nil {
         return nil, err
     }
