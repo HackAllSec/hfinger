@@ -93,6 +93,9 @@ func InitializeHTTPClient(proxy string, timeout time.Duration) error {
     httpClient = &http.Client{
         Transport: transport,
         Timeout:   timeout,
+        CheckRedirect: func(req *http.Request, via []*http.Request) error {
+            return http.ErrUseLastResponse
+        },
     }
 
     return nil
