@@ -30,9 +30,9 @@ type Result struct {
 }
 
 var (
-    config *FingerprintConfig
+    Config *FingerprintConfig
     once   sync.Once
-    Version = "v1.0.5"
+    Version = "v1.0.4"
     CertsDir   = "certs"
     CaCertFile = "ca.crt"
     CaKeyFile  = "ca.key"
@@ -61,12 +61,7 @@ func init() {
             return
         }
 
-        config = &loadedConfig
+        Config = &loadedConfig
         Isconfig = true
     })
-}
-
-// GetConfig 获取缓存的指纹配置
-func GetConfig() *FingerprintConfig {
-    return config
 }
