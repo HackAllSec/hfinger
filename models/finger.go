@@ -83,15 +83,14 @@ func process(url string, headers map[string]string, resultsChannel chan<- config
         ismatched := matchKeywords(body, resp.Header, title, faviconbody, fingerprint)
         if ismatched {
             cms := fingerprint.CMS
-            result := config.Result{
-                URL:        url,
-                CMS:        cms,
-                Server:     server,
-                StatusCode: statuscode,
-                Title:      title,
-            }
-
             if _, loaded := matchedCMS.LoadOrStore(cms, true); !loaded {
+                result := config.Result{
+                    URL:        url,
+                    CMS:        cms,
+                    Server:     server,
+                    StatusCode: statuscode,
+                    Title:      title,
+                }
                 resultsChannel <- result
                 color.Green("[%s] [+] [%s] [%s] [%d] [%s] [%s]", time.Now().Format("01-02 15:04:05"), url, cms, statuscode, server, title)
             }
