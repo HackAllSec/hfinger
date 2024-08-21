@@ -45,8 +45,6 @@ func MitmServer(listenAddr string) {
             color.Red("[%s] [!] Error: %v", time.Now().Format("01-02 15:04:05"), err)
             continue
         }
-        conn.SetReadDeadline(time.Now().Add(10 * time.Second))
-        conn.SetWriteDeadline(time.Now().Add(10 * time.Second))
         go func(conn net.Conn) {
             defer conn.Close()
             handleConnection(conn)
