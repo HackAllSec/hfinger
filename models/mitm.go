@@ -5,7 +5,6 @@ import (
     "bytes"
     "crypto/tls"
     "io"
-    "io/ioutil"
     "net"
     "net/http"
     "net/http/httputil"
@@ -43,7 +42,8 @@ func MitmServer(listenAddr string) {
             color.Red("[%s] [!] Error: %v", time.Now().Format("01-02 15:04:05"), err)
             continue
         }
-
+        conn.SetReadDeadline(time.Now().Add(10 * time.Second))
+        conn.SetWriteDeadline(time.Now().Add(10 * time.Second))
         go func(conn net.Conn) {
             defer conn.Close()
             handleConnection(conn)
@@ -56,21 +56,27 @@ func handleConnection(conn net.Conn) {
     defer conn.Close()
     reader := bufio.NewReader(conn)
 
-    // Read HTTP Request
     req, err := http.ReadRequest(reader)
     if err != nil {
-        //color.Red("[%s] [!] Error: %v", time.Now().Format("01-02 15:04:05"), err)
+        // Request reading error
         return
     }
 
-    if req.Method == "CONNECT" {
-        if err := handleHTTPS(conn, req); err != nil {
-            color.Red("[%s] [!] Error: %v", time.Now().Format("01-02 15:04:05"), err)
+    done := make(chan error, 1)
+
+    go func() {
+        var err error
+        switch req.Method {
+        case "CONNECT":
+            err = handleHTTPS(conn, req)
+        default:
+            err = handleHTTP(conn, req)
         }
-    } else {
-        if err := handleHTTP(conn, req); err != nil {
-            color.Red("[%s] [!] Error: %v", time.Now().Format("01-02 15:04:05"), err)
-        }
+        done <- err
+    }()
+
+    if err := <-done; err != nil {
+        color.Red("[%s] [!] Error: %v", time.Now().Format("01-02 15:04:05"), err)
     }
 }
 
@@ -152,7 +158,7 @@ func handleHTTP(conn net.Conn, req *http.Request) error {
     if err != nil {
         return err
     }
-    resp.Body = ioutil.NopCloser(bytes.NewReader(body))
+    resp.Body = io.NopCloser(bytes.NewReader(body))
     responseDump, err := httputil.DumpResponse(resp, true)
     if err != nil {
         return err
@@ -270,7 +276,7 @@ func handleHTTPS(conn net.Conn, req *http.Request) error {
     if err != nil {
         return err
     }
-    resp.Body = ioutil.NopCloser(bytes.NewReader(body))
+    resp.Body = io.NopCloser(bytes.NewReader(body))
     responseDump, err := httputil.DumpResponse(resp, true)
     if err != nil {
         return err
@@ -372,7 +378,7 @@ func DecodeBody(contentEncoding string, body []byte) ([]byte, error) {
     }
 
     defer reader.Close()
-    decodedBody, err := ioutil.ReadAll(reader)
+    decodedBody, err := io.ReadAll(reader)
     if err != nil {
         return nil, err
     }
