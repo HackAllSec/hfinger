@@ -19,7 +19,6 @@ import (
 var (
     workerCount int64
     resultsLock sync.Mutex
-    cfg *config.FingerprintConfig = config.GetConfig()
 )
 
 func process(url string, headers map[string]string, resultsChannel chan<- config.Result, matchedCMS *sync.Map, mu *sync.Mutex, wg *sync.WaitGroup, errOccurred *bool) {
@@ -79,7 +78,7 @@ func process(url string, headers map[string]string, resultsChannel chan<- config
     if server == "" {
         server = "None"
     }
-    for _, fingerprint := range cfg.Finger {
+    for _, fingerprint := range config.Config.Finger {
         ismatched := matchKeywords(body, resp.Header, title, faviconbody, fingerprint)
         if ismatched {
             cms := fingerprint.CMS
@@ -224,7 +223,7 @@ func SetThread(thread int64) {
 }
 
 func ShowFingerPrints() {
-    fingerprints := config.GetConfig()
+    fingerprints := config.Config
     fingerCount := len(fingerprints.Finger)
     color.Blue("[*] Total number of fingerprints: %d\n", fingerCount)
     uniqueCMSCount := make(map[string]struct{})
