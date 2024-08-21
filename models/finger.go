@@ -19,9 +19,6 @@ import (
 var (
     workerCount int64
     resultsLock sync.Mutex
-    title string
-    server string
-    statuscode int
 )
 
 func process(url string, headers map[string]string, resultsChannel chan<- config.Result, matchedCMS *sync.Map, mu *sync.Mutex, wg *sync.WaitGroup, errOccurred *bool) {
@@ -51,7 +48,7 @@ func process(url string, headers map[string]string, resultsChannel chan<- config
         return
     }
 
-    title = utils.FetchTitle(body)
+    title := utils.FetchTitle(body)
     if title == "" {
         title = "None"
     }
@@ -76,8 +73,8 @@ func process(url string, headers map[string]string, resultsChannel chan<- config
         }
     }
 
-    statuscode = resp.StatusCode
-    server = resp.Header.Get("Server")
+    statuscode := resp.StatusCode
+    server := resp.Header.Get("Server")
     if server == "" {
         server = "None"
     }
@@ -153,7 +150,7 @@ func ProcessURL(url string) {
     mu.Lock()
     defer mu.Unlock()
     if countItems(&matchedCMS) == 0 && !errOccurred {
-        color.White("[%s] [*] [%s] [Not Matched] [%d] [%s] [%s]", time.Now().Format("01-02 15:04:05"), url, statuscode, server, title)
+        color.White("[%s] [*] [%s] [None] [%d] [None] [None]", time.Now().Format("01-02 15:04:05"), url, 0)
     }
 }
 
