@@ -6219,7 +6219,7 @@
         "logic": "or",
         "rule": ["-1136755742","746379308"]
     }, {
-        "cms": "Spring",
+        "cms": "Spring Framework",
         "method": "keyword",
         "location":"body",
         "logic": "or",
@@ -8532,5 +8532,229 @@
         "location": "body",
         "logic": "or",
         "rule": ["/cms/web/cms/themes/","/rcms/web/cms/themes/"]
+    }, {
+        "cms": "PHPMyWind CMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["content=\"PHPMyWind CMS",".php?cid="]
+    }, {
+        "cms": "Adobe-Experience-Manager",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["adobe experience manager"," class=\"coral-heading coral-heading--1\""]
+    }, {
+        "cms": "Adobe-Flex",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["learn more about flex at http://flex.org"]
+    }, {
+        "cms": "adslr-Router",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["href=\"css/r1login.css\"","src=\"chinesehl.js\"","/img/r1/favicon.ico"]
+    }, {
+        "cms": "ADT-IAM",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["content=\"tpn,vpn,内网安全,内网控制,主机防护\"","src=\"/page/assets/javascripts/adt.js\""]
+    }, {
+        "cms": "ADT-TPN-2G",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["src=\"./system/usbkey.js\""]
+    }, {
+        "cms": "ADVA-FSP",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["var gtitle = 'adva fsp "]
+    }, {
+        "cms": "Advanced-Electron-Forum",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["powered by aef","content=\"aef"]
+    }, {
+        "cms": "Advanced-Electron-Forum",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["aefsid"]
+    }, {
+        "cms": "Advantech-LR77",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["lr77-v2"]
+    }, {
+        "cms": "Aethra-Telecommunications-OS",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["atos"]
+    }, {
+        "cms": "AfterLogic-WebMail",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["phpwebmailsessid","PHPWEBMAILSESSID"]
+    }, {
+        "cms": "AirCam-Cameras-and-Surveillance",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["realm=\"aircam ","realm=\"airlive bu-"]
+    }, {
+        "cms": "AirLink-AIC250",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["realm=\"aic250"]
+    }, {
+        "cms": "AirLink-AIC250",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["aic250"]
+    }, {
+        "cms": "AirLink-modem",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["modem@airlink.com"]
+    }, {
+        "cms": "AirLink-SkyIPCam",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["realm=\"skyipcam"]
+    }, {
+        "cms": "AirLink-WL-2600CAM",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["realm=\"wl-2600cam"]
+    }, {
+        "cms": "AirLive-Firmware&Driver",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["airlive airmax5","airlive airmax2","realm=\"airlive wha-"]
+    }, {
+        "cms": "AirLive-ARM-204",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["realm=\"airlive arm-204"]
+    }, {
+        "cms": "AirLive-Modem",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["realm=\"airlive arm-",
+            "realm=\"airlive arm201"]
+    }, {
+        "cms": "AirOS",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["airos_sessionid","AIROS_SESSIONID","cookiechecker?uri="]
+    }, {
+        "cms": "AirOS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["cache_images([\"main_top.png\", \"main.png\", \"link.png\", \"net.png\", \"4dv.png\", \"srv.png\", \"system.png\", \"border.gif\", \"spectr.gif\"]);"]
+    }, {
+        "cms": "Advantech-WebAccess",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["/bw_templete1.dwt","/broadweb/webaccessclientsetup.exe","/broadweb/bwuconfig.asp"]
+    }, {
+        "cms": "ADVANTECH-WISE-3610",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["/advantech/advantech/css/main.css"]
+    }, {
+        "cms": "advantech_WISE",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["remote manage your intelligent systems"]
+    }, {
+        "cms": "AdviserLogicCli",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["navigator.serviceworker.register('/adviserlogiccache.js'"]
+    }, {
+        "cms": "AgileBPM",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["class=\"logo-element\">bpm","class=\"logo-element\">agile-bpm"]
+    }, {
+        "cms": "agora.cgi",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["/agora.cgi?product=","/store/agora.cgi"]
+    }, {
+        "cms": "Aipstar-Cameras-and-Surveillance",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["window.location.href = \"login.html\";"]
+    }, {
+        "cms": "AirLive-POE-HDwebcam",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["js/variable_6.js"]
+    }, {
+        "cms": "AirLive-Wireless-Device",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["realm=\"airlive wl-","realm=\"airlive g.duo","realm=\"airlive air3g","realm=\"airlive ap60","realm=\"airlive wmm-","realm=\"airlive n.power","realm=\"airlive wt-"]
+    }, {
+        "cms": "Aisino-Telecom",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["<font class=\"bottomfont\">航天信息股份有限公司 电信行业版"]
+    }, {
+        "cms": "AJA-Video-Converter",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["eparamid_swversion","<title>AJA Video - FS1 Admin: Main</title> <link href=\"/css/aja_fs1.css\""]
+    }, {
+        "cms": "Ajenti-Server-Admin-Panel",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["src=\"/ajenti:static/",
+            "action=\"/ajenti:auth\""]
+    }, {
+        "cms": "Akamai-CDN",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["server: akamaighost","x-akamai-transformed","akamai-ip: "]
+    }, {
+        "cms": "Cloudflare",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["Cf-Cache-Status","Cf-Ray","cloudflare"]
     }]
 }
