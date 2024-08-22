@@ -137,7 +137,7 @@ func handleHTTPS(conn net.Conn, req *http.Request) error {
         return err
     }
 
-    color.White("[%s] [*] Received HTTPS request: %s", time.Now().Format("01-02 15:04:05"), "https://" + clientReq.Host + clientReq.URL.Path)
+    color.White("[%s] [*] Received HTTPS request: %s", time.Now().Format("01-02 15:04:05"), "https://" + clientReq.Host + clientReq.URL.String())
     err = ForwardHTTPRequest(tlsConn, clientReq, true)
     if err != nil {
         return err
@@ -169,7 +169,7 @@ func getTLSConfigForHost(host string) (*tls.Config, error) {
 func ForwardHTTPRequest(conn net.Conn, req *http.Request, ishttps bool) error {
 	url := req.URL.String()
     if ishttps {
-        url = "https://" + req.Host + req.URL.Path
+        url = "https://" + req.Host + req.URL.String()
     }
 	headers := headersToMap(req.Header)
     httpMethod := req.Method
