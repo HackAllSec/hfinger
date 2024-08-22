@@ -47,7 +47,7 @@ cd hfinger
 go build
 ```
 
-Windows下可直接运行`build_windows.bat`编译。
+Windows下可直接运行`windows_build.bat`编译。
 
 ### 命令行参数
 
