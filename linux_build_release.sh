@@ -6,7 +6,7 @@ build_and_package() {
     local filename=$3
 
     echo "Building for ${goos}/${goarch}..."
-    CGO_ENABLED=0 GOOS=${goos} GOARCH=${goarch} go build -ldflags "-w -s"
+    CGO_ENABLED=0 GOOS=${goos} GOARCH=${goarch} go build -ldflags "-w -s" -trimpath
     
     if [ $? -ne 0 ]; then
         echo "Build failed for ${goos}/${goarch}"
