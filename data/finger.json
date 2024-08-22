@@ -309,7 +309,7 @@
         "cms": "Spring env",
         "method": "keyword",
         "location": "body",
-        "logic": "or",
+        "logic": "and",
         "rule": ["servletContextInitParams","logback"]
     }, {
         "cms": "微三云管理系统",
