@@ -444,7 +444,7 @@
         "logic": "and",
         "rule": ["wh/servlet/MainServer"]
     }, {
-        "cms": "Shiro",
+        "cms": "Apache-Shiro",
         "method": "keyword",
         "location": "header",
         "logic": "and",
@@ -706,12 +706,6 @@
         "logic": "and",
         "rule": ["dreamer-cms"]
     }, {
-        "cms": "Shiro",
-        "method": "keyword",
-        "location": "header",
-        "logic": "and",
-        "rule": ["=deleteMe"]
-    }, {
         "cms": "重庆佰鼎-佰鼎OA",
         "method": "keyword",
         "location": "body",
@@ -843,12 +837,6 @@
         "location": "title",
         "logic": "and",
         "rule": ["_IPEasy知易通"]
-    }, {
-        "cms": "Apache Airflow",
-        "method": "keyword",
-        "location": "title",
-        "logic": "and",
-        "rule": ["Airflow - Login"]
     }, {
         "cms": "启明星辰天清汉马USG防火墙",
         "method": "keyword",
@@ -6174,8 +6162,8 @@
         "cms": "DedeCMS",
         "method": "keyword",
         "location": "body",
-        "logic": "and",
-        "rule": ["Power by DedeCms"]
+        "logic": "or",
+        "rule": ["Power by DedeCms","/templets/default/style/dedecms.css"]
     }, {
         "cms": "FastAdmin 框架",
         "method": "keyword",
@@ -8756,5 +8744,546 @@
         "location": "header",
         "logic": "or",
         "rule": ["Cf-Cache-Status","Cf-Ray","cloudflare"]
+    }, {
+        "cms": "Akiva-WebBoard",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["powered by WebBoard","webboard=","/WebBoard/"]
+    }, {
+        "cms": "ALCASAR",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["valoriserDiv5"]
+    }, {
+        "cms": "Alcatel_Lucent-7250",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["realm=\"alcatel-lucent 7250"]
+    }, {
+        "cms": "Alcatel_Lucent-Enterprise-gateway",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["欢迎登陆alcatel-lucent企业网关<p></p>请输入用户名和密码，3次出错将被锁定<p>","alcatel-lucent"]
+    }, {
+        "cms": "Alcatel_Lucent-IP1020",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["realm=\"alcatel ip1020"]
+    }, {
+        "cms": "Alcatel_Lucent-Omniswitch",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["/web/content/login.html","agranat-emweb"]
+    }, {
+        "cms": "Alcatel_Lucent-Omniswitch",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["document.write(errmsg==\"\"?\"&nbsp;\""]
+    }, {
+        "cms": "Alcatel_Lucent-OmniVista-Cirrus",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["/help/en-us/others/ov-cirrus_cookiepolicy.html"]
+    }, {
+        "cms": "Alcatel_Lucent-OS10K",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["<span>device os10k"]
+    }, {
+        "cms": "Alcatel_Lucent-OS6560-24X4",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["<span>device os6560-24x4"]
+    }, {
+        "cms": "Alcatel_Lucent-OS6560-P24X4",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["<span>device os6560-p24x4"]
+    }, {
+        "cms": "Alcatel_Lucent-OS6560-P48X4",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["<span>device os6560-p48x4"]
+    }, {
+        "cms": "Alcatel_Lucent-OS6860-24",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["<span>device os6860-24"]
+    }, {
+        "cms": "Alcatel_Lucent-OS6860-48",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["<span>device os6860-48"]
+    }, {
+        "cms": "Alcatel_Lucent-OS6860E-24",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["<span>device os6860e-24"]
+    }, {
+        "cms": "Alcatel_Lucent-OS6860E-48",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["<span>device os6860e-48"]
+    }, {
+        "cms": "Alcatel_Lucent-OS6860E-P24",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["<span>device os6860e-p24"]
+    }, {
+        "cms": "Alcatel_Lucent-OS6860E-P48",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["<span>device os6860e-p48"]
+    }, {
+        "cms": "Alcatel_Lucent-OS6860-P24",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["<span>device os6860-p24"]
+    }, {
+        "cms": "Alcatel_Lucent-OS6860-P48",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["<span>device os6860-p48"]
+    }, {
+        "cms": "Alcatel_Lucent-OS6860U-28",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["<span>device os6860u-28"]
+    }, {
+        "cms": "Alcatel_Lucent-OS6865-P16X",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["<span>device os6865-p16x"]
+    }, {
+        "cms": "Alcatel_Lucent-OS6865-U12X",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["<span>device os6865-u12x"]
+    }, {
+        "cms": "Alcatel_Lucent-OS6900-T20",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["<span>device os6900-t20"]
+    }, {
+        "cms": "Alcatel_Lucent-OS6900-T40",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["<span>device os6900-t40"]
+    }, {
+        "cms": "Alcatel_Lucent-OS6900-X20",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["<span>device os6900-x20"]
+    }, {
+        "cms": "Alcatel_Lucent-OS6900-X40",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["<span>device os6900-x40"]
+    }, {
+        "cms": "Alcatel_Lucent-OS6900-X72",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["<span>device os6900-x72"]
+    }, {
+        "cms": "Alcatel_Lucent-OS9900",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["<span>device os9900"]
+    }, {
+        "cms": "ALERTMANAGER",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["defaultcreator"]
+    }, {
+        "cms": "Alibaba-Group-DMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["copyright &copy;  dms  all rights reserved （alibaba 数据管理产品）"]
+    }, {
+        "cms": "Alibaba-Group-TLog",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["content=\"tlog 实时数据处理"]
+    }, {
+        "cms": "Ali-Monitoring-System",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["/monitor/css/monitor.css",
+            "href=\"/monitor/monitoritem/monitoritemlist.htm"]
+    }, {
+        "cms": "阿里云-CDN",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["cdn.aliyuncs.com"]
+    }, {
+        "cms": "阿里云-CDN",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["cdn.aliyuncs.com"]
+    }, {
+        "cms": "Aliyun-Cloud-shield",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["set-cookie: yundun_404"]
+    }, {
+        "cms": "Aliyun-Cloud-shield",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["yundun"]
+    }, {
+        "cms": "AliyunOSS",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["AliyunOSS","x-oss-request-id"]
+    }, {
+        "cms": "FortiGate Endpoint",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["FortiGate Endpoint"]
+    }, {
+        "cms": "ALIYUN-RDS-API",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["href=\"system!stat.jspa"]
+    }, {
+        "cms": "Aliyun-RDS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["class=\"legend\">rds管理系统</div>"]
+    }, {
+        "cms": "Alliance-Web-Platform",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["window.location = \"/swp/group/admin\";"]
+    }, {
+        "cms": "Alpha-Five",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["Alpha Five","A5wSessionId"]
+    }, {
+        "cms": "Alstom-ALSPA®Care",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["asp/images/s8000plus.gif"]
+    }, {
+        "cms": "Amazon-ECS",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["x-amz-error-"]
+    }, {
+        "cms": "Bluetrum-CDN",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["powered-by-chinacache"]
+    }, {
+        "cms": "Dnion-CDN",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["fastcdn.com","dnion"]
+    }, {
+        "cms": "EdgePrism-CDN",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["edgeprism"]
+    }, {
+        "cms": "Fastly-CDN",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["fastcdn.org"]
+    }, {
+        "cms": "Microsoft-Ajax-CDN",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["ajax.aspnetcdn.com/ajax"]
+    }, {
+        "cms": "Microsoft-Ajax-CDN",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["ajax.aspnetcdn.com/ajax"]
+    }, {
+        "cms": "RackCorp-CDN",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["rackcorpcdn"]
+    }, {
+        "cms": "Sina-CDN",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["X-Via-Cdn","Sina-"]
+    }, {
+        "cms": "Baidu-CDN",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["apps.bdimg.com","libs.baidu.com"]
+    }, {
+        "cms": "Tencent-CDN",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["nwss","tencent-cdn"]
+    }, {
+        "cms": "jQuery-official-website-CDN",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["code.jquery.com"]
+    }, {
+        "cms": "七牛云-七牛CDN",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["glb.clouddn.com","glb.qiniucdn.com","cdn.staticfile.org"]
+    }, {
+        "cms": "Bootstrap-CDN",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["cdn.bootcss.com"]
+    }, {
+        "cms": "UCloud-CDN",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["ucloud/cdn"]
+    }, {
+        "cms": "Verizon-CDN",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["ecs (","ecd ("]
+    }, {
+        "cms": "reyzar-CDN",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["reyzar-cdn"]
+    }, {
+        "cms": "GoCDN",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["gocdn"]
+    }, {
+        "cms": "MaxCDN",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["NetDNA"]
+    }, {
+        "cms": "PowerCDN",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["PowerCDN"]
+    }, {
+        "cms": "keycdn-engine",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["keycdn-engine","TBO-CDN"]
+    }, {
+        "cms": "CDN-Cache-Server",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["Cdn Cache Server"]
+    }, {
+        "cms": "WS CDN Server",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["WS CDN Server"]
+    }, {
+        "cms": "CDN77",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["X-77","CDN77"]
+    }, {
+        "cms": "Apache-Airflow",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["src=\"/static/pin_100.png\"","<span>airflow</span>"]
+    }, {
+        "cms": "Apache-Cocoon",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["X-Cocoon-Version"]
+    }, {
+        "cms": "Apache-Dubbo",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["Basic realm=\"dubbo"]
+    }, {
+        "cms": "Apache-Flink",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["<flink-root></flink-root>","<img alt=\"apache flink dashboard\"","src=\"images/flink-logo.png"]
+    }, {
+        "cms": "Apache-Forrest",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["content=\"Apache Forrest","name=\"Forrest"]
+    }, {
+        "cms": "Apache-Guacamole",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["images/guacamole-logo","guacamole - clientless remote desktop","scripts/guac-ui.js"]
+    }, {
+        "cms": "Apache-hadoop-YARN",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["yarn.dt.plugins.js"]
+    }, {
+        "cms": "Apache-Haus",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["href=\"/apachehaus.ico","copyright &copy; 2008-2017 <a href=\"http://www.apachehaus.com\""]
+    }, {
+        "cms": "Apache-Kylin",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["href=\"/kylin/\""]
+    }, {
+        "cms": "Apache-Mesos",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["href=\"/static/css/mesos.css","<img src=\"/static/img/mesos_logo.png\" alt=\"apache mesos\">"]
+    }, {
+        "cms": "Apache-Oozie-Web-Console",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["oozie-console","href=\"/oozie\">oozie console"]
+    }, {
+        "cms": "Apache-Spark",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["src=\"/static/spark-logo(.*\\.png\""]
+    }, {
+        "cms": "Apache-Traffic-Server",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["ApacheTrafficServer"]
+    }, {
+        "cms": "Apache-Unomi",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["logo apache unomi"]
+    }, {
+        "cms": "Apache-Wicket",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["xmlns:wicket=","/org.apache.wicket."]
+    }, {
+        "cms": "ASPCMS",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["ASPSESSIONIDQSQSSSRS"]
+    }, {
+        "cms": "ASPCMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["/inc/AspCms_AdvJs.asp"]
+    }, {
+        "cms": "CNVP-JCMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["publish by jcms2010"]
+    }, {
+        "cms": "ContrexxCMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["powered by contrexx","content=\"contrexx"]
+    }, {
+        "cms": "DocCMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["power by doccms"]
+    }, {
+        "cms": "elite_CMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["copyright &copy; 2003 - 2017 <a href=\"http://www.elite-is.com/cmhome.asp"]
+    }, {
+        "cms": "WebsiteBakerCMS",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["wb_session_id"]
     }]
 }
