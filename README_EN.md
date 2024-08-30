@@ -1,5 +1,6 @@
 ## HFinger Introduction
 
+#### English | [简体中文](README.md)
 ![](https://github.com/HackAllSec/hfinger/blob/main/images/logo.png)
 
 **hfinger** is a high-performance and accurate command-line fingerprint recognition tool, It is used for fast and accurate identification of specified targets during Red Team RBI, including web frameworks, CDN, and CMS information. Since [EHole](https://github.com/EdgeSecurityTeam/EHole) has not been updated for a long time and has some shortcomings (false positives, false negatives, inflexible matching, etc.), this tool is based on the `finger.json` file Match the defined fingerprints, optimize the original file structure, add matching logic, and add error page recognition and passive recognition modes.
