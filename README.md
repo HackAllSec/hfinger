@@ -1,5 +1,6 @@
 ## HFinger简介
 
+#### 简体中文 | [English](README_EN.md)
 ![](https://github.com/HackAllSec/hfinger/blob/main/images/logo.png)
 
 **hfinger** 是一个**高性能**、**准确**的命令行指纹识别工具，用于红队打点时快速准确识别指定目标的 Web 框架、CDN 和 CMS 等信息。由于[EHole](https://github.com/EdgeSecurityTeam/EHole)很久没更新了，且存在一些缺点（误报、漏报、匹配不太灵活等），此工具根据 `finger.json` 文件中定义的指纹进行匹配，优化原有文件结构，增加匹配逻辑，增加错误页识别和被动识别模式。
@@ -221,12 +222,14 @@ hfinger/
 ## 贡献
 
 欢迎提交 PR 、Issues 和指纹库。
-欢迎二次开发。
-可以在`data`目录下创建`XXXCMS.json`通过PR提交指纹。或提交Issues告诉我们不能识别的CMS或框架。
+
+欢迎基于此项目开发其它工具或扩展此工具功能。
+
+你可以在`data/finger.json`文件末尾追加新的指纹，并通过PR提交。或提交Issues告诉我们不能识别的CMS或框架以及更多细节。
 
 ## 许可
 
-MIT License
+请遵守[MIT License](LICENSE)
 
 ## Star History
 
