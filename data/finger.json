@@ -5299,7 +5299,7 @@
         "method": "keyword",
         "location": "title",
         "logic": "and",
-        "rule": ["powered by espcms"]
+        "rule": ["Powered by ESPCMS","powered by espcms","/templates/default/style/tempates_div.css","infolist_fff"]
      }, {
         "cms": "KesionCMS",
         "method": "keyword",
@@ -5415,7 +5415,7 @@
         "logic": "and",
         "rule": ["Powered by <b>4images","4homepages"]
      }, {
-        "cms": "Finecms",
+        "cms": "FineCMS",
         "method": "keyword",
         "location": "body",
         "logic": "and",
@@ -6379,7 +6379,13 @@
         "method": "keyword",
         "location":"body",
         "logic": "and",
-        "rule": ["SolrCore Initialization Failures", "Solr Admin"]
+        "rule": ["SolrCore Initialization Failures", "Solr Admin","app_config.solr_path","ng-app=\"solrAdminApp\""]
+    }, {
+        "cms": "Apache Solr",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["Location: /solr/"]
     }, {
         "cms": "Redmi 路由器",
         "method": "keyword",
@@ -9285,5 +9291,383 @@
         "location": "header",
         "logic": "or",
         "rule": ["wb_session_id"]
+    }, {
+        "cms": "ValleyCMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["href=\"viewcmscac.do","href=\"/viewcmscac.do"]
+    }, {
+        "cms": "WUZHICMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["powered by wuzhicms","content=\"wuzhicms"]
+    }, {
+        "cms": "DianCMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["diancms_sitename","diancms_用户登陆引用"]
+    }, {
+        "cms": "DianCMS",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["DianCMS"]
+    }, {
+        "cms": "goldlibCMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["speakintertscarch.aspx"]
+    }, {
+        "cms": "Hingesoft-HZCMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["produced by","网站群内容管理系统"]
+    }, {
+        "cms": "TCCMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["index.php?ac=link_more","index.php?ac=news_list"]
+    }, {
+        "cms": "IDEACMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["powered by ideacms","ejnav{ideacms:cursort"]
+    }, {
+        "cms": "Ruijie-RCMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["jhtml","/r/cms/www/"]
+    }, {
+        "cms": "kingCMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["content=\"kingcms","powered by kingcms"]
+    }, {
+        "cms": "KoobooCMS",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["kooboocms"]
+    }, {
+        "cms": "PBOOTCMS",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["set-cookie: pbootsystem="]
+    }, {
+        "cms": "taoCMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["template/taocms","src=\"/taocms/code/calendar.js\"",">taoCMS<"]
+    }, {
+        "cms": "tao-long-YunGouCMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["/yungou/css/comm.css"]
+    }, {
+        "cms": "TomatoCMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["tomato.core.widget.loader.baseurl = 'http://","<h1>TomatoCMS Install Wizard</h1>","<a href=\"http://www.tomatocms.com\" title=\"powered by tomatocms\" target=\"_blank\">"]
+    }, {
+        "cms": "TomatoCMS",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["TomatoCMS"]
+    }, {
+        "cms": "fidion CMS",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["fidion CMS"]
+    }, {
+        "cms": "UQCMS(UQ云商)",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["UQCMS"]
+    }, {
+        "cms": "UQCMS(UQ云商)",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["/public/css/common_uqcms.css"]
+    }, {
+        "cms": "XUNRUICMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["alt=\"xunruicms\""]
+    }, {
+        "cms": "ZZZCMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["href=\"/?brandlist/zzzcms",".banner .in_business ul li dd"]
+    }, {
+        "cms": "EZCMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["Powered by EZCMS","EZCMS Content Management System","background=\"images/headerbg.png\"><div align=\"right\"><img src=\"images/headerright.png\" border=\"0\"></div></td>"]
+    }, {
+        "cms": "SyndeoCMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["<!-- Please don\"t remove my credits! I worked hard to create this theme and distribute it freely. Thanks! -->"]
+    }, {
+        "cms": "ZikulaCMS",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["ZikulaCMS"]
+    }, {
+        "cms": "WebYep CMS",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["WebYep CMS"]
+    }, {
+        "cms": "捷点JCMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["Publish By JCms2010"]
+    }, {
+        "cms": "Acidcat_CMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["Start Acidcat CMS footer information","Powered by Acidcat CMS"]
+    }, {
+        "cms": "BoyowCMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["publish by BoyowCMS"]
+    }, {
+        "cms": "ThinkSNS",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["tsv3_lang","t3_lang"]
+    }, {
+        "cms": "ThinkSNS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["_static/image/favicon.ico","ThinkSNS","powered by <a href=\"http://www.thinksns.com\">"]
+    }, {
+        "cms": "PigCms",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["X-Powered-By:PigCms.com"]
+    }, {
+        "cms": "O2OCMS",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["/index.php/clasify/showone/gtitle/"]
+    }, {
+        "cms": "niucms",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["content=\"NIUCMS"]
+    }, {
+        "cms": "baocms",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["content=\"BAOCMS"]
+    }, {
+        "cms": "JTBC(CMS)",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["/js/jtbc.js","content=\"JTBC","JTBC,CMS"]
+    }, {
+        "cms": "AnHuiWAF",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["protected-by: anhui web firewall"]
+    }, {
+        "cms": "AnZuWAF",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["AnZuWAF"]
+    }, {
+        "cms": "FortiWeb WAF",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["FORTIWAFSID="]
+    }, {
+        "cms": "Barracuda-WAF",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["bni__barracuda_lb_cookie="]
+    }, {
+        "cms": "Barracuda-Waf",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["<div style=\"border: 3px solid #4991C5; font:1.5em; font-family:tahoma,calibri,arial; font-weight:bold; color:#0A4369; padding:5px; margin:10px; text-align:center\"> The requested service is temporarily unavailable. It is either overloaded or under maintenance. Please try later.</div><!--01234567890123456789"]
+    }, {
+        "cms": "DAS-Security-DAS-WEB-Application-Firewall",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["<img id=\"company_logo\" src=\"images/waf.company.png"]
+    }, {
+        "cms": "Fortinet-WAF",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["fortiwafsid="]
+    }, {
+        "cms": "hechen-WAF",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["src=\"./js/jquery.validate.js","class=\"inputsize2"]
+    }, {
+        "cms": "IndusGuard-WAF",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["wafportal/wafportal.nocache.js"]
+    }, {
+        "cms": "NSFOCUS-WAF",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["/images/logo/nsfocus.png"]
+    }, {
+        "cms": "NSFOCUS-WAF",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["nsfocus vmwaf"]
+    }, {
+        "cms": "Safe3WAF",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["safe3waf","Safe3WAF","safe3 web firewall"]
+    }, {
+        "cms": "Topsec-TTopWAF",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["/style/images/rand.php?update=1"]
+    }, {
+        "cms": "WebRay-WAF",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["rayengine","drivedby: raysrv"]
+    }, {
+        "cms": "Websecurity-WAF",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["websecurity: waf 1.0"]
+    }, {
+        "cms": "Yxlink-WAF",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["server: yxlinkwaf"]
+    }, {
+        "cms": "KS-WAF(知道创宇)",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["KS-WAF"]
+    }, {
+        "cms": "Safedog",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["WAF/2.0","waf/2.0","safedog-flow-item=","safedog"]
+    }, {
+        "cms": "Safedog",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["safedog-flow-item=","<a href=\"http://security.safedog.cn/index.html\"><input type=\"button\" name=\"feedback\""]
+    }, {
+        "cms": "Websecurity_WAF",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["Websecurity:WAF 1.0"]
+    }, {
+        "cms": "网神SecWAF应用防火墙",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["网神SecWAF应用防火墙"]
+    }, {
+        "cms": "HUAWEI Secospace WAF",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["HUAWEI Secospace WAF"]
+    }, {
+        "cms": "Newdefend WAF",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["Newdefend WAF","newdefend"]
+    }, {
+        "cms": "深信服WAF",
+        "method": "keyword",
+        "location": "body",
+        "logic": "or",
+        "rule": ["commonFunction.js","/LogInOut.php"]
+    }, {
+        "cms": "Incapsula-CDN",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["Incapsula"]
+    }, {
+        "cms": "Voole-OTV",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["server: voole_cdn1.0"]
+    }, {
+        "cms": "Western-Digital",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["wt263cdn"]
+    }, {
+        "cms": "网宿-CDN",
+        "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["server: ws-web-server"]
     }]
 }
