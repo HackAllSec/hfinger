@@ -1,0 +1,107 @@
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+
+# This workflow lets you compile your Go project using a SLSA3 compliant builder.
+# This workflow will generate a so-called "provenance" file describing the steps
+# that were performed to generate the final binary.
+# The project is an initiative of the OpenSSF (openssf.org) and is developed at
+# https://github.com/slsa-framework/slsa-github-generator.
+# The provenance file can be verified using https://github.com/slsa-framework/slsa-verifier.
+# For more information about SLSA and how it improves the supply-chain, visit slsa.dev.
+
+name: SLSA Go releaser
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+permissions: read-all
+
+jobs:
+  # ========================================================================================================================================
+  #     Prerequesite: Create a .slsa-goreleaser.yml in the root directory of your project.
+  #       See format in https://github.com/slsa-framework/slsa-github-generator/blob/main/internal/builders/go/README.md#configuration-file
+  #=========================================================================================================================================
+  build:
+    permissions:
+      id-token: write # To sign.
+      contents: write # To upload release assets.
+      actions: read   # To read workflow path.
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        goos: [windows, linux, darwin]
+        goarch: [amd64, 386, arm64, arm]
+        exclude:
+          - goos: darwin
+            goarch: 386
+          - goos: windows
+            goarch: arm
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Parse CHANGELOG
+        id: parse_changelog
+        run: |
+          version=$(grep -E '## \[([0-9]+\.[0-9]+\.[0-9]+)\] - [0-9]{4}-[0-9]{2}-[0-9]{2}.*' CHANGELOG.md | head -n 1 | sed -E 's/## \[([0-9]+\.[0-9]+\.[0-9]+)\] - [0-9]{4}-[0-9]{2}-[0-9]{2}(.*)/\1 \2/')
+          description=$(awk '/## \[/ {if (found) {found=0; exit} else {found=1; next}} found' CHANGELOG.md)
+          echo "Latest Version: $version"
+          echo "Release Notes: $description"
+          latest_tag=$(git describe --tags `git rev-list --tags --max-count=1`)
+          echo "Latest Tag: ${latest_tag#v}"
+          if [[ "$(echo "${latest_tag#v}" | xargs)" == "$(echo "$version" | xargs)" ]]; then
+              echo "Not a release event, ending workflow."
+              exit 0
+          fi
+          echo "RELEASE_TAG=$version" >> $GITHUB_OUTPUT
+          echo "RELEASE_NOTES<<EOF" >> $GITHUB_OUTPUT
+          echo "$description" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Set up Go
+        if: steps.parse_changelog.outputs.RELEASE_TAG != ''
+        uses: actions/setup-go@v3
+        with:
+          go-version: '1.20'
+
+      - name: Install UPX
+        if: steps.parse_changelog.outputs.RELEASE_TAG != ''
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y upx
+          
+      - name: Build
+        if: steps.parse_changelog.outputs.RELEASE_TAG != ''
+        run: |
+          for GOOS in ${{ matrix.goos }}; do
+            for GOARCH in ${{ matrix.goarch }}; do
+              echo "Building for $GOOS/$GOARCH"
+              if [ "$GOOS" = "windows" ]; then
+                GOOS=$GOOS GOARCH=$GOARCH CGO_ENABLED=0 go build -ldflags="-s -w" -o hfinger-$GOOS-$GOARCH.exe main.go
+                upx --lzma --best hfinger-$GOOS-$GOARCH.exe
+                zip -r hfinger-$GOOS-$GOARCH.zip hfinger-$GOOS-$GOARCH.exe data/
+              else
+                GOOS=$GOOS GOARCH=$GOARCH CGO_ENABLED=0 go build -ldflags="-s -w" -o hfinger-$GOOS-$GOARCH main.go
+                upx --lzma --best hfinger-$GOOS-$GOARCH
+                zip -r hfinger-$GOOS-$GOARCH.zip hfinger-$GOOS-$GOARCH data/ 
+              fi
+            done
+          done
+
+      - name: Upload release assets
+        if: steps.parse_changelog.outputs.RELEASE_TAG != ''
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: hfinger-*.zip
+          tag: ${{ steps.parse_changelog.outputs.RELEASE_TAG }}
+          body: ${{ steps.parse_changelog.outputs.RELEASE_NOTES }}
+          overwrite: true
+          file_glob: true
+          
