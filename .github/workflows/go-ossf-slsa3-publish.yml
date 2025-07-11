@@ -34,10 +34,12 @@ jobs:
     strategy:
       matrix:
         goos: [windows, linux, darwin]
-        goarch: [amd64, 386, arm64]
+        goarch: [amd64, 386, arm64, arm]
         exclude:
           - goos: darwin
             goarch: 386
+          - goos: darwin
+            goarch: arm
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -67,13 +69,7 @@ jobs:
         uses: actions/setup-go@v3
         with:
           go-version: '1.20'
-
-      - name: Install UPX
-        if: steps.parse_changelog.outputs.RELEASE_TAG != ''
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y upx
-          
+  
       - name: Build
         if: steps.parse_changelog.outputs.RELEASE_TAG != ''
         run: |
@@ -82,11 +78,9 @@ jobs:
               echo "Building for $GOOS/$GOARCH"
               if [ "$GOOS" = "windows" ]; then
                 GOOS=$GOOS GOARCH=$GOARCH CGO_ENABLED=0 go build -ldflags="-s -w" -o hfinger-$GOOS-$GOARCH.exe main.go
-                upx --lzma --best hfinger-$GOOS-$GOARCH.exe
                 zip -r hfinger-$GOOS-$GOARCH.zip hfinger-$GOOS-$GOARCH.exe data/
               else
                 GOOS=$GOOS GOARCH=$GOARCH CGO_ENABLED=0 go build -ldflags="-s -w" -o hfinger-$GOOS-$GOARCH main.go
-                upx --lzma --best hfinger-$GOOS-$GOARCH
                 zip -r hfinger-$GOOS-$GOARCH.zip hfinger-$GOOS-$GOARCH data/ 
               fi
             done
