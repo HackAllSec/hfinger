@@ -45,6 +45,8 @@ var (
     CertsPath = filepath.Join(CertsDir, CaCertFile)
     KeyPath = filepath.Join(CertsDir, CaKeyFile)
     Datapath = "data"
+    FingerUrl = "https://raw.githubusercontent.com/HackAllSec/hfinger/main/data/finger.json"
+    ReleaseUrl = "https://api.github.com/repos/HackAllSec/hfinger/releases/latest"
     Fingerfile = "finger.json"
     Fingerfullpath = filepath.Join(Datapath, Fingerfile)
     Isconfig = false
