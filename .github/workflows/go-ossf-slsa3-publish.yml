@@ -59,7 +59,7 @@ jobs:
               echo "Not a release event, ending workflow."
               exit 0
           fi
-          echo "RELEASE_TAG=$version" >> $GITHUB_OUTPUT
+          echo "RELEASE_TAG=v$version" >> $GITHUB_OUTPUT
           echo "RELEASE_NOTES<<EOF" >> $GITHUB_OUTPUT
           echo "$description" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
