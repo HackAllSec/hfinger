@@ -105,16 +105,16 @@ func process(url string, headers map[string]string, resultsChannel chan<- config
     }
 
     switch resp.StatusCode {
-    case http.StatusMovedPermanently, http.StatusFound, http.StatusSeeOther, http.StatusTemporaryRedirect:
-        location := resp.Header.Get("Location")
-        baseurl, _ := utils.GetBaseURL(url)
-        if !strings.HasPrefix(location, "http://") && !strings.HasPrefix(location, "https://") {
-            location = baseurl + location
-        }
-        wg.Add(1)
-        go process(location, nil, resultsChannel, matchedCMS, mu, wg, errOccurred, nil)
-    default:
-        return
+        case http.StatusMovedPermanently, http.StatusFound, http.StatusSeeOther, http.StatusTemporaryRedirect:
+            location := resp.Header.Get("Location")
+            baseurl, _ := utils.GetBaseURL(url)
+            if !strings.HasPrefix(location, "http://") && !strings.HasPrefix(location, "https://") {
+                location = baseurl + location
+            }
+            wg.Add(1)
+            go process(location, nil, resultsChannel, matchedCMS, mu, wg, errOccurred, nil)
+        default:
+            return
     }
 }
 
