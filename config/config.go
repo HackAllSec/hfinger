@@ -38,7 +38,7 @@ type LastResponse struct {
 var (
     Config *FingerprintConfig
     once   sync.Once
-    Version = "v1.0.7"
+    Version = "v1.0.8"
     CertsDir   = "certs"
     CaCertFile = "ca.crt"
     CaKeyFile  = "ca.key"
