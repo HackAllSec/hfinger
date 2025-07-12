@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.8] - 2025-07-13
+
+- 新增 ZIP 文件内容完整性校验
+- 新增更新失败自动回滚机制，更新成功清理临时文件
+- 修复([Issues#11](https://github.com/HackAllSec/hfinger/issues/11))，增加重定向深度控制
+- 清理无效请求，优化并发安全，提升性能
+
 ## [1.0.7] - 2025-07-11
 
 - 修复([Issues#10](https://github.com/HackAllSec/hfinger/issues/10))

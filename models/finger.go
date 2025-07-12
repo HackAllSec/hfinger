@@ -18,103 +18,129 @@ import (
 
 var (
     workerCount int64
-    resultsLock sync.Mutex
+    maxRedirects int64
+    outputLock sync.Mutex // 全局锁保护output操作
 )
 
 func process(url string, headers map[string]string, resultsChannel chan<- config.Result, matchedCMS *sync.Map, mu *sync.Mutex, wg *sync.WaitGroup, errOccurred *bool, saveResponse func(int, string, string)) {
     defer wg.Done()
-
-    mu.Lock()
-    if *errOccurred {
-        mu.Unlock()
-        return
-    }
-    mu.Unlock()
     
-    resp, err := utils.Get(url, headers)
-    if err != nil {
+    currentURL := url
+    redirectCount := int64(0)
+    processedFirst := false
+
+    for redirectCount <= maxRedirects {
         mu.Lock()
-        if !*errOccurred {
-            *errOccurred = handleError(err, url)
+        if *errOccurred {
+            mu.Unlock()
+            return
         }
         mu.Unlock()
-        return
-    }
-    defer resp.Body.Close()
-
-    body, err := io.ReadAll(resp.Body)
-    if err != nil {
-        color.Red("[%s] [!] Error: %v", time.Now().Format("01-02 15:04:05"), err)
-        return
-    }
-
-    title := utils.FetchTitle(body)
-    if title == "" {
-        title = "None"
-    }
-
-    faviconpath := utils.FetchFavicon(body)
-    var faviconbody []byte
-    if faviconpath != "" && resp.StatusCode == http.StatusOK {
-        baseurl, _ := utils.GetBaseURL(url)
-        faviconurl := baseurl + "/" + faviconpath
-        if strings.HasPrefix(faviconpath, "http://") || strings.HasPrefix(faviconpath, "https://") {
-            faviconurl = faviconpath
-        }
-        if faviconpath[0] == '/' {
-            faviconurl = baseurl + faviconpath
-        }
-        favicon, err := utils.Get(faviconurl, nil)
-        if err == nil && favicon.StatusCode == http.StatusOK {
-            defer favicon.Body.Close()
-            faviconbody, err = io.ReadAll(favicon.Body)
-            if err != nil {
-                color.Yellow("[%s] [-] Warning: %v", time.Now().Format("01-02 15:04:05"), err)
+        
+        resp, err := utils.Get(currentURL, headers)
+        if err != nil {
+            mu.Lock()
+            if !*errOccurred {
+                *errOccurred = handleError(err, currentURL)
             }
-        }
-    }
-
-    statusCode := resp.StatusCode
-    server := resp.Header.Get("Server")
-    if server == "" {
-        server = "None"
-    }
-
-    // 保存第一次请求结果用于后续日志
-    if saveResponse != nil {
-        saveResponse(statusCode, server, title)
-    }
-
-    for _, fingerprint := range config.Config.Finger {
-        ismatched := matchKeywords(body, resp.Header, title, faviconbody, fingerprint)
-        if ismatched {
-            cms := fingerprint.CMS
-            if _, loaded := matchedCMS.LoadOrStore(cms, true); !loaded {
-                result := config.Result{
-                    URL:        url,
-                    CMS:        cms,
-                    Server:     server,
-                    StatusCode: statusCode,
-                    Title:      title,
-                }
-                resultsChannel <- result
-                color.Green("[%s] [+] [%s] [%s] [%d] [%s] [%s]",
-                    time.Now().Format("01-02 15:04:05"), url, cms, statusCode, server, title)
-            }
-        }
-    }
-
-    switch resp.StatusCode {
-        case http.StatusMovedPermanently, http.StatusFound, http.StatusSeeOther, http.StatusTemporaryRedirect:
-            location := resp.Header.Get("Location")
-            baseurl, _ := utils.GetBaseURL(url)
-            if !strings.HasPrefix(location, "http://") && !strings.HasPrefix(location, "https://") {
-                location = baseurl + location
-            }
-            wg.Add(1)
-            go process(location, nil, resultsChannel, matchedCMS, mu, wg, errOccurred, nil)
-        default:
+            mu.Unlock()
             return
+        }
+        
+        // 读取响应后立即关闭body
+        body, err := io.ReadAll(resp.Body)
+        resp.Body.Close()
+        if err != nil {
+            color.Red("[%s] [!] Error: %v", time.Now().Format("01-02 15:04:05"), err)
+            return
+        }
+
+        title := utils.FetchTitle(body)
+        if title == "" {
+            title = "None"
+        }
+
+        faviconpath := utils.FetchFavicon(body)
+        var faviconbody []byte
+        if faviconpath != "" && resp.StatusCode == http.StatusOK {
+            baseurl, _ := utils.GetBaseURL(currentURL)
+            faviconurl := baseurl + "/" + faviconpath
+            if strings.HasPrefix(faviconpath, "http://") || strings.HasPrefix(faviconpath, "https://") {
+                faviconurl = faviconpath
+            }
+            if faviconpath[0] == '/' {
+                faviconurl = baseurl + faviconpath
+            }
+            favicon, err := utils.Get(faviconurl, nil)
+            if err == nil && favicon.StatusCode == http.StatusOK {
+                defer favicon.Body.Close()
+                faviconbody, err = io.ReadAll(favicon.Body)
+                if err != nil {
+                    color.Yellow("[%s] [-] Warning: %v", time.Now().Format("01-02 15:04:05"), err)
+                }
+            }
+        }
+
+        statusCode := resp.StatusCode
+        server := resp.Header.Get("Server")
+        if server == "" {
+            server = "None"
+        }
+
+        // 保存第一次请求结果
+        if saveResponse != nil && !processedFirst {
+            saveResponse(statusCode, server, title)
+            processedFirst = true
+        }
+
+        // 指纹匹配
+        for _, fingerprint := range config.Config.Finger {
+            ismatched := matchKeywords(body, resp.Header, title, faviconbody, fingerprint)
+            if ismatched {
+                cms := fingerprint.CMS
+                if _, loaded := matchedCMS.LoadOrStore(cms, true); !loaded {
+                    result := config.Result{
+                        URL:        currentURL, // 使用当前URL（可能是重定向后的）
+                        CMS:        cms,
+                        Server:     server,
+                        StatusCode: statusCode,
+                        Title:      title,
+                    }
+                    resultsChannel <- result
+                    color.Green("[%s] [+] [%s] [%s] [%d] [%s] [%s]",
+                        time.Now().Format("01-02 15:04:05"), currentURL, cms, statusCode, server, title)
+                }
+            }
+        }
+
+        // 检查是否需要重定向
+        if redirectCount < maxRedirects && 
+            (statusCode == http.StatusMovedPermanently ||
+             statusCode == http.StatusFound ||
+             statusCode == http.StatusSeeOther ||
+             statusCode == http.StatusTemporaryRedirect) {
+            
+            location := resp.Header.Get("Location")
+            if location == "" {
+                return
+            }
+            
+            // 处理相对路径重定向
+            if !strings.HasPrefix(location, "http://") && !strings.HasPrefix(location, "https://") {
+                baseurl, _ := utils.GetBaseURL(currentURL)
+                if strings.HasPrefix(location, "/") {
+                    location = baseurl + location
+                } else {
+                    location = baseurl + "/" + location
+                }
+            }
+            
+            currentURL = location
+            redirectCount++
+            continue // 处理重定向
+        }
+        
+        break // 退出循环
     }
 }
 
@@ -144,42 +170,19 @@ func ProcessURL(url string) {
         })
     }
 
-    // 单独发起一次原始 URL 的请求用于获取指纹信息
-    wg.Add(1)
-    go func() {
-        defer wg.Done()
-        resp, err := utils.Get(url, nil)
-        if err != nil {
-            mu.Lock()
-            if !errOccurred {
-                errOccurred = handleError(err, url)
-            }
-            mu.Unlock()
-            return
-        }
-        defer resp.Body.Close()
-
-        body, _ := io.ReadAll(resp.Body)
-        title := utils.FetchTitle(body)
-        server := resp.Header.Get("Server")
-        code := resp.StatusCode
-        saveFirstResponse(code, server, title)
-    }()
-
-    // 启动主流程中的 process 请求
-    wg.Add(2)
-    go process(url, nil, resultsChannel, &matchedCMS, &mu, &wg, &errOccurred, nil)
-    go process(url, map[string]string{"Cookie": "rememberMe=1"}, resultsChannel, &matchedCMS, &mu, &wg, &errOccurred, nil)
-    wg.Wait()
-
-    // 构造带随机路径的新 URL 并发起探测
-    wg.Add(1)
+    // 统一处理所有请求
+    wg.Add(3) // 三个请求：原始URL两次，随机路径一次
+    go process(url, nil, resultsChannel, &matchedCMS, &mu, &wg, &errOccurred, saveFirstResponse)
+    go process(url, map[string]string{"Cookie": "rememberMe=1"}, resultsChannel, &matchedCMS, &mu, &wg, &errOccurred, saveFirstResponse)
+    
+    // 构造带随机路径的新 URL
     suffix := fmt.Sprintf("/%x", rand.Int())
     if url[len(url)-1] == '/' {
         suffix = fmt.Sprintf("%x", rand.Int())
     }
     newUrl := url + suffix
     go process(newUrl, nil, resultsChannel, &matchedCMS, &mu, &wg, &errOccurred, nil)
+    
     wg.Wait()
 
     close(resultsChannel)
@@ -189,14 +192,11 @@ func ProcessURL(url string) {
         results = append(results, result)
     }
 
-    resultsLock.Lock()
-    defer resultsLock.Unlock()
+    // 使用全局锁保护output操作
+    outputLock.Lock()
+    defer outputLock.Unlock()
     for _, result := range results {
         output.AddResults(result)
-    }
-    err := output.WriteOutputs()
-    if err != nil {
-        color.Red("[%s] [!] Error: %s", time.Now().Format("01-02 15:04:05"), err)
     }
 
     mu.Lock()
@@ -270,10 +270,21 @@ func ProcessFile(filePath string) {
 
     wg.Wait()
     close(sem)
+    
+    // 所有URL处理完成后统一写入文件
+    outputLock.Lock()
+    defer outputLock.Unlock()
+    if err := output.WriteOutputs(); err != nil {
+        color.Red("[%s] [!] Error writing output: %s", time.Now().Format("01-02 15:04:05"), err)
+    }
 }
 
 func SetThread(thread int64) {
     workerCount = thread
+}
+
+func SetMaxRedirects(count int64) {
+    maxRedirects = count
 }
 
 func ShowFingerPrints() {

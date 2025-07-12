@@ -14,7 +14,7 @@ import (
 
 var RootCmd = &cobra.Command{
     Use:   "hfinger",
-    Short: "A high-performance command-line tool for web framework and CMS fingerprinting",
+    Short: "A high-performance command-line tool for web framework, CDN and CMS fingerprinting",
     Run: func(cmd *cobra.Command, args []string) {
         url, _ := cmd.Flags().GetString("url")
         file, _ := cmd.Flags().GetString("file")
@@ -38,6 +38,7 @@ var RootCmd = &cobra.Command{
         listen,_ := cmd.Flags().GetString("listen")
         proxy, _ := cmd.Flags().GetString("proxy")
         thread, _ := cmd.Flags().GetInt64("thread")
+        redirect, _ := cmd.Flags().GetInt64("redirect")
         outputJSON, _ := cmd.Flags().GetString("output-json")
         outputXML, _ := cmd.Flags().GetString("output-xml")
         outputXLSX, _ := cmd.Flags().GetString("output-xlsx")
@@ -94,6 +95,11 @@ var RootCmd = &cobra.Command{
             os.Exit(1)
         }
         models.SetThread(thread)
+        if redirect < 1 {
+            color.Red("[%s] [!] Error: The number of redirect cannot be less than 1.", time.Now().Format("01-02 15:04:05"))
+            os.Exit(1)
+        }
+        models.SetMaxRedirects(redirect)
         if outputJSON != "" {
             err = output.SetOutput("json",outputJSON)
         }
@@ -119,6 +125,7 @@ func init() {
     RootCmd.Flags().StringP("output-xlsx", "s", "", "Output all results to a Excel file")
     RootCmd.Flags().StringP("proxy", "p", "", "Specify the proxy for accessing the target, supporting HTTP and SOCKS, example: http://127.0.0.1:8080")
     RootCmd.Flags().Int64P("thread", "t", 100, "Number of fingerprint recognition threads")
+    RootCmd.Flags().Int64P("redirect", "r", 5, "Number of max redirects")
     RootCmd.Flags().BoolP("update", "", false, "Update fingerprint database")
     RootCmd.Flags().BoolP("upgrade", "", false, "Upgrade to the latest version")
     RootCmd.Flags().BoolP("version", "v", false, "Display the current version of the tool")

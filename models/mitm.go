@@ -236,6 +236,7 @@ func MitmMatchFingerprint(url string, statuscode int, header http.Header, body [
     debody, err := DecodeBody(header.Get("Content-Encoding"), body)
     if err != nil {
         color.Red("[%s] [!] Error: %s", time.Now().Format("01-02 15:04:05"), err)
+        return
     }
     faviconurl := utils.FetchFavicon(debody)
     if strings.Contains(url, faviconurl) && statuscode == http.StatusOK {
@@ -256,6 +257,8 @@ func matchfingerprint(url string, statuscode int, body []byte, header http.Heade
     if title == "" {
         title = "None"
     }
+    // 用于存储匹配到的结果
+    var newResults []config.Result
     for _, fingerprint := range config.Config.Finger {
         matched = matchKeywords(body, header, title, favicon, fingerprint)
         if matched {
@@ -269,13 +272,24 @@ func matchfingerprint(url string, statuscode int, body []byte, header http.Heade
                     StatusCode: statuscode,
                     Title:      title,
                 }
-                output.AddResults(result)
+                // 收集新结果
+                newResults = append(newResults, result)
             }
         }
     }
-    err := output.WriteOutputs()
-    if err != nil {
-        color.Red("[%s] [!] Error: %s", time.Now().Format("01-02 15:04:05"), err)
+    if len(newResults) > 0 {
+        // 加锁保护输出操作
+        outputLock.Lock()
+        defer outputLock.Unlock()
+        
+        for _, result := range newResults {
+            output.AddResults(result)
+        }
+        
+        if err := output.WriteOutputs(); err != nil {
+            color.Red("[%s] [!] Error writing output: %s", 
+                time.Now().Format("01-02 15:04:05"), err)
+        }
     }
 }
 

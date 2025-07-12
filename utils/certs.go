@@ -25,6 +25,8 @@ func EnsureCerts() error {
         color.Yellow("[%s] [-] Warning: Certificates not found, generating new ones...", time.Now().Format("01-02 15:04:05"))
         if err := generateSelfSignedCert(config.CertsPath, config.KeyPath); err != nil {
             return err
+        } else {
+            color.Green("[%s] [+] The certificate has been successfully generated", time.Now().Format("01-02 15:04:05"))
         }
     }
 

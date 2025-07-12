@@ -9723,7 +9723,7 @@
         "method": "keyword",
         "location": "header",
         "logic": "or",
-        "rule": ["Apache/0.", "Apache/1.", "Apache/2.2.", "Apache/2.4.0", "Apache/2.4.1", "Apache/2.4.2", "Apache/2.4.3", "Apache/2.4.4", "Apache/2.4.5"]
+        "rule": ["Apache/0.", "Apache/1.", "Apache/2.2.", "Apache/2.4.0", "Apache/2.4.1", "Apache/2.4.2", "Apache/2.4.3", "Apache/2.4.4", "Apache/2.4.5", "Apache/2.4.6 "]
     }, {
         "cms": "Nginx",
         "method": "keyword",
@@ -9741,7 +9741,7 @@
         "method": "keyword",
         "location": "header",
         "logic": "and",
-        "rule": ["ver", "rev"]
+        "rule": ["Server: ver", "rev"]
     }, {
         "cms": "QNAP Systems",
         "method": "keyword",
