@@ -3,16 +3,22 @@ package utils
 import (
     "bytes"
     "crypto/tls"
+    "encoding/base64"
     "fmt"
     "math/rand"
+    "net"
     "net/http"
     "net/url"
+    "regexp"
     "strings"
+    "sync"
     "time"
-    "encoding/base64"
-
+    
+    "hfinger/logger"
     "golang.org/x/net/http2"
     "github.com/PuerkitoBio/goquery"
+    "github.com/tjfoc/gmsm/gmtls"
+    gmX509 "github.com/tjfoc/gmsm/x509"
 )
 
 var (
@@ -45,60 +51,136 @@ var (
         "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:90.0) Gecko/20100101 Firefox/90.0",
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64; Trident/7.0; AS; rv:11.0) like Gecko",
     }
+
+    // 共享的国密TLS配置（提升性能）
+    gmTLSConfig = &gmtls.Config{
+        GMSupport:          &gmtls.GMSupport{},
+        InsecureSkipVerify: true,
+        RootCAs:            gmX509.NewCertPool(),
+        NextProtos:         []string{"h2", "http/1.1"},
+    }
+    
+    // 连接跟踪器（用于监控复用）
+    connTrackMutex sync.Mutex
+    connTrackMap   = make(map[string]int)
 )
 
-func RandomUserAgent() string {
+func init() {
     rand.Seed(time.Now().UnixNano())
+}
+
+func RandomUserAgent() string {
     return userAgents[rand.Intn(len(userAgents))]
 }
 
-func InitializeHTTPClient(proxy string, timeout time.Duration) error {
-    transport := &http.Transport{
-        TLSClientConfig: &tls.Config{
-            InsecureSkipVerify: true,
-        },
-        MaxIdleConns:          100,
-        IdleConnTimeout:       90 * time.Second,
-        TLSHandshakeTimeout:   10 * time.Second,
-        MaxIdleConnsPerHost: 10,
-    }
-
-    if proxy != "" {
-        proxyURL, err := url.Parse(proxy)
-        if err != nil {
-            return err
-        }
-
-        user := proxyURL.User.Username()
-        password, hasPassword := proxyURL.User.Password()
-        if hasPassword {
-            // Encode credentials to handle special characters
-            encodedAuth := base64.StdEncoding.EncodeToString([]byte(user + ":" + password))
-            transport.Proxy = func(req *http.Request) (*url.URL, error) {
-                req.Header.Add("Proxy-Authorization", "Basic "+encodedAuth)
-                return proxyURL, nil
-            }
-        } else {
-            transport.Proxy = func(req *http.Request) (*url.URL, error) {
-                return proxyURL, nil
-            }
-        }
-    }
-
-    err := http2.ConfigureTransport(transport)
-    if err != nil {
-        return err
+func InitializeHTTPClient(proxy string, timeout time.Duration, maxRedirects int) error {
+    transport := createHybridTransport(proxy)
+    
+    if err := http2.ConfigureTransport(transport); err != nil {
+        // 回退到HTTP/1.1
+        transport.ForceAttemptHTTP2 = false
     }
 
     httpClient = &http.Client{
         Transport: transport,
         Timeout:   timeout,
         CheckRedirect: func(req *http.Request, via []*http.Request) error {
-            return http.ErrUseLastResponse
+            // 当重定向次数超过设定值时返回错误
+            if len(via) > maxRedirects {
+                return fmt.Errorf("stopped after %d redirects", maxRedirects)
+            }
+            return nil
         },
     }
 
     return nil
+}
+
+func createHybridTransport(proxy string) *http.Transport {
+    // 标准TLS配置
+    stdTLSConfig := &tls.Config{
+        InsecureSkipVerify: true,
+        NextProtos:         []string{"h2", "http/1.1"},
+    }
+    
+    // 创建混合传输层
+    transport := &http.Transport{
+        DialTLS: func(network, addr string) (net.Conn, error) {
+            conn, err := tls.Dial(network, addr, stdTLSConfig)
+            if err == nil {
+                return conn, nil
+            }
+            if strings.Contains(err.Error(), "tls: protocol version not supported") {
+                return connectWithGMTLS(network, addr)
+            }
+            return nil, err
+        },
+        
+        DisableKeepAlives:   false,
+        MaxIdleConns:        100,
+        IdleConnTimeout:     120 * time.Second,
+        TLSHandshakeTimeout: 10 * time.Second,
+        MaxConnsPerHost:     0,
+        MaxIdleConnsPerHost: 50,
+    }
+    
+    if proxy != "" {
+        proxyURL, err := url.Parse(proxy)
+        if err != nil {
+            logger.Error("Error: %v", err)
+            return transport
+        }
+
+        user := proxyURL.User.Username()
+        password, hasPassword := proxyURL.User.Password()
+        if hasPassword {
+            encodedAuth := base64.StdEncoding.EncodeToString([]byte(user + ":" + password))
+            transport.Proxy = func(req *http.Request) (*url.URL, error) {
+                req.Header.Add("Proxy-Authorization", "Basic "+encodedAuth)
+                return proxyURL, nil
+            }
+        } else {
+            transport.Proxy = http.ProxyURL(proxyURL)
+        }
+    }
+    
+    return transport
+}
+
+func connectWithGMTLS(network, addr string) (net.Conn, error) {
+    conn, err := gmtls.Dial(network, addr, gmTLSConfig)
+    if err != nil {
+        return nil, fmt.Errorf("GM TLS connection failed: %v", err)
+    }
+    
+    state := conn.ConnectionState()
+    if !state.HandshakeComplete {
+        conn.Close()
+        return nil, fmt.Errorf("GM TLS handshake not complete")
+    }
+    
+    return conn, nil
+}
+
+func setRequestHeaders(req *http.Request, headers map[string]string) {
+    req.Header.Set("User-Agent", RandomUserAgent())
+    req.Header.Set("Accept", "*/*;q=0.8")
+    
+    if headers != nil {
+        for key, value := range headers {
+            req.Header.Set(key, value)
+        }
+    }
+    
+    // 仅对需要正文的方法设置默认 Content-Type
+    if req.Body != nil {
+        if _, exists := headers["Content-Type"]; !exists {
+            switch req.Method {
+            case "POST", "PUT", "PATCH", "DELETE":
+                req.Header.Set("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8")
+            }
+        }
+    }
 }
 
 func Head(url string, headers map[string]string) (*http.Response, error) {
@@ -107,21 +189,8 @@ func Head(url string, headers map[string]string) (*http.Response, error) {
         return nil, err
     }
 
-    req.Header.Set("User-Agent", RandomUserAgent())
-    req.Header.Set("Accept", "*/*;q=0.8")
-
-    if headers != nil {
-        for key, value := range headers {
-            req.Header.Set(key, value)
-        }
-    }
-
-    resp, err := httpClient.Do(req)
-    if err != nil {
-        return nil, err
-    }
-
-    return resp, nil
+    setRequestHeaders(req, headers)
+    return httpClient.Do(req)
 }
 
 func Get(url string, headers map[string]string) (*http.Response, error) {
@@ -134,21 +203,8 @@ func Get(url string, headers map[string]string) (*http.Response, error) {
         return nil, err
     }
 
-    req.Header.Set("User-Agent", RandomUserAgent())
-    req.Header.Set("Accept", "*/*;q=0.8")
-
-    if headers != nil {
-        for key, value := range headers {
-            req.Header.Set(key, value)
-        }
-    }
-
-    resp, err := httpClient.Do(req)
-    if err != nil {
-        return nil, err
-    }
-
-    return resp, nil
+    setRequestHeaders(req, headers)
+    return httpClient.Do(req)
 }
 
 func Options(url string, headers map[string]string) (*http.Response, error) {
@@ -161,21 +217,8 @@ func Options(url string, headers map[string]string) (*http.Response, error) {
         return nil, err
     }
 
-    req.Header.Set("User-Agent", RandomUserAgent())
-    req.Header.Set("Accept", "*/*;q=0.8")
-
-    if headers != nil {
-        for key, value := range headers {
-            req.Header.Set(key, value)
-        }
-    }
-
-    resp, err := httpClient.Do(req)
-    if err != nil {
-        return nil, err
-    }
-
-    return resp, nil
+    setRequestHeaders(req, headers)
+    return httpClient.Do(req)
 }
 
 func Trace(url string, headers map[string]string) (*http.Response, error) {
@@ -188,21 +231,8 @@ func Trace(url string, headers map[string]string) (*http.Response, error) {
         return nil, err
     }
 
-    req.Header.Set("User-Agent", RandomUserAgent())
-    req.Header.Set("Accept", "*/*;q=0.8")
-
-    if headers != nil {
-        for key, value := range headers {
-            req.Header.Set(key, value)
-        }
-    }
-
-    resp, err := httpClient.Do(req)
-    if err != nil {
-        return nil, err
-    }
-
-    return resp, nil
+    setRequestHeaders(req, headers)
+    return httpClient.Do(req)
 }
 
 func Post(url string, data []byte, headers map[string]string) (*http.Response, error) {
@@ -210,23 +240,9 @@ func Post(url string, data []byte, headers map[string]string) (*http.Response, e
     if err != nil {
         return nil, err
     }
-
-    req.Header.Set("User-Agent", RandomUserAgent())
-    req.Header.Set("Accept", "*/*;q=0.8")
-    req.Header.Set("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8")
     
-    if headers != nil {
-        for key, value := range headers {
-            req.Header.Set(key, value)
-        }
-    }
-
-    resp, err := httpClient.Do(req)
-    if err != nil {
-        return nil, err
-    }
-
-    return resp, nil
+    setRequestHeaders(req, headers)
+    return httpClient.Do(req)
 }
 
 func Put(url string, data []byte, headers map[string]string) (*http.Response, error) {
@@ -235,22 +251,8 @@ func Put(url string, data []byte, headers map[string]string) (*http.Response, er
         return nil, err
     }
 
-    req.Header.Set("Content-Type", "application/octet-stream")
-    req.Header.Set("User-Agent", RandomUserAgent())
-    req.Header.Set("Accept", "*/*;q=0.8")
-
-    if headers != nil {
-        for key, value := range headers {
-            req.Header.Set(key, value)
-        }
-    }
-
-    resp, err := httpClient.Do(req)
-    if err != nil {
-        return nil, err
-    }
-
-    return resp, nil
+    setRequestHeaders(req, headers)
+    return httpClient.Do(req)
 }
 
 func Delete(url string, data []byte, headers map[string]string) (*http.Response, error) {
@@ -259,22 +261,8 @@ func Delete(url string, data []byte, headers map[string]string) (*http.Response,
         return nil, err
     }
 
-    req.Header.Set("User-Agent", RandomUserAgent())
-    req.Header.Set("Accept", "*/*;q=0.8")
-    req.Header.Set("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8")
-    
-    if headers != nil {
-        for key, value := range headers {
-            req.Header.Set(key, value)
-        }
-    }
-
-    resp, err := httpClient.Do(req)
-    if err != nil {
-        return nil, err
-    }
-
-    return resp, nil
+    setRequestHeaders(req, headers)
+    return httpClient.Do(req)
 }
 
 func FetchTitle(body []byte) string {
@@ -316,4 +304,78 @@ func GetBaseURL(fullURL string) (string, error) {
 
     baseURL := fmt.Sprintf("%s://%s", parsedURL.Scheme, parsedURL.Host)
     return baseURL, nil
+}
+
+// ExtractRedirectURL 从HTTP响应中提取重定向URL
+func ExtractRedirectURL(resp *http.Response, body []byte) string {
+    // 1. 检查HTTP Location头（标准重定向）
+    if location := resp.Header.Get("Location"); location != "" {
+        return location
+    }
+    
+    // 2. 检查Refresh头
+    if refresh := resp.Header.Get("Refresh"); refresh != "" {
+        if urlStart := strings.Index(refresh, "url="); urlStart != -1 {
+            return strings.TrimSpace(refresh[urlStart+4:])
+        }
+    }
+    
+    // 3. 检查HTML Meta Refresh（自动跳转）
+    re := regexp.MustCompile(`(?is)<noscript[^>]*>.*?</noscript>`)
+    cleanBody := re.ReplaceAll(body, []byte{})
+    if metaIdx := bytes.Index(body, []byte("http-equiv=\"refresh\"")); metaIdx != -1 {
+        if contentIdx := bytes.Index(cleanBody[metaIdx:], []byte("content=")); contentIdx != -1 {
+            start := metaIdx + contentIdx + 8 // 跳过 content=
+            if start < len(body) {
+                // 查找值结束引号
+                quote := body[start]
+                if quote == '"' || quote == '\'' {
+                    end := bytes.IndexByte(body[start+1:], quote)
+                    if end > 0 {
+                        content := string(body[start+1 : start+1+end])
+                        if urlStart := strings.Index(content, "url="); urlStart != -1 {
+                            return strings.TrimSpace(content[urlStart+4:])
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    // 4. 检查特定JavaScript跳转模式
+    return extractSpecificJSRredirect(body)
+}
+
+// 专门处理两种特定的JavaScript跳转
+func extractSpecificJSRredirect(body []byte) string {
+    // 模式1: window.location.href = "URL";
+    re1 := regexp.MustCompile(`>window\.location\.href\s*=\s*['"]([^'"]+)['"]\s*;?\s*</script>`)
+    matches1 := re1.FindSubmatch(body)
+    if len(matches1) > 1 {
+        return string(matches1[1])
+    }
+    
+    // 模式2: window.location.replace("URL");
+    re2 := regexp.MustCompile(`>window\.location\.replace\s*$\s*['"]([^'"]+)['"]\s*$\s*;?\s*</script>`)
+    matches2 := re2.FindSubmatch(body)
+    if len(matches2) > 1 {
+        return string(matches2[1])
+    }
+
+    return ""
+}
+
+// ResolveRelativeURL 解析相对URL为绝对URL
+func ResolveRelativeURL(base, relative string) (string, error) {
+    baseURL, err := url.Parse(base)
+    if err != nil {
+        return "", err
+    }
+    
+    relURL, err := url.Parse(relative)
+    if err != nil {
+        return "", err
+    }
+    
+    return baseURL.ResolveReference(relURL).String(), nil
 }

@@ -10,10 +10,9 @@ import (
     "path/filepath"
     "runtime"
     "strings"
-    "time"
 
-    "github.com/fatih/color"
     "hfinger/config"
+    "hfinger/logger"
 )
 
 type GitHubReleaseAsset struct {
@@ -124,13 +123,13 @@ func CheckForUpdates() {
 
     latestVersion := release.TagName
     if latestVersion != config.Version {
-        color.Yellow("[*] Your current hfinger %s is outdated. Latest is %s. You can use the --upgrade option to upgrade.", config.Version, latestVersion)
+        logger.Warn("Your current hfinger %s is outdated. Latest is %s. You can use the --upgrade option to upgrade.", config.Version, latestVersion)
     }
     remotehash := getRemoteFileHash()
     localhash := getLocalFileHash()
     if remotehash != "" && localhash != "" {
         if remotehash != localhash {
-            color.Yellow("[*] There is a new update to the hfinger fingerprint database, you can use the --update option to update it.")
+            logger.Warn("There is a new update to the hfinger fingerprint database, you can use the --update option to update it.")
         }
     }
 }
@@ -151,11 +150,11 @@ func Update() {
     // 下载新文件
     err = downloadFile(config.FingerUrl, config.Fingerfullpath)
     if err != nil {
-        color.Red("[%s] [!] Error downloading file: %v", time.Now().Format("01-02 15:04:05"), err)
+        logger.Error("Error downloading file: %v", err)
         _ = os.Remove(config.Fingerfullpath)
         if _, err := os.Stat(backupPath); err == nil {
             _ = os.Rename(backupPath, config.Fingerfullpath)
-            color.Green("[+] Rollback to previous version.")
+            logger.Success("Rollback to previous version.")
         }
         return
     }
@@ -164,28 +163,28 @@ func Update() {
     remoteHash := getRemoteFileHash()
     localHash := getLocalFileHash()
     if remoteHash != "" && localHash != "" && remoteHash != localHash {
-        color.Red("[%s] [!] Hash mismatch. Update failed.", time.Now().Format("01-02 15:04:05"))
+        logger.Error("Hash mismatch. Update failed.")
         _ = os.Remove(config.Fingerfullpath)
         if _, err := os.Stat(backupPath); err == nil {
             _ = os.Rename(backupPath, config.Fingerfullpath)
-            color.Green("[+] Rollback to previous version.")
+            logger.Success("Rollback to previous version.")
         }
         return
     }
 
-    color.Green("[%s] [+] Update successful.", time.Now().Format("01-02 15:04:05"))
+    logger.Success("Update successful.")
 }
 
 func Upgrade() {
     release, err := getLatestRelease()
     if err != nil {
-        color.Red("[%s] [!] Error fetching release info: %v", time.Now().Format("01-02 15:04:05"), err)
+        logger.Error("Error fetching release info: %v", err)
         return
     }
 
     latestVersion := release.TagName
     if latestVersion == config.Version {
-        color.Green("[%s] [+] Already on the latest version: %s", time.Now().Format("01-02 15:04:05"), latestVersion)
+        logger.Success("Already on the latest version: %s", latestVersion)
         return
     }
 
@@ -198,7 +197,7 @@ func Upgrade() {
     case "darwin":
         assetName = "darwin"
     default:
-        color.Red("[%s] [!] Unsupported OS: %s", time.Now().Format("01-02 15:04:05"), runtime.GOOS)
+        logger.Error("Unsupported OS: %s", runtime.GOOS)
         return
     }
 
@@ -212,7 +211,7 @@ func Upgrade() {
     }
 
     if downloadURL == "" {
-        color.Red("[%s] [!] No matching asset found for %s", time.Now().Format("01-02 15:04:05"), assetName)
+        logger.Error("No matching asset found for %s", assetName)
         return
     }
 
@@ -223,13 +222,13 @@ func Upgrade() {
 
     // 备份当前程序
     if err := os.Rename(exePath, backupExe); err != nil {
-        color.Red("[%s] [!] Error backing up executable: %v", time.Now().Format("01-02 15:04:05"), err)
+        logger.Error("Error backing up executable: %v", err)
         return
     }
 
     // 下载新版本
     if err := downloadFile(downloadURL, tempFile); err != nil {
-        color.Red("[%s] [!] Error downloading new version: %v", time.Now().Format("01-02 15:04:05"), err)
+        logger.Error("Error downloading new version: %v", err)
         _ = os.Remove(tempFile)
         _ = os.Rename(backupExe, exePath)
         return
@@ -237,7 +236,7 @@ func Upgrade() {
 
     // 解压前校验 ZIP
     if err := verifyZip(tempFile); err != nil {
-        color.Red("[%s] [!] ZIP verification failed: %v", time.Now().Format("01-02 15:04:05"), err)
+        logger.Error("ZIP verification failed: %v", err)
         _ = os.Remove(tempFile)
         _ = os.Rename(backupExe, exePath)
         return
@@ -245,7 +244,7 @@ func Upgrade() {
 
     // 解压 ZIP 到当前目录
     if err := extractZip(tempFile, "./"); err != nil {
-        color.Red("[%s] [!] Error extracting ZIP: %v", time.Now().Format("01-02 15:04:05"), err)
+        logger.Error("Error extracting ZIP: %v", err)
         _ = os.Remove(tempFile)
         _ = os.Rename(backupExe, exePath)
         return
@@ -255,7 +254,7 @@ func Upgrade() {
     _ = os.Remove(tempFile)
     _ = os.Remove(backupExe)
 
-    color.Green("[%s] [+] Upgrade complete. New version: %s", time.Now().Format("01-02 15:04:05"), latestVersion)
+    logger.Success("Upgrade complete. New version: %s", latestVersion)
 }
 
 func extractZip(filePath, destDir string) error {

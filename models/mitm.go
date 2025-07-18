@@ -9,41 +9,46 @@ import (
     "net"
     "net/http"
     "net/http/httputil"
-    "time"
     "strings"
     "sync"
     "compress/gzip"
     "compress/zlib"
+    "golang.org/x/net/http2"
+    "net/http/httptest"
 
     "hfinger/config"
+    "hfinger/logger"
     "hfinger/output"
     "hfinger/utils"
-    "github.com/fatih/color"
 )
 
 var (
     matchedCMS sync.Map
-    certCache = sync.Map{}
+    certCache  = sync.Map{}
+    h2Server   = &http2.Server{}
 )
 
 func MitmServer(listenAddr string) {
     sem := make(chan struct{}, workerCount)
+    
     if err := utils.EnsureCerts(); err != nil {
-        color.Red("[%s] [!] Error: %v", time.Now().Format("01-02 15:04:05"), err)
+        logger.Error("Error: %v", err)
+        return
     }
 
     listener, err := net.Listen("tcp", listenAddr)
     if err != nil {
-        color.Red("[%s] [!] Error: %v", time.Now().Format("01-02 15:04:05"), err)
+        logger.Error("Error: %v", err)
+        return
     }
     defer listener.Close()
 
-    color.White("[%s] [*] Starting MITM Server at: %s", time.Now().Format("01-02 15:04:05"), listenAddr)
+    logger.Info("Starting MITM Server at: %s", listenAddr)
 
     for {
         conn, err := listener.Accept()
         if err != nil {
-            color.Red("[%s] [!] Error: %v", time.Now().Format("01-02 15:04:05"), err)
+            logger.Error("Error: %v", err)
             continue
         }
         sem <- struct{}{}
@@ -55,14 +60,13 @@ func MitmServer(listenAddr string) {
     }
 }
 
-// handleConnection
 func handleConnection(conn net.Conn) {
     defer conn.Close()
     reader := bufio.NewReader(conn)
 
     req, err := http.ReadRequest(reader)
     if err != nil {
-        // Request reading error
+        logger.PrintByLevel(err, "")
         return
     }
 
@@ -80,7 +84,7 @@ func handleConnection(conn net.Conn) {
     }()
 
     if err := <-done; err != nil {
-        color.Red("[%s] [!] Error: %v", time.Now().Format("01-02 15:04:05"), err)
+        logger.PrintByLevel(err, "")
     }
 }
 
@@ -94,9 +98,8 @@ func headersToMap(headers http.Header) map[string]string {
     return headerMap
 }
 
-// handleHTTP
 func handleHTTP(conn net.Conn, req *http.Request) error {
-    color.White("[%s] [*] Received HTTP request: %s", time.Now().Format("01-02 15:04:05"), req.URL.String())
+    logger.Info("Received HTTP request: %s", req.URL.String())
     err := ForwardHTTPRequest(conn, req, false)
     if err != nil {
         return err
@@ -104,7 +107,6 @@ func handleHTTP(conn net.Conn, req *http.Request) error {
     return nil
 }
 
-// handleHTTPS
 func handleHTTPS(conn net.Conn, req *http.Request) error {
     defer conn.Close()
 
@@ -131,112 +133,289 @@ func handleHTTPS(conn net.Conn, req *http.Request) error {
     }
     defer tlsConn.Close()
 
-    reader := bufio.NewReader(tlsConn)
-    clientReq, err := http.ReadRequest(reader)
-    if err != nil {
-        return err
+    // HTTP/2 连接处理
+    switch tlsConn.ConnectionState().NegotiatedProtocol {
+    case "h2":
+        h2Server.ServeConn(tlsConn, &http2.ServeConnOpts{
+            Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+                handleHTTP2Request(w, r)
+            }),
+        })
+        return nil
+    default:
+        reader := bufio.NewReader(tlsConn)
+        clientReq, err := http.ReadRequest(reader)
+        if err != nil {
+            return err
+        }
+        logger.Info("[HTTPS] Received request: %s", "https://"+clientReq.Host+clientReq.URL.String())
+        return ForwardHTTPRequest(tlsConn, clientReq, true)
     }
-
-    color.White("[%s] [*] Received HTTPS request: %s", time.Now().Format("01-02 15:04:05"), "https://" + clientReq.Host + clientReq.URL.String())
-    err = ForwardHTTPRequest(tlsConn, clientReq, true)
-    if err != nil {
-        return err
-    }
-    return nil
 }
 
 func getTLSConfigForHost(host string) (*tls.Config, error) {
-    tlsConfig, ok := certCache.Load(host)
-    if ok {
+    if tlsConfig, ok := certCache.Load(host); ok {
         return tlsConfig.(*tls.Config), nil
     }
 
-    // Generate new server cert
-    serverCert, err := utils.GenerateServerCert(host)
+    stdCert, gmCert, err := utils.GenerateServerCert(host)
     if err != nil {
         return nil, err
     }
 
-    tlsConfig = &tls.Config{
-        Certificates: []tls.Certificate{*serverCert},
+    // 标准TLS配置
+    stdTLSConfig := &tls.Config{
+        Certificates: []tls.Certificate{*stdCert},
+        NextProtos:   []string{"h2", "http/1.1"},
+    }
+
+    // 国密TLS配置
+    gmTLSConfig := &tls.Config{
+        Certificates: []tls.Certificate{*gmCert},
+        NextProtos:   []string{"http/1.1"},
+    }
+
+    tlsConfig := &tls.Config{
+        GetConfigForClient: func(hello *tls.ClientHelloInfo) (*tls.Config, error) {
+            for _, proto := range hello.SupportedProtos {
+                if proto == "h2" || proto == "http/1.1" {
+                    return stdTLSConfig, nil
+                }
+            }
+
+            if isGMClient(hello) {
+                return gmTLSConfig, nil
+            }
+
+            return stdTLSConfig, nil
+        },
+    }
+
+    // 原子操作存储配置
+    actual, loaded := certCache.LoadOrStore(host, tlsConfig)
+    if loaded {
+        return actual.(*tls.Config), nil
     }
     
-    certCache.Store(host, tlsConfig)
-
-    return tlsConfig.(*tls.Config), nil
+    return tlsConfig, nil
 }
 
-func ForwardHTTPRequest(conn net.Conn, req *http.Request, ishttps bool) error {
-	url := req.URL.String()
-    if ishttps {
-        url = "https://" + req.Host + req.URL.String()
+func isGMClient(hello *tls.ClientHelloInfo) bool {
+    gmCipherSuites := []uint16{
+        0xE011,
+        0xE013,
     }
-	headers := headersToMap(req.Header)
-    httpMethod := req.Method
-    var resp *http.Response
-	var err error
-	switch httpMethod {
-    case "GET":
-        resp, err = utils.Get(url,headers)
-    case "HEAD":
-        resp, err = utils.Head(url,headers)
-    case "OPTIONS":
-        resp, err = utils.Options(url,headers)
-    case "TRACE":
-        resp, err = utils.Trace(url,headers)
-    case "POST":
-        body, err := io.ReadAll(req.Body)
-        if err != nil {
-            return err
+
+    for _, suite := range hello.CipherSuites {
+        for _, gmSuite := range gmCipherSuites {
+            if suite == gmSuite {
+                return true
+            }
         }
-        req.Body.Close()
-        resp, err = utils.Post(url, body, headers)
-    case "PUT":
-        body, err := io.ReadAll(req.Body)
-        if err != nil {
-            return err
+    }
+    return false
+}
+
+func contains(protos []string, protocol string) bool {
+    for _, proto := range protos {
+        if proto == protocol {
+            return true
         }
-        req.Body.Close()
-        resp, err = utils.Put(url, body, headers)
-    case "DELETE":
-        body, err := io.ReadAll(req.Body)
-        if err != nil {
-            return err
+    }
+    return false
+}
+
+func handleHTTP2Request(w http.ResponseWriter, r *http.Request) {
+    fullURL := "https://" + r.Host + r.URL.String()
+    logger.Info("[HTTP2] Handling request: %s", fullURL)
+    
+    // 创建响应记录器
+    recorder := httptest.NewRecorder()
+    
+    // 转发请求
+    err := ForwardHTTP2Request(recorder, r)
+    if err != nil {
+        logger.PrintByLevel(err, fullURL)
+        http.Error(w, err.Error(), http.StatusInternalServerError)
+        return
+    }
+    
+    // 复制响应到客户端
+    for k, vv := range recorder.Header() {
+        for _, v := range vv {
+            w.Header().Add(k, v)
         }
-        req.Body.Close()
-        resp, err = utils.Delete(url, body, headers)
+    }
+    w.WriteHeader(recorder.Code)
+    if _, err := w.Write(recorder.Body.Bytes()); err != nil {
+        logger.PrintByLevel(err, fullURL)
+    }
+    
+    // 使用记录器中的数据安全地进行指纹匹配
+    go MitmMatchFingerprint(fullURL, recorder.Code, recorder.Header(), recorder.Body.Bytes())
+}
+
+// 转发器：根据方法 + 参数 返回 *http.Response
+type forwardFunc func(url string, headers map[string]string, body []byte) (*http.Response, error)
+
+func forwardRequest(
+    method string,
+    url string,
+    headers map[string]string,
+    bodyNeeded bool,
+    body io.ReadCloser,
+    fwd forwardFunc,
+) (*http.Response, error) {
+
+    var bodyBytes []byte
+    var err error
+    if bodyNeeded && body != nil {
+        bodyBytes, err = io.ReadAll(body)
+        if err != nil {
+            return nil, fmt.Errorf("read request body: %w", err)
+        }
+        body.Close()
+    }
+
+    switch method {
+    case http.MethodGet:
+        return fwd(url, headers, nil)
+    case http.MethodHead:
+        return fwd(url, headers, nil)
+    case http.MethodOptions:
+        return fwd(url, headers, nil)
+    case http.MethodTrace:
+        return fwd(url, headers, nil)
+    case http.MethodPost, http.MethodPut, http.MethodDelete:
+        return fwd(url, headers, bodyBytes)
     default:
-        return fmt.Errorf("Not supported %s Method!", httpMethod)
+        return nil, fmt.Errorf("unsupported method: %s", method)
     }
+}
+
+func ForwardHTTP2Request(w http.ResponseWriter, r *http.Request) error {
+    url := "https://" + r.Host + r.URL.String()
+    headers := headersToMap(r.Header)
+
+    resp, err := forwardRequest(
+        r.Method,
+        url,
+        headers,
+        r.Method == "POST" || r.Method == "PUT" || r.Method == "DELETE",
+        r.Body,
+        func(u string, h map[string]string, b []byte) (*http.Response, error) {
+            switch r.Method {
+            case "GET":     return utils.Get(u, h)
+            case "HEAD":    return utils.Head(u, h)
+            case "OPTIONS": return utils.Options(u, h)
+            case "TRACE":   return utils.Trace(u, h)
+            case "POST":    return utils.Post(u, b, h)
+            case "PUT":     return utils.Put(u, b, h)
+            case "DELETE":  return utils.Delete(u, b, h)
+            default:        return nil, fmt.Errorf("unsupported method: %s", r.Method)
+            }
+        },
+    )
     if err != nil {
         return err
     }
-    if resp == nil {
-        return nil
+    defer resp.Body.Close()
+
+    for k, vv := range resp.Header {
+        w.Header()[k] = vv
+    }
+    w.WriteHeader(resp.StatusCode)
+    _, err = io.Copy(w, resp.Body)
+    return err
+}
+
+func ForwardHTTPRequest(conn net.Conn, req *http.Request, ishttps bool) error {
+    url := req.URL.String()
+    if ishttps {
+        url = "https://" + req.Host + req.URL.String()
+    }
+    headers := headersToMap(req.Header)
+
+    resp, err := forwardRequest(
+        req.Method,
+        url,
+        headers,
+        req.Method == "POST" || req.Method == "PUT" || req.Method == "DELETE",
+        req.Body,
+        func(u string, h map[string]string, b []byte) (*http.Response, error) {
+            switch req.Method {
+            case "GET":     return utils.Get(u, h)
+            case "HEAD":    return utils.Head(u, h)
+            case "OPTIONS": return utils.Options(u, h)
+            case "TRACE":   return utils.Trace(u, h)
+            case "POST":    return utils.Post(u, b, h)
+            case "PUT":     return utils.Put(u, b, h)
+            case "DELETE":  return utils.Delete(u, b, h)
+            default:        return nil, fmt.Errorf("unsupported method: %s", req.Method)
+            }
+        },
+    )
+    if err != nil {
+        return err
     }
     defer resp.Body.Close()
+
+    contentType := resp.Header.Get("Content-Type")
+    if isTextContent(contentType) {
+        return handleTextResponse(conn, resp, url)
+    }
+    return handleBinaryResponse(conn, resp)
+}
+
+
+func handleTextResponse(conn net.Conn, resp *http.Response, url string) error {
+    defer resp.Body.Close()
+
     body, err := io.ReadAll(resp.Body)
     if err != nil {
         return err
     }
-    resp.Body = io.NopCloser(bytes.NewReader(body))
-    responseDump, err := httputil.DumpResponse(resp, true)
+
+    clonedResp := *resp
+    clonedResp.Body = io.NopCloser(bytes.NewReader(body))
+
+    responseDump, err := httputil.DumpResponse(&clonedResp, true)
     if err != nil {
         return err
     }
-    _, err = conn.Write(responseDump)
-    if err != nil {
+
+    if _, err := conn.Write(responseDump); err != nil {
         return err
     }
-    MitmMatchFingerprint(url, resp.StatusCode, resp.Header, body)
-    return nil
+
+    return MitmMatchFingerprint(url, resp.StatusCode, resp.Header, body)
 }
 
-func MitmMatchFingerprint(url string, statuscode int, header http.Header, body []byte) {
+func handleBinaryResponse(conn net.Conn, resp *http.Response) error {
+    defer resp.Body.Close()
+    if err := resp.Write(conn); err != nil {
+        return err
+    }
+    
+    _, err := io.Copy(conn, resp.Body)
+    return err
+}
+
+func isTextContent(contentType string) bool {
+    if contentType == "" {
+        return true
+    }
+    return strings.Contains(contentType, "text") ||
+        strings.Contains(contentType, "json") ||
+        strings.Contains(contentType, "xml") ||
+        strings.Contains(contentType, "javascript") ||
+        strings.Contains(contentType, "x-www-form-urlencoded")
+}
+
+func MitmMatchFingerprint(url string, statuscode int, header http.Header, body []byte) error {
     debody, err := DecodeBody(header.Get("Content-Encoding"), body)
     if err != nil {
-        color.Red("[%s] [!] Error: %s", time.Now().Format("01-02 15:04:05"), err)
-        return
+        return err
     }
     faviconurl := utils.FetchFavicon(debody)
     if strings.Contains(url, faviconurl) && statuscode == http.StatusOK {
@@ -244,6 +423,7 @@ func MitmMatchFingerprint(url string, statuscode int, header http.Header, body [
     } else {
         matchfingerprint(url, statuscode, debody, header, nil)
     }
+    return nil
 }
 
 func matchfingerprint(url string, statuscode int, body []byte, header http.Header, favicon []byte) {
@@ -257,14 +437,14 @@ func matchfingerprint(url string, statuscode int, body []byte, header http.Heade
     if title == "" {
         title = "None"
     }
-    // 用于存储匹配到的结果
     var newResults []config.Result
     for _, fingerprint := range config.Config.Finger {
         matched = matchKeywords(body, header, title, favicon, fingerprint)
         if matched {
             cms = fingerprint.CMS
-            if _, loaded := matchedCMS.LoadOrStore(cms, true); !loaded {
-                color.Green("[%s] [+] [%s] [%s] [%d] [%s] [%s]", time.Now().Format("01-02 15:04:05"), url, cms, statuscode, server, title)
+            key := fmt.Sprintf("%s::%s", url, cms)
+            if _, loaded := matchedCMS.LoadOrStore(key, true); !loaded {
+                logger.Success("[%s] [%s] [%d] [%s] [%s]", url, cms, statuscode, server, title)
                 result := config.Result{
                     URL:        url,
                     CMS:        cms,
@@ -272,13 +452,11 @@ func matchfingerprint(url string, statuscode int, body []byte, header http.Heade
                     StatusCode: statuscode,
                     Title:      title,
                 }
-                // 收集新结果
                 newResults = append(newResults, result)
             }
         }
     }
     if len(newResults) > 0 {
-        // 加锁保护输出操作
         outputLock.Lock()
         defer outputLock.Unlock()
         
@@ -287,8 +465,7 @@ func matchfingerprint(url string, statuscode int, body []byte, header http.Heade
         }
         
         if err := output.WriteOutputs(); err != nil {
-            color.Red("[%s] [!] Error writing output: %s", 
-                time.Now().Format("01-02 15:04:05"), err)
+            logger.Error("Error writing output: %s", err)
         }
     }
 }

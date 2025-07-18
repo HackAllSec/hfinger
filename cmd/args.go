@@ -7,6 +7,7 @@ import (
     "time"
 
     "hfinger/config"
+    "hfinger/logger"
     "hfinger/output"
     "hfinger/models"
     "hfinger/utils"
@@ -37,12 +38,13 @@ var RootCmd = &cobra.Command{
         file, _ := cmd.Flags().GetString("file")
         listen,_ := cmd.Flags().GetString("listen")
         proxy, _ := cmd.Flags().GetString("proxy")
-        thread, _ := cmd.Flags().GetInt64("thread")
-        redirect, _ := cmd.Flags().GetInt64("redirect")
+        thread, _ := cmd.Flags().GetInt("thread")
+        redirect, _ := cmd.Flags().GetInt("redirect")
         outputJSON, _ := cmd.Flags().GetString("output-json")
         outputXML, _ := cmd.Flags().GetString("output-xml")
         outputXLSX, _ := cmd.Flags().GetString("output-xlsx")
         versionFlag, _ := cmd.Flags().GetBool("version")
+        checkFlag,_ := cmd.Flags().GetBool("check-update")
         updateFlag,_ := cmd.Flags().GetBool("update")
         upgradeFlag,_ := cmd.Flags().GetBool("upgrade")
         
@@ -51,10 +53,20 @@ var RootCmd = &cobra.Command{
             os.Exit(0)
         }
 
-        err := utils.InitializeHTTPClient(proxy, 20*time.Second)
-        if err != nil {
-            color.Red("[%s] [!] Error: %v", time.Now().Format("01-02 15:04:05"), err)
+        if redirect < 1 {
+            logger.Error("Error: The number of redirect cannot be less than 1.")
             os.Exit(1)
+        }
+
+        err := utils.InitializeHTTPClient(proxy, 30*time.Second, redirect)
+        if err != nil {
+            logger.Error("Error: %v", err)
+            os.Exit(1)
+        }
+
+        if checkFlag {
+            utils.CheckForUpdates()
+            os.Exit(0)
         }
 
         if updateFlag {
@@ -67,38 +79,32 @@ var RootCmd = &cobra.Command{
             os.Exit(0)
         }
 
-        utils.CheckForUpdates()
-
         if url == "" && file == "" && listen == "" {
             cmd.Help()
-            color.Red("[%s] [!] Error: Must specify one of the -u, -f, or -l parameters!", time.Now().Format("01-02 15:04:05"))
+            logger.Error("Error: Must specify one of the -u, -f, or -l parameters!")
             os.Exit(1)
         }
         if url != "" && file != "" && listen != "" {
-            color.Red("[%s] [!] Error: You can only choose one of the -u, -f or -l parameters!", time.Now().Format("01-02 15:04:05"))
+            logger.Error("Error: You can only choose one of the -u, -f or -l parameters!")
             os.Exit(1)
         }
         if url != "" {
             _, err := utils.GetBaseURL(url)
             if err != nil {
-                color.Red("[%s] [!] Error: %v", time.Now().Format("01-02 15:04:05"),err)
+                logger.Error("Error: %v",err)
             }
         }
         
         if !config.Isconfig {
-            color.Red("[%s] [!] Error: Failed to load fingerprint library.You can use --update option to get fingerprint library.", time.Now().Format("01-02 15:04:05"))
+            logger.Error("Error: Failed to load fingerprint library.You can use --update option to get fingerprint library.")
             os.Exit(1)
         }
         models.ShowFingerPrints()
         if thread < 1 {
-            color.Red("[%s] [!] Error: The number of threads cannot be less than 1.", time.Now().Format("01-02 15:04:05"))
+            logger.Error("Error: The number of threads cannot be less than 1.")
             os.Exit(1)
         }
         models.SetThread(thread)
-        if redirect < 1 {
-            color.Red("[%s] [!] Error: The number of redirect cannot be less than 1.", time.Now().Format("01-02 15:04:05"))
-            os.Exit(1)
-        }
         models.SetMaxRedirects(redirect)
         if outputJSON != "" {
             err = output.SetOutput("json",outputJSON)
@@ -110,7 +116,7 @@ var RootCmd = &cobra.Command{
             err = output.SetOutput("xlsx",outputXLSX)
         }
         if err != nil {
-            color.Red("[%s] [!] Error: %v", time.Now().Format("01-02 15:04:05"), err)
+            logger.Error("Error: %v", err)
         }
     },
 }
@@ -124,8 +130,9 @@ func init() {
     RootCmd.Flags().StringP("output-xml", "x", "", "Output all results to a XML file")
     RootCmd.Flags().StringP("output-xlsx", "s", "", "Output all results to a Excel file")
     RootCmd.Flags().StringP("proxy", "p", "", "Specify the proxy for accessing the target, supporting HTTP and SOCKS, example: http://127.0.0.1:8080")
-    RootCmd.Flags().Int64P("thread", "t", 100, "Number of fingerprint recognition threads")
-    RootCmd.Flags().Int64P("redirect", "r", 5, "Number of max redirects")
+    RootCmd.Flags().IntP("thread", "t", 100, "Number of fingerprint recognition threads")
+    RootCmd.Flags().IntP("redirect", "r", 5, "Number of max redirects")
+    RootCmd.Flags().BoolP("check-update", "c", false, "Check for updates and upgrades")
     RootCmd.Flags().BoolP("update", "", false, "Update fingerprint database")
     RootCmd.Flags().BoolP("upgrade", "", false, "Upgrade to the latest version")
     RootCmd.Flags().BoolP("version", "v", false, "Display the current version of the tool")

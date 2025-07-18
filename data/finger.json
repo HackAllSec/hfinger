@@ -1098,6 +1098,12 @@
     }, {
         "cms": "Inspur-InCloud-Sphere",
         "method": "keyword",
+        "location": "header",
+        "logic": "or",
+        "rule": ["Inspur InCloudManager"]
+    }, {
+        "cms": "EasyUI",
+        "method": "keyword",
         "location": "body",
         "logic": "or",
         "rule": ["class=\"easyui-layout"]

@@ -28,6 +28,8 @@
 - 支持代理，通过 -p 参数指定代理
 - 实时输出匹配结果，匹配到则使用绿色输出，未匹配到则使用白色输出
 - 支持 JSON、XML 和 XLSX 格式的输出
+- 支持HTTP/2和HTTP/1
+- 支持标准HTTPS和国密HTTPS
 - 由于Fofa的部分icon_hash和Mmh3Hash32的计算结果不一致，新增了icon_hash计算工具
 
 ### 指纹库

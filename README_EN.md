@@ -28,6 +28,8 @@ It is best to combine these methods to prevent secondary development systems fro
 - Support proxy, specify proxy through -p parameter
 - Output the matching results in real time. If the match is matched, the green output will be used. If the match is not matched, the white output will be used.
 - Supports output in JSON, XML and XLSX formats
+- Supports HTTP/2 and HTTP/1
+- Supports Standart TLS and GM TLS
 - Due to inconsistent calculation results of some of Fofa's icon_hash and Mmh3Hash32, a new icon_hash calculation tool has been added
 
 ### Fingerprint database
