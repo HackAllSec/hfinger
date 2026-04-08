@@ -137,7 +137,7 @@ func CheckForUpdates() {
 func Update() {
     backupPath := config.Fingerfullpath + ".bak"
 
-    err := os.MkdirAll("data", os.ModePerm)
+    err := os.MkdirAll(config.Datapath, os.ModePerm)
     if err != nil {
         return
     }
@@ -215,9 +215,9 @@ func Upgrade() {
         return
     }
 
-    tempFile := "./" + assetName
-
     exePath, _ := os.Executable()
+    exeDir := filepath.Dir(exePath)
+    tempFile := filepath.Join(exeDir, assetName)
     backupExe := exePath + ".old"
 
     // 备份当前程序
@@ -242,8 +242,8 @@ func Upgrade() {
         return
     }
 
-    // 解压 ZIP 到当前目录
-    if err := extractZip(tempFile, "./"); err != nil {
+    // 解压 ZIP 到可执行文件目录
+    if err := extractZip(tempFile, exeDir); err != nil {
         logger.Error("Error extracting ZIP: %v", err)
         _ = os.Remove(tempFile)
         _ = os.Rename(backupExe, exePath)

@@ -95,8 +95,8 @@ var RootCmd = &cobra.Command{
             }
         }
         
-        if !config.Isconfig {
-            logger.Error("Error: Failed to load fingerprint library.You can use --update option to get fingerprint library.")
+        if err := ensureFingerprintLibrary(); err != nil {
+            logger.Error("Error: Failed to load fingerprint library from %s: %v", config.Fingerfullpath, err)
             os.Exit(1)
         }
         models.ShowFingerPrints()
@@ -119,6 +119,19 @@ var RootCmd = &cobra.Command{
             logger.Error("Error: %v", err)
         }
     },
+}
+
+func ensureFingerprintLibrary() error {
+    if config.Isconfig {
+        return nil
+    }
+
+    if _, err := os.Stat(config.Fingerfullpath); os.IsNotExist(err) {
+        logger.Warn("Fingerprint library not found at %s. Downloading it now.", config.Fingerfullpath)
+        utils.Update()
+    }
+
+    return config.LoadFingerprintConfig()
 }
 
 func init() {
