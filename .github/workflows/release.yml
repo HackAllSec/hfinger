@@ -14,13 +14,25 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        goos: [windows, linux, darwin]
-        goarch: [amd64, 386, arm64, arm]
-        exclude:
-          - goos: darwin
+        include:
+          - goos: windows
+            goarch: amd64
+          - goos: windows
             goarch: 386
-          - goos: darwin
+          - goos: windows
+            goarch: arm64
+          - goos: linux
+            goarch: amd64
+          - goos: linux
+            goarch: 386
+          - goos: linux
+            goarch: arm64
+          - goos: linux
             goarch: arm
+          - goos: darwin
+            goarch: amd64
+          - goos: darwin
+            goarch: arm64
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -54,19 +66,15 @@ jobs:
       - name: Build
         if: steps.parse_changelog.outputs.RELEASE_TAG != ''
         run: |
-          for GOOS in ${{ matrix.goos }}; do
-            for GOARCH in ${{ matrix.goarch }}; do
-              echo "Building for $GOOS/$GOARCH"
-              if [ "$GOOS" = "windows" ]; then
-                GOOS=$GOOS GOARCH=$GOARCH CGO_ENABLED=0 go build -ldflags="-s -w" -o hfinger-$GOOS-$GOARCH.exe main.go
-                zip -r hfinger-$GOOS-$GOARCH.zip hfinger-$GOOS-$GOARCH.exe README.md README_EN.md LICENSE NOTICE docs/
-              else
-                GOOS=$GOOS GOARCH=$GOARCH CGO_ENABLED=0 go build -ldflags="-s -w" -o hfinger-$GOOS-$GOARCH main.go
-                zip -r hfinger-$GOOS-$GOARCH.zip hfinger-$GOOS-$GOARCH README.md README_EN.md LICENSE NOTICE docs/
-              fi
-              sha256sum hfinger-$GOOS-$GOARCH.zip > hfinger-$GOOS-$GOARCH.zip.sha256
-            done
-          done
+          echo "Building for ${{ matrix.goos }}/${{ matrix.goarch }}"
+          if [ "${{ matrix.goos }}" = "windows" ]; then
+            GOOS=${{ matrix.goos }} GOARCH=${{ matrix.goarch }} CGO_ENABLED=0 go build -ldflags="-s -w" -o hfinger-${{ matrix.goos }}-${{ matrix.goarch }}.exe main.go
+            zip -r hfinger-${{ matrix.goos }}-${{ matrix.goarch }}.zip hfinger-${{ matrix.goos }}-${{ matrix.goarch }}.exe README.md README_EN.md LICENSE NOTICE docs/
+          else
+            GOOS=${{ matrix.goos }} GOARCH=${{ matrix.goarch }} CGO_ENABLED=0 go build -ldflags="-s -w" -o hfinger-${{ matrix.goos }}-${{ matrix.goarch }} main.go
+            zip -r hfinger-${{ matrix.goos }}-${{ matrix.goarch }}.zip hfinger-${{ matrix.goos }}-${{ matrix.goarch }} README.md README_EN.md LICENSE NOTICE docs/
+          fi
+          sha256sum hfinger-${{ matrix.goos }}-${{ matrix.goarch }}.zip > hfinger-${{ matrix.goos }}-${{ matrix.goarch }}.zip.sha256
 
       - name: Upload release assets
         if: steps.parse_changelog.outputs.RELEASE_TAG != ''
