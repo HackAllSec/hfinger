@@ -15,8 +15,6 @@ import (
 
 	"gitee.com/Trisia/gotlcp/tlcp"
 	"github.com/PuerkitoBio/goquery"
-	"github.com/tjfoc/gmsm/gmtls"
-	gmX509 "github.com/tjfoc/gmsm/x509"
 	"golang.org/x/net/http2"
 	"hfinger/logger"
 )
@@ -61,14 +59,6 @@ var (
 		"Mozilla/5.0 (Windows NT 10.0; Win64; x64; Trident/7.0; AS; rv:11.0) like Gecko",
 	}
 
-	// 共享的国密TLS配置（提升性能）
-	gmTLSConfig = &gmtls.Config{
-		GMSupport:          &gmtls.GMSupport{},
-		InsecureSkipVerify: true,
-		RootCAs:            gmX509.NewCertPool(),
-		NextProtos:         []string{"h2", "http/1.1"},
-	}
-
 	// 连接跟踪器（用于监控复用）
 	connTrackMutex sync.Mutex
 	connTrackMap   = make(map[string]int)
@@ -80,11 +70,6 @@ const (
 	TLSModeStd  = "std"
 )
 
-var supportedGMTLSCipherSuites = []uint16{
-	gmtls.GMTLS_SM2_WITH_SM4_SM3,
-	gmtls.GMTLS_ECDHE_SM2_WITH_SM4_SM3,
-}
-
 var supportedTLCPCipherSuites = []uint16{
 	tlcp.ECC_SM4_GCM_SM3,
 	tlcp.ECC_SM4_CBC_SM3,
@@ -92,7 +77,7 @@ var supportedTLCPCipherSuites = []uint16{
 	tlcp.ECDHE_SM4_CBC_SM3,
 }
 
-const gmTLSCapabilitySummary = "supported GM/TLS stacks: GM/T 0024-2014 VersionGMSSL(0x0101) via tjfoc/gmsm [GMTLS_SM2_WITH_SM4_SM3(0xe013), GMTLS_ECDHE_SM2_WITH_SM4_SM3(0xe011)] and TLCP via gotlcp [ECC_SM4_GCM_SM3(0xe053), ECC_SM4_CBC_SM3(0xe013), ECDHE_SM4_GCM_SM3(0xe051), ECDHE_SM4_CBC_SM3(0xe011)]"
+const gmTLSCapabilitySummary = "supported GM/TLS stack: TLCP via GoTLCP [ECC_SM4_GCM_SM3(0xe053), ECC_SM4_CBC_SM3(0xe013), ECDHE_SM4_GCM_SM3(0xe051), ECDHE_SM4_CBC_SM3(0xe011)]"
 
 func init() {
 	rand.Seed(time.Now().UnixNano())
@@ -122,10 +107,6 @@ func ConfigureTLSMode(mode string) error {
 	}
 }
 
-func SupportedGMTLSCipherSuites() []uint16 {
-	return append([]uint16(nil), supportedGMTLSCipherSuites...)
-}
-
 func SupportedTLCPCipherSuites() []uint16 {
 	return append([]uint16(nil), supportedTLCPCipherSuites...)
 }
@@ -133,9 +114,8 @@ func SupportedTLCPCipherSuites() []uint16 {
 func TLSCapabilities() []string {
 	return []string{
 		"standard TLS: Go crypto/tls",
-		"GM/TLS(gmsm): GM/T 0024-2014 VersionGMSSL(0x0101), GMTLS_SM2_WITH_SM4_SM3(0xe013), GMTLS_ECDHE_SM2_WITH_SM4_SM3(0xe011)",
-		"TLCP(gotlcp): ECC_SM4_GCM_SM3(0xe053), ECC_SM4_CBC_SM3(0xe013), ECDHE_SM4_GCM_SM3(0xe051), ECDHE_SM4_CBC_SM3(0xe011)",
-		"active auto mode: standard TLS first, then GM/TLS(gmsm), then TLCP(gotlcp)",
+		"GM/TLS: TLCP via GoTLCP, ECC_SM4_GCM_SM3(0xe053), ECC_SM4_CBC_SM3(0xe013), ECDHE_SM4_GCM_SM3(0xe051), ECDHE_SM4_CBC_SM3(0xe011)",
+		"active auto mode: standard TLS first, then TLCP fallback when the standard TLS error matches protocol-level GM/TLS signals",
 		"passive MITM: TLS/TLCP record-version routing during server-side handshake",
 	}
 }
@@ -167,7 +147,7 @@ func InitializeHTTPClient(proxy string, timeout time.Duration, maxRedirects int)
 }
 
 func createHybridTransport(proxy string) (*http.Transport, error) {
-	stdClientCerts, gmClientCerts, tlcpClientCerts, err := loadClientCertificates()
+	stdClientCerts, tlcpClientCerts, err := loadClientCertificates()
 	if err != nil {
 		return nil, err
 	}
@@ -179,21 +159,13 @@ func createHybridTransport(proxy string) (*http.Transport, error) {
 		Certificates:       stdClientCerts,
 	}
 
-	gmTLSConfig := &gmtls.Config{
-		GMSupport:          &gmtls.GMSupport{},
-		InsecureSkipVerify: true,
-		RootCAs:            gmX509.NewCertPool(),
-		NextProtos:         []string{"h2", "http/1.1"},
-		CipherSuites:       supportedGMTLSCipherSuites,
-		Certificates:       gmClientCerts,
-	}
 	tlcpConfig := &tlcp.Config{
 		InsecureSkipVerify: true,
 		NextProtos:         []string{"h2", "http/1.1"},
 		CipherSuites:       supportedTLCPCipherSuites,
 		Certificates:       tlcpClientCerts,
 	}
-	tlsConnector := newActiveTLSConnector(tlsMode, stdTLSConfig, gmTLSConfig, tlcpConfig)
+	tlsConnector := newActiveTLSConnector(tlsMode, stdTLSConfig, tlcpConfig)
 
 	// 创建混合传输层
 	transport := &http.Transport{
@@ -223,7 +195,7 @@ func createHybridTransport(proxy string) (*http.Transport, error) {
 type activeTLSConnector struct {
 	mode        string
 	stdProvider activeTLSProvider
-	gmProviders []activeTLSProvider
+	gmProvider  activeTLSProvider
 }
 
 type activeTLSProvider interface {
@@ -244,19 +216,6 @@ func (provider standardTLSProvider) Dial(network, addr string) (net.Conn, error)
 	return provider.dial(network, addr, provider.config)
 }
 
-type gmtlsProvider struct {
-	config *gmtls.Config
-	dial   func(network, addr string, tlsConfig *gmtls.Config) (net.Conn, error)
-}
-
-func (provider gmtlsProvider) Name() string {
-	return "GM/TLS(gmsm)"
-}
-
-func (provider gmtlsProvider) Dial(network, addr string) (net.Conn, error) {
-	return provider.dial(network, addr, provider.config)
-}
-
 type tlcpProvider struct {
 	config *tlcp.Config
 	dial   func(network, addr string, tlsConfig *tlcp.Config) (net.Conn, error)
@@ -270,17 +229,14 @@ func (provider tlcpProvider) Dial(network, addr string) (net.Conn, error) {
 	return provider.dial(network, addr, provider.config)
 }
 
-func newActiveTLSConnector(mode string, stdConfig *tls.Config, gmConfig *gmtls.Config, tlcpConfig *tlcp.Config) *activeTLSConnector {
+func newActiveTLSConnector(mode string, stdConfig *tls.Config, tlcpConfig *tlcp.Config) *activeTLSConnector {
 	if mode == "" {
 		mode = TLSModeAuto
 	}
 	return &activeTLSConnector{
 		mode:        mode,
 		stdProvider: standardTLSProvider{config: stdConfig, dial: dialStandardTLS},
-		gmProviders: []activeTLSProvider{
-			gmtlsProvider{config: gmConfig, dial: connectWithGMTLS},
-			tlcpProvider{config: tlcpConfig, dial: connectWithTLCP},
-		},
+		gmProvider:  tlcpProvider{config: tlcpConfig, dial: connectWithTLCP},
 	}
 }
 
@@ -290,7 +246,7 @@ func dialStandardTLS(network, addr string, tlsConfig *tls.Config) (net.Conn, err
 
 func (connector *activeTLSConnector) Dial(network, addr string) (net.Conn, error) {
 	if connector.mode == TLSModeGM {
-		return connector.dialGMProviders(network, addr)
+		return connector.dialGMProvider(network, addr)
 	}
 
 	conn, err := connector.stdProvider.Dial(network, addr)
@@ -300,73 +256,61 @@ func (connector *activeTLSConnector) Dial(network, addr string) (net.Conn, error
 	if connector.mode == TLSModeStd {
 		return nil, err
 	}
-	if shouldFallbackToGMTLS(err) {
-		logger.Warn("Standard TLS connection failed for %s, trying GM/TLS/TLCP fallback: %v", addr, err)
-		gmConn, gmErr := connector.dialGMProviders(network, addr)
+	if shouldFallbackToTLCP(err) {
+		logger.Warn("Standard TLS connection failed for %s, trying TLCP fallback: %v", addr, err)
+		gmConn, gmErr := connector.dialGMProvider(network, addr)
 		if gmErr == nil {
 			return gmConn, nil
 		}
-		return nil, fmt.Errorf("standard TLS failed: %v; GM/TLS/TLCP fallback failed: %w", err, gmErr)
+		return nil, fmt.Errorf("standard TLS failed: %v; TLCP fallback failed: %w", err, gmErr)
 	}
 	return nil, err
 }
 
-func (connector *activeTLSConnector) dialGMProviders(network, addr string) (net.Conn, error) {
-	var failures []string
-	for _, provider := range connector.gmProviders {
-		conn, err := provider.Dial(network, addr)
-		if err == nil {
-			return conn, nil
-		}
-		failures = append(failures, fmt.Sprintf("%s: %v", provider.Name(), err))
+func (connector *activeTLSConnector) dialGMProvider(network, addr string) (net.Conn, error) {
+	if connector.gmProvider == nil {
+		return nil, fmt.Errorf("TLCP provider is not configured")
 	}
-	return nil, fmt.Errorf("all GM/TLS providers failed: %s", strings.Join(failures, "; "))
+	conn, err := connector.gmProvider.Dial(network, addr)
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w", connector.gmProvider.Name(), err)
+	}
+	return conn, nil
 }
 
-func loadClientCertificates() ([]tls.Certificate, []gmtls.Certificate, []tlcp.Certificate, error) {
+func loadClientCertificates() ([]tls.Certificate, []tlcp.Certificate, error) {
 	if (clientCertPath == "") != (clientKeyPath == "") {
-		return nil, nil, nil, fmt.Errorf("--client-cert and --client-key must be used together")
+		return nil, nil, fmt.Errorf("--client-cert and --client-key must be used together")
 	}
 	if (gmClientCertPath == "") != (gmClientKeyPath == "") {
-		return nil, nil, nil, fmt.Errorf("--gm-client-cert and --gm-client-key must be used together")
+		return nil, nil, fmt.Errorf("--gm-client-cert and --gm-client-key must be used together")
 	}
 
 	var stdCerts []tls.Certificate
-	var gmCerts []gmtls.Certificate
 	var tlcpCerts []tlcp.Certificate
 	if clientCertPath != "" {
 		cert, err := tls.LoadX509KeyPair(clientCertPath, clientKeyPath)
 		if err != nil {
-			return nil, nil, nil, fmt.Errorf("load TLS client certificate: %w", err)
+			return nil, nil, fmt.Errorf("load TLS client certificate: %w", err)
 		}
 		stdCerts = append(stdCerts, cert)
 
-		gmCert, err := gmtls.LoadX509KeyPair(clientCertPath, clientKeyPath)
-		if err == nil {
-			gmCerts = append(gmCerts, gmCert)
-		}
 		tlcpCert, err := tlcp.LoadX509KeyPair(clientCertPath, clientKeyPath)
 		if err == nil {
 			tlcpCerts = append(tlcpCerts, tlcpCert)
 		}
 	}
 	if gmClientCertPath != "" {
-		gmCert, err := gmtls.LoadX509KeyPair(gmClientCertPath, gmClientKeyPath)
-		if err != nil {
-			return nil, nil, nil, fmt.Errorf("load GM/TLS client certificate: %w", err)
-		}
-		gmCerts = append(gmCerts, gmCert)
-
 		tlcpCert, err := tlcp.LoadX509KeyPair(gmClientCertPath, gmClientKeyPath)
 		if err != nil {
-			return nil, nil, nil, fmt.Errorf("load TLCP client certificate: %w", err)
+			return nil, nil, fmt.Errorf("load TLCP client certificate: %w", err)
 		}
 		tlcpCerts = append(tlcpCerts, tlcpCert)
 	}
-	return stdCerts, gmCerts, tlcpCerts, nil
+	return stdCerts, tlcpCerts, nil
 }
 
-func shouldFallbackToGMTLS(err error) bool {
+func shouldFallbackToTLCP(err error) bool {
 	if err == nil {
 		return false
 	}
@@ -388,21 +332,6 @@ func shouldFallbackToGMTLS(err error) bool {
 	return false
 }
 
-func connectWithGMTLS(network, addr string, tlsConfig *gmtls.Config) (net.Conn, error) {
-	conn, err := gmtls.Dial(network, addr, tlsConfig)
-	if err != nil {
-		return nil, formatGMTLSConnectError(err)
-	}
-
-	state := conn.ConnectionState()
-	if !state.HandshakeComplete {
-		conn.Close()
-		return nil, fmt.Errorf("GM TLS handshake not complete")
-	}
-
-	return conn, nil
-}
-
 func connectWithTLCP(network, addr string, tlsConfig *tlcp.Config) (net.Conn, error) {
 	conn, err := tlcp.Dial(network, addr, tlsConfig)
 	if err != nil {
@@ -418,27 +347,17 @@ func connectWithTLCP(network, addr string, tlsConfig *tlcp.Config) (net.Conn, er
 	return conn, nil
 }
 
-func formatGMTLSConnectError(err error) error {
-	if err == nil {
-		return nil
-	}
-	if isUnsupportedGMTLSStackError(err) {
-		return fmt.Errorf("GM TLS connection failed: %v; target may require an unsupported GM/TLS version or cipher suite; %s", err, gmTLSCapabilitySummary)
-	}
-	return fmt.Errorf("GM TLS connection failed: %v", err)
-}
-
 func formatTLCPConnectError(err error) error {
 	if err == nil {
 		return nil
 	}
-	if isUnsupportedGMTLSStackError(err) {
+	if isUnsupportedGMStackError(err) {
 		return fmt.Errorf("TLCP connection failed: %v; target may require an unsupported GM/TLS version or cipher suite; %s", err, gmTLSCapabilitySummary)
 	}
 	return fmt.Errorf("TLCP connection failed: %v", err)
 }
 
-func isUnsupportedGMTLSStackError(err error) bool {
+func isUnsupportedGMStackError(err error) bool {
 	if err == nil {
 		return false
 	}

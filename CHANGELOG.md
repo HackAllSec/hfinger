@@ -3,13 +3,13 @@
 ## [1.0.9] - 2025-07-15
 
 - 新增检查更新参数，改善用户体验，现在不会默认检查更新了
-- 新增国密支持，主动模式和被动模式均支持智能选择标准TLS和国密TLS
-- 新增双向 TLS/GM TLS 客户端证书参数，完善被动 MITM 的 TLS/GM TLS 自适应握手
+- 新增国密支持，主动模式和被动模式均支持智能选择标准 TLS 和 TLCP
+- 新增双向 TLS/TLCP 客户端证书参数，完善被动 MITM 的 TLS/TLCP 自适应握手
 - 新增独立 GM CA，GM/TLS 被动代理证书链不再复用标准 RSA CA
 - 新增主动请求 TLS 模式控制，默认 auto，并支持强制 gm 或 std
-- 优化主动请求 TLS 决策层，标准 TLS、GM/TLS 与 auto fallback 路径独立可测
-- 明确内置 GM/TLS 支持范围，并在不支持的国密协议栈或套件失败时输出能力诊断
-- 接入 GoTLCP 作为第二国密 provider，主动模式支持 gmsm 与 TLCP 顺序 fallback，被动 MITM 支持标准 TLS/TLCP 握手阶段自动分流
+- 优化主动请求 TLS 决策层，标准 TLS、TLCP 与 auto fallback 路径独立可测
+- 明确内置 TLCP 支持范围，并在不支持的国密协议栈或套件失败时输出能力诊断
+- 选择 GoTLCP 作为唯一内置国密传输 provider，主动模式支持标准 TLS 到 TLCP fallback，被动 MITM 支持标准 TLS/TLCP 握手阶段自动分流
 - 新增重定向扩展
 - 优化连接复用，提升性能
 - 优化被动模式代理功能，优化大文件代理，大大提升响应速率

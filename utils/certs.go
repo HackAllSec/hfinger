@@ -20,18 +20,14 @@ import (
 	"gitee.com/Trisia/gotlcp/tlcp"
 	emSM2 "github.com/emmansun/gmsm/sm2"
 	"github.com/emmansun/gmsm/smx509"
-	"github.com/tjfoc/gmsm/gmtls"
-	tjSM2 "github.com/tjfoc/gmsm/sm2"
-	gmX509 "github.com/tjfoc/gmsm/x509"
 )
 
 // 统一CA结构
 type UnifiedCA struct {
-	RSACert    *x509.Certificate
-	RSAKey     *rsa.PrivateKey
-	GMCert     *gmX509.Certificate
-	GMKey      *tjSM2.PrivateKey
-	GMRootPool *gmX509.CertPool
+	RSACert *x509.Certificate
+	RSAKey  *rsa.PrivateKey
+	GMCert  *smx509.Certificate
+	GMKey   *emSM2.PrivateKey
 }
 
 var (
@@ -100,122 +96,48 @@ func loadUnifiedCA() (*UnifiedCA, error) {
 	if err != nil {
 		return nil, err
 	}
-	gmCACert, err := gmX509.ReadCertificateFromPem(gmCertPEM)
+	gmCACert, err := smx509.ParseCertificatePEM(gmCertPEM)
 	if err != nil {
 		return nil, err
 	}
-	gmCAKey, err := gmX509.ReadPrivateKeyFromPem(gmKeyPEM, nil)
+	block, _ := pem.Decode(gmKeyPEM)
+	if block == nil {
+		return nil, fmt.Errorf("parse GM CA private key: invalid PEM")
+	}
+	gmCAKey, err := parseTLCPPrivateKey(block.Bytes)
 	if err != nil {
 		return nil, err
 	}
-
-	rootPool := gmX509.NewCertPool()
-	rootPool.AddCert(gmCACert)
 
 	return &UnifiedCA{
-		RSACert:    rsaCert,
-		RSAKey:     rsaTLSCert.PrivateKey.(*rsa.PrivateKey),
-		GMCert:     gmCACert,
-		GMKey:      gmCAKey,
-		GMRootPool: rootPool,
+		RSACert: rsaCert,
+		RSAKey:  rsaTLSCert.PrivateKey.(*rsa.PrivateKey),
+		GMCert:  gmCACert,
+		GMKey:   gmCAKey,
 	}, nil
 }
 
-// 生成服务器证书
-func GenerateServerCert(host string) (*tls.Certificate, *tls.Certificate, error) {
+func GenerateServerTLSCert(host string) (*tls.Certificate, error) {
 	if globalCA == nil {
-		return nil, nil, fmt.Errorf("CA not initialized")
+		return nil, fmt.Errorf("CA not initialized")
 	}
-
-	// 生成标准证书
-	stdCert, err := generateStdServerCert(host, globalCA.RSACert, globalCA.RSAKey)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	// 生成国密证书
-	gmCert, err := generateGMServerCert(host, globalCA.GMCert, globalCA.GMKey)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	return stdCert, gmCert, nil
-}
-
-func GenerateServerGMTLSCerts(host string) (*tls.Certificate, *gmtls.Certificate, *gmtls.Certificate, *gmtls.Certificate, error) {
-	if globalCA == nil {
-		return nil, nil, nil, nil, fmt.Errorf("CA not initialized")
-	}
-	stdCert, err := generateStdServerCert(host, globalCA.RSACert, globalCA.RSAKey)
-	if err != nil {
-		return nil, nil, nil, nil, err
-	}
-	gmSignCert, err := generateGMServerCert(host, globalCA.GMCert, globalCA.GMKey)
-	if err != nil {
-		return nil, nil, nil, nil, err
-	}
-	gmEncCert, err := generateGMServerCert(host, globalCA.GMCert, globalCA.GMKey)
-	if err != nil {
-		return nil, nil, nil, nil, err
-	}
-	return stdCert, toGMTLSCertificate(stdCert), toGMTLSCertificate(gmSignCert), toGMTLSCertificate(gmEncCert), nil
+	return generateStdServerCert(host, globalCA.RSACert, globalCA.RSAKey)
 }
 
 func GenerateServerTLCPCerts(host string) (*tlcp.Certificate, *tlcp.Certificate, error) {
 	if globalCA == nil {
 		return nil, nil, fmt.Errorf("CA not initialized")
 	}
-	caCert, caKey, err := loadTLCPCA()
-	if err != nil {
-		return nil, nil, err
-	}
 
-	signCert, err := generateTLCPServerCert(host, caCert, caKey)
+	signCert, err := generateTLCPServerCert(host, globalCA.GMCert, globalCA.GMKey)
 	if err != nil {
 		return nil, nil, err
 	}
-	encCert, err := generateTLCPServerCert(host, caCert, caKey)
+	encCert, err := generateTLCPServerCert(host, globalCA.GMCert, globalCA.GMKey)
 	if err != nil {
 		return nil, nil, err
 	}
 	return signCert, encCert, nil
-}
-
-func toGMTLSCertificate(cert *tls.Certificate) *gmtls.Certificate {
-	if cert == nil {
-		return nil
-	}
-	return &gmtls.Certificate{
-		Certificate:                 cert.Certificate,
-		PrivateKey:                  cert.PrivateKey,
-		OCSPStaple:                  cert.OCSPStaple,
-		SignedCertificateTimestamps: cert.SignedCertificateTimestamps,
-	}
-}
-
-func loadTLCPCA() (*smx509.Certificate, *emSM2.PrivateKey, error) {
-	certPEM, err := os.ReadFile(config.GMCertsPath)
-	if err != nil {
-		return nil, nil, err
-	}
-	keyPEM, err := os.ReadFile(config.GMKeyPath)
-	if err != nil {
-		return nil, nil, err
-	}
-	cert, err := smx509.ParseCertificatePEM(certPEM)
-	if err != nil {
-		return nil, nil, fmt.Errorf("parse TLCP CA certificate: %w", err)
-	}
-
-	block, _ := pem.Decode(keyPEM)
-	if block == nil {
-		return nil, nil, fmt.Errorf("parse TLCP CA private key: invalid PEM")
-	}
-	key, err := parseTLCPPrivateKey(block.Bytes)
-	if err != nil {
-		return nil, nil, fmt.Errorf("parse TLCP CA private key: %w", err)
-	}
-	return cert, key, nil
 }
 
 func parseTLCPPrivateKey(der []byte) (*emSM2.PrivateKey, error) {
@@ -304,57 +226,6 @@ func generateStdServerCert(host string, caCert *x509.Certificate, caKey *rsa.Pri
 	}, nil
 }
 
-// 生成国密服务器证书
-func generateGMServerCert(host string, caCert *gmX509.Certificate, caKey *tjSM2.PrivateKey) (*tls.Certificate, error) {
-	// 生成SM2密钥对
-	priv, err := tjSM2.GenerateKey(rand.Reader)
-	if err != nil {
-		return nil, err
-	}
-
-	ip := net.ParseIP(host)
-	serial := big.NewInt(0).SetInt64(time.Now().UnixNano())
-
-	// 创建国密证书模板
-	template := gmX509.Certificate{
-		SerialNumber: serial,
-		Subject: pkix.Name{
-			CommonName: host,
-		},
-		NotBefore:          time.Now(),
-		NotAfter:           time.Now().AddDate(1, 0, 0),
-		SignatureAlgorithm: gmX509.SM2WithSM3,
-		KeyUsage:           gmX509.KeyUsageKeyEncipherment | gmX509.KeyUsageDigitalSignature,
-		ExtKeyUsage:        []gmX509.ExtKeyUsage{gmX509.ExtKeyUsageServerAuth},
-	}
-
-	if ip != nil {
-		template.IPAddresses = []net.IP{ip}
-	} else {
-		template.DNSNames = []string{host}
-	}
-
-	// 创建国密证书
-	derBytes, err := gmX509.CreateCertificate(&template, caCert, &priv.PublicKey, caKey)
-	if err != nil {
-		return nil, err
-	}
-
-	// 转换为TLS证书格式
-	return &tls.Certificate{
-		Certificate: [][]byte{derBytes},
-		PrivateKey:  priv,
-	}, nil
-}
-
-// 获取国密根证书池
-func GetGMRootPool() *gmX509.CertPool {
-	if globalCA == nil {
-		return nil
-	}
-	return globalCA.GMRootPool
-}
-
 func generateSelfSignedCert(certPath, keyPath string) error {
 	priv, err := rsa.GenerateKey(rand.Reader, 2048)
 	if err != nil {
@@ -413,7 +284,7 @@ func generateSelfSignedCert(certPath, keyPath string) error {
 }
 
 func generateSelfSignedGMCert(certPath, keyPath string) error {
-	priv, err := tjSM2.GenerateKey(rand.Reader)
+	priv, err := emSM2.GenerateKey(rand.Reader)
 	if err != nil {
 		return err
 	}
@@ -421,7 +292,7 @@ func generateSelfSignedGMCert(certPath, keyPath string) error {
 	notBefore := time.Now()
 	notAfter := notBefore.Add(5 * 365 * 24 * time.Hour)
 
-	template := gmX509.Certificate{
+	template := smx509.Certificate{
 		SerialNumber: big.NewInt(time.Now().UTC().UnixNano()),
 		Subject: pkix.Name{
 			CommonName:         "HackAllSec GM CA",
@@ -433,15 +304,15 @@ func generateSelfSignedGMCert(certPath, keyPath string) error {
 		},
 		NotBefore:             notBefore,
 		NotAfter:              notAfter,
-		SignatureAlgorithm:    gmX509.SM2WithSM3,
-		KeyUsage:              gmX509.KeyUsageKeyEncipherment | gmX509.KeyUsageDigitalSignature | gmX509.KeyUsageCertSign,
-		ExtKeyUsage:           []gmX509.ExtKeyUsage{gmX509.ExtKeyUsageServerAuth},
+		SignatureAlgorithm:    smx509.SM2WithSM3,
+		KeyUsage:              smx509.KeyUsageKeyEncipherment | smx509.KeyUsageDigitalSignature | smx509.KeyUsageCertSign,
+		ExtKeyUsage:           []smx509.ExtKeyUsage{smx509.ExtKeyUsageServerAuth},
 		BasicConstraintsValid: true,
 		IsCA:                  true,
 		MaxPathLen:            0,
 	}
 
-	certDER, err := gmX509.CreateCertificate(&template, &template, &priv.PublicKey, priv)
+	certDER, err := smx509.CreateCertificate(rand.Reader, &template, &template, &priv.PublicKey, priv)
 	if err != nil {
 		return err
 	}
@@ -456,10 +327,11 @@ func generateSelfSignedGMCert(certPath, keyPath string) error {
 		return err
 	}
 
-	keyPEM, err := gmX509.WritePrivateKeyToPem(priv, nil)
+	keyBytes, err := smx509.MarshalSM2PrivateKey(priv)
 	if err != nil {
 		return err
 	}
+	keyPEM := pem.EncodeToMemory(&pem.Block{Type: "EC PRIVATE KEY", Bytes: keyBytes})
 	return os.WriteFile(keyPath, keyPEM, 0600)
 }
 

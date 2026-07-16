@@ -59,7 +59,7 @@ func TestEnsureCertsGeneratesSeparateGMCA(t *testing.T) {
 	}
 }
 
-func TestGenerateServerGMTLSCertsUsesGMCA(t *testing.T) {
+func TestGenerateServerTLCPCertsUsesGMCA(t *testing.T) {
 	certDir := t.TempDir()
 	oldCertsDir := config.CertsDir
 	oldCertsPath := config.CertsPath
@@ -85,14 +85,14 @@ func TestGenerateServerGMTLSCertsUsesGMCA(t *testing.T) {
 	if err := EnsureCerts(); err != nil {
 		t.Fatalf("EnsureCerts() unexpected error: %v", err)
 	}
-	_, _, gmSignCert, gmEncCert, err := GenerateServerGMTLSCerts("example.com")
+	gmSignCert, gmEncCert, err := GenerateServerTLCPCerts("example.com")
 	if err != nil {
-		t.Fatalf("GenerateServerGMTLSCerts() unexpected error: %v", err)
+		t.Fatalf("GenerateServerTLCPCerts() unexpected error: %v", err)
 	}
 	if gmSignCert == nil || gmEncCert == nil {
-		t.Fatalf("GenerateServerGMTLSCerts() did not return GM sign/encryption certificates")
+		t.Fatalf("GenerateServerTLCPCerts() did not return TLCP sign/encryption certificates")
 	}
 	if len(gmSignCert.Certificate) == 0 || len(gmEncCert.Certificate) == 0 {
-		t.Fatalf("GM sign/encryption certificates should contain DER data")
+		t.Fatalf("TLCP sign/encryption certificates should contain DER data")
 	}
 }

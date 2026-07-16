@@ -197,7 +197,7 @@ func getTLSConfigForHost(host string) (*proxyTLSConfig, error) {
 		return tlsConfig.(*proxyTLSConfig), nil
 	}
 
-	stdCert, _, _, _, err := utils.GenerateServerGMTLSCerts(host)
+	stdCert, err := utils.GenerateServerTLSCert(host)
 	if err != nil {
 		return nil, err
 	}

@@ -158,13 +158,13 @@ For GM/TLS targets, provide a GM client certificate explicitly:
 hfinger -u https://www.example.com --gm-client-cert gm-client.crt --gm-client-key gm-client.key
 ```
 
-When only `--client-cert/--client-key` is provided, HFinger uses it for standard TLS and also attempts to load it as a GM/TLS client certificate. If the GM/TLS client certificate is different, use `--gm-client-cert/--gm-client-key`.
+When only `--client-cert/--client-key` is provided, HFinger uses it for standard TLS and also attempts to load it as a TLCP client certificate. If the GM/TLS client certificate is different, use `--gm-client-cert/--gm-client-key`.
 
 ### Active TLS Mode
 
-Active requests use `auto` mode by default, so users do not need to specify an extra option. `auto` tries standard TLS first. If standard TLS fails with a GM/TLS-like error, HFinger automatically tries GM/TLS fallback.
+Active requests use `auto` mode by default, so users do not need to specify an extra option. `auto` tries standard TLS first. If standard TLS fails with a GM transport-like error, HFinger automatically tries TLCP fallback.
 
-The built-in GM/TLS support now uses multiple providers. HFinger keeps the `tjfoc/gmsm` GM/TLS compatibility layer and also integrates GoTLCP for TLCP suites: `ECC_SM4_GCM_SM3(0xe053)`, `ECC_SM4_CBC_SM3(0xe013)`, `ECDHE_SM4_GCM_SM3(0xe051)`, and `ECDHE_SM4_CBC_SM3(0xe011)`. If a target requires another unsupported protocol variant or cipher suite, HFinger reports the supported range in the connection error.
+The built-in GM transport support now selects GoTLCP as the only provider. It supports TLCP suites: `ECC_SM4_GCM_SM3(0xe053)`, `ECC_SM4_CBC_SM3(0xe013)`, `ECDHE_SM4_GCM_SM3(0xe051)`, and `ECDHE_SM4_CBC_SM3(0xe011)`. If a target requires another unsupported protocol variant or cipher suite, HFinger reports the supported range in the connection error.
 
 If the target type is already known, force the mode explicitly:
 
@@ -172,10 +172,10 @@ If the target type is already known, force the mode explicitly:
 # Show built-in TLS / GM capabilities
 hfinger tls capabilities
 
-# GM/TLS only
+# TLCP only
 hfinger -u https://www.example.com --tls-mode gm
 
-# Standard TLS only, without GM/TLS fallback
+# Standard TLS only, without TLCP fallback
 hfinger -u https://www.example.com --tls-mode std
 ```
 

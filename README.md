@@ -158,13 +158,13 @@ GM/TLS 目标可以单独提供国密客户端证书：
 hfinger -u https://www.example.com --gm-client-cert gm-client.crt --gm-client-key gm-client.key
 ```
 
-如果只提供 `--client-cert/--client-key`，工具会优先将其用于标准 TLS，并尝试作为 GM/TLS 客户端证书加载；如果国密客户端证书与标准 TLS 证书不同，建议显式使用 `--gm-client-cert/--gm-client-key`。
+如果只提供 `--client-cert/--client-key`，工具会优先将其用于标准 TLS，并尝试作为 TLCP 客户端证书加载；如果国密客户端证书与标准 TLS 证书不同，建议显式使用 `--gm-client-cert/--gm-client-key`。
 
 ### 主动 TLS 模式
 
-主动请求默认使用 `auto` 模式，用户不需要额外指定参数。`auto` 会先尝试标准 TLS；如果标准 TLS 失败且错误特征符合 GM/TLS 场景，再自动尝试 GM/TLS。
+主动请求默认使用 `auto` 模式，用户不需要额外指定参数。`auto` 会先尝试标准 TLS；如果标准 TLS 失败且错误特征符合国密传输场景，再自动尝试 TLCP。
 
-当前内置国密能力采用多 provider 方式：保留 `tjfoc/gmsm` 的 GM/TLS 兼容层，同时接入 GoTLCP，支持 TLCP 的 `ECC_SM4_GCM_SM3(0xe053)`、`ECC_SM4_CBC_SM3(0xe013)`、`ECDHE_SM4_GCM_SM3(0xe051)`、`ECDHE_SM4_CBC_SM3(0xe011)`。如果目标使用当前 provider 仍不支持的协议变体或套件，工具会在连接失败信息中提示当前支持范围。
+当前内置国密传输能力选择 GoTLCP 作为唯一 provider，支持 TLCP 的 `ECC_SM4_GCM_SM3(0xe053)`、`ECC_SM4_CBC_SM3(0xe013)`、`ECDHE_SM4_GCM_SM3(0xe051)`、`ECDHE_SM4_CBC_SM3(0xe011)`。如果目标使用当前 provider 仍不支持的协议变体或套件，工具会在连接失败信息中提示当前支持范围。
 
 如果已经明确目标类型，可以强制指定模式：
 
@@ -172,10 +172,10 @@ hfinger -u https://www.example.com --gm-client-cert gm-client.crt --gm-client-ke
 # 查看当前内置 TLS / 国密能力
 hfinger tls capabilities
 
-# 只走 GM/TLS
+# 只走 TLCP 国密传输
 hfinger -u https://www.example.com --tls-mode gm
 
-# 只走标准 TLS，不做 GM/TLS fallback
+# 只走标准 TLS，不做 TLCP fallback
 hfinger -u https://www.example.com --tls-mode std
 ```
 
