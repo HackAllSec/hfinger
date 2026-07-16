@@ -22,7 +22,7 @@ var (
 	outputLock   sync.Mutex // 全局锁保护output操作
 )
 
-func process(url string, headers map[string]string, resultsChannel chan<- config.Result, matchedCMS *sync.Map, mu *sync.Mutex, wg *sync.WaitGroup, errOccurred *bool, saveResponse func(int, string, string)) {
+func process(url string, probeID string, headers map[string]string, responsesChannel chan<- rules.Response, mu *sync.Mutex, wg *sync.WaitGroup, errOccurred *bool, saveResponse func(int, string, string)) {
 	defer wg.Done()
 
 	currentURL := url
@@ -109,8 +109,8 @@ func process(url string, headers map[string]string, resultsChannel chan<- config
 			saveResponse(statusCode, server, title)
 		}
 
-		response := rules.Response{
-			ProbeID:    "default",
+		responsesChannel <- rules.Response{
+			ProbeID:    probeID,
 			URL:        currentURL,
 			Path:       rules.PathFromURL(currentURL),
 			StatusCode: statusCode,
@@ -119,24 +119,6 @@ func process(url string, headers map[string]string, resultsChannel chan<- config
 			Header:     resp.Header,
 			Body:       body,
 			Favicon:    faviconbody,
-		}
-
-		for _, match := range rules.MatchRules([]rules.Response{response}, rules.ActiveRules()) {
-			cms := match.Rule.Name
-			if _, loaded := matchedCMS.LoadOrStore(cms, true); !loaded {
-				result := config.Result{
-					URL:        currentURL, // 使用当前URL（可能是重定向后的）
-					CMS:        cms,
-					Category:   match.Rule.Category,
-					Server:     server,
-					StatusCode: statusCode,
-					Title:      title,
-					Confidence: match.Confidence,
-					Evidence:   match.Evidence,
-				}
-				resultsChannel <- result
-				logger.Success("[%s] [%s] [%d] [%s] [%s] [confidence=%d]", currentURL, cms, statusCode, server, title, match.Confidence)
-			}
 		}
 		break // 退出循环
 	}
@@ -147,7 +129,7 @@ func ProcessURL(url string) {
 	var mu sync.Mutex
 	var errOccurred bool
 	var matchedCMS sync.Map
-	resultsChannel := make(chan config.Result, workerCount)
+	responsesChannel := make(chan rules.Response, workerCount+len(rules.ActiveHTTPProbes())+3)
 
 	var lastResp config.LastResponse
 	var firstRespOnce sync.Once
@@ -169,23 +151,55 @@ func ProcessURL(url string) {
 	}
 
 	wg.Add(3)
-	go process(url, nil, resultsChannel, &matchedCMS, &mu, &wg, &errOccurred, saveFirstResponse)
-	go process(url, map[string]string{"Cookie": "rememberMe=1"}, resultsChannel, &matchedCMS, &mu, &wg, &errOccurred, nil)
+	go process(url, "default", nil, responsesChannel, &mu, &wg, &errOccurred, saveFirstResponse)
+	go process(url, "remember-me", map[string]string{"Cookie": "rememberMe=1"}, responsesChannel, &mu, &wg, &errOccurred, nil)
 
 	suffix := fmt.Sprintf("/%x", rand.Int())
 	if url[len(url)-1] == '/' {
 		suffix = fmt.Sprintf("%x", rand.Int())
 	}
 	newUrl := url + suffix
-	go process(newUrl, nil, resultsChannel, &matchedCMS, &mu, &wg, &errOccurred, nil)
+	go process(newUrl, "error-page", nil, responsesChannel, &mu, &wg, &errOccurred, nil)
+
+	baseURL, baseErr := utils.GetBaseURL(url)
+	if baseErr == nil {
+		for _, probe := range rules.ActiveHTTPProbes() {
+			probeURL := baseURL + probe.Request.Path
+			wg.Add(1)
+			go process(probeURL, probe.ID, probe.Request.Headers, responsesChannel, &mu, &wg, &errOccurred, nil)
+		}
+	}
 
 	wg.Wait()
 
-	close(resultsChannel)
+	close(responsesChannel)
 
+	var responses []rules.Response
+	for response := range responsesChannel {
+		responses = append(responses, response)
+	}
 	var results []config.Result
-	for result := range resultsChannel {
+	for _, match := range rules.MatchRules(responses, rules.ActiveRules()) {
+		cms := match.Rule.Name
+		if _, loaded := matchedCMS.LoadOrStore(cms, true); loaded {
+			continue
+		}
+		response := match.Response
+		if response.URL == "" && len(responses) > 0 {
+			response = responses[0]
+		}
+		result := config.Result{
+			URL:        response.URL,
+			CMS:        cms,
+			Category:   match.Rule.Category,
+			Server:     response.Server,
+			StatusCode: response.StatusCode,
+			Title:      response.Title,
+			Confidence: match.Confidence,
+			Evidence:   match.Evidence,
+		}
 		results = append(results, result)
+		logger.Success("[%s] [%s] [%d] [%s] [%s] [confidence=%d]", result.URL, result.CMS, result.StatusCode, result.Server, result.Title, result.Confidence)
 	}
 
 	outputLock.Lock()
