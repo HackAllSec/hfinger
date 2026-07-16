@@ -274,6 +274,10 @@ rules:
                   value: e-Bridge
                   weight: 100
                   evidence: Migrated response body evidence for 泛微云桥 e-Bridge
+      negative:
+        - type: body.contains
+          value: 泛微云桥 e-Bridge 漏洞
+          reason: Vulnerability articles can quote e-Bridge markers without being a deployed OA system.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -294,6 +298,10 @@ rules:
                   value: /eoffice10/client/
                   weight: 100
                   evidence: Migrated response body evidence for 泛微-EOffice 10
+      negative:
+        - type: body.contains
+          value: 泛微 EOffice 10 漏洞
+          reason: Vulnerability articles can quote EOffice client paths without being a deployed OA system.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -338,6 +346,10 @@ rules:
                   value: '>EM-404</div>'
                   weight: 100
                   evidence: Migrated response body evidence for 泛微-EMobile
+      negative:
+        - type: body.contains
+          value: 泛微 EMobile 漏洞
+          reason: Vulnerability articles can quote EMobile error markers without being a deployed mobile OA system.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -358,6 +370,10 @@ rules:
                   value: /ServiceAction/com.eweaver.document
                   weight: 100
                   evidence: Migrated response body evidence for 政务外网OA系统
+      negative:
+        - type: body.contains
+          value: 政务外网OA系统 漏洞
+          reason: Vulnerability articles can quote EWeaver ServiceAction paths without being a deployed OA system.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -378,6 +394,10 @@ rules:
                   value: /jsoa/login.jsp
                   weight: 100
                   evidence: Migrated response body evidence for 九思 OA 协同办公系统
+      negative:
+        - type: body.contains
+          value: 九思 OA 漏洞
+          reason: Vulnerability articles can quote JSOA login paths without being a deployed OA system.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -398,6 +418,10 @@ rules:
                   value: 欢迎登录易宝OA系统
                   weight: 100
                   evidence: Migrated HTML title evidence for 顶讯科技-易宝OA系统
+      negative:
+        - type: body.contains
+          value: 易宝OA系统 漏洞
+          reason: Vulnerability articles can quote this title without being a deployed OA system.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -418,6 +442,10 @@ rules:
                   value: iOffice.net
                   weight: 100
                   evidence: Migrated HTML title evidence for 红帆-ioffice OA
+      negative:
+        - type: body.contains
+          value: 红帆 iOffice 漏洞
+          reason: Vulnerability articles can mention iOffice.net without being a deployed OA system.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -458,6 +486,10 @@ rules:
                   value: wh/servlet/MainServer
                   weight: 100
                   evidence: Migrated response body evidence for 微宏 OA
+      negative:
+        - type: body.contains
+          value: 微宏 OA 漏洞
+          reason: Vulnerability articles can quote servlet paths without being a deployed OA system.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -498,6 +530,10 @@ rules:
                   value: /seeyon/USER-DATA/IMAGES/LOGIN/login.gif
                   weight: 100
                   evidence: Migrated response body evidence for 用友致远oa
+      negative:
+        - type: body.contains
+          value: 用友致远OA 漏洞
+          reason: Vulnerability articles can quote Seeyon login image paths without being a deployed OA system.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -518,6 +554,10 @@ rules:
                   value: /yyoa/
                   weight: 100
                   evidence: Migrated response body evidence for 用友致远oa
+      negative:
+        - type: body.contains
+          value: /yyoa/ 漏洞
+          reason: Vulnerability articles can quote YYOA paths without being a deployed OA system.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -550,6 +590,10 @@ rules:
                   value: logo/images/ufida_ebs_disable.png
                   weight: 100
                   evidence: Migrated response body evidence for 用友软件
+      negative:
+        - type: body.contains
+          value: 用友软件 漏洞
+          reason: Vulnerability articles can quote UFIDA image paths without being a deployed Yonyou system.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -574,6 +618,10 @@ rules:
                   value: 用友NC
                   weight: 100
                   evidence: Migrated response body evidence for 用友NC
+      negative:
+        - type: body.contains
+          value: 用友NC 漏洞
+          reason: Vulnerability articles can quote NC login assets without being a deployed Yonyou NC system.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -598,6 +646,10 @@ rules:
                   value: UClient
                   weight: 100
                   evidence: Migrated response body evidence for 用友NC
+      negative:
+        - type: body.contains
+          value: UClient 使用手册
+          reason: Product manuals can mention UClient without being a deployed Yonyou NC system.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -626,6 +678,10 @@ rules:
                   value: href="logo/images/ufida.ico">
                   weight: 100
                   evidence: Migrated response body evidence for 用友NC
+      negative:
+        - type: body.contains
+          value: ufida.ico 漏洞
+          reason: Vulnerability articles can quote UFIDA favicon paths without being a deployed Yonyou NC system.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -646,6 +702,10 @@ rules:
                   value: platform/pub/welcome.do
                   weight: 100
                   evidence: Migrated response body evidence for 用友 NC Cloud
+      negative:
+        - type: body.contains
+          value: 用友 NC Cloud 漏洞
+          reason: Vulnerability articles can quote NC Cloud welcome paths without being a deployed system.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -690,6 +750,10 @@ rules:
                   value: Web_sc/login.gn
                   weight: 100
                   evidence: Migrated response body evidence for 用友-畅捷通OEM
+      negative:
+        - type: body.contains
+          value: 畅捷通 OEM 漏洞
+          reason: Vulnerability articles can quote login.gn paths without being a deployed system.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -710,6 +774,10 @@ rules:
                   value: /images_index/productKSOA.jpg
                   weight: 100
                   evidence: Migrated response body evidence for 用友-时空KSOA
+      negative:
+        - type: body.contains
+          value: 时空KSOA 漏洞
+          reason: Vulnerability articles can quote KSOA image paths without being a deployed OA system.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -734,6 +802,10 @@ rules:
                   value: Login_Main_BG
                   weight: 100
                   evidence: Migrated response body evidence for 用友商战实践平台
+      negative:
+        - type: body.contains
+          value: 用友商战实践平台 漏洞
+          reason: Vulnerability articles can quote login asset names without being a deployed training platform.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -754,6 +826,10 @@ rules:
                   value: /nc/servlet/nc.ui.iufo.login.Index
                   weight: 100
                   evidence: Migrated response body evidence for 用友erp-nc
+      negative:
+        - type: body.contains
+          value: 用友 erp-nc 漏洞
+          reason: Vulnerability articles can quote NC servlet paths without being a deployed ERP system.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -774,6 +850,10 @@ rules:
                   value: getFirstU8Accid
                   weight: 100
                   evidence: Migrated response body evidence for 用友U8
+      negative:
+        - type: body.contains
+          value: 用友U8 漏洞
+          reason: Vulnerability articles can quote U8 function names without being a deployed U8 system.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -794,6 +874,10 @@ rules:
                   value: /System/Login/Login.asp?AppID=
                   weight: 100
                   evidence: Migrated response body evidence for 用友ufida
+      negative:
+        - type: body.contains
+          value: UFIDA 漏洞
+          reason: Vulnerability articles can quote UFIDA login URLs without being a deployed system.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -894,6 +978,10 @@ rules:
                   value: 用友优普U8系统
                   weight: 100
                   evidence: Migrated HTML title evidence for 用友优普U8系统
+      negative:
+        - type: body.contains
+          value: 用友优普U8 漏洞
+          reason: Vulnerability articles can mention U8 titles without being a deployed U8 system.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -914,6 +1002,10 @@ rules:
                   value: 用友 商战实践平台
                   weight: 100
                   evidence: Migrated HTML title evidence for 用友-商战实践平台
+      negative:
+        - type: body.contains
+          value: 商战实践平台 漏洞
+          reason: Vulnerability articles can mention this title without being a deployed platform.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -954,6 +1046,10 @@ rules:
                   value: 用友 FE协同办公平台
                   weight: 100
                   evidence: Migrated HTML title evidence for 用友-FE协同办公平台
+      negative:
+        - type: body.contains
+          value: 用友 FE协同办公平台 漏洞
+          reason: Vulnerability articles can mention FE platform titles without being a deployed OA system.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -994,6 +1090,10 @@ rules:
                   value: nc.sfbase.applet.NCApplet.class
                   weight: 100
                   evidence: Migrated response body evidence for 用友-UFIDA-NC
+      negative:
+        - type: body.contains
+          value: NCApplet.class 漏洞
+          reason: Vulnerability articles can quote NC applet class names without being a deployed NC system.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -1034,6 +1134,10 @@ rules:
                   value: 用友A6
                   weight: 100
                   evidence: Migrated HTML title evidence for 用友A6
+      negative:
+        - type: body.contains
+          value: 用友A6 漏洞
+          reason: Vulnerability articles can mention Yonyou A6 titles without being a deployed OA system.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -1054,6 +1158,10 @@ rules:
                   value: 用友GRP-RMIS系统
                   weight: 100
                   evidence: Migrated HTML title evidence for 用友GRP-RMIS系统
+      negative:
+        - type: body.contains
+          value: 用友GRP-RMIS 漏洞
+          reason: Vulnerability articles can mention GRP-RMIS titles without being a deployed system.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -1086,6 +1194,10 @@ rules:
                   value: TxtUserPwd
                   weight: 100
                   evidence: Migrated response body evidence for 重庆佰鼎-佰鼎OA
+      negative:
+        - type: body.contains
+          value: 佰鼎OA 漏洞
+          reason: Vulnerability articles can quote login field names without being a deployed OA system.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -1106,6 +1218,10 @@ rules:
                   value: /images/tongda.ico
                   weight: 100
                   evidence: Migrated response body evidence for 通达OA
+      negative:
+        - type: body.contains
+          value: 通达OA 漏洞
+          reason: Vulnerability articles can quote Tongda icon paths without being a deployed OA system.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -1126,6 +1242,10 @@ rules:
                   value: Office Anywhere
                   weight: 100
                   evidence: Migrated response body evidence for 通达OA
+      negative:
+        - type: body.contains
+          value: Office Anywhere 漏洞
+          reason: Vulnerability articles can mention Office Anywhere without being a deployed Tongda OA system.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -1150,6 +1270,10 @@ rules:
                   value: login
                   weight: 100
                   evidence: Migrated response body evidence for 通达OA
+      negative:
+        - type: body.contains
+          value: 通达OA 使用手册
+          reason: Product manuals can mention Tongda OA login markers without exposing a live OA system.
       metadata:
         references:
             - builtin:migrated-legacy-rule

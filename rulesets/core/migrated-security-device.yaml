@@ -262,6 +262,10 @@ rules:
                   value: /ssl/down/images_pc/
                   weight: 100
                   evidence: Migrated response body evidence for Leadsec-SSL-VPN
+      negative:
+        - type: body.contains
+          value: Leadsec SSL VPN 漏洞
+          reason: Vulnerability articles can quote Leadsec SSL VPN download paths without being a deployed VPN.
       metadata:
         references:
             - builtin:migrated-legacy-rule

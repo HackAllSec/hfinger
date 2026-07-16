@@ -14,6 +14,10 @@ rules:
                   value: Nexus Repository Manager
                   weight: 100
                   evidence: Migrated HTML title evidence for Nexus Repository Manager
+      negative:
+        - type: body.contains
+          value: Nexus Repository Manager vulnerability
+          reason: Vulnerability writeups can mention this title without being a deployed Nexus instance.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -206,4 +210,3 @@ rules:
         references:
             - builtin:migrated-legacy-rule
         confidence: low
-

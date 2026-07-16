@@ -14,6 +14,10 @@ rules:
                   value: Kibana
                   weight: 100
                   evidence: Migrated HTML title evidence for Kibana
+      negative:
+        - type: body.contains
+          value: Kibana vulnerability
+          reason: Vulnerability writeups and tutorials can mention Kibana without being a deployed observability service.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -274,4 +278,3 @@ rules:
         references:
             - builtin:migrated-legacy-rule
         confidence: low
-

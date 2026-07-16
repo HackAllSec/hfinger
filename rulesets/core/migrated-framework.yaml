@@ -18,6 +18,10 @@ rules:
                   value: logback
                   weight: 100
                   evidence: Migrated response body evidence for Spring env
+      negative:
+        - type: body.contains
+          value: Spring env 漏洞
+          reason: Vulnerability articles can quote actuator environment keys without being an exposed Spring endpoint.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -38,6 +42,10 @@ rules:
                   value: Error 404--Not Found
                   weight: 100
                   evidence: Migrated response body evidence for Weblogic
+      negative:
+        - type: body.contains
+          value: WebLogic 404 漏洞
+          reason: Vulnerability articles can quote WebLogic error pages without being a deployed server.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -58,6 +66,10 @@ rules:
                   value: Error 403--
                   weight: 100
                   evidence: Migrated response body evidence for Weblogic
+      negative:
+        - type: body.contains
+          value: WebLogic 403 漏洞
+          reason: Vulnerability articles can quote WebLogic error pages without being a deployed server.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -78,6 +90,10 @@ rules:
                   value: /console/framework/skins/wlsconsole/images/login_WebLogic_branding.png
                   weight: 100
                   evidence: Migrated response body evidence for Weblogic
+      negative:
+        - type: body.contains
+          value: login_WebLogic_branding.png 漏洞
+          reason: Vulnerability articles can quote WebLogic console asset paths without being a deployed console.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -98,6 +114,10 @@ rules:
                   value: Welcome to Weblogic Application Server
                   weight: 100
                   evidence: Migrated response body evidence for Weblogic
+      negative:
+        - type: body.contains
+          value: Weblogic Application Server 文档
+          reason: Documentation pages can mention the default welcome text without being a deployed WebLogic server.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -118,6 +138,10 @@ rules:
                   value: <i>Hypertext Transfer Protocol -- HTTP/1.1</i>
                   weight: 100
                   evidence: Migrated response body evidence for Weblogic
+      negative:
+        - type: body.contains
+          value: Hypertext Transfer Protocol -- HTTP/1.1 文档
+          reason: Documentation pages can quote this error fragment without being a deployed WebLogic server.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -178,6 +202,10 @@ rules:
                   value: Swagger UI
                   weight: 100
                   evidence: Migrated response body evidence for Swagger UI
+      negative:
+        - type: body.contains
+          value: Swagger UI documentation
+          reason: Documentation and tutorials can mention Swagger UI without exposing a live API documentation endpoint.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -562,4 +590,3 @@ rules:
         references:
             - builtin:migrated-legacy-rule
         confidence: medium
-

@@ -74,6 +74,10 @@ rules:
                   value: Welcome to use zentao
                   weight: 100
                   evidence: Migrated HTML title evidence for 禅道 zentao
+      negative:
+        - type: body.contains
+          value: Zentao vulnerability
+          reason: Vulnerability writeups can quote Zentao titles without being a deployed project management system.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -134,6 +138,10 @@ rules:
                   value: Welcome to zentao
                   weight: 100
                   evidence: Migrated HTML title evidence for 禅道 zentao
+      negative:
+        - type: body.contains
+          value: 禅道 漏洞
+          reason: Vulnerability articles can mention Zentao titles without being a deployed project management system.
       metadata:
         references:
             - builtin:migrated-legacy-rule
