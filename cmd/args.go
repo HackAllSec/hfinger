@@ -323,14 +323,11 @@ var rulesStatsCmd = &cobra.Command{
 		}
 		report := rules.Stats(rules.ActiveRules())
 		fmt.Printf("rules=%d products=%d\n", report.Rules, report.Products)
-		tiers := make([]string, 0, len(report.Tiers))
-		for tier := range report.Tiers {
-			tiers = append(tiers, tier)
-		}
-		sort.Strings(tiers)
-		for _, tier := range tiers {
-			fmt.Printf("tier.%s=%d\n", tier, report.Tiers[tier])
-		}
+		fmt.Printf("lint.errors=%d\n", report.LintErrors)
+		fmt.Printf("lint.warnings=%d\n", report.LintWarnings)
+		printStatsMap("tier.", report.Tiers)
+		printStatsMap("lint.errors.tier.", report.LintErrorsByTier)
+		printStatsMap("lint.warnings.tier.", report.LintWarningsByTier)
 		categories := make([]string, 0, len(report.Categories))
 		for category := range report.Categories {
 			categories = append(categories, category)
@@ -340,6 +337,17 @@ var rulesStatsCmd = &cobra.Command{
 			fmt.Printf("%s=%d\n", category, report.Categories[category])
 		}
 	},
+}
+
+func printStatsMap(prefix string, values map[string]int) {
+	keys := make([]string, 0, len(values))
+	for key := range values {
+		keys = append(keys, key)
+	}
+	sort.Strings(keys)
+	for _, key := range keys {
+		fmt.Printf("%s%s=%d\n", prefix, key, values[key])
+	}
 }
 
 func countRuleProducts(ruleSet []rules.Rule) int {

@@ -354,7 +354,7 @@ framework, ai-service, iot-device
 hfinger rules stats
 ```
 
-输出包含规则总量、产品数量、`tier.curated` / `tier.migrated` 分层统计，以及各 category 的规则分布。
+输出包含规则总量、产品数量、lint error/warning 计数、`tier.curated` / `tier.migrated` 分层统计、各 tier 的 lint 分布，以及各 category 的规则分布。
 
 校验外置规则：
 
@@ -502,4 +502,4 @@ hfinger rules test ./rules/your-rule.yaml
 
 ## 许可
 
-请遵守 [MIT License](LICENSE)。
+请遵守 [Apache License 2.0](LICENSE)。

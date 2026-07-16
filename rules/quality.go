@@ -20,22 +20,40 @@ type LintReport struct {
 }
 
 type StatsReport struct {
-	Rules      int
-	Products   int
-	Categories map[string]int
-	Tiers      map[string]int
+	Rules              int
+	Products           int
+	Categories         map[string]int
+	Tiers              map[string]int
+	LintErrors         int
+	LintWarnings       int
+	LintErrorsByTier   map[string]int
+	LintWarningsByTier map[string]int
 }
 
 func Stats(ruleSet []Rule) StatsReport {
 	report := StatsReport{
-		Rules:      len(ruleSet),
-		Products:   uniqueProducts(ruleSet),
-		Categories: make(map[string]int),
-		Tiers:      make(map[string]int),
+		Rules:              len(ruleSet),
+		Products:           uniqueProducts(ruleSet),
+		Categories:         make(map[string]int),
+		Tiers:              make(map[string]int),
+		LintErrorsByTier:   make(map[string]int),
+		LintWarningsByTier: make(map[string]int),
 	}
+	ruleTiers := make(map[string]string, len(ruleSet))
 	for _, rule := range ruleSet {
+		tier := RuleTier(rule)
 		report.Categories[rule.Category]++
-		report.Tiers[RuleTier(rule)]++
+		report.Tiers[tier]++
+		ruleTiers[rule.ID] = tier
+	}
+	lintReport := LintRules(ruleSet)
+	report.LintErrors = len(lintReport.Errors)
+	report.LintWarnings = len(lintReport.Warnings)
+	for _, lintError := range lintReport.Errors {
+		report.LintErrorsByTier[ruleTierForIssue(ruleTiers, lintError)]++
+	}
+	for _, lintWarning := range lintReport.Warnings {
+		report.LintWarningsByTier[ruleTierForIssue(ruleTiers, lintWarning)]++
 	}
 	return report
 }
@@ -49,6 +67,13 @@ func RuleTier(rule Rule) string {
 	default:
 		return "external"
 	}
+}
+
+func ruleTierForIssue(ruleTiers map[string]string, lintIssue LintIssue) string {
+	if tier, ok := ruleTiers[lintIssue.RuleID]; ok {
+		return tier
+	}
+	return "external"
 }
 
 func LintRules(ruleSet []Rule) LintReport {

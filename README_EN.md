@@ -354,7 +354,7 @@ Show runtime rule distribution:
 hfinger rules stats
 ```
 
-The output includes total rule count, product count, `tier.curated` / `tier.migrated` tier counts, and category distribution.
+The output includes total rule count, product count, lint error/warning counts, `tier.curated` / `tier.migrated` tier counts, lint distribution by tier, and category distribution.
 
 Validate external rules:
 
@@ -502,4 +502,4 @@ hfinger rules test ./rules/your-rule.yaml
 
 ## License
 
-See [MIT License](LICENSE).
+See [Apache License 2.0](LICENSE).
