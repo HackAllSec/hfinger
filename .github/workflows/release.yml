@@ -74,14 +74,13 @@ jobs:
             GOOS=${{ matrix.goos }} GOARCH=${{ matrix.goarch }} CGO_ENABLED=0 go build -ldflags="-s -w" -o hfinger-${{ matrix.goos }}-${{ matrix.goarch }} main.go
             zip -r hfinger-${{ matrix.goos }}-${{ matrix.goarch }}.zip hfinger-${{ matrix.goos }}-${{ matrix.goarch }} README.md README_EN.md LICENSE NOTICE docs/
           fi
-          sha256sum hfinger-${{ matrix.goos }}-${{ matrix.goarch }}.zip > hfinger-${{ matrix.goos }}-${{ matrix.goarch }}.zip.sha256
 
       - name: Upload release assets
         if: steps.parse_changelog.outputs.RELEASE_TAG != ''
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: hfinger-*.zip*
+          file: hfinger-*.zip
           tag: ${{ steps.parse_changelog.outputs.RELEASE_TAG }}
           body: ${{ steps.parse_changelog.outputs.RELEASE_NOTES }}
           overwrite: true

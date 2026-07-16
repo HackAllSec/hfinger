@@ -19,6 +19,7 @@ import (
 type GitHubReleaseAsset struct {
 	Name               string `json:"name"`
 	BrowserDownloadURL string `json:"browser_download_url"`
+	Digest             string `json:"digest"`
 }
 
 type GitHubReleaseResponse struct {
@@ -68,30 +69,33 @@ func downloadFile(url, filepath string) error {
 }
 
 func verifyAssetChecksum(release *GitHubReleaseResponse, assetName, filePath string) error {
-	checksumAsset, ok := findChecksumAsset(release.Assets, assetName)
-	if !ok {
-		return fmt.Errorf("missing checksum asset for %s", assetName)
-	}
-
-	checksumPath := filePath + ".sha256"
-	defer os.Remove(checksumPath)
-	if err := downloadFile(checksumAsset.BrowserDownloadURL, checksumPath); err != nil {
-		return fmt.Errorf("download checksum: %w", err)
-	}
-
-	checksumData, err := os.ReadFile(checksumPath)
-	if err != nil {
-		return err
-	}
-
-	expectedHash, err := parseChecksum(string(checksumData), assetName)
-	if err != nil {
-		return err
-	}
-
 	assetData, err := os.ReadFile(filePath)
 	if err != nil {
 		return err
+	}
+
+	expectedHash, err := releaseAssetDigest(release.Assets, assetName)
+	if err != nil {
+		checksumAsset, ok := findChecksumAsset(release.Assets, assetName)
+		if !ok {
+			return err
+		}
+
+		checksumPath := filePath + ".sha256"
+		defer os.Remove(checksumPath)
+		if err := downloadFile(checksumAsset.BrowserDownloadURL, checksumPath); err != nil {
+			return fmt.Errorf("download checksum: %w", err)
+		}
+
+		checksumData, err := os.ReadFile(checksumPath)
+		if err != nil {
+			return err
+		}
+
+		expectedHash, err = parseChecksum(string(checksumData), assetName)
+		if err != nil {
+			return err
+		}
 	}
 
 	actualHash := calculateHash(assetData)
@@ -99,6 +103,32 @@ func verifyAssetChecksum(release *GitHubReleaseResponse, assetName, filePath str
 		return fmt.Errorf("checksum mismatch for %s", assetName)
 	}
 	return nil
+}
+
+func releaseAssetDigest(assets []GitHubReleaseAsset, assetName string) (string, error) {
+	for _, asset := range assets {
+		if asset.Name != assetName {
+			continue
+		}
+		hash, err := parseGitHubAssetDigest(asset.Digest)
+		if err != nil {
+			return "", err
+		}
+		return hash, nil
+	}
+	return "", fmt.Errorf("missing GitHub asset digest for %s", assetName)
+}
+
+func parseGitHubAssetDigest(digest string) (string, error) {
+	const prefix = "sha256:"
+	if !strings.HasPrefix(strings.ToLower(digest), prefix) {
+		return "", fmt.Errorf("unsupported GitHub asset digest %q", digest)
+	}
+	hash := digest[len(prefix):]
+	if !isSHA256Hex(hash) {
+		return "", fmt.Errorf("invalid GitHub asset digest %q", digest)
+	}
+	return hash, nil
 }
 
 func findChecksumAsset(assets []GitHubReleaseAsset, assetName string) (GitHubReleaseAsset, bool) {

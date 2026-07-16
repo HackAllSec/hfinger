@@ -3,7 +3,9 @@ package utils
 import (
 	"crypto/sha256"
 	"fmt"
+	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 )
 
@@ -96,6 +98,59 @@ func TestIsSHA256Hex_BitsUT(t *testing.T) {
 				t.Fatalf("isSHA256Hex() = %v, want %v", got, tt.want)
 			}
 		})
+	}
+}
+
+func TestParseGitHubAssetDigest(t *testing.T) {
+	hash := fmt.Sprintf("%x", sha256.Sum256([]byte("release-asset")))
+
+	tests := []struct {
+		name    string
+		digest  string
+		want    string
+		wantErr bool
+	}{
+		{name: "valid sha256 digest", digest: "sha256:" + hash, want: hash},
+		{name: "uppercase hash", digest: "sha256:" + strings.ToUpper(hash), want: strings.ToUpper(hash)},
+		{name: "unsupported algorithm", digest: "sha512:" + hash, wantErr: true},
+		{name: "invalid sha256", digest: "sha256:not-a-hash", wantErr: true},
+		{name: "empty digest", digest: "", wantErr: true},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := parseGitHubAssetDigest(tt.digest)
+			if tt.wantErr {
+				if err == nil {
+					t.Fatalf("parseGitHubAssetDigest() expected error")
+				}
+				return
+			}
+			if err != nil {
+				t.Fatalf("parseGitHubAssetDigest() unexpected error: %v", err)
+			}
+			if got != tt.want {
+				t.Fatalf("parseGitHubAssetDigest() = %q, want %q", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestVerifyAssetChecksumUsesGitHubDigest(t *testing.T) {
+	data := []byte("release-asset")
+	hash := fmt.Sprintf("%x", sha256.Sum256(data))
+	filePath := filepath.Join(t.TempDir(), "hfinger-darwin-arm64.zip")
+	if err := os.WriteFile(filePath, data, 0o600); err != nil {
+		t.Fatalf("WriteFile() unexpected error: %v", err)
+	}
+
+	release := &GitHubReleaseResponse{
+		Assets: []GitHubReleaseAsset{
+			{Name: "hfinger-darwin-arm64.zip", Digest: "sha256:" + hash},
+		},
+	}
+	if err := verifyAssetChecksum(release, "hfinger-darwin-arm64.zip", filePath); err != nil {
+		t.Fatalf("verifyAssetChecksum() unexpected error: %v", err)
 	}
 }
 
