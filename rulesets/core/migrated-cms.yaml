@@ -14,6 +14,10 @@ rules:
                   value: href="/twcms/theme/default/css/global.css
                   weight: 100
                   evidence: Migrated response body evidence for TWCMS
+      negative:
+        - type: body.contains
+          value: TWCMS 漏洞
+          reason: Vulnerability articles can quote TWCMS theme asset paths without being a deployed CMS instance.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -58,6 +62,10 @@ rules:
                   value: col-12 col-sm-6 col-lg-3 wow zoomIn
                   weight: 100
                   evidence: Migrated response body evidence for PbootCMS
+      negative:
+        - type: body.contains
+          value: PbootCMS 漏洞
+          reason: Vulnerability articles can quote template fragments without being a deployed PbootCMS site.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -102,6 +110,10 @@ rules:
                   value: /usr/themes/
                   weight: 100
                   evidence: Migrated response body evidence for Typecho
+      negative:
+        - type: body.contains
+          value: Typecho 漏洞
+          reason: Vulnerability articles can quote Typecho theme paths without being a deployed Typecho site.
       metadata:
         references:
             - builtin:migrated-legacy-rule

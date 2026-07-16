@@ -51,7 +51,7 @@ jobs:
           go run main.go rules doctor --max-rules 0
           grep -q '^lint.errors=0$' /tmp/hfinger-rules-stats.txt
           warnings=$(awk -F= '/^lint.warnings=/{print $2}' /tmp/hfinger-rules-stats.txt)
-          test "${warnings}" -le 2238
+          test "${warnings}" -le 2196
 
       - name: Vulnerability scan
         run: go run golang.org/x/vuln/cmd/govulncheck@latest ./...

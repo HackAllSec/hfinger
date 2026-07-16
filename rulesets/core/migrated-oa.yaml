@@ -1402,6 +1402,10 @@ rules:
                   value: portalClientHelper.jsp
                   weight: 100
                   evidence: Migrated response body evidence for 金蝶 EAS
+      negative:
+        - type: body.contains
+          value: 金蝶 EAS 漏洞
+          reason: Vulnerability articles can quote EAS SSO paths without being a deployed Kingdee EAS system.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -1426,6 +1430,10 @@ rules:
                   value: easSessionId
                   weight: 100
                   evidence: Migrated response body evidence for 金蝶 EAS
+      negative:
+        - type: body.contains
+          value: easSessionId 漏洞
+          reason: Vulnerability articles can quote EAS session markers without being a deployed Kingdee EAS system.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -1446,6 +1454,10 @@ rules:
                   value: 欢迎使用Apusic应用服务器
                   weight: 100
                   evidence: Migrated response body evidence for 金蝶Apusic应用服务器
+      negative:
+        - type: body.contains
+          value: Apusic应用服务器 漏洞
+          reason: Vulnerability articles can quote Apusic welcome pages without being a deployed application server.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -1466,6 +1478,10 @@ rules:
                   value: /kdgs/script/kdgs.js
                   weight: 100
                   evidence: Migrated response body evidence for 金蝶政务GSiS
+      negative:
+        - type: body.contains
+          value: 金蝶政务GSiS 漏洞
+          reason: Vulnerability articles can quote KDGS script paths without being a deployed government system.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -1506,6 +1522,10 @@ rules:
                   value: 金蝶K/3 Cloud
                   weight: 100
                   evidence: Migrated HTML title evidence for 金蝶K/3 Cloud
+      negative:
+        - type: body.contains
+          value: 金蝶K/3 Cloud 漏洞
+          reason: Vulnerability articles can mention this title without being a deployed Kingdee K/3 Cloud system.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -1530,6 +1550,10 @@ rules:
                   value: 金蝶国际软件集团有限公司
                   weight: 100
                   evidence: Migrated response body evidence for 金蝶OA
+      negative:
+        - type: body.contains
+          value: 金蝶OA 漏洞
+          reason: Vulnerability articles can quote Kingdee OA login markers without being a deployed OA system.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -1550,6 +1574,10 @@ rules:
                   value: 金蝶OA
                   weight: 100
                   evidence: Migrated HTML title evidence for 金蝶OA
+      negative:
+        - type: body.contains
+          value: 金蝶OA 使用手册
+          reason: Product manuals can mention Kingdee OA titles without being a deployed OA system.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -1570,6 +1598,10 @@ rules:
                   value: 金蝶协作办公系统
                   weight: 100
                   evidence: Migrated HTML title evidence for 金蝶协作办公系统
+      negative:
+        - type: body.contains
+          value: 金蝶协作办公系统 漏洞
+          reason: Vulnerability articles can mention this title without being a deployed collaboration system.
       metadata:
         references:
             - builtin:migrated-legacy-rule

@@ -1334,6 +1334,10 @@ rules:
                   value: login_logo
                   weight: 100
                   evidence: Migrated response body evidence for 飞鱼星上网行为管理
+      negative:
+        - type: body.contains
+          value: 飞鱼星上网行为管理 漏洞
+          reason: Vulnerability articles can quote login asset markers without being a deployed access-control device.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -1354,6 +1358,10 @@ rules:
                   value: utccjfaewjb = function(str, key)
                   weight: 100
                   evidence: Migrated response body evidence for 深信服上网行为管理系统
+      negative:
+        - type: body.contains
+          value: 深信服上网行为管理 漏洞
+          reason: Vulnerability articles can quote Sangfor JavaScript fragments without being a deployed device.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -1374,6 +1382,10 @@ rules:
                   value: document.write(WRFWWCSFBXMIGKRKHXFJ
                   weight: 100
                   evidence: Migrated response body evidence for 深信服上网行为管理系统
+      negative:
+        - type: body.contains
+          value: WRFWWCSFBXMIGKRKHXFJ 漏洞
+          reason: Vulnerability articles can quote generated JavaScript fragments without being a deployed Sangfor device.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -1394,6 +1406,10 @@ rules:
                   value: /reportCenter/index.php?cls_mode=cluster_mode_others
                   weight: 100
                   evidence: Migrated response body evidence for 深信服应用交付报表系统
+      negative:
+        - type: body.contains
+          value: 深信服应用交付报表系统 漏洞
+          reason: Vulnerability articles can quote report center paths without being a deployed application delivery system.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -1422,6 +1438,10 @@ rules:
                   value: class="kd-div-loading-ct"
                   weight: 100
                   evidence: Migrated response body evidence for kingdee-K3-cloud
+      negative:
+        - type: body.contains
+          value: kingdee K3 Cloud 漏洞
+          reason: Vulnerability articles can quote Kingdee K3 Cloud UI fragments without being a deployed system.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -1442,6 +1462,10 @@ rules:
                   value: coremail/common
                   weight: 100
                   evidence: Migrated response body evidence for CoreMail
+      negative:
+        - type: body.contains
+          value: CoreMail 漏洞
+          reason: Vulnerability articles can quote CoreMail common paths without being a deployed mail system.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -1462,6 +1486,10 @@ rules:
                   value: 入口校验失败
                   weight: 100
                   evidence: Migrated response body evidence for 宝塔-BT.cn
+      negative:
+        - type: body.contains
+          value: 宝塔 入口校验失败 漏洞
+          reason: Vulnerability articles can quote BT panel error text without being a deployed BT panel.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -1498,6 +1526,10 @@ rules:
                   value: 检查端口是否正确
                   weight: 100
                   evidence: Migrated response body evidence for 宝塔-BT.cn
+      negative:
+        - type: body.contains
+          value: 宝塔 没有找到站点
+          reason: Tutorials can quote BT default no-site pages without indicating a deployed target.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -1526,6 +1558,10 @@ rules:
                   value: 系统自动生成
                   weight: 100
                   evidence: Migrated response body evidence for 宝塔-BT.cn
+      negative:
+        - type: body.contains
+          value: 宝塔Linux面板 教程
+          reason: Tutorials can quote BT default site-created pages without being a scanned deployment.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -1554,6 +1590,10 @@ rules:
                   value: theme
                   weight: 100
                   evidence: Migrated response body evidence for DouPHP
+      negative:
+        - type: body.contains
+          value: DouPHP 漏洞
+          reason: Vulnerability articles can quote DouPHP powered-by text without being a deployed DouPHP site.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -1582,6 +1622,10 @@ rules:
                   value: /login
                   weight: 100
                   evidence: Migrated response body evidence for 宝塔-BT.cn
+      negative:
+        - type: body.contains
+          value: 宝塔面板 漏洞
+          reason: Vulnerability articles can quote BT login markers without being a deployed BT panel.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -1606,6 +1650,10 @@ rules:
                   value: bt.cn
                   weight: 100
                   evidence: Migrated response body evidence for 宝塔-BT.cn
+      negative:
+        - type: body.contains
+          value: 宝塔 站点创建成功 教程
+          reason: Tutorials can quote BT default site-created text without being a deployed target.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -1650,6 +1698,10 @@ rules:
                   value: Lw==
                   weight: 100
                   evidence: Migrated response body evidence for 禅道
+      negative:
+        - type: body.contains
+          value: Zentao self.location vulnerability
+          reason: Vulnerability writeups can quote Zentao redirect fragments without being a deployed system.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -1670,6 +1722,10 @@ rules:
                   value: /theme/default/images/main/zt-logo.png
                   weight: 100
                   evidence: Migrated response body evidence for 禅道
+      negative:
+        - type: body.contains
+          value: zt-logo.png 漏洞
+          reason: Vulnerability articles can quote Zentao logo paths without being a deployed project management system.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -1710,6 +1766,10 @@ rules:
                   value: 宝塔Linux面板
                   weight: 100
                   evidence: Migrated response body evidence for 宝塔-BT.cn
+      negative:
+        - type: body.contains
+          value: 宝塔Linux面板 漏洞
+          reason: Vulnerability articles can mention BT panel titles without being a deployed panel.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -1730,6 +1790,10 @@ rules:
                   value: <title>RabbitMQ Management</title>
                   weight: 100
                   evidence: Migrated response body evidence for RabbitMQ
+      negative:
+        - type: body.contains
+          value: RabbitMQ Management vulnerability
+          reason: Vulnerability writeups can quote RabbitMQ management titles without being a deployed console.
       metadata:
         references:
             - builtin:migrated-legacy-rule

@@ -14,6 +14,10 @@ rules:
                   value: /wnm/ssl/web/frame/login.html
                   weight: 100
                   evidence: Migrated response body evidence for H3C Router
+      negative:
+        - type: body.contains
+          value: H3C Router vulnerability
+          reason: Vulnerability writeups can quote H3C login paths without being a deployed router.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -38,6 +42,10 @@ rules:
                   value: webman/
                   weight: 100
                   evidence: Migrated response body evidence for 群晖 NAS
+      negative:
+        - type: body.contains
+          value: Synology vulnerability
+          reason: Vulnerability writeups can quote Synology webman paths without being a deployed NAS.
       metadata:
         references:
             - builtin:migrated-legacy-rule
