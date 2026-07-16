@@ -303,10 +303,6 @@ rules:
             - id: default
               matchers:
                 - type: body.contains
-                  value: 蓝盾
-                  weight: 100
-                  evidence: Migrated response body evidence for 蓝盾防火墙
-                - type: body.contains
                   value: Bluedon
                   weight: 100
                   evidence: Migrated response body evidence for 蓝盾防火墙
@@ -314,6 +310,10 @@ rules:
                   value: default/js/act/login.js
                   weight: 100
                   evidence: Migrated response body evidence for 蓝盾防火墙
+      negative:
+        - type: body.contains
+          value: Bluedon firewall documentation
+          reason: Exclude documentation pages
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -358,10 +358,10 @@ rules:
                   value: login
                   weight: 100
                   evidence: Migrated response body evidence for 网神下一代极速防火墙
-                - type: body.contains
-                  value: 防火墙
-                  weight: 100
-                  evidence: Migrated response body evidence for 网神下一代极速防火墙
+      negative:
+        - type: body.contains
+          value: 网神下一代极速防火墙 文档
+          reason: Exclude documentation pages
       metadata:
         references:
             - builtin:migrated-legacy-rule

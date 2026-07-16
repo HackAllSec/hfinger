@@ -8,7 +8,7 @@ HFinger 是一个面向安全测试场景的服务端指纹识别工具，用于
 
 工具内置核心指纹规则，开箱即用；同时支持通过外置 YAML 规则扩展企业内部系统、社区规则和私有化产品识别能力。
 
-当前内置指纹规则 **1744** 条，覆盖产品、Web 框架、CMS、中间件、CDN/WAF、蜜罐等服务端组件 **1474** 种。
+当前内置指纹规则 **1746** 条，覆盖产品、Web 框架、CMS、中间件、CDN/WAF、蜜罐等服务端组件 **1478** 种。
 
 ## 工具定位
 
@@ -40,8 +40,8 @@ HFinger 的设计重点是把服务端指纹识别做成可治理、可复核、
 - 内置核心规则，开箱即用
 - 外置 YAML 规则加载
 - Header、Body、Title、Cookie、Status、Redirect、Favicon 等多来源匹配
-- HTML Meta、DOM selector、Script src、JS/CSS Hash、Favicon mmh3/MD5/SHA1/SHA256、DNS CNAME、JSON/API、TLS 证书/ALPN/版本/Cipher、HTTP 行为和 Server banner 特征匹配
-- 主动探测常见路径、API 接口、错误页、404 页面和 OPTIONS 行为
+- HTML Meta、DOM selector、Script src、JS/CSS Hash、Favicon mmh3/MD5/SHA1/SHA256、DNS CNAME/NS/TXT/IP、JSON/API、TLS 证书/ALPN/版本/Cipher、HTTP 行为和 Server banner 特征匹配
+- 主动探测常见路径、API 接口、错误页、404 页面、HEAD、OPTIONS、Alt-Svc 和缓存链路行为
 - WAF/CDN、框架、CMS、中间件、版本提取和蜜罐识别
 - 识别结果包含证据与置信度
 - 支持 JSON、JSONL、XML、XLSX 输出
@@ -68,9 +68,10 @@ HFinger 的设计重点是把服务端指纹识别做成可治理、可复核、
 | 静态资源路径 | 主动 probe、`path.exists`、`script.src.contains`、Body/Regex |
 | 404 / 错误页指纹 | 默认 error-page 探测与规则级 probe |
 | TLS/HTTPS 指纹 | 证书 Subject/Issuer/DNSNames、ALPN、TLS 版本、Cipher、JA3S 风格摘要 |
-| HTTP 协议行为 | HTTP 版本、OPTIONS Allow、压缩、ETag、Accept-Ranges、状态码、重定向 |
+| DNS / CDN 解析链路 | DNS CNAME、NS、TXT、IP 证据，适合 CDN/WAF/托管服务识别 |
+| HTTP 协议行为 | HTTP 版本、HEAD/OPTIONS Allow、Alt-Svc/HTTP/3 提示、压缩、ETag、Accept-Ranges、缓存头、状态码、重定向 |
 | 主动探测 / API 指纹 | 规则 `probes.request` 支持 method/path/header/body |
-| WAF/CDN / 框架 / CMS / 中间件 | 内置分类规则、DNS CNAME、Header/Cookie/Body/TLS 与行为探测 |
+| WAF/CDN / 框架 / CMS / 中间件 | 内置分类规则、DNS CNAME/NS/TXT/IP、Header/Cookie/Body/TLS 与行为探测 |
 | 版本特征 | `extract` 正则提取版本 |
 | 综合识别 | score/any/all、negative、confidence、evidence |
 | 蜜罐识别 | 明确蜜罐产品规则 + 多产品冲突/异常响应/响应相似度启发式识别 |
@@ -543,6 +544,45 @@ hfinger llm skills
 ```bash
 hfinger -f alive.jsonl --output-jsonl hfinger-results.jsonl
 ```
+
+一个可直接落地的渗透测试编排流程：
+
+```bash
+# 1. httpx 探活，输出 JSONL
+httpx -l domains.txt -json -silent > alive.jsonl
+
+# 2. HFinger 识别服务端技术栈，输出证据化 JSONL
+hfinger -f alive.jsonl --output-jsonl hfinger-results.jsonl
+
+# 3. 提取高置信度 API 网关，交给 nuclei 做验证
+jq -r 'select(.category=="api-gateway" and .confidence>=80) | .url' hfinger-results.jsonl > api-gateway.txt
+nuclei -l api-gateway.txt -tags exposure,api,gateway -o nuclei-api-gateway.txt
+
+# 4. 提取管理面/DevOps 目标，交给 katana 或 ffuf 做后续发现
+jq -r 'select((.category=="devops" or .category=="middleware") and .confidence>=80) | .url' hfinger-results.jsonl > high-value.txt
+katana -list high-value.txt -silent -o katana-high-value.txt
+
+# 5. 提取服务端/中间件结果，按需交给 nmap 做端口侧验证
+jq -r 'select(.confidence>=80) | .url' hfinger-results.jsonl > confirmed-web.txt
+```
+
+给 LLM/Agent 的推荐 Prompt 示例：
+
+```text
+你是授权渗透测试中的资产分诊助手。读取 hfinger-results.jsonl 后：
+1. 只基于 HFinger 的 cms/category/version/confidence/evidence 做判断，不自行臆测指纹。
+2. 按 API 网关、DevOps、管理后台、安全设备、WAF/CDN、蜜罐风险分组。
+3. 对 confidence >= 80 的结果生成 nuclei/katana/ffuf/nmap 后续命令。
+4. 对 category=honeypot 或 evidence 中包含冲突/相似响应的目标，降低主动探测强度并给出低风险确认步骤。
+5. 输出每组目标、证据摘要、建议命令和风险备注。
+```
+
+`hfinger llm skills` 会输出外部 Agent 可参考的 Skill 模板数组，核心字段含义如下：
+
+- `name`：Skill 名称，例如结果分诊、工具链编排、规则生成、蜜罐研判。
+- `description`：Skill 要解决的问题。
+- `when_to_use`：适合触发该 Skill 的渗透测试场景。
+- `commands`：Skill 可调用的 HFinger、jq、nuclei 等命令示例。
 
 典型 LLM/Skill 场景：
 

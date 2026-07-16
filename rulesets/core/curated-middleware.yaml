@@ -509,4 +509,59 @@ rules:
       positive: [{path: /nifi/, title: NiFi, body: "nf-canvas"}]
       negative: [{body: "Apache NiFi documentation"}]
 
+  - id: core-0129-finereport
+    name: FineReport
+    category: middleware
+    vendor: FanRuan
+    priority: 85
+    tags: [finereport, report, bi, middleware]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: finereport-reportserver
+          request: {method: GET, path: /webroot/decision}
+          matchers:
+            - type: body.contains
+              value: ReportServer
+              weight: 45
+              evidence: FineReport ReportServer marker
+            - type: body.contains
+              value: com.fr
+              weight: 35
+              evidence: FineReport frontend namespace
+            - type: path.exists
+              weight: 20
+              evidence: FineReport decision endpoint responded
+    negative: [{type: body.contains, value: "FineReport documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://www.finereport.com/"], confidence: high}
+    examples:
+      positive: [{path: /webroot/decision, body: "ReportServer com.fr"}]
+      negative: [{body: "FineReport documentation"}]
 
+  - id: core-0130-nps
+    name: NPS
+    category: middleware
+    vendor: Ehang
+    priority: 80
+    tags: [nps, proxy, tunnel, middleware]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: nps-login
+          request: {method: GET, path: /}
+          matchers:
+            - type: body.contains
+              value: ehang
+              weight: 45
+              evidence: NPS upstream vendor marker
+            - type: body.contains
+              value: static/js/manifest
+              weight: 35
+              evidence: NPS web UI asset marker
+    negative: [{type: body.contains, value: "nps ehang documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://github.com/ehang-io/nps"], confidence: high}
+    examples:
+      positive: [{body: "ehang static/js/manifest"}]
+      negative: [{body: "nps ehang documentation"}]

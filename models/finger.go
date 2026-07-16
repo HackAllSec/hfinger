@@ -145,7 +145,7 @@ func ProcessURL(url string) {
 	var mu sync.Mutex
 	var errOccurred bool
 	var matchedCMS sync.Map
-	responsesChannel := make(chan rules.Response, workerCount+len(rules.ActiveHTTPProbes())+4)
+	responsesChannel := make(chan rules.Response, workerCount+len(rules.ActiveHTTPProbes())+5)
 	dns := dnsInfo(url)
 
 	var lastResp config.LastResponse
@@ -167,8 +167,9 @@ func ProcessURL(url string) {
 		})
 	}
 
-	wg.Add(5)
+	wg.Add(6)
 	go process(url, "default", rules.Request{Method: "GET"}, dns, responsesChannel, &mu, &wg, &errOccurred, saveFirstResponse)
+	go process(url, "head", rules.Request{Method: "HEAD"}, dns, responsesChannel, &mu, &wg, &errOccurred, nil)
 	go process(url, "remember-me", rules.Request{Method: "GET", Headers: map[string]string{"Cookie": "rememberMe=1"}}, dns, responsesChannel, &mu, &wg, &errOccurred, nil)
 	go process(url, "options", rules.Request{Method: "OPTIONS"}, dns, responsesChannel, &mu, &wg, &errOccurred, nil)
 
@@ -295,7 +296,30 @@ func behaviorInfo(resp *http.Response) rules.BehaviorInfo {
 		HTTPVersion: resp.Proto,
 		Compression: resp.Header.Get("Content-Encoding"),
 		Allowed:     splitHeaderList(resp.Header.Get("Allow")),
+		AltSvc:      resp.Header.Get("Alt-Svc"),
+		Cache:       cacheHeaderSummary(resp.Header),
 	}
+}
+
+func cacheHeaderSummary(header http.Header) string {
+	keys := []string{
+		"Age",
+		"Via",
+		"X-Cache",
+		"X-Cache-Hits",
+		"CF-Cache-Status",
+		"Fastly-Cachetype",
+		"X-Served-By",
+		"X-CDN",
+	}
+	values := make([]string, 0, len(keys))
+	for _, key := range keys {
+		if value := strings.TrimSpace(header.Get(key)); value != "" {
+			// 保留 Header 名称可减少仅凭 HIT/cache 等泛化值造成的 CDN 误报。
+			values = append(values, key+"="+value)
+		}
+	}
+	return strings.Join(values, " ")
 }
 
 func splitHeaderList(value string) []string {
@@ -340,11 +364,25 @@ func dnsInfo(targetURL string) rules.DNSInfo {
 	if err != nil || parsed.Hostname() == "" {
 		return rules.DNSInfo{}
 	}
-	cname, err := net.LookupCNAME(parsed.Hostname())
-	if err != nil {
-		return rules.DNSInfo{}
+	host := parsed.Hostname()
+	info := rules.DNSInfo{}
+	if cname, err := net.LookupCNAME(host); err == nil {
+		info.CNAME = strings.TrimSuffix(cname, ".")
 	}
-	return rules.DNSInfo{CNAME: strings.TrimSuffix(cname, ".")}
+	if nameservers, err := net.LookupNS(host); err == nil {
+		for _, item := range nameservers {
+			info.Nameservers = append(info.Nameservers, strings.TrimSuffix(item.Host, "."))
+		}
+	}
+	if txtRecords, err := net.LookupTXT(host); err == nil {
+		info.TXT = append(info.TXT, txtRecords...)
+	}
+	if ips, err := net.LookupIP(host); err == nil {
+		for _, ip := range ips {
+			info.IPs = append(info.IPs, ip.String())
+		}
+	}
+	return info
 }
 
 func scriptHashes(pageURL string, body []byte) []rules.ResourceHash {

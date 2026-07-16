@@ -1,0 +1,120 @@
+rules:
+  - id: core-0125-cloudflare-ns
+    name: Cloudflare DNS
+    category: cdn
+    vendor: Cloudflare
+    priority: 85
+    tags: [cdn, waf, dns]
+    match:
+      strategy: score
+      threshold: 80
+      matchers:
+        - type: dns.ns.contains
+          value: cloudflare.com
+          weight: 100
+          evidence: Cloudflare authoritative nameserver
+    negative:
+      - type: body.contains
+        value: Cloudflare DNS documentation
+        reason: Exclude documentation pages
+    metadata:
+      references: ["https://developers.cloudflare.com/dns/"]
+      confidence: high
+    examples:
+      positive:
+        - name: cloudflare-ns
+          dns: {nameservers: ["ns1.cloudflare.com", "ns2.cloudflare.com"]}
+      negative:
+        - name: cloudflare-doc
+          body: Cloudflare DNS documentation
+
+  - id: core-0126-cloudflare-cache
+    name: Cloudflare CDN Cache
+    category: cdn
+    vendor: Cloudflare
+    priority: 85
+    tags: [cdn, cache, waf]
+    match:
+      strategy: score
+      threshold: 80
+      matchers:
+        - type: response.cache.contains
+          value: CF-Cache-Status=HIT
+          weight: 100
+          evidence: Cloudflare cache response header
+    negative:
+      - type: body.contains
+        value: Cloudflare cache documentation
+        reason: Exclude documentation pages
+    metadata:
+      references: ["https://developers.cloudflare.com/cache/concepts/cache-responses/"]
+      confidence: medium
+    examples:
+      positive:
+        - name: cloudflare-cache
+          headers:
+            CF-Cache-Status: HIT
+      negative:
+        - name: cloudflare-cache-doc
+          body: Cloudflare cache documentation
+
+  - id: core-0127-http3-alt-svc
+    name: HTTP/3 Alt-Svc
+    category: cdn
+    vendor: Generic
+    priority: 70
+    tags: [http3, quic, cdn]
+    match:
+      strategy: score
+      threshold: 80
+      matchers:
+        - type: http.alt_svc.contains
+          value: 'h3=":443"'
+          weight: 100
+          evidence: HTTP/3 or QUIC advertised by Alt-Svc
+    negative:
+      - type: body.contains
+        value: HTTP/3 Alt-Svc documentation
+        reason: Exclude documentation pages
+    metadata:
+      references: ["https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Alt-Svc"]
+      confidence: medium
+    examples:
+      positive:
+        - name: h3-alt-svc
+          headers:
+            Alt-Svc: 'h3=":443"; ma=86400'
+      negative:
+        - name: h3-doc
+          body: HTTP/3 Alt-Svc documentation
+
+  - id: core-0128-fastly-cache
+    name: Fastly CDN Cache
+    category: cdn
+    vendor: Fastly
+    priority: 80
+    tags: [cdn, cache]
+    match:
+      strategy: score
+      threshold: 80
+      matchers:
+        - type: response.cache.contains
+          value: X-Served-By=cache-
+          weight: 100
+          evidence: Fastly-like cache response header
+    negative:
+      - type: body.contains
+        value: Fastly cache documentation
+        reason: Exclude documentation pages
+    metadata:
+      references: ["https://docs.fastly.com/"]
+      confidence: medium
+    examples:
+      positive:
+        - name: fastly-cache
+          headers:
+            X-Served-By: cache-lax-kwhp1940027-LAX
+            X-Cache: HIT
+      negative:
+        - name: fastly-cache-doc
+          body: Fastly cache documentation

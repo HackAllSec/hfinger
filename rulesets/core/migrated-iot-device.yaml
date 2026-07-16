@@ -1742,14 +1742,14 @@ rules:
         probes:
             - id: default
               matchers:
-                - type: header.contains
-                  value: 'Server: ver'
+                - type: header.regex
+                  value: '(?i)server:\s*ver.*rev'
                   weight: 100
                   evidence: Migrated HTTP header evidence for Panasonic远程摄像机
-                - type: header.contains
-                  value: rev
-                  weight: 100
-                  evidence: Migrated HTTP header evidence for Panasonic远程摄像机
+      negative:
+        - type: body.contains
+          value: Panasonic camera documentation
+          reason: Exclude documentation pages
       metadata:
         references:
             - builtin:migrated-legacy-rule

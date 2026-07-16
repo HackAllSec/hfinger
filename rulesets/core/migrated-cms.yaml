@@ -419,30 +419,6 @@ rules:
             - builtin:migrated-legacy-rule
         confidence: low
 
-    - id: builtin-0772
-      name: WordPress
-      category: cms
-      tags:
-        - migrated
-        - cms
-      match:
-        strategy: all
-        probes:
-            - id: default
-              matchers:
-                - type: body.contains
-                  value: wp-
-                  weight: 100
-                  evidence: Migrated response body evidence for WordPress
-                - type: body.contains
-                  value: wp-content/themes/
-                  weight: 100
-                  evidence: Migrated response body evidence for WordPress
-      metadata:
-        references:
-            - builtin:migrated-legacy-rule
-        confidence: low
-
     - id: builtin-0791
       name: JEECMS
       category: cms
@@ -5322,4 +5298,3 @@ rules:
         references:
             - builtin:migrated-legacy-rule
         confidence: low
-

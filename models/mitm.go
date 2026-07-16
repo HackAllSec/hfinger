@@ -498,6 +498,9 @@ func matchfingerprint(url string, statuscode int, body []byte, header http.Heade
 		Behavior: rules.BehaviorInfo{
 			Compression: header.Get("Content-Encoding"),
 			Allowed:     splitHeaderList(header.Get("Allow")),
+			// 被动流量同样保留协议行为证据，确保 MITM 与主动扫描的规则能力一致。
+			AltSvc: header.Get("Alt-Svc"),
+			Cache:  cacheHeaderSummary(header),
 		},
 	}
 	matches := rules.MatchRules([]rules.Response{response}, rules.ActiveRules())

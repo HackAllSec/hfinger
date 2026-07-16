@@ -213,9 +213,14 @@ Common fields:
 | `tls.cipher.contains` | TLS Cipher Suite contains a value |
 | `tls.ja3s.hash` | JA3S-style summary matches |
 | `dns.cname.contains` | DNS CNAME contains a value, useful for CDN/WAF identification |
+| `dns.ns.contains` | DNS NS record contains a value, useful for authoritative DNS/CDN identification |
+| `dns.txt.contains` | DNS TXT record contains a value |
+| `dns.ip.contains` | DNS resolved IP contains a value |
 | `http.version.contains` | HTTP protocol version contains a value, such as `HTTP/2` |
 | `http.method.allowed` | `OPTIONS` response `Allow` methods contain a value |
+| `http.alt_svc.contains` | `Alt-Svc` contains a value, useful for HTTP/3/QUIC hints |
 | `response.compression.contains` | `Content-Encoding` contains a value |
+| `response.cache.contains` | CDN/cache response-header summary contains a value |
 | `response.etag.exists` | Response has an `ETag` header |
 | `response.accept_ranges.exists` | Response has an `Accept-Ranges` header |
 

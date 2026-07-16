@@ -241,6 +241,11 @@ func LintRules(ruleSet []Rule) LintReport {
 		"json.key.exists":           {},
 		"json.path.eq":              {},
 		"dns.cname.contains":        {},
+		"dns.ns.contains":           {},
+		"dns.txt.contains":          {},
+		"dns.ip.contains":           {},
+		"http.alt_svc.contains":     {},
+		"response.cache.contains":   {},
 		"tls.cert.subject.contains": {},
 		"tls.cert.issuer.contains":  {},
 		"tls.cert.dns.contains":     {},
@@ -420,7 +425,40 @@ func fixtureResponse(fixture Fixture) Response {
 		Body:       []byte(fixture.Body),
 		DNS:        fixture.DNS,
 		TLS:        fixture.TLS,
+		Behavior: BehaviorInfo{
+			HTTPVersion: header.Get("X-HFinger-Fixture-HTTP-Version"),
+			Compression: header.Get("Content-Encoding"),
+			Allowed:     splitFixtureHeaderList(header.Get("Allow")),
+			AltSvc:      header.Get("Alt-Svc"),
+			Cache:       fixtureCacheHeaderSummary(header),
+		},
 	}
+}
+
+func splitFixtureHeaderList(value string) []string {
+	if strings.TrimSpace(value) == "" {
+		return nil
+	}
+	parts := strings.Split(value, ",")
+	values := make([]string, 0, len(parts))
+	for _, part := range parts {
+		part = strings.TrimSpace(part)
+		if part != "" {
+			values = append(values, part)
+		}
+	}
+	return values
+}
+
+func fixtureCacheHeaderSummary(header http.Header) string {
+	keys := []string{"Age", "Via", "X-Cache", "X-Cache-Hits", "CF-Cache-Status", "Fastly-Cachetype", "X-Served-By", "X-CDN"}
+	values := make([]string, 0, len(keys))
+	for _, key := range keys {
+		if value := header.Get(key); strings.TrimSpace(value) != "" {
+			values = append(values, key+"="+strings.TrimSpace(value))
+		}
+	}
+	return strings.Join(values, " ")
 }
 
 func fixtureName(fixture Fixture) string {

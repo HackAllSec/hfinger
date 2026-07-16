@@ -129,13 +129,18 @@ type ResourceHash struct {
 }
 
 type DNSInfo struct {
-	CNAME string `json:"cname,omitempty" yaml:"cname,omitempty"`
+	CNAME       string   `json:"cname,omitempty" yaml:"cname,omitempty"`
+	Nameservers []string `json:"nameservers,omitempty" yaml:"nameservers,omitempty"`
+	TXT         []string `json:"txt,omitempty" yaml:"txt,omitempty"`
+	IPs         []string `json:"ips,omitempty" yaml:"ips,omitempty"`
 }
 
 type BehaviorInfo struct {
 	HTTPVersion string   `json:"http_version,omitempty" yaml:"http_version,omitempty"`
 	Compression string   `json:"compression,omitempty" yaml:"compression,omitempty"`
 	Allowed     []string `json:"allowed,omitempty" yaml:"allowed,omitempty"`
+	AltSvc      string   `json:"alt_svc,omitempty" yaml:"alt_svc,omitempty"`
+	Cache       string   `json:"cache,omitempty" yaml:"cache,omitempty"`
 }
 
 type Evidence struct {

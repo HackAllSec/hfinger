@@ -380,7 +380,12 @@ func TestMatchResponseResourceHashesAndBehavior(t *testing.T) {
 			URL:    "https://example.com/app.css",
 			SHA256: "style-sha256",
 		}},
-		DNS: DNSInfo{CNAME: "example.cloudflare.net"},
+		DNS: DNSInfo{
+			CNAME:       "example.cloudflare.net",
+			Nameservers: []string{"ns1.cloudflare.com"},
+			TXT:         []string{"v=spf1 include:_spf.google.com"},
+			IPs:         []string{"203.0.113.10"},
+		},
 		Header: http.Header{
 			"ETag":          {`"abc"`},
 			"Accept-Ranges": {"bytes"},
@@ -389,6 +394,8 @@ func TestMatchResponseResourceHashesAndBehavior(t *testing.T) {
 			HTTPVersion: "HTTP/2.0",
 			Compression: "gzip",
 			Allowed:     []string{"GET", "POST", "OPTIONS"},
+			AltSvc:      `h3=":443"; ma=86400`,
+			Cache:       "HIT cloudflare",
 		},
 	}
 
@@ -404,6 +411,15 @@ func TestMatchResponseResourceHashesAndBehavior(t *testing.T) {
 	if _, ok := MatchResponse(response, Matcher{Type: "dns.cname.contains", Value: "cloudflare.net"}); !ok {
 		t.Fatalf("dns.cname.contains expected match")
 	}
+	if _, ok := MatchResponse(response, Matcher{Type: "dns.ns.contains", Value: "cloudflare.com"}); !ok {
+		t.Fatalf("dns.ns.contains expected match")
+	}
+	if _, ok := MatchResponse(response, Matcher{Type: "dns.txt.contains", Value: "_spf.google.com"}); !ok {
+		t.Fatalf("dns.txt.contains expected match")
+	}
+	if _, ok := MatchResponse(response, Matcher{Type: "dns.ip.contains", Value: "203.0.113.10"}); !ok {
+		t.Fatalf("dns.ip.contains expected match")
+	}
 	if _, ok := MatchResponse(response, Matcher{Type: "html.selector.exists", Value: "body"}); !ok {
 		t.Fatalf("html.selector.exists expected match")
 	}
@@ -415,6 +431,12 @@ func TestMatchResponseResourceHashesAndBehavior(t *testing.T) {
 	}
 	if _, ok := MatchResponse(response, Matcher{Type: "response.compression.contains", Value: "gzip"}); !ok {
 		t.Fatalf("response.compression.contains expected match")
+	}
+	if _, ok := MatchResponse(response, Matcher{Type: "http.alt_svc.contains", Value: "h3"}); !ok {
+		t.Fatalf("http.alt_svc.contains expected match")
+	}
+	if _, ok := MatchResponse(response, Matcher{Type: "response.cache.contains", Value: "cloudflare"}); !ok {
+		t.Fatalf("response.cache.contains expected match")
 	}
 	if _, ok := MatchResponse(response, Matcher{Type: "response.etag.exists"}); !ok {
 		t.Fatalf("response.etag.exists expected match")

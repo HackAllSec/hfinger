@@ -8,7 +8,7 @@ HFinger is a server-side fingerprinting tool for security testing. It helps iden
 
 HFinger ships with built-in core fingerprint rules and works out of the box. It also supports external YAML rules for community contributions, private products, and internal enterprise systems.
 
-The current build includes **1744** built-in fingerprint rules covering **1474** server-side products, web frameworks, CMS products, middleware, CDN/WAF providers, honeypots, and related components.
+The current build includes **1746** built-in fingerprint rules covering **1478** server-side products, web frameworks, CMS products, middleware, CDN/WAF providers, honeypots, and related components.
 
 ## Positioning
 
@@ -40,8 +40,8 @@ HFinger is designed to make server-side fingerprinting governable, reviewable, a
 - Built-in core rules that work out of the box
 - External YAML rule loading
 - Header, body, title, cookie, status, redirect, and favicon matching
-- HTML meta, DOM selectors, script source, JavaScript/CSS hash, favicon mmh3/MD5/SHA1/SHA256, DNS CNAME, JSON/API, TLS certificate/ALPN/version/cipher, HTTP behavior, and Server banner matching
-- Active probes for common paths, API endpoints, error pages, 404 pages, and OPTIONS behavior
+- HTML meta, DOM selectors, script source, JavaScript/CSS hash, favicon mmh3/MD5/SHA1/SHA256, DNS CNAME/NS/TXT/IP, JSON/API, TLS certificate/ALPN/version/cipher, HTTP behavior, and Server banner matching
+- Active probes for common paths, API endpoints, error pages, 404 pages, HEAD, OPTIONS, Alt-Svc, and cache-chain behavior
 - WAF/CDN, framework, CMS, middleware, version extraction, and honeypot identification
 - Evidence and confidence in scan results
 - JSON, JSONL, XML, and XLSX output
@@ -68,9 +68,10 @@ HFinger is designed to make server-side fingerprinting governable, reviewable, a
 | Static resource paths | Active probes, `path.exists`, `script.src.contains`, Body/Regex |
 | 404 / error page fingerprints | Default error-page probe and rule-level probes |
 | TLS/HTTPS fingerprints | Certificate Subject/Issuer/DNSNames, ALPN, TLS version, cipher, JA3S-style summary |
-| HTTP protocol behavior | HTTP version, OPTIONS Allow, compression, ETag, Accept-Ranges, status code, redirect |
+| DNS / CDN resolution chain | DNS CNAME, NS, TXT, and IP evidence for CDN/WAF/hosting identification |
+| HTTP protocol behavior | HTTP version, HEAD/OPTIONS Allow, Alt-Svc/HTTP/3 hints, compression, ETag, Accept-Ranges, cache headers, status code, redirect |
 | Active probes / API fingerprints | Rule `probes.request` supports method/path/header/body |
-| WAF/CDN / framework / CMS / middleware | Built-in category rules, DNS CNAME, Header/Cookie/Body/TLS, and behavior probes |
+| WAF/CDN / framework / CMS / middleware | Built-in category rules, DNS CNAME/NS/TXT/IP, Header/Cookie/Body/TLS, and behavior probes |
 | Version fingerprints | Regex version extraction with `extract` |
 | Combined identification | score/any/all, negative matchers, confidence, evidence |
 | Honeypot identification | Explicit honeypot rules plus conflict, abnormal-response, and response-similarity heuristics |
@@ -543,6 +544,45 @@ Run batch scanning with JSONL output for streaming LLM/agent consumption:
 ```bash
 hfinger -f alive.jsonl --output-jsonl hfinger-results.jsonl
 ```
+
+A directly usable penetration-testing orchestration flow:
+
+```bash
+# 1. Run httpx liveness probing and write JSONL
+httpx -l domains.txt -json -silent > alive.jsonl
+
+# 2. Run HFinger and write evidence-backed JSONL
+hfinger -f alive.jsonl --output-jsonl hfinger-results.jsonl
+
+# 3. Extract high-confidence API gateways and validate with nuclei
+jq -r 'select(.category=="api-gateway" and .confidence>=80) | .url' hfinger-results.jsonl > api-gateway.txt
+nuclei -l api-gateway.txt -tags exposure,api,gateway -o nuclei-api-gateway.txt
+
+# 4. Extract admin/DevOps targets for katana or ffuf follow-up
+jq -r 'select((.category=="devops" or .category=="middleware") and .confidence>=80) | .url' hfinger-results.jsonl > high-value.txt
+katana -list high-value.txt -silent -o katana-high-value.txt
+
+# 5. Extract confirmed web targets for optional nmap-side validation
+jq -r 'select(.confidence>=80) | .url' hfinger-results.jsonl > confirmed-web.txt
+```
+
+Recommended prompt for an LLM/agent:
+
+```text
+You are an asset triage assistant in an authorized penetration test. Read hfinger-results.jsonl and:
+1. Base conclusions only on HFinger cms/category/version/confidence/evidence. Do not invent fingerprints.
+2. Group targets by API gateway, DevOps, admin surface, security device, WAF/CDN, and honeypot risk.
+3. Generate nuclei/katana/ffuf/nmap follow-up commands for results with confidence >= 80.
+4. For category=honeypot or evidence containing conflicts/similar responses, reduce intrusive probing and suggest low-impact confirmation steps.
+5. Output targets, evidence summaries, suggested commands, and risk notes for each group.
+```
+
+`hfinger llm skills` prints an array of external agent Skill templates. Key fields:
+
+- `name`: Skill name, such as result triage, toolchain orchestration, rule authoring, or honeypot review.
+- `description`: The problem solved by the Skill.
+- `when_to_use`: Penetration-testing situations where the Skill should be triggered.
+- `commands`: Example commands that the Skill can call, including HFinger, jq, and nuclei.
 
 Typical LLM/Skill scenarios:
 

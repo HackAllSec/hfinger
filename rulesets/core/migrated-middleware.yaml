@@ -267,10 +267,6 @@ rules:
                   weight: 100
                   evidence: Migrated response body evidence for 科荣 AIO 运营管理系统
                 - type: body.contains
-                  value: 主账套
-                  weight: 100
-                  evidence: Migrated response body evidence for 科荣 AIO 运营管理系统
-                - type: body.contains
                   value: login.jsp
                   weight: 100
                   evidence: Migrated response body evidence for 科荣 AIO 运营管理系统
@@ -411,7 +407,7 @@ rules:
                   weight: 100
                   evidence: Migrated response body evidence for 广联达 Glodon
                 - type: body.contains
-                  value: 广联达
+                  value: Glodon
                   weight: 100
                   evidence: Migrated response body evidence for 广联达 Glodon
       negative:
@@ -779,10 +775,6 @@ rules:
                   weight: 100
                   evidence: Migrated response body evidence for 思迪数据池管理平台
                 - type: body.contains
-                  value: 思迪
-                  weight: 100
-                  evidence: Migrated response body evidence for 思迪数据池管理平台
-                - type: body.contains
                   value: canvas
                   weight: 100
                   evidence: Migrated response body evidence for 思迪数据池管理平台
@@ -1116,10 +1108,6 @@ rules:
               matchers:
                 - type: body.contains
                   value: TopAPP负载均衡系统
-                  weight: 100
-                  evidence: Migrated response body evidence for 天融信TopAPP负载均衡系统
-                - type: body.contains
-                  value: 天融信
                   weight: 100
                   evidence: Migrated response body evidence for 天融信TopAPP负载均衡系统
       negative:
@@ -1466,34 +1454,6 @@ rules:
                   value: bt.cn
                   weight: 100
                   evidence: Migrated response body evidence for 宝塔-BT.cn
-      metadata:
-        references:
-            - builtin:migrated-legacy-rule
-        confidence: low
-
-    - id: builtin-0168
-      name: 宝塔-BT.cn
-      category: middleware
-      tags:
-        - migrated
-        - middleware
-      match:
-        strategy: all
-        probes:
-            - id: default
-              matchers:
-                - type: body.contains
-                  value: 站点创建成功
-                  weight: 100
-                  evidence: Migrated response body evidence for 宝塔-BT.cn
-                - type: body.contains
-                  value: 宝塔
-                  weight: 100
-                  evidence: Migrated response body evidence for 宝塔-BT.cn
-      negative:
-        - type: body.contains
-          value: 宝塔面板教程
-          reason: Documentation pages can contain Baota keywords without being the server panel itself.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -10335,10 +10295,6 @@ rules:
             - id: default
               matchers:
                 - type: body.contains
-                  value: nps
-                  weight: 100
-                  evidence: Migrated response body evidence for nps
-                - type: body.contains
                   value: ehang
                   weight: 100
                   evidence: Migrated response body evidence for nps
@@ -10346,6 +10302,10 @@ rules:
                   value: login
                   weight: 100
                   evidence: Migrated response body evidence for nps
+      negative:
+        - type: body.contains
+          value: nps ehang documentation
+          reason: Exclude documentation pages
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -10450,30 +10410,6 @@ rules:
                   value: ubuntu-logo.png
                   weight: 100
                   evidence: Migrated response body evidence for Apache2 Ubuntu 默认页
-      metadata:
-        references:
-            - builtin:migrated-legacy-rule
-        confidence: low
-
-    - id: builtin-0728
-      name: 帆软报表-FineReport
-      category: middleware
-      tags:
-        - migrated
-        - middleware
-      match:
-        strategy: all
-        probes:
-            - id: default
-              matchers:
-                - type: body.contains
-                  value: ReportServer
-                  weight: 100
-                  evidence: Migrated response body evidence for 帆软报表-FineReport
-                - type: body.contains
-                  value: =fs
-                  weight: 100
-                  evidence: Migrated response body evidence for 帆软报表-FineReport
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -11627,10 +11563,6 @@ rules:
             - id: default
               matchers:
                 - type: body.contains
-                  value: 锐捷
-                  weight: 100
-                  evidence: Migrated response body evidence for 锐捷 RG-EW1200G
-                - type: body.contains
                   value: /static/img/title.ico
                   weight: 100
                   evidence: Migrated response body evidence for 锐捷 RG-EW1200G
@@ -11638,6 +11570,10 @@ rules:
                   value: /js/app
                   weight: 100
                   evidence: Migrated response body evidence for 锐捷 RG-EW1200G
+      negative:
+        - type: body.contains
+          value: 锐捷 RG-EW1200G 文档
+          reason: Exclude documentation pages
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -11750,26 +11686,6 @@ rules:
                   value: 网络视频监控系统
                   weight: 100
                   evidence: Migrated response body evidence for 天迈科技网络视频监控系统
-      metadata:
-        references:
-            - builtin:migrated-legacy-rule
-        confidence: low
-
-    - id: builtin-0802
-      name: 后台
-      category: middleware
-      tags:
-        - migrated
-        - middleware
-      match:
-        strategy: all
-        probes:
-            - id: default
-              matchers:
-                - type: title.contains
-                  value: 后台
-                  weight: 100
-                  evidence: Migrated HTML title evidence for 后台
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -11894,10 +11810,10 @@ rules:
                   value: login_form
                   weight: 100
                   evidence: Migrated response body evidence for 景云网络防病毒系统
-                - type: body.contains
-                  value: 防病毒
-                  weight: 100
-                  evidence: Migrated response body evidence for 景云网络防病毒系统
+      negative:
+        - type: body.contains
+          value: 景云网络防病毒系统 文档
+          reason: Exclude documentation pages
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -12015,10 +11931,6 @@ rules:
             - id: default
               matchers:
                 - type: body.contains
-                  value: DNS
-                  weight: 100
-                  evidence: Migrated response body evidence for 阿姆瑞特智能DNS
-                - type: body.contains
                   value: main.php?mod=member
                   weight: 100
                   evidence: Migrated response body evidence for 阿姆瑞特智能DNS
@@ -12026,6 +11938,10 @@ rules:
                   value: DNS_
                   weight: 100
                   evidence: Migrated response body evidence for 阿姆瑞特智能DNS
+      negative:
+        - type: body.contains
+          value: 阿姆瑞特智能DNS 文档
+          reason: Exclude documentation pages
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -12307,10 +12223,6 @@ rules:
             - id: default
               matchers:
                 - type: body.contains
-                  value: 天玥
-                  weight: 100
-                  evidence: Migrated response body evidence for 天玥网络安全审计系统
-                - type: body.contains
                   value: venustech
                   weight: 100
                   evidence: Migrated response body evidence for 天玥网络安全审计系统
@@ -12318,6 +12230,10 @@ rules:
                   value: func_login
                   weight: 100
                   evidence: Migrated response body evidence for 天玥网络安全审计系统
+      negative:
+        - type: body.contains
+          value: 天玥网络安全审计系统 文档
+          reason: Exclude documentation pages
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -12335,10 +12251,6 @@ rules:
             - id: default
               matchers:
                 - type: body.contains
-                  value: 金航
-                  weight: 100
-                  evidence: Migrated response body evidence for 金航网上阅卷系统
-                - type: body.contains
                   value: jsyj
                   weight: 100
                   evidence: Migrated response body evidence for 金航网上阅卷系统
@@ -12346,6 +12258,10 @@ rules:
                   value: 衡水金航
                   weight: 100
                   evidence: Migrated response body evidence for 金航网上阅卷系统
+      negative:
+        - type: body.contains
+          value: 金航网上阅卷系统 文档
+          reason: Exclude documentation pages
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -12370,10 +12286,10 @@ rules:
                   value: Login.aspx
                   weight: 100
                   evidence: Migrated response body evidence for 科脉·蛙笑在线商业管理软件
-                - type: body.contains
-                  value: 科脉
-                  weight: 100
-                  evidence: Migrated response body evidence for 科脉·蛙笑在线商业管理软件
+      negative:
+        - type: body.contains
+          value: 科脉蛙笑在线商业管理软件 文档
+          reason: Exclude documentation pages
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -12419,13 +12335,13 @@ rules:
                   weight: 100
                   evidence: Migrated response body evidence for 品德科技医学在线考试系统
                 - type: body.contains
-                  value: 品德
-                  weight: 100
-                  evidence: Migrated response body evidence for 品德科技医学在线考试系统
-                - type: body.contains
                   value: login.aspx
                   weight: 100
                   evidence: Migrated response body evidence for 品德科技医学在线考试系统
+      negative:
+        - type: body.contains
+          value: 品德科技医学在线考试系统 文档
+          reason: Exclude documentation pages
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -12523,10 +12439,6 @@ rules:
             - id: default
               matchers:
                 - type: body.contains
-                  value: 短信
-                  weight: 100
-                  evidence: Migrated response body evidence for 云信通短信运营管理平台
-                - type: body.contains
                   value: Simpla
                   weight: 100
                   evidence: Migrated response body evidence for 云信通短信运营管理平台
@@ -12534,6 +12446,10 @@ rules:
                   value: chklogin.aspx
                   weight: 100
                   evidence: Migrated response body evidence for 云信通短信运营管理平台
+      negative:
+        - type: body.contains
+          value: 云信通短信运营管理平台 文档
+          reason: Exclude documentation pages
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -13011,13 +12927,13 @@ rules:
                   weight: 100
                   evidence: Migrated response body evidence for 明源云 ERP
                 - type: body.contains
-                  value: 明源云
-                  weight: 100
-                  evidence: Migrated response body evidence for 明源云 ERP
-                - type: body.contains
                   value: LoginHandler
                   weight: 100
                   evidence: Migrated response body evidence for 明源云 ERP
+      negative:
+        - type: body.contains
+          value: 明源云 ERP 文档
+          reason: Exclude documentation pages
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -14691,10 +14607,6 @@ rules:
             - id: default
               matchers:
                 - type: body.contains
-                  value: H3C
-                  weight: 100
-                  evidence: Migrated response body evidence for H3C ER8300G2-X
-                - type: body.contains
                   value: vld.bmp
                   weight: 100
                   evidence: Migrated response body evidence for H3C ER8300G2-X
@@ -14706,6 +14618,10 @@ rules:
                   value: ER8300G2
                   weight: 100
                   evidence: Migrated response body evidence for H3C ER8300G2-X
+      negative:
+        - type: body.contains
+          value: H3C ER8300G2-X 文档
+          reason: Exclude documentation pages
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -15215,9 +15131,13 @@ rules:
                   weight: 100
                   evidence: Migrated response body evidence for 时空智友
                 - type: body.contains
-                  value: 登录
+                  value: 时空智友
                   weight: 100
                   evidence: Migrated response body evidence for 时空智友
+      negative:
+        - type: body.contains
+          value: 时空智友 文档
+          reason: Exclude documentation pages
       metadata:
         references:
             - builtin:migrated-legacy-rule

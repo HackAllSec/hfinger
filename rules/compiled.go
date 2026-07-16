@@ -90,8 +90,14 @@ type preparedResponse struct {
 	scriptHashes     []ResourceHash
 	stylesheetHashes []ResourceHash
 
-	dnsCNAME      string
-	lowerDNSCNAME string
+	dnsCNAME            string
+	lowerDNSCNAME       string
+	dnsNameservers      string
+	lowerDNSNameservers string
+	dnsTXT              string
+	lowerDNSTXT         string
+	dnsIPs              string
+	lowerDNSIPs         string
 
 	httpVersion         string
 	lowerHTTPVersion    string
@@ -99,6 +105,10 @@ type preparedResponse struct {
 	lowerAllowedMethods string
 	compression         string
 	lowerCompression    string
+	altSvc              string
+	lowerAltSvc         string
+	cacheHeaders        string
+	lowerCacheHeaders   string
 
 	jsonParsed bool
 	jsonOK     bool
@@ -195,7 +205,8 @@ func compileMatcher(matcher Matcher) compiledMatcher {
 	case "body.contains", "header.contains", "title.contains", "cookie.contains", "redirect.to", "server.banner.contains",
 		"tls.cert.subject.contains", "tls.cert.issuer.contains", "tls.cert.dns.contains", "tls.alpn.contains",
 		"tls.version.contains", "tls.cipher.contains", "http.version.contains", "http.method.allowed",
-		"response.compression.contains", "dns.cname.contains":
+		"response.compression.contains", "response.cache.contains", "http.alt_svc.contains",
+		"dns.cname.contains", "dns.ns.contains", "dns.txt.contains", "dns.ip.contains":
 		automatonValues := cm.values
 		if !isCaseSensitive(matcher) {
 			automatonValues = cm.lowerValues
@@ -555,12 +566,22 @@ func prepareResponseSet(responses []Response) preparedResponses {
 			stylesheetHashes:    response.Stylesheets,
 			dnsCNAME:            response.DNS.CNAME,
 			lowerDNSCNAME:       strings.ToLower(response.DNS.CNAME),
+			dnsNameservers:      strings.Join(response.DNS.Nameservers, ","),
+			lowerDNSNameservers: strings.ToLower(strings.Join(response.DNS.Nameservers, ",")),
+			dnsTXT:              strings.Join(response.DNS.TXT, ","),
+			lowerDNSTXT:         strings.ToLower(strings.Join(response.DNS.TXT, ",")),
+			dnsIPs:              strings.Join(response.DNS.IPs, ","),
+			lowerDNSIPs:         strings.ToLower(strings.Join(response.DNS.IPs, ",")),
 			httpVersion:         response.Behavior.HTTPVersion,
 			lowerHTTPVersion:    strings.ToLower(response.Behavior.HTTPVersion),
 			allowedMethods:      allowedMethods,
 			lowerAllowedMethods: strings.ToLower(allowedMethods),
 			compression:         response.Behavior.Compression,
 			lowerCompression:    strings.ToLower(response.Behavior.Compression),
+			altSvc:              response.Behavior.AltSvc,
+			lowerAltSvc:         strings.ToLower(response.Behavior.AltSvc),
+			cacheHeaders:        response.Behavior.Cache,
+			lowerCacheHeaders:   strings.ToLower(response.Behavior.Cache),
 		}
 		prepared.items = append(prepared.items, item)
 		if response.ProbeID != "" {
@@ -788,12 +809,22 @@ func matchPreparedResponse(response *preparedResponse, matcher compiledMatcher) 
 		return matchPreparedExact("tls.ja3s", matcher, response.tlsJA3S, response.response.URL)
 	case "dns.cname.contains":
 		return matchPreparedText("dns.cname", matcher, response.dnsCNAME, response.lowerDNSCNAME, response.response.URL)
+	case "dns.ns.contains":
+		return matchPreparedText("dns.ns", matcher, response.dnsNameservers, response.lowerDNSNameservers, response.response.URL)
+	case "dns.txt.contains":
+		return matchPreparedText("dns.txt", matcher, response.dnsTXT, response.lowerDNSTXT, response.response.URL)
+	case "dns.ip.contains":
+		return matchPreparedText("dns.ip", matcher, response.dnsIPs, response.lowerDNSIPs, response.response.URL)
 	case "http.version.contains":
 		return matchPreparedText("http.version", matcher, response.httpVersion, response.lowerHTTPVersion, response.response.URL)
+	case "http.alt_svc.contains":
+		return matchPreparedText("http.alt_svc", matcher, response.altSvc, response.lowerAltSvc, response.response.URL)
 	case "http.method.allowed":
 		return matchPreparedText("http.allow", matcher, response.allowedMethods, response.lowerAllowedMethods, response.response.URL)
 	case "response.compression.contains":
 		return matchPreparedText("response.compression", matcher, response.compression, response.lowerCompression, response.response.URL)
+	case "response.cache.contains":
+		return matchPreparedText("response.cache", matcher, response.cacheHeaders, response.lowerCacheHeaders, response.response.URL)
 	case "response.etag.exists":
 		if value := headerValue(response.response.Header, "ETag"); value != "" {
 			return evidence("response.etag", matcher.matcher, value, response.response.URL), true

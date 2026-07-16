@@ -213,9 +213,14 @@ Matcher 是具体匹配条件。
 | `tls.cipher.contains` | TLS Cipher Suite 包含指定值 |
 | `tls.ja3s.hash` | JA3S 风格摘要命中 |
 | `dns.cname.contains` | DNS CNAME 包含指定值，适合 CDN/WAF 识别 |
+| `dns.ns.contains` | DNS NS 记录包含指定值，适合权威 DNS/CDN 识别 |
+| `dns.txt.contains` | DNS TXT 记录包含指定值 |
+| `dns.ip.contains` | DNS 解析 IP 包含指定值 |
 | `http.version.contains` | HTTP 协议版本包含指定值，如 `HTTP/2` |
 | `http.method.allowed` | `OPTIONS` 响应的 `Allow` 方法包含指定值 |
+| `http.alt_svc.contains` | `Alt-Svc` 包含指定值，适合 HTTP/3/QUIC 提示识别 |
 | `response.compression.contains` | `Content-Encoding` 包含指定值 |
+| `response.cache.contains` | CDN/缓存相关响应头摘要包含指定值 |
 | `response.etag.exists` | 响应存在 `ETag` |
 | `response.accept_ranges.exists` | 响应存在 `Accept-Ranges` |
 
