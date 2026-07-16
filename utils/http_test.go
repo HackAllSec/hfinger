@@ -2,9 +2,14 @@ package utils
 
 import (
 	"bytes"
+	"crypto/tls"
 	"fmt"
+	"net"
 	"net/http"
+	"strings"
 	"testing"
+
+	"github.com/tjfoc/gmsm/gmtls"
 )
 
 func TestGetBaseURL_BitsUT(t *testing.T) {
@@ -243,6 +248,110 @@ func TestConfigureTLSMode(t *testing.T) {
 
 	if err := ConfigureTLSMode("standard"); err == nil {
 		t.Fatalf("ConfigureTLSMode() expected error for unsupported mode")
+	}
+}
+
+func TestActiveTLSConnectorGMModeUsesGMTLSOnly(t *testing.T) {
+	connector := newActiveTLSConnector(TLSModeGM, nil, nil)
+	stdCalls := 0
+	gmCalls := 0
+	clientConn, serverConn := net.Pipe()
+	defer clientConn.Close()
+	defer serverConn.Close()
+	connector.stdDial = func(network, addr string, tlsConfig *tls.Config) (net.Conn, error) {
+		stdCalls++
+		return nil, fmt.Errorf("standard TLS should not be used")
+	}
+	connector.gmDial = func(network, addr string, tlsConfig *gmtls.Config) (net.Conn, error) {
+		gmCalls++
+		return clientConn, nil
+	}
+
+	conn, err := connector.Dial("tcp", "example.com:443")
+	if err != nil {
+		t.Fatalf("Dial() unexpected error: %v", err)
+	}
+	if conn == nil || stdCalls != 0 || gmCalls != 1 {
+		t.Fatalf("Dial() stdCalls=%d gmCalls=%d conn=%v, want std=0 gm=1 conn", stdCalls, gmCalls, conn)
+	}
+}
+
+func TestActiveTLSConnectorStdModeDoesNotFallback(t *testing.T) {
+	connector := newActiveTLSConnector(TLSModeStd, nil, nil)
+	stdErr := fmt.Errorf("remote error: tls: handshake failure")
+	gmCalls := 0
+	connector.stdDial = func(network, addr string, tlsConfig *tls.Config) (net.Conn, error) {
+		return nil, stdErr
+	}
+	connector.gmDial = func(network, addr string, tlsConfig *gmtls.Config) (net.Conn, error) {
+		gmCalls++
+		return nil, nil
+	}
+
+	if _, err := connector.Dial("tcp", "example.com:443"); err != stdErr {
+		t.Fatalf("Dial() error = %v, want original std error", err)
+	}
+	if gmCalls != 0 {
+		t.Fatalf("Dial() gmCalls = %d, want 0", gmCalls)
+	}
+}
+
+func TestActiveTLSConnectorAutoFallbacksForTLSHandshakeError(t *testing.T) {
+	connector := newActiveTLSConnector(TLSModeAuto, nil, nil)
+	clientConn, serverConn := net.Pipe()
+	defer clientConn.Close()
+	defer serverConn.Close()
+	connector.stdDial = func(network, addr string, tlsConfig *tls.Config) (net.Conn, error) {
+		return nil, fmt.Errorf("remote error: tls: handshake failure")
+	}
+	connector.gmDial = func(network, addr string, tlsConfig *gmtls.Config) (net.Conn, error) {
+		return clientConn, nil
+	}
+
+	conn, err := connector.Dial("tcp", "example.com:443")
+	if err != nil {
+		t.Fatalf("Dial() unexpected error: %v", err)
+	}
+	if conn == nil {
+		t.Fatalf("Dial() expected GM/TLS connection")
+	}
+}
+
+func TestActiveTLSConnectorAutoKeepsStandardErrorWhenNoFallbackSignal(t *testing.T) {
+	connector := newActiveTLSConnector(TLSModeAuto, nil, nil)
+	stdErr := fmt.Errorf("dial tcp 127.0.0.1:443: connect: connection refused")
+	gmCalls := 0
+	connector.stdDial = func(network, addr string, tlsConfig *tls.Config) (net.Conn, error) {
+		return nil, stdErr
+	}
+	connector.gmDial = func(network, addr string, tlsConfig *gmtls.Config) (net.Conn, error) {
+		gmCalls++
+		return nil, nil
+	}
+
+	if _, err := connector.Dial("tcp", "example.com:443"); err != stdErr {
+		t.Fatalf("Dial() error = %v, want original std error", err)
+	}
+	if gmCalls != 0 {
+		t.Fatalf("Dial() gmCalls = %d, want 0", gmCalls)
+	}
+}
+
+func TestActiveTLSConnectorAutoReportsBothErrorsWhenFallbackFails(t *testing.T) {
+	connector := newActiveTLSConnector(TLSModeAuto, nil, nil)
+	connector.stdDial = func(network, addr string, tlsConfig *tls.Config) (net.Conn, error) {
+		return nil, fmt.Errorf("remote error: tls: handshake failure")
+	}
+	connector.gmDial = func(network, addr string, tlsConfig *gmtls.Config) (net.Conn, error) {
+		return nil, fmt.Errorf("gm failed")
+	}
+
+	_, err := connector.Dial("tcp", "example.com:443")
+	if err == nil {
+		t.Fatalf("Dial() expected error")
+	}
+	if !strings.Contains(err.Error(), "standard TLS failed") || !strings.Contains(err.Error(), "GM/TLS fallback failed") {
+		t.Fatalf("Dial() error = %q, want both standard and GM/TLS errors", err.Error())
 	}
 }
 

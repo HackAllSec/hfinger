@@ -153,31 +153,11 @@ func createHybridTransport(proxy string) (*http.Transport, error) {
 		NextProtos:         []string{"h2", "http/1.1"},
 		Certificates:       gmClientCerts,
 	}
+	tlsConnector := newActiveTLSConnector(tlsMode, stdTLSConfig, gmTLSConfig)
 
 	// 创建混合传输层
 	transport := &http.Transport{
-		DialTLS: func(network, addr string) (net.Conn, error) {
-			if tlsMode == TLSModeGM {
-				return connectWithGMTLS(network, addr, gmTLSConfig)
-			}
-
-			conn, err := tls.Dial(network, addr, stdTLSConfig)
-			if err == nil {
-				return conn, nil
-			}
-			if tlsMode == TLSModeStd {
-				return nil, err
-			}
-			if shouldFallbackToGMTLS(err) {
-				logger.Warn("Standard TLS connection failed for %s, trying GM/TLS fallback: %v", addr, err)
-				gmConn, gmErr := connectWithGMTLS(network, addr, gmTLSConfig)
-				if gmErr == nil {
-					return gmConn, nil
-				}
-				return nil, fmt.Errorf("standard TLS failed: %v; GM/TLS fallback failed: %w", err, gmErr)
-			}
-			return nil, err
-		},
+		DialTLS: tlsConnector.Dial,
 
 		DisableKeepAlives:   false,
 		MaxIdleConns:        100,
@@ -198,6 +178,54 @@ func createHybridTransport(proxy string) (*http.Transport, error) {
 	}
 
 	return transport, nil
+}
+
+type activeTLSConnector struct {
+	mode      string
+	stdConfig *tls.Config
+	gmConfig  *gmtls.Config
+	stdDial   func(network, addr string, tlsConfig *tls.Config) (net.Conn, error)
+	gmDial    func(network, addr string, tlsConfig *gmtls.Config) (net.Conn, error)
+}
+
+func newActiveTLSConnector(mode string, stdConfig *tls.Config, gmConfig *gmtls.Config) *activeTLSConnector {
+	if mode == "" {
+		mode = TLSModeAuto
+	}
+	return &activeTLSConnector{
+		mode:      mode,
+		stdConfig: stdConfig,
+		gmConfig:  gmConfig,
+		stdDial:   dialStandardTLS,
+		gmDial:    connectWithGMTLS,
+	}
+}
+
+func dialStandardTLS(network, addr string, tlsConfig *tls.Config) (net.Conn, error) {
+	return tls.Dial(network, addr, tlsConfig)
+}
+
+func (connector *activeTLSConnector) Dial(network, addr string) (net.Conn, error) {
+	if connector.mode == TLSModeGM {
+		return connector.gmDial(network, addr, connector.gmConfig)
+	}
+
+	conn, err := connector.stdDial(network, addr, connector.stdConfig)
+	if err == nil {
+		return conn, nil
+	}
+	if connector.mode == TLSModeStd {
+		return nil, err
+	}
+	if shouldFallbackToGMTLS(err) {
+		logger.Warn("Standard TLS connection failed for %s, trying GM/TLS fallback: %v", addr, err)
+		gmConn, gmErr := connector.gmDial(network, addr, connector.gmConfig)
+		if gmErr == nil {
+			return gmConn, nil
+		}
+		return nil, fmt.Errorf("standard TLS failed: %v; GM/TLS fallback failed: %w", err, gmErr)
+	}
+	return nil, err
 }
 
 func loadClientCertificates() ([]tls.Certificate, []gmtls.Certificate, error) {
