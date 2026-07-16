@@ -5,9 +5,7 @@ import (
 	"bytes"
 	"compress/gzip"
 	"compress/zlib"
-	"crypto/tls"
 	"fmt"
-	"golang.org/x/net/http2"
 	"io"
 	"net"
 	"net/http"
@@ -15,6 +13,9 @@ import (
 	"net/http/httputil"
 	"strings"
 	"sync"
+
+	"github.com/tjfoc/gmsm/gmtls"
+	"golang.org/x/net/http2"
 
 	"hfinger/config"
 	"hfinger/logger"
@@ -154,7 +155,7 @@ func handleHTTPS(conn net.Conn, req *http.Request) error {
 		return err
 	}
 
-	tlsConn := tls.Server(conn, tlsConfig)
+	tlsConn := gmtls.Server(conn, tlsConfig)
 	err = tlsConn.Handshake()
 	if err != nil {
 		return err
@@ -181,66 +182,29 @@ func handleHTTPS(conn net.Conn, req *http.Request) error {
 	}
 }
 
-func getTLSConfigForHost(host string) (*tls.Config, error) {
+func getTLSConfigForHost(host string) (*gmtls.Config, error) {
 	if tlsConfig, ok := certCache.Load(host); ok {
-		return tlsConfig.(*tls.Config), nil
+		return tlsConfig.(*gmtls.Config), nil
 	}
 
-	stdCert, gmCert, err := utils.GenerateServerCert(host)
+	_, stdCert, gmSignCert, gmEncCert, err := utils.GenerateServerGMTLSCerts(host)
 	if err != nil {
 		return nil, err
 	}
 
-	// 标准TLS配置
-	stdTLSConfig := &tls.Config{
-		Certificates: []tls.Certificate{*stdCert},
-		NextProtos:   []string{"h2", "http/1.1"},
+	tlsConfig, err := gmtls.NewBasicAutoSwitchConfig(gmSignCert, gmEncCert, stdCert)
+	if err != nil {
+		return nil, err
 	}
-
-	// 国密TLS配置
-	gmTLSConfig := &tls.Config{
-		Certificates: []tls.Certificate{*gmCert},
-		NextProtos:   []string{"http/1.1"},
-	}
-
-	tlsConfig := &tls.Config{
-		GetConfigForClient: func(hello *tls.ClientHelloInfo) (*tls.Config, error) {
-			if isGMClient(hello) {
-				return gmTLSConfig, nil
-			}
-			for _, proto := range hello.SupportedProtos {
-				if proto == "h2" || proto == "http/1.1" {
-					return stdTLSConfig, nil
-				}
-			}
-
-			return stdTLSConfig, nil
-		},
-	}
+	tlsConfig.NextProtos = []string{"h2", "http/1.1"}
 
 	// 原子操作存储配置
 	actual, loaded := certCache.LoadOrStore(host, tlsConfig)
 	if loaded {
-		return actual.(*tls.Config), nil
+		return actual.(*gmtls.Config), nil
 	}
 
 	return tlsConfig, nil
-}
-
-func isGMClient(hello *tls.ClientHelloInfo) bool {
-	gmCipherSuites := []uint16{
-		0xE011,
-		0xE013,
-	}
-
-	for _, suite := range hello.CipherSuites {
-		for _, gmSuite := range gmCipherSuites {
-			if suite == gmSuite {
-				return true
-			}
-		}
-	}
-	return false
 }
 
 func handleHTTP2Request(w http.ResponseWriter, r *http.Request) {

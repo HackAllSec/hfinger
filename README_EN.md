@@ -34,7 +34,8 @@ Compared with simple keyword-based fingerprinting, HFinger focuses on:
 - JSON, XML, and XLSX output
 - Passive mode JSONL persistence and query
 - HTTP/1.1 and HTTP/2 support
-- Standard HTTPS support, with active-request fallback support for some GM/TLS services
+- Active requests with standard TLS, GM/TLS fallback, and client-certificate authentication
+- Passive MITM with adaptive standard TLS / GM/TLS handshakes
 - Proxy, random User-Agent, and multithreading support
 - Rule validation commands for custom rule maintenance
 
@@ -141,7 +142,23 @@ hfinger -l 127.0.0.1:8888 -p http://127.0.0.1:7777 -s result.xlsx --passive-stor
 
 For HTTPS passive fingerprinting, import the generated certificate under the `certs` directory into your browser or system trust store.
 
-Note: passive mode supports standard TLS MITM fingerprinting. GM/TLS compatibility is currently mainly used by active requests as a fallback path. Passive MITM compatibility for true GM/TLS clients still depends on the client protocol stack and certificate trust environment.
+Note: passive mode uses an adaptive TLS/GM/TLS handshake. Standard TLS clients and GM/TLS clients are handled on the same listener and automatically select the matching handshake flow.
+
+### Mutual TLS / GM/TLS
+
+If a target requires a client certificate, provide the certificate and private key:
+
+```bash
+hfinger -u https://www.example.com --client-cert client.crt --client-key client.key
+```
+
+For GM/TLS targets, provide a GM client certificate explicitly:
+
+```bash
+hfinger -u https://www.example.com --gm-client-cert gm-client.crt --gm-client-key gm-client.key
+```
+
+When only `--client-cert/--client-key` is provided, HFinger uses it for standard TLS and also attempts to load it as a GM/TLS client certificate. If the GM/TLS client certificate is different, use `--gm-client-cert/--gm-client-key`.
 
 Query passive mode JSONL results:
 
@@ -275,6 +292,10 @@ metadata:
 -r, --redirect int         Max redirects
     --rules stringArray    Load external YAML rule file or directory
     --passive-store string Write passive mode results to a JSONL file
+    --client-cert string   Mutual TLS client certificate
+    --client-key string    Mutual TLS client private key
+    --gm-client-cert string Mutual GM/TLS client certificate
+    --gm-client-key string  Mutual GM/TLS client private key
 -j, --output-json string   Write JSON output
 -x, --output-xml string    Write XML output
 -s, --output-xlsx string   Write XLSX output

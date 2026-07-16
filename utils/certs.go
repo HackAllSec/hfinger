@@ -1,21 +1,23 @@
 package utils
 
 import (
+	"crypto/rand"
 	"crypto/rsa"
 	"crypto/tls"
 	"crypto/x509"
 	"crypto/x509/pkix"
-	"crypto/rand"
 	"encoding/pem"
-	"math/big"
-	"os"
-	"time"
-	"net"
 	"fmt"
+	"math/big"
+	"net"
+	"os"
 	"sync"
+	"time"
 
 	"hfinger/config"
-    "hfinger/logger"
+	"hfinger/logger"
+
+	"github.com/tjfoc/gmsm/gmtls"
 	"github.com/tjfoc/gmsm/sm2"
 	gmX509 "github.com/tjfoc/gmsm/x509"
 )
@@ -35,32 +37,32 @@ var (
 func EnsureCerts() error {
 	caMutex.Lock()
 	defer caMutex.Unlock()
-	
+
 	if globalCA != nil {
 		return nil
 	}
-	
+
 	// 创建证书目录
 	if err := os.MkdirAll(config.CertsDir, 0755); err != nil {
 		return err
 	}
-	
+
 	// 检查RSA根证书是否存在
 	if _, err := os.Stat(config.CertsPath); os.IsNotExist(err) {
 		logger.Warn("Generating new root CA certificates...")
-		
+
 		if err := generateSelfSignedCert(config.CertsPath, config.KeyPath); err != nil {
 			return err
 		}
 		logger.Success("Root CA certificates generated successfully")
 	}
-	
+
 	// 加载证书
 	ca, err := loadUnifiedCA()
 	if err != nil {
 		return err
 	}
-	
+
 	globalCA = ca
 	return nil
 }
@@ -71,23 +73,23 @@ func loadUnifiedCA() (*UnifiedCA, error) {
 	if err != nil {
 		return nil, err
 	}
-	
+
 	// 解析RSA根证书
 	rsaCert, err := x509.ParseCertificate(rsaTLSCert.Certificate[0])
 	if err != nil {
 		return nil, err
 	}
-	
+
 	// 创建国密根证书池
 	rootPool := gmX509.NewCertPool()
-	
+
 	// 将RSA根证书转换为国密格式并添加到证书池
 	gmCert, err := gmX509.ParseCertificate(rsaCert.Raw)
 	if err != nil {
 		return nil, err
 	}
 	rootPool.AddCert(gmCert)
-	
+
 	return &UnifiedCA{
 		RSACert:    rsaCert,
 		RSAKey:     rsaTLSCert.PrivateKey.(*rsa.PrivateKey),
@@ -100,20 +102,51 @@ func GenerateServerCert(host string) (*tls.Certificate, *tls.Certificate, error)
 	if globalCA == nil {
 		return nil, nil, fmt.Errorf("CA not initialized")
 	}
-	
+
 	// 生成标准证书
 	stdCert, err := generateStdServerCert(host, globalCA.RSACert, globalCA.RSAKey)
 	if err != nil {
 		return nil, nil, err
 	}
-	
+
 	// 生成国密证书
 	gmCert, err := generateGMServerCert(host, globalCA.RSACert, globalCA.RSAKey)
 	if err != nil {
 		return nil, nil, err
 	}
-	
+
 	return stdCert, gmCert, nil
+}
+
+func GenerateServerGMTLSCerts(host string) (*tls.Certificate, *gmtls.Certificate, *gmtls.Certificate, *gmtls.Certificate, error) {
+	if globalCA == nil {
+		return nil, nil, nil, nil, fmt.Errorf("CA not initialized")
+	}
+	stdCert, err := generateStdServerCert(host, globalCA.RSACert, globalCA.RSAKey)
+	if err != nil {
+		return nil, nil, nil, nil, err
+	}
+	gmSignCert, err := generateGMServerCert(host, globalCA.RSACert, globalCA.RSAKey)
+	if err != nil {
+		return nil, nil, nil, nil, err
+	}
+	gmEncCert, err := generateGMServerCert(host, globalCA.RSACert, globalCA.RSAKey)
+	if err != nil {
+		return nil, nil, nil, nil, err
+	}
+	return stdCert, toGMTLSCertificate(stdCert), toGMTLSCertificate(gmSignCert), toGMTLSCertificate(gmEncCert), nil
+}
+
+func toGMTLSCertificate(cert *tls.Certificate) *gmtls.Certificate {
+	if cert == nil {
+		return nil
+	}
+	return &gmtls.Certificate{
+		Certificate:                 cert.Certificate,
+		PrivateKey:                  cert.PrivateKey,
+		OCSPStaple:                  cert.OCSPStaple,
+		SignedCertificateTimestamps: cert.SignedCertificateTimestamps,
+	}
 }
 
 // 生成标准服务器证书
@@ -187,7 +220,7 @@ func generateGMServerCert(host string, caCert *x509.Certificate, caKey *rsa.Priv
 	if err != nil {
 		return nil, err
 	}
-	
+
 	// 创建国密证书
 	derBytes, err := gmX509.CreateCertificate(&template, gmCACert, &priv.PublicKey, caKey)
 	if err != nil {

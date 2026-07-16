@@ -43,6 +43,10 @@ var RootCmd = &cobra.Command{
 		file, _ := cmd.Flags().GetString("file")
 		listen, _ := cmd.Flags().GetString("listen")
 		proxy, _ := cmd.Flags().GetString("proxy")
+		clientCert, _ := cmd.Flags().GetString("client-cert")
+		clientKey, _ := cmd.Flags().GetString("client-key")
+		gmClientCert, _ := cmd.Flags().GetString("gm-client-cert")
+		gmClientKey, _ := cmd.Flags().GetString("gm-client-key")
 		thread, _ := cmd.Flags().GetInt("thread")
 		redirect, _ := cmd.Flags().GetInt("redirect")
 		outputJSON, _ := cmd.Flags().GetString("output-json")
@@ -65,6 +69,7 @@ var RootCmd = &cobra.Command{
 			os.Exit(1)
 		}
 
+		utils.ConfigureClientCertificates(clientCert, clientKey, gmClientCert, gmClientKey)
 		err := utils.InitializeHTTPClient(proxy, 30*time.Second, redirect)
 		if err != nil {
 			logger.Error("Error: %v", err)
@@ -156,6 +161,10 @@ func init() {
 	RootCmd.Flags().StringP("output-xml", "x", "", "Output all results to a XML file")
 	RootCmd.Flags().StringP("output-xlsx", "s", "", "Output all results to a Excel file")
 	RootCmd.Flags().StringP("proxy", "p", "", "Specify the proxy for accessing the target, supporting HTTP and SOCKS, example: http://127.0.0.1:8080")
+	RootCmd.Flags().String("client-cert", "", "TLS client certificate for mutual TLS targets")
+	RootCmd.Flags().String("client-key", "", "TLS client private key for mutual TLS targets")
+	RootCmd.Flags().String("gm-client-cert", "", "GM/TLS client certificate for mutual TLS targets")
+	RootCmd.Flags().String("gm-client-key", "", "GM/TLS client private key for mutual TLS targets")
 	RootCmd.Flags().StringArray("rules", nil, "Load external YAML rule file or directory; can be specified multiple times")
 	RootCmd.Flags().String("passive-store", "", "Write passive mode fingerprint results to a JSONL file")
 	RootCmd.Flags().IntP("thread", "t", 100, "Number of fingerprint recognition threads")

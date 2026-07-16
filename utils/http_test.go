@@ -220,7 +220,14 @@ func TestShouldFallbackToGMTLS(t *testing.T) {
 }
 
 func TestCreateHybridTransportProxyCredentialsDoNotMutateRequest(t *testing.T) {
-	transport := createHybridTransport("http://user:pass@127.0.0.1:8080")
+	ConfigureClientCertificates("", "", "", "")
+	t.Cleanup(func() {
+		ConfigureClientCertificates("", "", "", "")
+	})
+	transport, err := createHybridTransport("http://user:pass@127.0.0.1:8080")
+	if err != nil {
+		t.Fatalf("createHybridTransport() unexpected error: %v", err)
+	}
 	if transport.Proxy == nil {
 		t.Fatalf("createHybridTransport() did not configure proxy")
 	}
@@ -238,5 +245,20 @@ func TestCreateHybridTransportProxyCredentialsDoNotMutateRequest(t *testing.T) {
 	}
 	if got := req.Header.Get("Proxy-Authorization"); got != "" {
 		t.Fatalf("Proxy() mutated request Proxy-Authorization header: %q", got)
+	}
+}
+
+func TestCreateHybridTransportRequiresClientCertificatePairs(t *testing.T) {
+	ConfigureClientCertificates("client.crt", "", "", "")
+	t.Cleanup(func() {
+		ConfigureClientCertificates("", "", "", "")
+	})
+	if _, err := createHybridTransport(""); err == nil {
+		t.Fatalf("createHybridTransport() expected error for incomplete TLS client certificate pair")
+	}
+
+	ConfigureClientCertificates("", "", "gm-client.crt", "")
+	if _, err := createHybridTransport(""); err == nil {
+		t.Fatalf("createHybridTransport() expected error for incomplete GM/TLS client certificate pair")
 	}
 }

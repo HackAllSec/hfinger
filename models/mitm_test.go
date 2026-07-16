@@ -1,9 +1,14 @@
 package models
 
 import (
-	"crypto/tls"
 	"net/http"
+	"path/filepath"
 	"testing"
+
+	"github.com/tjfoc/gmsm/gmtls"
+
+	"hfinger/config"
+	"hfinger/utils"
 )
 
 func TestRequestTargetURL(t *testing.T) {
@@ -68,11 +73,38 @@ func TestHeadersToMapStripsProxyHeaders(t *testing.T) {
 	}
 }
 
-func TestIsGMClient(t *testing.T) {
-	if !isGMClient(&tls.ClientHelloInfo{CipherSuites: []uint16{0xE011}}) {
-		t.Fatalf("isGMClient() expected true for GM cipher suite")
+func TestGetTLSConfigForHostUsesGMTLSAutoSwitch(t *testing.T) {
+	certDir := t.TempDir()
+	oldCertsDir := config.CertsDir
+	oldCertsPath := config.CertsPath
+	oldKeyPath := config.KeyPath
+	config.CertsDir = certDir
+	config.CertsPath = filepath.Join(certDir, config.CaCertFile)
+	config.KeyPath = filepath.Join(certDir, config.CaKeyFile)
+	t.Cleanup(func() {
+		config.CertsDir = oldCertsDir
+		config.CertsPath = oldCertsPath
+		config.KeyPath = oldKeyPath
+	})
+
+	if err := utils.EnsureCerts(); err != nil {
+		t.Fatalf("EnsureCerts() unexpected error: %v", err)
 	}
-	if isGMClient(&tls.ClientHelloInfo{CipherSuites: []uint16{tls.TLS_AES_128_GCM_SHA256}}) {
-		t.Fatalf("isGMClient() expected false for standard TLS cipher suite")
+
+	tlsConfig, err := getTLSConfigForHost("example.com")
+	if err != nil {
+		t.Fatalf("getTLSConfigForHost() unexpected error: %v", err)
+	}
+	if tlsConfig.GMSupport == nil || !tlsConfig.GMSupport.IsAutoSwitchMode() {
+		t.Fatalf("getTLSConfigForHost() did not enable GM/TLS auto switch mode")
+	}
+	if tlsConfig.GetCertificate == nil || tlsConfig.GetKECertificate == nil {
+		t.Fatalf("getTLSConfigForHost() did not configure GM sign/encryption certificates")
+	}
+	cert, err := tlsConfig.GetCertificate(&gmtls.ClientHelloInfo{
+		SupportedVersions: []uint16{gmtls.VersionGMSSL},
+	})
+	if err != nil || cert == nil {
+		t.Fatalf("GM GetCertificate() = %v, %v; want certificate", cert, err)
 	}
 }

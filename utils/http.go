@@ -22,6 +22,10 @@ import (
 
 var (
 	httpClient          *http.Client
+	clientCertPath      string
+	clientKeyPath       string
+	gmClientCertPath    string
+	gmClientKeyPath     string
 	noScriptRe          = regexp.MustCompile(`(?is)<noscript[^>]*>.*?</noscript>`)
 	metaRefreshRe       = regexp.MustCompile(`(?is)<meta\b[^>]*http-equiv\s*=\s*['"]?refresh['"]?[^>]*>`)
 	jsLocationHrefRe    = regexp.MustCompile(`>window\.location\.href\s*=\s*['"]([^'"]+)['"]\s*;?\s*</script>`)
@@ -76,8 +80,18 @@ func RandomUserAgent() string {
 	return userAgents[rand.Intn(len(userAgents))]
 }
 
+func ConfigureClientCertificates(certPath, keyPath, gmCertPath, gmKeyPath string) {
+	clientCertPath = certPath
+	clientKeyPath = keyPath
+	gmClientCertPath = gmCertPath
+	gmClientKeyPath = gmKeyPath
+}
+
 func InitializeHTTPClient(proxy string, timeout time.Duration, maxRedirects int) error {
-	transport := createHybridTransport(proxy)
+	transport, err := createHybridTransport(proxy)
+	if err != nil {
+		return err
+	}
 
 	if err := http2.ConfigureTransport(transport); err != nil {
 		// 回退到HTTP/1.1
@@ -99,11 +113,25 @@ func InitializeHTTPClient(proxy string, timeout time.Duration, maxRedirects int)
 	return nil
 }
 
-func createHybridTransport(proxy string) *http.Transport {
+func createHybridTransport(proxy string) (*http.Transport, error) {
+	stdClientCerts, gmClientCerts, err := loadClientCertificates()
+	if err != nil {
+		return nil, err
+	}
+
 	// 标准TLS配置
 	stdTLSConfig := &tls.Config{
 		InsecureSkipVerify: true,
 		NextProtos:         []string{"h2", "http/1.1"},
+		Certificates:       stdClientCerts,
+	}
+
+	gmTLSConfig := &gmtls.Config{
+		GMSupport:          &gmtls.GMSupport{},
+		InsecureSkipVerify: true,
+		RootCAs:            gmX509.NewCertPool(),
+		NextProtos:         []string{"h2", "http/1.1"},
+		Certificates:       gmClientCerts,
 	}
 
 	// 创建混合传输层
@@ -114,7 +142,11 @@ func createHybridTransport(proxy string) *http.Transport {
 				return conn, nil
 			}
 			if shouldFallbackToGMTLS(err) {
-				return connectWithGMTLS(network, addr)
+				gmConn, gmErr := connectWithGMTLS(network, addr, gmTLSConfig)
+				if gmErr == nil {
+					return gmConn, nil
+				}
+				return nil, fmt.Errorf("standard TLS failed: %v; GM/TLS fallback failed: %w", err, gmErr)
 			}
 			return nil, err
 		},
@@ -131,13 +163,45 @@ func createHybridTransport(proxy string) *http.Transport {
 		proxyURL, err := url.Parse(proxy)
 		if err != nil {
 			logger.Error("Error: %v", err)
-			return transport
+			return transport, nil
 		}
 
 		transport.Proxy = http.ProxyURL(proxyURL)
 	}
 
-	return transport
+	return transport, nil
+}
+
+func loadClientCertificates() ([]tls.Certificate, []gmtls.Certificate, error) {
+	if (clientCertPath == "") != (clientKeyPath == "") {
+		return nil, nil, fmt.Errorf("--client-cert and --client-key must be used together")
+	}
+	if (gmClientCertPath == "") != (gmClientKeyPath == "") {
+		return nil, nil, fmt.Errorf("--gm-client-cert and --gm-client-key must be used together")
+	}
+
+	var stdCerts []tls.Certificate
+	var gmCerts []gmtls.Certificate
+	if clientCertPath != "" {
+		cert, err := tls.LoadX509KeyPair(clientCertPath, clientKeyPath)
+		if err != nil {
+			return nil, nil, fmt.Errorf("load TLS client certificate: %w", err)
+		}
+		stdCerts = append(stdCerts, cert)
+
+		gmCert, err := gmtls.LoadX509KeyPair(clientCertPath, clientKeyPath)
+		if err == nil {
+			gmCerts = append(gmCerts, gmCert)
+		}
+	}
+	if gmClientCertPath != "" {
+		gmCert, err := gmtls.LoadX509KeyPair(gmClientCertPath, gmClientKeyPath)
+		if err != nil {
+			return nil, nil, fmt.Errorf("load GM/TLS client certificate: %w", err)
+		}
+		gmCerts = append(gmCerts, gmCert)
+	}
+	return stdCerts, gmCerts, nil
 }
 
 func shouldFallbackToGMTLS(err error) bool {
@@ -162,8 +226,8 @@ func shouldFallbackToGMTLS(err error) bool {
 	return false
 }
 
-func connectWithGMTLS(network, addr string) (net.Conn, error) {
-	conn, err := gmtls.Dial(network, addr, gmTLSConfig)
+func connectWithGMTLS(network, addr string, tlsConfig *gmtls.Config) (net.Conn, error) {
+	conn, err := gmtls.Dial(network, addr, tlsConfig)
 	if err != nil {
 		return nil, fmt.Errorf("GM TLS connection failed: %v", err)
 	}
