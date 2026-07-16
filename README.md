@@ -10,6 +10,18 @@ HFinger 是一个面向安全测试场景的服务端指纹识别工具，用于
 
 当前内置指纹规则 **1621** 条，覆盖产品、Web 框架、CMS、中间件、CDN/WAF 等服务端组件 **1371** 种。
 
+## 工具定位
+
+HFinger 的目标不是替代漏洞扫描器，而是成为安全测试链路中的服务端技术栈识别层。它关注“目标背后运行了什么服务端组件”，并通过多来源证据和置信度输出，帮助红队、渗透测试人员和企业安全团队更快完成资产理解、规则编排和后续验证。
+
+与传统关键词匹配工具相比，HFinger 更强调：
+
+- 核心规则内置，部署后无需携带运行时规则文件
+- 外置 YAML 规则，方便社区贡献和企业私有规则维护
+- Header、Body、Cookie、Favicon、JSON/API、TLS、Server banner 等多证据融合
+- 输出证据和置信度，便于复核和自动化编排
+- 主动识别与被动代理识别同时覆盖
+
 ## 主要能力
 
 - 服务端技术栈识别
@@ -22,9 +34,17 @@ HFinger 是一个面向安全测试场景的服务端指纹识别工具，用于
 - 支持 JSON、XML、XLSX 输出
 - 支持被动模式 JSONL 结构化落盘与查询
 - 支持 HTTP/1.1、HTTP/2
-- 支持标准 HTTPS 和国密 HTTPS
+- 主动请求支持标准 HTTPS，并对部分 GM/TLS 服务提供回退连接能力
 - 支持代理、随机 UA、多线程
 - 提供规则校验命令，方便维护自定义规则
+
+## 与 WhatWeb / xapp 的关系
+
+WhatWeb 是成熟的 Web 技术识别工具，公开资料显示其拥有 1800+ 插件、扫描强度分级和丰富日志格式。HFinger 当前内置 1621 条规则，规则数量已经接近，但产品方向更聚焦服务端技术栈识别、证据化输出、YAML 规则治理和被动代理落盘查询。
+
+xapp 更偏向国内常见 Web 指纹识别场景。HFinger 在保留常规 Web/CMS 识别能力的基础上，进一步把 API 网关、中间件、WAF/CDN、负载均衡、TLS 证书、JSON 错误语义等服务端线索纳入规则体系。
+
+由于 HFinger 使用 MIT License，而 WhatWeb 使用 GPL-2.0，项目不会直接复制 WhatWeb 插件或规则。推荐的补齐方式是基于公开产品文档、真实授权样本和响应证据重新编写 HFinger YAML 规则，并通过 `rules lint/test` 做质量校验。
 
 ## 项目结构
 
@@ -129,12 +149,37 @@ hfinger -l 127.0.0.1:8888 -p http://127.0.0.1:7777 -s result.xlsx --passive-stor
 
 HTTPS 被动识别需要将 `certs` 目录下生成的证书导入浏览器或系统信任区。
 
+说明：被动模式支持标准 TLS MITM 识别。GM/TLS 场景目前主要用于主动请求侧的兼容连接，真正国密客户端的被动 MITM 兼容性仍取决于客户端协议栈和证书信任环境。
+
 查询被动模式 JSONL 结果：
 
 ```bash
 hfinger passive query passive.jsonl
 hfinger passive query passive.jsonl --cms Cloudflare --min-confidence 80
 ```
+
+## 与其他工具联动
+
+HFinger 可以作为信息收集链路中的指纹识别层，与常见安全工具组合使用。
+
+```bash
+# httpx / 自研探活结果 -> HFinger 批量识别
+httpx -l domains.txt -silent > alive.txt
+hfinger -f alive.txt -j hfinger.json
+
+# HFinger 使用上游代理，联动 Burp Suite / mitmproxy / Clash 等代理链路
+hfinger -l 127.0.0.1:8888 -p http://127.0.0.1:8080 --passive-store passive.jsonl
+
+# 将 HFinger JSON 结果交给后续脚本、资产平台或漏洞验证流程
+hfinger -f alive.txt -j hfinger.json
+```
+
+典型组合方式：
+
+- 探活工具负责发现可访问目标，HFinger 负责识别服务端技术栈
+- Burp Suite、浏览器或移动端调试代理流量进入 HFinger，被动沉淀指纹结果
+- 自定义脚本读取 JSON/JSONL 输出，根据 `cms`、`category`、`confidence` 和 `evidence` 做后续编排
+- nuclei、xray 等验证工具可根据 HFinger 识别出的组件选择更精准的模板或插件
 
 ## 规则管理
 

@@ -287,7 +287,100 @@ examples:
         alpn: h2
 ```
 
-## 11. 常见问题
+### 中间件 Header 规则示例
+
+```yaml
+id: example-middleware
+name: Example Middleware
+category: middleware
+match:
+  strategy: score
+  threshold: 80
+  matchers:
+    - type: header.contains
+      key: X-Powered-By
+      value: Example Middleware
+      weight: 50
+      evidence: X-Powered-By 暴露中间件名称
+    - type: server.banner.regex
+      value: (?i)example-middleware/[0-9.]+
+      weight: 40
+      evidence: Server banner 暴露中间件版本
+negative:
+  - type: body.contains
+    value: Example Middleware Documentation
+    reason: 排除普通文档页面
+examples:
+  positive:
+    - name: Header 命中
+      status_code: 200
+      server: Example-Middleware/1.2.3
+      headers:
+        X-Powered-By: Example Middleware
+  negative:
+    - name: 文档页面
+      status_code: 200
+      body: Example Middleware Documentation
+```
+
+### WAF/CDN 规则示例
+
+```yaml
+id: example-waf
+name: Example WAF
+category: waf
+match:
+  strategy: score
+  threshold: 70
+  matchers:
+    - type: header.contains
+      key: Server
+      value: ExampleWAF
+      weight: 40
+    - type: cookie.contains
+      value: example_waf_session
+      weight: 40
+    - type: status.in
+      values:
+        - "403"
+        - "406"
+      weight: 20
+examples:
+  positive:
+    - name: 拦截响应
+      status_code: 403
+      headers:
+        Server: ExampleWAF
+        Set-Cookie: example_waf_session=abc
+```
+
+### 固定路径探测规则示例
+
+```yaml
+id: example-admin-path
+name: Example Admin Path
+category: web
+match:
+  strategy: score
+  threshold: 80
+  probes:
+    - id: admin
+      request:
+        method: GET
+        path: /example-admin/
+      matchers:
+        - type: path.exists
+          weight: 30
+          evidence: 默认管理路径存在
+        - type: title.contains
+          value: Example Admin
+          weight: 50
+          evidence: 默认管理页面标题命中
+negative:
+  - type: status.eq
+    value: 404
+    reason: 探测路径不存在
+```
 
 ## 11. AI 辅助生成规则提示词
 

@@ -287,6 +287,101 @@ examples:
         alpn: h2
 ```
 
+### Middleware Header Rule Example
+
+```yaml
+id: example-middleware
+name: Example Middleware
+category: middleware
+match:
+  strategy: score
+  threshold: 80
+  matchers:
+    - type: header.contains
+      key: X-Powered-By
+      value: Example Middleware
+      weight: 50
+      evidence: X-Powered-By exposes the middleware name
+    - type: server.banner.regex
+      value: (?i)example-middleware/[0-9.]+
+      weight: 40
+      evidence: Server banner exposes the middleware version
+negative:
+  - type: body.contains
+    value: Example Middleware Documentation
+    reason: Exclude documentation pages
+examples:
+  positive:
+    - name: header matched
+      status_code: 200
+      server: Example-Middleware/1.2.3
+      headers:
+        X-Powered-By: Example Middleware
+  negative:
+    - name: documentation page
+      status_code: 200
+      body: Example Middleware Documentation
+```
+
+### WAF/CDN Rule Example
+
+```yaml
+id: example-waf
+name: Example WAF
+category: waf
+match:
+  strategy: score
+  threshold: 70
+  matchers:
+    - type: header.contains
+      key: Server
+      value: ExampleWAF
+      weight: 40
+    - type: cookie.contains
+      value: example_waf_session
+      weight: 40
+    - type: status.in
+      values:
+        - "403"
+        - "406"
+      weight: 20
+examples:
+  positive:
+    - name: blocked response
+      status_code: 403
+      headers:
+        Server: ExampleWAF
+        Set-Cookie: example_waf_session=abc
+```
+
+### Fixed Path Probe Rule Example
+
+```yaml
+id: example-admin-path
+name: Example Admin Path
+category: web
+match:
+  strategy: score
+  threshold: 80
+  probes:
+    - id: admin
+      request:
+        method: GET
+        path: /example-admin/
+      matchers:
+        - type: path.exists
+          weight: 30
+          evidence: Default admin path exists
+        - type: title.contains
+          value: Example Admin
+          weight: 50
+          evidence: Default admin page title matched
+negative:
+  - type: status.eq
+    value: 404
+    reason: Probe path does not exist
+```
+
 ## 11. AI-Assisted Rule Drafting Prompt
 
 AI can help draft candidate rules, but AI output should not be submitted as-is. Recommended workflow:

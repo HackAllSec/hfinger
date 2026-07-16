@@ -77,6 +77,78 @@ func TestMatchRuleNegativeExcludes(t *testing.T) {
 	}
 }
 
+func TestMatchRuleAnyConfidenceUsesMatchedWeight(t *testing.T) {
+	response := Response{
+		URL:  "https://example.com/",
+		Body: []byte("strong-signal"),
+	}
+	rule := Rule{
+		ID:       "any-confidence",
+		Name:     "Any Confidence",
+		Category: "web",
+		Match: MatchBlock{
+			Strategy: StrategyAny,
+			Matchers: []Matcher{
+				{Type: "body.contains", Value: "strong-signal", Weight: 40},
+				{Type: "body.contains", Value: "missing-signal", Weight: 60},
+			},
+		},
+	}
+
+	result := MatchRule([]Response{response}, rule)
+	if !result.Matched {
+		t.Fatalf("MatchRule() expected match")
+	}
+	if result.Confidence != 40 {
+		t.Fatalf("confidence = %d, want 40", result.Confidence)
+	}
+}
+
+func TestMatchRuleAnyConfidenceIncludesMissingProbeWeight(t *testing.T) {
+	response := Response{
+		ProbeID: "homepage",
+		URL:     "https://example.com/",
+		Path:    "/",
+		Body:    []byte("homepage-signal"),
+	}
+	rule := Rule{
+		ID:       "any-confidence-probes",
+		Name:     "Any Confidence Probes",
+		Category: "web",
+		Match: MatchBlock{
+			Strategy: StrategyAny,
+			Probes: []Probe{
+				{
+					ID: "homepage",
+					Request: Request{
+						Path: "/",
+					},
+					Matchers: []Matcher{
+						{Type: "body.contains", Value: "homepage-signal", Weight: 40},
+					},
+				},
+				{
+					ID: "missing-admin",
+					Request: Request{
+						Path: "/admin",
+					},
+					Matchers: []Matcher{
+						{Type: "body.contains", Value: "admin-signal", Weight: 60},
+					},
+				},
+			},
+		},
+	}
+
+	result := MatchRule([]Response{response}, rule)
+	if !result.Matched {
+		t.Fatalf("MatchRule() expected match")
+	}
+	if result.Confidence != 40 {
+		t.Fatalf("confidence = %d, want 40", result.Confidence)
+	}
+}
+
 func TestMatchResponseStatusAndRegex(t *testing.T) {
 	response := Response{
 		URL:        "https://example.com/login",

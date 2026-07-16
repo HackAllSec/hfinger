@@ -197,7 +197,7 @@ func ProcessURL(url string) {
 			Evidence:   match.Evidence,
 		}
 		results = append(results, result)
-		logger.Success("[%s] [%s] [%d] [%s] [%s] [confidence=%d%%]", result.URL, result.CMS, result.StatusCode, result.Server, result.Title, result.Confidence)
+		logger.Success("[%s] [%s] [%d] [%s] [%s] [Confidence %d%%]", result.URL, result.CMS, result.StatusCode, result.Server, result.Title, result.Confidence)
 	}
 
 	outputLock.Lock()

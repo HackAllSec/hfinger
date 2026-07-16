@@ -93,6 +93,9 @@ func handleConnection(conn net.Conn) {
 func headersToMap(headers http.Header) map[string]string {
 	headerMap := make(map[string]string)
 	for key, values := range headers {
+		if strings.EqualFold(key, "Proxy-Authorization") || strings.EqualFold(key, "Proxy-Connection") {
+			continue
+		}
 		if len(values) > 0 {
 			headerMap[key] = values[0]
 		}
@@ -100,8 +103,31 @@ func headersToMap(headers http.Header) map[string]string {
 	return headerMap
 }
 
+func requestTargetURL(req *http.Request, isHTTPS bool) string {
+	if req == nil || req.URL == nil {
+		return ""
+	}
+	if req.URL.IsAbs() {
+		return req.URL.String()
+	}
+
+	scheme := "http"
+	if isHTTPS {
+		scheme = "https"
+	}
+	host := req.Host
+	if host == "" {
+		host = req.URL.Host
+	}
+	path := req.URL.RequestURI()
+	if path == "" {
+		path = "/"
+	}
+	return scheme + "://" + host + path
+}
+
 func handleHTTP(conn net.Conn, req *http.Request) error {
-	logger.Info("Received HTTP request: %s", req.URL.String())
+	logger.Info("Received HTTP request: %s", requestTargetURL(req, false))
 	err := ForwardHTTPRequest(conn, req, false)
 	if err != nil {
 		return err
@@ -179,14 +205,13 @@ func getTLSConfigForHost(host string) (*tls.Config, error) {
 
 	tlsConfig := &tls.Config{
 		GetConfigForClient: func(hello *tls.ClientHelloInfo) (*tls.Config, error) {
+			if isGMClient(hello) {
+				return gmTLSConfig, nil
+			}
 			for _, proto := range hello.SupportedProtos {
 				if proto == "h2" || proto == "http/1.1" {
 					return stdTLSConfig, nil
 				}
-			}
-
-			if isGMClient(hello) {
-				return gmTLSConfig, nil
 			}
 
 			return stdTLSConfig, nil
@@ -218,17 +243,8 @@ func isGMClient(hello *tls.ClientHelloInfo) bool {
 	return false
 }
 
-func contains(protos []string, protocol string) bool {
-	for _, proto := range protos {
-		if proto == protocol {
-			return true
-		}
-	}
-	return false
-}
-
 func handleHTTP2Request(w http.ResponseWriter, r *http.Request) {
-	fullURL := "https://" + r.Host + r.URL.String()
+	fullURL := requestTargetURL(r, true)
 	logger.Info("[HTTP2] Handling request: %s", fullURL)
 
 	// 创建响应记录器
@@ -296,7 +312,7 @@ func forwardRequest(
 }
 
 func ForwardHTTP2Request(w http.ResponseWriter, r *http.Request) error {
-	url := "https://" + r.Host + r.URL.String()
+	url := requestTargetURL(r, true)
 	headers := headersToMap(r.Header)
 
 	resp, err := forwardRequest(
@@ -340,10 +356,7 @@ func ForwardHTTP2Request(w http.ResponseWriter, r *http.Request) error {
 }
 
 func ForwardHTTPRequest(conn net.Conn, req *http.Request, ishttps bool) error {
-	url := req.URL.String()
-	if ishttps {
-		url = "https://" + req.Host + req.URL.String()
-	}
+	url := requestTargetURL(req, ishttps)
 	headers := headersToMap(req.Header)
 
 	resp, err := forwardRequest(
@@ -410,12 +423,7 @@ func handleTextResponse(conn net.Conn, resp *http.Response, url string) error {
 
 func handleBinaryResponse(conn net.Conn, resp *http.Response) error {
 	defer resp.Body.Close()
-	if err := resp.Write(conn); err != nil {
-		return err
-	}
-
-	_, err := io.Copy(conn, resp.Body)
-	return err
+	return resp.Write(conn)
 }
 
 func isTextContent(contentType string) bool {
@@ -469,7 +477,7 @@ func matchfingerprint(url string, statuscode int, body []byte, header http.Heade
 		cms = match.Rule.Name
 		key := fmt.Sprintf("%s::%s", url, cms)
 		if _, loaded := matchedCMS.LoadOrStore(key, true); !loaded {
-			logger.Success("[%s] [%s] [%d] [%s] [%s] [confidence=%d%%]", url, cms, statuscode, server, title, match.Confidence)
+			logger.Success("[%s] [%s] [%d] [%s] [%s] [Confidence %d%%]", url, cms, statuscode, server, title, match.Confidence)
 			result := config.Result{
 				URL:        url,
 				CMS:        cms,

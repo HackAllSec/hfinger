@@ -51,6 +51,9 @@ func MatchRule(responses []Response, rule Rule) MatchResult {
 
 	for _, probe := range probes {
 		candidates := filterResponsesForProbe(responses, probe)
+		for _, matcher := range probe.Matchers {
+			totalPossible += matcherWeight(matcher)
+		}
 		if len(candidates) == 0 {
 			allMatched = false
 			continue
@@ -58,7 +61,6 @@ func MatchRule(responses []Response, rule Rule) MatchResult {
 
 		for _, matcher := range probe.Matchers {
 			weight := matcherWeight(matcher)
-			totalPossible += weight
 			evidence, ok := matchAnyResponse(candidates, matcher)
 			if !ok {
 				allMatched = false
@@ -122,7 +124,10 @@ func confidence(score, totalPossible, threshold int, strategy string) int {
 	}
 	switch strategy {
 	case StrategyAny:
-		return 100
+		if totalPossible <= 0 {
+			return 100
+		}
+		return min(100, score*100/totalPossible)
 	case StrategyAll:
 		if totalPossible <= 0 {
 			return 100
