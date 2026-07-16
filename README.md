@@ -146,6 +146,11 @@ hfinger -l 127.0.0.1:8888 -s result.xlsx --passive-store passive.jsonl
 ```
 
 浏览器或其它工具将代理设置为 `127.0.0.1:8888` 后，HFinger 会在转发流量的同时识别响应中的服务端指纹。
+长时间运行时可以启用 JSONL 轮转，避免单个结果文件持续膨胀：
+
+```bash
+hfinger -l 127.0.0.1:8888 --passive-store passive.jsonl --passive-store-max-bytes 104857600
+```
 
 如需联动上游代理：
 
@@ -204,7 +209,7 @@ hfinger -u https://www.example.com --tls-mode std
 
 ```bash
 hfinger passive query passive.jsonl
-hfinger passive query passive.jsonl --cms Cloudflare --min-confidence 80
+hfinger passive query passive.jsonl --cms Cloudflare --min-confidence 80 --limit 100
 ```
 
 ## 与其他工具联动
@@ -350,6 +355,15 @@ hfinger rules stats
 
 输出包含规则总量、产品数量、lint error/warning 计数、`tier.curated` / `tier.migrated` 分层统计、各 tier 的 lint 分布，以及各 category 的规则分布。
 
+查看规则治理优先级：
+
+```bash
+hfinger rules doctor
+hfinger rules doctor --max-rules 0
+```
+
+`rules doctor` 会聚合 lint 问题、输出高频问题类型，并列出最需要治理的规则及建议修复方向。`--max-rules 0` 只输出汇总，适合 CI 基线检查。
+
 校验外置规则：
 
 ```bash
@@ -449,6 +463,8 @@ metadata:
 -r, --redirect int         最大重定向次数
     --rules stringArray    加载外置 YAML 规则文件或目录
     --passive-store string 被动模式结果 JSONL 落盘路径
+    --passive-store-max-bytes int
+                           被动 JSONL 文件超过指定字节数后自动轮转，0 表示关闭
     --client-cert string   双向 TLS 客户端证书
     --client-key string    双向 TLS 客户端私钥
     --gm-client-cert string TLCP 单证书客户端证书

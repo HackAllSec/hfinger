@@ -3,7 +3,9 @@ package passive
 import (
 	"bufio"
 	"encoding/json"
+	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 	"sync"
 	"time"
@@ -17,12 +19,22 @@ type Record struct {
 }
 
 var storePath string
+var storeMaxBytes int64
 var storeMu sync.Mutex
 
 func SetStorePath(path string) {
 	storeMu.Lock()
 	defer storeMu.Unlock()
 	storePath = strings.TrimSpace(path)
+}
+
+func SetStoreMaxBytes(maxBytes int64) {
+	storeMu.Lock()
+	defer storeMu.Unlock()
+	if maxBytes < 0 {
+		maxBytes = 0
+	}
+	storeMaxBytes = maxBytes
 }
 
 func StorePath() string {
@@ -39,17 +51,20 @@ func Append(result config.Result) error {
 	if path == "" {
 		return nil
 	}
+	record := Record{Time: time.Now().UTC(), Result: result}
+	data, err := json.Marshal(record)
+	if err != nil {
+		return err
+	}
+	if err := rotateIfNeeded(path, int64(len(data)+1)); err != nil {
+		return err
+	}
 	file, err := os.OpenFile(path, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0600)
 	if err != nil {
 		return err
 	}
 	defer file.Close()
 
-	record := Record{Time: time.Now().UTC(), Result: result}
-	data, err := json.Marshal(record)
-	if err != nil {
-		return err
-	}
 	if _, err := file.Write(append(data, '\n')); err != nil {
 		return err
 	}
@@ -57,16 +72,25 @@ func Append(result config.Result) error {
 }
 
 func Query(path string, filter QueryFilter) ([]Record, error) {
+	var records []Record
+	err := QueryEach(path, filter, func(record Record) error {
+		records = append(records, record)
+		return nil
+	})
+	return records, err
+}
+
+func QueryEach(path string, filter QueryFilter, handle func(Record) error) error {
 	file, err := os.Open(path)
 	if err != nil {
-		return nil, err
+		return err
 	}
 	defer file.Close()
 
-	var records []Record
 	scanner := bufio.NewScanner(file)
 	buffer := make([]byte, 0, 1024*1024)
 	scanner.Buffer(buffer, 10*1024*1024)
+	matched := 0
 	for scanner.Scan() {
 		line := strings.TrimSpace(scanner.Text())
 		if line == "" {
@@ -77,13 +101,44 @@ func Query(path string, filter QueryFilter) ([]Record, error) {
 			continue
 		}
 		if filter.Match(record) {
-			records = append(records, record)
-			if filter.Limit > 0 && len(records) >= filter.Limit {
+			if err := handle(record); err != nil {
+				return err
+			}
+			matched++
+			if filter.Limit > 0 && matched >= filter.Limit {
 				break
 			}
 		}
 	}
-	return records, scanner.Err()
+	return scanner.Err()
+}
+
+func rotateIfNeeded(path string, pendingBytes int64) error {
+	if storeMaxBytes <= 0 {
+		return nil
+	}
+	info, err := os.Stat(path)
+	if err != nil {
+		if os.IsNotExist(err) {
+			return nil
+		}
+		return err
+	}
+	if info.Size() == 0 || info.Size()+pendingBytes <= storeMaxBytes {
+		return nil
+	}
+	rotatedPath := rotatedStorePath(path, time.Now().UTC())
+	return os.Rename(path, rotatedPath)
+}
+
+func rotatedStorePath(path string, now time.Time) string {
+	dir := filepath.Dir(path)
+	ext := filepath.Ext(path)
+	base := strings.TrimSuffix(filepath.Base(path), ext)
+	if ext == "" {
+		ext = ".jsonl"
+	}
+	return filepath.Join(dir, fmt.Sprintf("%s-%s%s", base, now.Format("20060102T150405.000000000Z"), ext))
 }
 
 type QueryFilter struct {

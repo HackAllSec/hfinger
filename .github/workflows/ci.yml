@@ -40,6 +40,7 @@ jobs:
       - name: Check rule quality baseline
         run: |
           go run main.go rules stats | tee /tmp/hfinger-rules-stats.txt
+          go run main.go rules doctor --max-rules 0
           grep -q '^lint.errors=0$' /tmp/hfinger-rules-stats.txt
           warnings=$(awk -F= '/^lint.warnings=/{print $2}' /tmp/hfinger-rules-stats.txt)
           test "${warnings}" -le 2491

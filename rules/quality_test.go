@@ -103,6 +103,68 @@ func TestStatsReportsLintIssuesByTier(t *testing.T) {
 	}
 }
 
+func TestDoctorReportsTopIssuesAndSuggestions(t *testing.T) {
+	report := Doctor([]Rule{
+		{
+			ID:       "builtin-0001-weak",
+			Name:     "Weak Migrated",
+			Category: "cms",
+			Match: MatchBlock{Matchers: []Matcher{
+				{Type: "body.contains", Value: "OK"},
+			}},
+		},
+		{
+			ID:       "builtin-0002-weak",
+			Name:     "Another Weak Migrated",
+			Category: "cms",
+			Match: MatchBlock{Matchers: []Matcher{
+				{Type: "body.contains", Value: "NO"},
+			}},
+		},
+		statsCleanRule("core-0001-clean", "Clean", "devops"),
+	}, 1)
+
+	if report.Stats.LintWarnings == 0 {
+		t.Fatalf("LintWarnings = 0, want warnings")
+	}
+	if len(report.Issues) == 0 {
+		t.Fatalf("Doctor() issues empty")
+	}
+	if len(report.Rules) != 1 {
+		t.Fatalf("Doctor() rules length = %d, want 1", len(report.Rules))
+	}
+	if !report.HasMore {
+		t.Fatalf("Doctor() HasMore = false, want true")
+	}
+	rule := report.Rules[0]
+	if rule.RuleID != "builtin-0001-weak" {
+		t.Fatalf("Doctor() top rule = %s, want builtin-0001-weak", rule.RuleID)
+	}
+	if len(rule.Suggestions) == 0 {
+		t.Fatalf("Doctor() suggestions empty")
+	}
+}
+
+func TestDoctorCanReturnSummaryOnly(t *testing.T) {
+	report := Doctor([]Rule{
+		{
+			ID:       "builtin-0001-weak",
+			Name:     "Weak Migrated",
+			Category: "cms",
+			Match: MatchBlock{Matchers: []Matcher{
+				{Type: "body.contains", Value: "OK"},
+			}},
+		},
+	}, 0)
+
+	if len(report.Rules) != 0 {
+		t.Fatalf("Doctor() rules length = %d, want 0", len(report.Rules))
+	}
+	if !report.HasMore {
+		t.Fatalf("Doctor() HasMore = false, want true")
+	}
+}
+
 func statsCleanRule(id string, name string, category string) Rule {
 	return Rule{
 		ID:       id,

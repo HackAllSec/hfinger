@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"sort"
+	"strings"
 	"time"
 
 	"github.com/fatih/color"
@@ -60,6 +61,7 @@ var RootCmd = &cobra.Command{
 		outputXLSX, _ := cmd.Flags().GetString("output-xlsx")
 		rulePaths, _ := cmd.Flags().GetStringArray("rules")
 		passiveStore, _ := cmd.Flags().GetString("passive-store")
+		passiveStoreMaxBytes, _ := cmd.Flags().GetInt64("passive-store-max-bytes")
 		versionFlag, _ := cmd.Flags().GetBool("version")
 		checkFlag, _ := cmd.Flags().GetBool("check-update")
 		updateFlag, _ := cmd.Flags().GetBool("update")
@@ -146,6 +148,7 @@ var RootCmd = &cobra.Command{
 			os.Exit(1)
 		}
 		passive.SetStorePath(passiveStore)
+		passive.SetStoreMaxBytes(passiveStoreMaxBytes)
 		models.ShowFingerPrints()
 		models.SetThread(thread)
 		models.SetMaxRedirects(redirect)
@@ -182,6 +185,7 @@ func init() {
 	RootCmd.Flags().String("tls-mode", "auto", "TLS mode for active requests: auto, gm, or std")
 	RootCmd.Flags().StringArray("rules", nil, "Load external YAML rule file or directory; can be specified multiple times")
 	RootCmd.Flags().String("passive-store", "", "Write passive mode fingerprint results to a JSONL file")
+	RootCmd.Flags().Int64("passive-store-max-bytes", 0, "Rotate passive JSONL store when it exceeds this size in bytes; 0 disables rotation")
 	RootCmd.Flags().IntP("thread", "t", 100, "Number of fingerprint recognition threads")
 	RootCmd.Flags().IntP("redirect", "r", 5, "Number of max redirects")
 	RootCmd.Flags().BoolP("check-update", "c", false, "Check for updates and upgrades")
@@ -229,24 +233,50 @@ var passiveQueryCmd = &cobra.Command{
 		categoryFilter, _ := cmd.Flags().GetString("category")
 		minConfidence, _ := cmd.Flags().GetInt("min-confidence")
 		limit, _ := cmd.Flags().GetInt("limit")
-		records, err := passive.Query(args[0], passive.QueryFilter{
+		filter := passive.QueryFilter{
 			URL:           urlFilter,
 			CMS:           cmsFilter,
 			Category:      categoryFilter,
 			MinConfidence: minConfidence,
 			Limit:         limit,
-		})
-		if err != nil {
+		}
+		if err := printPassiveQueryJSON(args[0], filter); err != nil {
 			logger.Error("Error: %v", err)
 			os.Exit(1)
 		}
-		data, err := json.MarshalIndent(records, "", "  ")
-		if err != nil {
-			logger.Error("Error: %v", err)
-			os.Exit(1)
-		}
-		fmt.Println(string(data))
 	},
+}
+
+func printPassiveQueryJSON(path string, filter passive.QueryFilter) error {
+	file, err := os.Open(path)
+	if err != nil {
+		return err
+	}
+	_ = file.Close()
+
+	fmt.Println("[")
+	first := true
+	err = passive.QueryEach(path, filter, func(record passive.Record) error {
+		if !first {
+			fmt.Println(",")
+		}
+		first = false
+		data, marshalErr := json.MarshalIndent(record, "  ", "  ")
+		if marshalErr != nil {
+			return marshalErr
+		}
+		fmt.Print("  ")
+		fmt.Print(strings.ReplaceAll(string(data), "\n", "\n  "))
+		return nil
+	})
+	if err != nil {
+		return err
+	}
+	if !first {
+		fmt.Println()
+	}
+	fmt.Println("]")
+	return nil
 }
 
 var rulesLintCmd = &cobra.Command{
@@ -341,6 +371,37 @@ var rulesStatsCmd = &cobra.Command{
 	},
 }
 
+var rulesDoctorCmd = &cobra.Command{
+	Use:   "doctor [rule-file-or-directory...]",
+	Short: "Summarize rule quality issues and remediation priorities",
+	Run: func(cmd *cobra.Command, args []string) {
+		maxRules, _ := cmd.Flags().GetInt("max-rules")
+		var ruleSet []rules.Rule
+		if len(args) == 0 {
+			rulePaths, _ := cmd.Root().Flags().GetStringArray("rules")
+			if err := rules.Init(rulePaths); err != nil {
+				logger.Error("Error: Failed to load fingerprint rules: %v", err)
+				os.Exit(1)
+			}
+			ruleSet = rules.ActiveRules()
+		} else {
+			for _, path := range args {
+				loaded, err := rules.LoadYAMLPath(path)
+				if err != nil {
+					logger.Error("Error: %v", err)
+					os.Exit(1)
+				}
+				ruleSet = append(ruleSet, loaded...)
+			}
+		}
+		report := rules.Doctor(ruleSet, maxRules)
+		printDoctorReport(report)
+		if report.Stats.LintErrors > 0 {
+			os.Exit(1)
+		}
+	},
+}
+
 func printStatsMap(prefix string, values map[string]int) {
 	keys := make([]string, 0, len(values))
 	for key := range values {
@@ -349,6 +410,29 @@ func printStatsMap(prefix string, values map[string]int) {
 	sort.Strings(keys)
 	for _, key := range keys {
 		fmt.Printf("%s%s=%d\n", prefix, key, values[key])
+	}
+}
+
+func printDoctorReport(report rules.DoctorReport) {
+	fmt.Printf("rules=%d products=%d\n", report.Stats.Rules, report.Stats.Products)
+	fmt.Printf("lint.errors=%d\n", report.Stats.LintErrors)
+	fmt.Printf("lint.warnings=%d\n", report.Stats.LintWarnings)
+	printStatsMap("tier.", report.Stats.Tiers)
+	printStatsMap("lint.errors.tier.", report.Stats.LintErrorsByTier)
+	printStatsMap("lint.warnings.tier.", report.Stats.LintWarningsByTier)
+	for i, issue := range report.Issues {
+		fmt.Printf("issue.%d.severity=%s\n", i+1, issue.Severity)
+		fmt.Printf("issue.%d.count=%d\n", i+1, issue.Count)
+		fmt.Printf("issue.%d.message=%s\n", i+1, issue.Message)
+	}
+	for _, rule := range report.Rules {
+		fmt.Printf("rule=%s tier=%s category=%s errors=%d warnings=%d name=%q\n", rule.RuleID, rule.Tier, rule.Category, rule.Errors, rule.Warnings, rule.Name)
+		for _, suggestion := range rule.Suggestions {
+			fmt.Printf("  suggestion=%s\n", suggestion)
+		}
+	}
+	if report.HasMore {
+		fmt.Println("more=true")
 	}
 }
 
@@ -383,6 +467,8 @@ func init() {
 	rulesCmd.AddCommand(rulesCompileCmd)
 	rulesCmd.AddCommand(rulesTestCmd)
 	rulesCmd.AddCommand(rulesStatsCmd)
+	rulesDoctorCmd.Flags().Int("max-rules", 20, "Maximum number of rule remediation entries to print; 0 prints summary only")
+	rulesCmd.AddCommand(rulesDoctorCmd)
 
 	passiveQueryCmd.Flags().String("url", "", "Filter by URL substring")
 	passiveQueryCmd.Flags().String("cms", "", "Filter by product name")

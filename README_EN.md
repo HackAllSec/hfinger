@@ -146,6 +146,11 @@ hfinger -l 127.0.0.1:8888 -s result.xlsx --passive-store passive.jsonl
 ```
 
 Configure your browser or another tool to use `127.0.0.1:8888` as the proxy. HFinger forwards traffic and fingerprints server responses at the same time.
+For long-running passive mode, enable JSONL rotation to prevent one result file from growing indefinitely:
+
+```bash
+hfinger -l 127.0.0.1:8888 --passive-store passive.jsonl --passive-store-max-bytes 104857600
+```
 
 Use an upstream proxy:
 
@@ -204,7 +209,7 @@ Query passive mode JSONL results:
 
 ```bash
 hfinger passive query passive.jsonl
-hfinger passive query passive.jsonl --cms Cloudflare --min-confidence 80
+hfinger passive query passive.jsonl --cms Cloudflare --min-confidence 80 --limit 100
 ```
 
 ## Toolchain Integration
@@ -350,6 +355,15 @@ hfinger rules stats
 
 The output includes total rule count, product count, lint error/warning counts, `tier.curated` / `tier.migrated` tier counts, lint distribution by tier, and category distribution.
 
+Show rule remediation priorities:
+
+```bash
+hfinger rules doctor
+hfinger rules doctor --max-rules 0
+```
+
+`rules doctor` aggregates lint findings, prints the most common issue types, and lists rules that should be cleaned up first with suggested remediation directions. `--max-rules 0` prints summary output only and is suitable for CI baseline checks.
+
 Validate external rules:
 
 ```bash
@@ -449,6 +463,8 @@ metadata:
 -r, --redirect int         Max redirects
     --rules stringArray    Load external YAML rule file or directory
     --passive-store string Write passive mode results to a JSONL file
+    --passive-store-max-bytes int
+                           Rotate passive JSONL store after it exceeds this size in bytes; 0 disables rotation
     --client-cert string   Mutual TLS client certificate
     --client-key string    Mutual TLS client private key
     --gm-client-cert string TLCP single-certificate client certificate

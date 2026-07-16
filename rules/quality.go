@@ -3,6 +3,8 @@ package rules
 import (
 	"fmt"
 	"net/http"
+	"slices"
+	"sort"
 	"strings"
 )
 
@@ -28,6 +30,29 @@ type StatsReport struct {
 	LintWarnings       int
 	LintErrorsByTier   map[string]int
 	LintWarningsByTier map[string]int
+}
+
+type DoctorReport struct {
+	Stats   StatsReport
+	Issues  []DoctorIssueSummary
+	Rules   []DoctorRuleSummary
+	HasMore bool
+}
+
+type DoctorIssueSummary struct {
+	Severity string
+	Message  string
+	Count    int
+}
+
+type DoctorRuleSummary struct {
+	RuleID      string
+	Name        string
+	Category    string
+	Tier        string
+	Errors      int
+	Warnings    int
+	Suggestions []string
 }
 
 func Stats(ruleSet []Rule) StatsReport {
@@ -56,6 +81,122 @@ func Stats(ruleSet []Rule) StatsReport {
 		report.LintWarningsByTier[ruleTierForIssue(ruleTiers, lintWarning)]++
 	}
 	return report
+}
+
+func Doctor(ruleSet []Rule, maxRules int) DoctorReport {
+	stats := Stats(ruleSet)
+	lintReport := LintRules(ruleSet)
+	ruleIndex := make(map[string]Rule, len(ruleSet))
+	for _, rule := range ruleSet {
+		ruleIndex[rule.ID] = rule
+	}
+
+	issueCounts := make(map[string]DoctorIssueSummary)
+	ruleSummaries := make(map[string]*DoctorRuleSummary)
+	addIssue := func(item LintIssue) {
+		key := item.Severity + "\x00" + item.Message
+		summary := issueCounts[key]
+		summary.Severity = item.Severity
+		summary.Message = item.Message
+		summary.Count++
+		issueCounts[key] = summary
+
+		rule, ok := ruleIndex[item.RuleID]
+		if !ok {
+			rule = Rule{ID: item.RuleID}
+		}
+		ruleSummary := ruleSummaries[item.RuleID]
+		if ruleSummary == nil {
+			ruleSummary = &DoctorRuleSummary{
+				RuleID:   item.RuleID,
+				Name:     rule.Name,
+				Category: rule.Category,
+				Tier:     RuleTier(rule),
+			}
+			ruleSummaries[item.RuleID] = ruleSummary
+		}
+		if item.Severity == "error" {
+			ruleSummary.Errors++
+		} else {
+			ruleSummary.Warnings++
+		}
+		addSuggestion(ruleSummary, item.Message)
+	}
+	for _, item := range lintReport.Errors {
+		addIssue(item)
+	}
+	for _, item := range lintReport.Warnings {
+		addIssue(item)
+	}
+
+	issues := make([]DoctorIssueSummary, 0, len(issueCounts))
+	for _, issue := range issueCounts {
+		issues = append(issues, issue)
+	}
+	sort.Slice(issues, func(i, j int) bool {
+		if issues[i].Count != issues[j].Count {
+			return issues[i].Count > issues[j].Count
+		}
+		if issues[i].Severity != issues[j].Severity {
+			return issues[i].Severity < issues[j].Severity
+		}
+		return issues[i].Message < issues[j].Message
+	})
+
+	rules := make([]DoctorRuleSummary, 0, len(ruleSummaries))
+	for _, ruleSummary := range ruleSummaries {
+		rules = append(rules, *ruleSummary)
+	}
+	sort.Slice(rules, func(i, j int) bool {
+		if rules[i].Errors != rules[j].Errors {
+			return rules[i].Errors > rules[j].Errors
+		}
+		if rules[i].Warnings != rules[j].Warnings {
+			return rules[i].Warnings > rules[j].Warnings
+		}
+		return rules[i].RuleID < rules[j].RuleID
+	})
+	hasMore := false
+	if maxRules >= 0 && len(rules) > maxRules {
+		rules = rules[:maxRules]
+		hasMore = true
+	}
+
+	return DoctorReport{Stats: stats, Issues: issues, Rules: rules, HasMore: hasMore}
+}
+
+func addSuggestion(ruleSummary *DoctorRuleSummary, message string) {
+	suggestion := doctorSuggestion(message)
+	if suggestion == "" {
+		return
+	}
+	if slices.Contains(ruleSummary.Suggestions, suggestion) {
+		return
+	}
+	ruleSummary.Suggestions = append(ruleSummary.Suggestions, suggestion)
+}
+
+func doctorSuggestion(message string) string {
+	switch {
+	case strings.Contains(message, "negative matchers"):
+		return "add negative matchers to reduce false positives"
+	case strings.Contains(message, "no strong evidence matcher"):
+		return "add a strong evidence matcher such as header.contains, favicon.hash, json.key.exists, or tls.cert.*"
+	case strings.Contains(message, "weak matcher value"):
+		return "replace weak keywords with longer product-specific evidence"
+	case strings.Contains(message, "metadata.references"):
+		return "add upstream documentation or product references"
+	case strings.Contains(message, "unsupported matcher type"):
+		return "replace unsupported matcher types with the documented YAML schema"
+	case strings.Contains(message, "has no value"):
+		return "set matcher value, values, key, or use path.exists where appropriate"
+	case strings.Contains(message, "duplicate rule id"):
+		return "assign a unique rule id"
+	case strings.Contains(message, "cannot be empty"):
+		return "fill the required rule metadata field"
+	default:
+		return ""
+	}
 }
 
 func RuleTier(rule Rule) string {
@@ -202,8 +343,8 @@ func hasCorroboratedEvidence(rule Rule) bool {
 
 func matcherSource(matcherType string) string {
 	matcherType = strings.ToLower(strings.TrimSpace(matcherType))
-	if idx := strings.Index(matcherType, "."); idx >= 0 {
-		return matcherType[:idx]
+	if source, _, ok := strings.Cut(matcherType, "."); ok {
+		return source
 	}
 	return matcherType
 }
