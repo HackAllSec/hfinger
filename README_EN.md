@@ -164,11 +164,14 @@ When only `--client-cert/--client-key` is provided, HFinger uses it for standard
 
 Active requests use `auto` mode by default, so users do not need to specify an extra option. `auto` tries standard TLS first. If standard TLS fails with a GM/TLS-like error, HFinger automatically tries GM/TLS fallback.
 
-The built-in GM/TLS support is based on `tjfoc/gmsm`. It currently supports GM/T 0024-2014 `VersionGMSSL(0x0101)` and two implemented cipher suites: `GMTLS_SM2_WITH_SM4_SM3(0xe013)` and `GMTLS_ECDHE_SM2_WITH_SM4_SM3(0xe011)`. If a target requires another TLCP/GMSSL variant or an unsupported cipher suite, HFinger reports the supported range in the connection error.
+The built-in GM/TLS support now uses multiple providers. HFinger keeps the `tjfoc/gmsm` GM/TLS compatibility layer and also integrates GoTLCP for TLCP suites: `ECC_SM4_GCM_SM3(0xe053)`, `ECC_SM4_CBC_SM3(0xe013)`, `ECDHE_SM4_GCM_SM3(0xe051)`, and `ECDHE_SM4_CBC_SM3(0xe011)`. If a target requires another unsupported protocol variant or cipher suite, HFinger reports the supported range in the connection error.
 
 If the target type is already known, force the mode explicitly:
 
 ```bash
+# Show built-in TLS / GM capabilities
+hfinger tls capabilities
+
 # GM/TLS only
 hfinger -u https://www.example.com --tls-mode gm
 

@@ -1,12 +1,13 @@
 package models
 
 import (
+	"net"
 	"net/http"
 	"path/filepath"
 	"testing"
+	"time"
 
-	"github.com/tjfoc/gmsm/gmtls"
-
+	"gitee.com/Trisia/gotlcp/tlcp"
 	"hfinger/config"
 	"hfinger/utils"
 )
@@ -54,6 +55,66 @@ func TestRequestTargetURL(t *testing.T) {
 	}
 }
 
+func TestNegotiateProxyTLCPHandshake(t *testing.T) {
+	certDir := t.TempDir()
+	oldCertsDir := config.CertsDir
+	oldCertsPath := config.CertsPath
+	oldKeyPath := config.KeyPath
+	oldGMCertsPath := config.GMCertsPath
+	oldGMKeyPath := config.GMKeyPath
+	config.CertsDir = certDir
+	config.CertsPath = filepath.Join(certDir, config.CaCertFile)
+	config.KeyPath = filepath.Join(certDir, config.CaKeyFile)
+	config.GMCertsPath = filepath.Join(certDir, config.GMCaCertFile)
+	config.GMKeyPath = filepath.Join(certDir, config.GMCaKeyFile)
+	t.Cleanup(func() {
+		config.CertsDir = oldCertsDir
+		config.CertsPath = oldCertsPath
+		config.KeyPath = oldKeyPath
+		config.GMCertsPath = oldGMCertsPath
+		config.GMKeyPath = oldGMKeyPath
+	})
+
+	if err := utils.EnsureCerts(); err != nil {
+		t.Fatalf("EnsureCerts() unexpected error: %v", err)
+	}
+	tlsConfig, err := getTLSConfigForHost("example.com")
+	if err != nil {
+		t.Fatalf("getTLSConfigForHost() unexpected error: %v", err)
+	}
+
+	serverConn, clientConn := net.Pipe()
+	defer serverConn.Close()
+	defer clientConn.Close()
+	deadline := time.Now().Add(5 * time.Second)
+	if err := serverConn.SetDeadline(deadline); err != nil {
+		t.Fatalf("server SetDeadline() error: %v", err)
+	}
+	if err := clientConn.SetDeadline(deadline); err != nil {
+		t.Fatalf("client SetDeadline() error: %v", err)
+	}
+
+	serverErr := make(chan error, 1)
+	go func() {
+		conn, err := negotiateProxyTLS(serverConn, tlsConfig)
+		if err == nil {
+			conn.Close()
+		}
+		serverErr <- err
+	}()
+
+	client := tlcp.Client(clientConn, &tlcp.Config{
+		InsecureSkipVerify: true,
+		CipherSuites:       utils.SupportedTLCPCipherSuites(),
+	})
+	if err := client.Handshake(); err != nil {
+		t.Fatalf("TLCP client Handshake() error: %v", err)
+	}
+	if err := <-serverErr; err != nil {
+		t.Fatalf("negotiateProxyTLS() error: %v", err)
+	}
+}
+
 func TestHeadersToMapStripsProxyHeaders(t *testing.T) {
 	headers := http.Header{
 		"User-Agent":          {"hfinger-test"},
@@ -73,7 +134,7 @@ func TestHeadersToMapStripsProxyHeaders(t *testing.T) {
 	}
 }
 
-func TestGetTLSConfigForHostUsesGMTLSAutoSwitch(t *testing.T) {
+func TestGetTLSConfigForHostUsesStandardTLSAndTLCP(t *testing.T) {
 	certDir := t.TempDir()
 	oldCertsDir := config.CertsDir
 	oldCertsPath := config.CertsPath
@@ -101,25 +162,19 @@ func TestGetTLSConfigForHostUsesGMTLSAutoSwitch(t *testing.T) {
 	if err != nil {
 		t.Fatalf("getTLSConfigForHost() unexpected error: %v", err)
 	}
-	if tlsConfig.GMSupport == nil || !tlsConfig.GMSupport.IsAutoSwitchMode() {
-		t.Fatalf("getTLSConfigForHost() did not enable GM/TLS auto switch mode")
+	if tlsConfig.std == nil || len(tlsConfig.std.Certificates) != 1 {
+		t.Fatalf("getTLSConfigForHost() did not configure standard TLS certificate")
 	}
-	if tlsConfig.GetCertificate == nil || tlsConfig.GetKECertificate == nil {
-		t.Fatalf("getTLSConfigForHost() did not configure GM sign/encryption certificates")
+	if tlsConfig.tlcp == nil || len(tlsConfig.tlcp.Certificates) != 2 {
+		t.Fatalf("getTLSConfigForHost() did not configure TLCP sign/encryption certificates")
 	}
-	wantSuites := utils.SupportedGMTLSCipherSuites()
-	if len(tlsConfig.CipherSuites) != len(wantSuites) {
-		t.Fatalf("CipherSuites length = %d, want %d", len(tlsConfig.CipherSuites), len(wantSuites))
+	wantSuites := utils.SupportedTLCPCipherSuites()
+	if len(tlsConfig.tlcp.CipherSuites) != len(wantSuites) {
+		t.Fatalf("CipherSuites length = %d, want %d", len(tlsConfig.tlcp.CipherSuites), len(wantSuites))
 	}
 	for i := range wantSuites {
-		if tlsConfig.CipherSuites[i] != wantSuites[i] {
-			t.Fatalf("CipherSuites[%d] = %#x, want %#x", i, tlsConfig.CipherSuites[i], wantSuites[i])
+		if tlsConfig.tlcp.CipherSuites[i] != wantSuites[i] {
+			t.Fatalf("CipherSuites[%d] = %#x, want %#x", i, tlsConfig.tlcp.CipherSuites[i], wantSuites[i])
 		}
-	}
-	cert, err := tlsConfig.GetCertificate(&gmtls.ClientHelloInfo{
-		SupportedVersions: []uint16{gmtls.VersionGMSSL},
-	})
-	if err != nil || cert == nil {
-		t.Fatalf("GM GetCertificate() = %v, %v; want certificate", cert, err)
 	}
 }

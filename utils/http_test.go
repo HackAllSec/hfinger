@@ -2,15 +2,36 @@ package utils
 
 import (
 	"bytes"
-	"crypto/tls"
 	"fmt"
 	"net"
 	"net/http"
 	"strings"
 	"testing"
 
+	"gitee.com/Trisia/gotlcp/tlcp"
 	"github.com/tjfoc/gmsm/gmtls"
 )
+
+type stubTLSProvider struct {
+	name  string
+	calls *int
+	conn  net.Conn
+	err   error
+}
+
+func (provider stubTLSProvider) Name() string {
+	return provider.name
+}
+
+func (provider stubTLSProvider) Dial(network, addr string) (net.Conn, error) {
+	if provider.calls != nil {
+		*provider.calls++
+	}
+	if provider.err != nil {
+		return nil, provider.err
+	}
+	return provider.conn, nil
+}
 
 func TestGetBaseURL_BitsUT(t *testing.T) {
 	tests := []struct {
@@ -269,6 +290,24 @@ func TestSupportedGMTLSCipherSuites(t *testing.T) {
 	}
 }
 
+func TestSupportedTLCPCipherSuites(t *testing.T) {
+	got := SupportedTLCPCipherSuites()
+	want := []uint16{tlcp.ECC_SM4_GCM_SM3, tlcp.ECC_SM4_CBC_SM3, tlcp.ECDHE_SM4_GCM_SM3, tlcp.ECDHE_SM4_CBC_SM3}
+	if len(got) != len(want) {
+		t.Fatalf("SupportedTLCPCipherSuites() length = %d, want %d", len(got), len(want))
+	}
+	for i := range want {
+		if got[i] != want[i] {
+			t.Fatalf("SupportedTLCPCipherSuites()[%d] = %#x, want %#x", i, got[i], want[i])
+		}
+	}
+
+	got[0] = 0
+	if SupportedTLCPCipherSuites()[0] == 0 {
+		t.Fatalf("SupportedTLCPCipherSuites() exposed mutable internal slice")
+	}
+}
+
 func TestFormatGMTLSConnectErrorAddsCapabilityForUnsupportedStack(t *testing.T) {
 	err := formatGMTLSConnectError(fmt.Errorf("tls: server selected unsupported protocol version 0x0303, while expecting 0x0101"))
 	if err == nil {
@@ -280,22 +319,23 @@ func TestFormatGMTLSConnectErrorAddsCapabilityForUnsupportedStack(t *testing.T) 
 	if !strings.Contains(err.Error(), "GMTLS_SM2_WITH_SM4_SM3") || !strings.Contains(err.Error(), "GMTLS_ECDHE_SM2_WITH_SM4_SM3") {
 		t.Fatalf("formatGMTLSConnectError() = %q, want supported cipher suites", err.Error())
 	}
+	if !strings.Contains(err.Error(), "ECC_SM4_GCM_SM3") || !strings.Contains(err.Error(), "ECDHE_SM4_CBC_SM3") {
+		t.Fatalf("formatGMTLSConnectError() = %q, want TLCP cipher suites", err.Error())
+	}
 }
 
 func TestActiveTLSConnectorGMModeUsesGMTLSOnly(t *testing.T) {
-	connector := newActiveTLSConnector(TLSModeGM, nil, nil)
 	stdCalls := 0
 	gmCalls := 0
 	clientConn, serverConn := net.Pipe()
 	defer clientConn.Close()
 	defer serverConn.Close()
-	connector.stdDial = func(network, addr string, tlsConfig *tls.Config) (net.Conn, error) {
-		stdCalls++
-		return nil, fmt.Errorf("standard TLS should not be used")
-	}
-	connector.gmDial = func(network, addr string, tlsConfig *gmtls.Config) (net.Conn, error) {
-		gmCalls++
-		return clientConn, nil
+	connector := &activeTLSConnector{
+		mode:        TLSModeGM,
+		stdProvider: stubTLSProvider{name: "std", calls: &stdCalls, err: fmt.Errorf("standard TLS should not be used")},
+		gmProviders: []activeTLSProvider{
+			stubTLSProvider{name: "gm", calls: &gmCalls, conn: clientConn},
+		},
 	}
 
 	conn, err := connector.Dial("tcp", "example.com:443")
@@ -308,15 +348,14 @@ func TestActiveTLSConnectorGMModeUsesGMTLSOnly(t *testing.T) {
 }
 
 func TestActiveTLSConnectorStdModeDoesNotFallback(t *testing.T) {
-	connector := newActiveTLSConnector(TLSModeStd, nil, nil)
 	stdErr := fmt.Errorf("remote error: tls: handshake failure")
 	gmCalls := 0
-	connector.stdDial = func(network, addr string, tlsConfig *tls.Config) (net.Conn, error) {
-		return nil, stdErr
-	}
-	connector.gmDial = func(network, addr string, tlsConfig *gmtls.Config) (net.Conn, error) {
-		gmCalls++
-		return nil, nil
+	connector := &activeTLSConnector{
+		mode:        TLSModeStd,
+		stdProvider: stubTLSProvider{name: "std", err: stdErr},
+		gmProviders: []activeTLSProvider{
+			stubTLSProvider{name: "gm", calls: &gmCalls},
+		},
 	}
 
 	if _, err := connector.Dial("tcp", "example.com:443"); err != stdErr {
@@ -328,15 +367,15 @@ func TestActiveTLSConnectorStdModeDoesNotFallback(t *testing.T) {
 }
 
 func TestActiveTLSConnectorAutoFallbacksForTLSHandshakeError(t *testing.T) {
-	connector := newActiveTLSConnector(TLSModeAuto, nil, nil)
 	clientConn, serverConn := net.Pipe()
 	defer clientConn.Close()
 	defer serverConn.Close()
-	connector.stdDial = func(network, addr string, tlsConfig *tls.Config) (net.Conn, error) {
-		return nil, fmt.Errorf("remote error: tls: handshake failure")
-	}
-	connector.gmDial = func(network, addr string, tlsConfig *gmtls.Config) (net.Conn, error) {
-		return clientConn, nil
+	connector := &activeTLSConnector{
+		mode:        TLSModeAuto,
+		stdProvider: stubTLSProvider{name: "std", err: fmt.Errorf("remote error: tls: handshake failure")},
+		gmProviders: []activeTLSProvider{
+			stubTLSProvider{name: "gm", conn: clientConn},
+		},
 	}
 
 	conn, err := connector.Dial("tcp", "example.com:443")
@@ -349,15 +388,14 @@ func TestActiveTLSConnectorAutoFallbacksForTLSHandshakeError(t *testing.T) {
 }
 
 func TestActiveTLSConnectorAutoKeepsStandardErrorWhenNoFallbackSignal(t *testing.T) {
-	connector := newActiveTLSConnector(TLSModeAuto, nil, nil)
 	stdErr := fmt.Errorf("dial tcp 127.0.0.1:443: connect: connection refused")
 	gmCalls := 0
-	connector.stdDial = func(network, addr string, tlsConfig *tls.Config) (net.Conn, error) {
-		return nil, stdErr
-	}
-	connector.gmDial = func(network, addr string, tlsConfig *gmtls.Config) (net.Conn, error) {
-		gmCalls++
-		return nil, nil
+	connector := &activeTLSConnector{
+		mode:        TLSModeAuto,
+		stdProvider: stubTLSProvider{name: "std", err: stdErr},
+		gmProviders: []activeTLSProvider{
+			stubTLSProvider{name: "gm", calls: &gmCalls},
+		},
 	}
 
 	if _, err := connector.Dial("tcp", "example.com:443"); err != stdErr {
@@ -369,20 +407,24 @@ func TestActiveTLSConnectorAutoKeepsStandardErrorWhenNoFallbackSignal(t *testing
 }
 
 func TestActiveTLSConnectorAutoReportsBothErrorsWhenFallbackFails(t *testing.T) {
-	connector := newActiveTLSConnector(TLSModeAuto, nil, nil)
-	connector.stdDial = func(network, addr string, tlsConfig *tls.Config) (net.Conn, error) {
-		return nil, fmt.Errorf("remote error: tls: handshake failure")
-	}
-	connector.gmDial = func(network, addr string, tlsConfig *gmtls.Config) (net.Conn, error) {
-		return nil, fmt.Errorf("gm failed")
+	connector := &activeTLSConnector{
+		mode:        TLSModeAuto,
+		stdProvider: stubTLSProvider{name: "std", err: fmt.Errorf("remote error: tls: handshake failure")},
+		gmProviders: []activeTLSProvider{
+			stubTLSProvider{name: "gm", err: fmt.Errorf("gm failed")},
+			stubTLSProvider{name: "tlcp", err: fmt.Errorf("tlcp failed")},
+		},
 	}
 
 	_, err := connector.Dial("tcp", "example.com:443")
 	if err == nil {
 		t.Fatalf("Dial() expected error")
 	}
-	if !strings.Contains(err.Error(), "standard TLS failed") || !strings.Contains(err.Error(), "GM/TLS fallback failed") {
+	if !strings.Contains(err.Error(), "standard TLS failed") || !strings.Contains(err.Error(), "GM/TLS/TLCP fallback failed") {
 		t.Fatalf("Dial() error = %q, want both standard and GM/TLS errors", err.Error())
+	}
+	if !strings.Contains(err.Error(), "gm failed") || !strings.Contains(err.Error(), "tlcp failed") {
+		t.Fatalf("Dial() error = %q, want all provider failures", err.Error())
 	}
 }
 

@@ -164,11 +164,14 @@ hfinger -u https://www.example.com --gm-client-cert gm-client.crt --gm-client-ke
 
 主动请求默认使用 `auto` 模式，用户不需要额外指定参数。`auto` 会先尝试标准 TLS；如果标准 TLS 失败且错误特征符合 GM/TLS 场景，再自动尝试 GM/TLS。
 
-当前内置国密能力基于 `tjfoc/gmsm`，支持 GM/T 0024-2014 `VersionGMSSL(0x0101)` 以及两组已实现套件：`GMTLS_SM2_WITH_SM4_SM3(0xe013)`、`GMTLS_ECDHE_SM2_WITH_SM4_SM3(0xe011)`。如果目标使用其他 TLCP/GMSSL 变体或未实现套件，工具会在连接失败信息中提示当前支持范围。
+当前内置国密能力采用多 provider 方式：保留 `tjfoc/gmsm` 的 GM/TLS 兼容层，同时接入 GoTLCP，支持 TLCP 的 `ECC_SM4_GCM_SM3(0xe053)`、`ECC_SM4_CBC_SM3(0xe013)`、`ECDHE_SM4_GCM_SM3(0xe051)`、`ECDHE_SM4_CBC_SM3(0xe011)`。如果目标使用当前 provider 仍不支持的协议变体或套件，工具会在连接失败信息中提示当前支持范围。
 
 如果已经明确目标类型，可以强制指定模式：
 
 ```bash
+# 查看当前内置 TLS / 国密能力
+hfinger tls capabilities
+
 # 只走 GM/TLS
 hfinger -u https://www.example.com --tls-mode gm
 

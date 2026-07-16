@@ -182,6 +182,7 @@ func init() {
 
 	RootCmd.AddCommand(rulesCmd)
 	RootCmd.AddCommand(passiveCmd)
+	RootCmd.AddCommand(tlsCmd)
 }
 
 var rulesCmd = &cobra.Command{
@@ -192,6 +193,21 @@ var rulesCmd = &cobra.Command{
 var passiveCmd = &cobra.Command{
 	Use:   "passive",
 	Short: "Query passive mode JSONL results",
+}
+
+var tlsCmd = &cobra.Command{
+	Use:   "tls",
+	Short: "Inspect TLS and GM/TLS capabilities",
+}
+
+var tlsCapabilitiesCmd = &cobra.Command{
+	Use:   "capabilities",
+	Short: "Show built-in TLS and GM/TLS providers",
+	Run: func(cmd *cobra.Command, args []string) {
+		for _, capability := range utils.TLSCapabilities() {
+			fmt.Println(capability)
+		}
+	},
 }
 
 var passiveQueryCmd = &cobra.Command{
@@ -323,4 +339,6 @@ func init() {
 	passiveQueryCmd.Flags().String("category", "", "Filter by category")
 	passiveQueryCmd.Flags().Int("min-confidence", 0, "Filter by minimum confidence")
 	passiveCmd.AddCommand(passiveQueryCmd)
+
+	tlsCmd.AddCommand(tlsCapabilitiesCmd)
 }

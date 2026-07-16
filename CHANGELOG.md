@@ -9,6 +9,7 @@
 - 新增主动请求 TLS 模式控制，默认 auto，并支持强制 gm 或 std
 - 优化主动请求 TLS 决策层，标准 TLS、GM/TLS 与 auto fallback 路径独立可测
 - 明确内置 GM/TLS 支持范围，并在不支持的国密协议栈或套件失败时输出能力诊断
+- 接入 GoTLCP 作为第二国密 provider，主动模式支持 gmsm 与 TLCP 顺序 fallback，被动 MITM 支持标准 TLS/TLCP 握手阶段自动分流
 - 新增重定向扩展
 - 优化连接复用，提升性能
 - 优化被动模式代理功能，优化大文件代理，大大提升响应速率

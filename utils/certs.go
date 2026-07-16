@@ -17,8 +17,11 @@ import (
 	"hfinger/config"
 	"hfinger/logger"
 
+	"gitee.com/Trisia/gotlcp/tlcp"
+	emSM2 "github.com/emmansun/gmsm/sm2"
+	"github.com/emmansun/gmsm/smx509"
 	"github.com/tjfoc/gmsm/gmtls"
-	"github.com/tjfoc/gmsm/sm2"
+	tjSM2 "github.com/tjfoc/gmsm/sm2"
 	gmX509 "github.com/tjfoc/gmsm/x509"
 )
 
@@ -27,7 +30,7 @@ type UnifiedCA struct {
 	RSACert    *x509.Certificate
 	RSAKey     *rsa.PrivateKey
 	GMCert     *gmX509.Certificate
-	GMKey      *sm2.PrivateKey
+	GMKey      *tjSM2.PrivateKey
 	GMRootPool *gmX509.CertPool
 }
 
@@ -158,6 +161,26 @@ func GenerateServerGMTLSCerts(host string) (*tls.Certificate, *gmtls.Certificate
 	return stdCert, toGMTLSCertificate(stdCert), toGMTLSCertificate(gmSignCert), toGMTLSCertificate(gmEncCert), nil
 }
 
+func GenerateServerTLCPCerts(host string) (*tlcp.Certificate, *tlcp.Certificate, error) {
+	if globalCA == nil {
+		return nil, nil, fmt.Errorf("CA not initialized")
+	}
+	caCert, caKey, err := loadTLCPCA()
+	if err != nil {
+		return nil, nil, err
+	}
+
+	signCert, err := generateTLCPServerCert(host, caCert, caKey)
+	if err != nil {
+		return nil, nil, err
+	}
+	encCert, err := generateTLCPServerCert(host, caCert, caKey)
+	if err != nil {
+		return nil, nil, err
+	}
+	return signCert, encCert, nil
+}
+
 func toGMTLSCertificate(cert *tls.Certificate) *gmtls.Certificate {
 	if cert == nil {
 		return nil
@@ -168,6 +191,80 @@ func toGMTLSCertificate(cert *tls.Certificate) *gmtls.Certificate {
 		OCSPStaple:                  cert.OCSPStaple,
 		SignedCertificateTimestamps: cert.SignedCertificateTimestamps,
 	}
+}
+
+func loadTLCPCA() (*smx509.Certificate, *emSM2.PrivateKey, error) {
+	certPEM, err := os.ReadFile(config.GMCertsPath)
+	if err != nil {
+		return nil, nil, err
+	}
+	keyPEM, err := os.ReadFile(config.GMKeyPath)
+	if err != nil {
+		return nil, nil, err
+	}
+	cert, err := smx509.ParseCertificatePEM(certPEM)
+	if err != nil {
+		return nil, nil, fmt.Errorf("parse TLCP CA certificate: %w", err)
+	}
+
+	block, _ := pem.Decode(keyPEM)
+	if block == nil {
+		return nil, nil, fmt.Errorf("parse TLCP CA private key: invalid PEM")
+	}
+	key, err := parseTLCPPrivateKey(block.Bytes)
+	if err != nil {
+		return nil, nil, fmt.Errorf("parse TLCP CA private key: %w", err)
+	}
+	return cert, key, nil
+}
+
+func parseTLCPPrivateKey(der []byte) (*emSM2.PrivateKey, error) {
+	if key, err := smx509.ParsePKCS8PrivateKey(der); err == nil {
+		if sm2Key, ok := key.(*emSM2.PrivateKey); ok {
+			return sm2Key, nil
+		}
+		return nil, fmt.Errorf("unexpected PKCS#8 key type %T", key)
+	}
+	if key, err := smx509.ParseSM2PrivateKey(der); err == nil {
+		return key, nil
+	}
+	return nil, fmt.Errorf("unsupported SM2 private key format")
+}
+
+func generateTLCPServerCert(host string, caCert *smx509.Certificate, caKey *emSM2.PrivateKey) (*tlcp.Certificate, error) {
+	priv, err := emSM2.GenerateKey(rand.Reader)
+	if err != nil {
+		return nil, err
+	}
+
+	ip := net.ParseIP(host)
+	template := smx509.Certificate{
+		SerialNumber: big.NewInt(0).SetInt64(time.Now().UnixNano()),
+		Subject: pkix.Name{
+			CommonName: host,
+		},
+		NotBefore:          time.Now(),
+		NotAfter:           time.Now().AddDate(1, 0, 0),
+		SignatureAlgorithm: smx509.SM2WithSM3,
+		KeyUsage:           smx509.KeyUsageKeyEncipherment | smx509.KeyUsageDigitalSignature,
+		ExtKeyUsage:        []smx509.ExtKeyUsage{smx509.ExtKeyUsageServerAuth},
+	}
+
+	if ip != nil {
+		template.IPAddresses = []net.IP{ip}
+	} else {
+		template.DNSNames = []string{host}
+	}
+
+	derBytes, err := smx509.CreateCertificate(rand.Reader, &template, caCert, &priv.PublicKey, caKey)
+	if err != nil {
+		return nil, err
+	}
+
+	return &tlcp.Certificate{
+		Certificate: [][]byte{derBytes},
+		PrivateKey:  priv,
+	}, nil
 }
 
 // 生成标准服务器证书
@@ -208,9 +305,9 @@ func generateStdServerCert(host string, caCert *x509.Certificate, caKey *rsa.Pri
 }
 
 // 生成国密服务器证书
-func generateGMServerCert(host string, caCert *gmX509.Certificate, caKey *sm2.PrivateKey) (*tls.Certificate, error) {
+func generateGMServerCert(host string, caCert *gmX509.Certificate, caKey *tjSM2.PrivateKey) (*tls.Certificate, error) {
 	// 生成SM2密钥对
-	priv, err := sm2.GenerateKey(rand.Reader)
+	priv, err := tjSM2.GenerateKey(rand.Reader)
 	if err != nil {
 		return nil, err
 	}
@@ -316,7 +413,7 @@ func generateSelfSignedCert(certPath, keyPath string) error {
 }
 
 func generateSelfSignedGMCert(certPath, keyPath string) error {
-	priv, err := sm2.GenerateKey(rand.Reader)
+	priv, err := tjSM2.GenerateKey(rand.Reader)
 	if err != nil {
 		return err
 	}

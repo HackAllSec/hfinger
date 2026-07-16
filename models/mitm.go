@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"compress/gzip"
 	"compress/zlib"
+	"crypto/tls"
 	"fmt"
 	"io"
 	"net"
@@ -14,7 +15,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/tjfoc/gmsm/gmtls"
+	"gitee.com/Trisia/gotlcp/tlcp"
 	"golang.org/x/net/http2"
 
 	"hfinger/config"
@@ -30,6 +31,16 @@ var (
 	certCache  = sync.Map{}
 	h2Server   = &http2.Server{}
 )
+
+type proxyTLSConfig struct {
+	std  *tls.Config
+	tlcp *tlcp.Config
+}
+
+type negotiatedConn struct {
+	net.Conn
+	protocol string
+}
 
 func MitmServer(listenAddr string) {
 	sem := make(chan struct{}, workerCount)
@@ -155,15 +166,14 @@ func handleHTTPS(conn net.Conn, req *http.Request) error {
 		return err
 	}
 
-	tlsConn := gmtls.Server(conn, tlsConfig)
-	err = tlsConn.Handshake()
+	tlsConn, err := negotiateProxyTLS(conn, tlsConfig)
 	if err != nil {
 		return err
 	}
 	defer tlsConn.Close()
 
 	// HTTP/2 连接处理
-	switch tlsConn.ConnectionState().NegotiatedProtocol {
+	switch tlsConn.protocol {
 	case "h2":
 		h2Server.ServeConn(tlsConn, &http2.ServeConnOpts{
 			Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -182,30 +192,78 @@ func handleHTTPS(conn net.Conn, req *http.Request) error {
 	}
 }
 
-func getTLSConfigForHost(host string) (*gmtls.Config, error) {
+func getTLSConfigForHost(host string) (*proxyTLSConfig, error) {
 	if tlsConfig, ok := certCache.Load(host); ok {
-		return tlsConfig.(*gmtls.Config), nil
+		return tlsConfig.(*proxyTLSConfig), nil
 	}
 
-	_, stdCert, gmSignCert, gmEncCert, err := utils.GenerateServerGMTLSCerts(host)
+	stdCert, _, _, _, err := utils.GenerateServerGMTLSCerts(host)
 	if err != nil {
 		return nil, err
 	}
 
-	tlsConfig, err := gmtls.NewBasicAutoSwitchConfig(gmSignCert, gmEncCert, stdCert)
+	tlcpSignCert, tlcpEncCert, err := utils.GenerateServerTLCPCerts(host)
 	if err != nil {
 		return nil, err
 	}
-	tlsConfig.NextProtos = []string{"h2", "http/1.1"}
-	tlsConfig.CipherSuites = utils.SupportedGMTLSCipherSuites()
+
+	tlsConfig := &proxyTLSConfig{
+		std: &tls.Config{
+			Certificates: []tls.Certificate{*stdCert},
+			NextProtos:   []string{"h2", "http/1.1"},
+		},
+		tlcp: &tlcp.Config{
+			Certificates: []tlcp.Certificate{*tlcpSignCert, *tlcpEncCert},
+			NextProtos:   []string{"h2", "http/1.1"},
+			CipherSuites: utils.SupportedTLCPCipherSuites(),
+		},
+	}
 
 	// 原子操作存储配置
 	actual, loaded := certCache.LoadOrStore(host, tlsConfig)
 	if loaded {
-		return actual.(*gmtls.Config), nil
+		return actual.(*proxyTLSConfig), nil
 	}
 
 	return tlsConfig, nil
+}
+
+func negotiateProxyTLS(conn net.Conn, tlsConfig *proxyTLSConfig) (*negotiatedConn, error) {
+	reader := bufio.NewReader(conn)
+	header, err := reader.Peek(3)
+	if err != nil {
+		return nil, err
+	}
+
+	bufferedConn := &peekedConn{Conn: conn, reader: reader}
+	switch header[1] {
+	case 0x01:
+		tlcpConn := tlcp.Server(bufferedConn, tlsConfig.tlcp)
+		if err := tlcpConn.Handshake(); err != nil {
+			return nil, err
+		}
+		return &negotiatedConn{Conn: tlcpConn, protocol: tlcpConn.ConnectionState().NegotiatedProtocol}, nil
+	case 0x03:
+		stdConn := tls.Server(bufferedConn, tlsConfig.std)
+		if err := stdConn.Handshake(); err != nil {
+			return nil, err
+		}
+		return &negotiatedConn{Conn: stdConn, protocol: stdConn.ConnectionState().NegotiatedProtocol}, nil
+	default:
+		return nil, fmt.Errorf("unsupported TLS/TLCP record version 0x%02x%02x", header[1], header[2])
+	}
+}
+
+type peekedConn struct {
+	net.Conn
+	reader *bufio.Reader
+}
+
+func (conn *peekedConn) Read(b []byte) (int, error) {
+	if conn.reader.Buffered() > 0 {
+		return conn.reader.Read(b)
+	}
+	return conn.Conn.Read(b)
 }
 
 func handleHTTP2Request(w http.ResponseWriter, r *http.Request) {
