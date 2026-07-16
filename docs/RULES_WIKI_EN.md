@@ -466,7 +466,7 @@ hfinger llm skills
 hfinger -f alive.jsonl --output-jsonl hfinger-results.jsonl
 ```
 
-`hfinger llm skills` prints external agent Skill templates for result triage, toolchain chaining, rule authoring, and honeypot review. Skills are user-side agent workflows, not part of HFinger's final decision path and not runtime directories that must be committed with the repository. LLM/Skill workflows only assist orchestration and explanation; they do not participate in final fingerprint decisions.
+`hfinger llm skills` prints machine-readable playbooks for external agents, covering result triage, toolchain chaining, rule authoring, and honeypot review. Skills are user-side agent workflows, not part of HFinger's final decision path and not runtime directories that must be committed with the repository. LLM/Skill workflows are useful for target splitting, follow-up command generation, rule drafting, and low-impact review suggestions; they must not re-identify or invent fingerprints.
 
 ## 12. AI-Assisted Rule Drafting Prompt
 

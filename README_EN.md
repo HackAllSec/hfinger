@@ -566,23 +566,36 @@ katana -list high-value.txt -silent -o katana-high-value.txt
 jq -r 'select(.confidence>=80) | .url' hfinger-results.jsonl > confirmed-web.txt
 ```
 
-Recommended prompt for an LLM/agent:
+The value of LLM/Skill integration is not "read `hfinger-results.jsonl` and repeat the results". For a single target or a simple product check, use the HFinger CLI directly; an LLM adds little value there.
+
+LLM/Skill workflows are useful for dynamic decisions that should not be hard-coded into HFinger flags:
+
+- Translate operator intent into filters, such as "find high-confidence API gateways and Spring Boot admin surfaces, then generate nuclei/katana commands".
+- Split large result sets by business priority, tool type, confidence, evidence strength, and authorized scope.
+- Generate follow-up command plans from fingerprints without replacing HFinger's deterministic matching.
+- Draft YAML rules from HTTP/TLS/DNS/favicon evidence, then validate them with `rules lint/test/doctor`.
+- When honeypot, conflicting-fingerprint, or universal-response signals appear, generate low-impact confirmation steps instead of increasing active probing.
+
+A more useful agent instruction:
 
 ```text
-You are an asset triage assistant in an authorized penetration test. Read hfinger-results.jsonl and:
-1. Base conclusions only on HFinger cms/category/version/confidence/evidence. Do not invent fingerprints.
-2. Group targets by API gateway, DevOps, admin surface, security device, WAF/CDN, and honeypot risk.
-3. Generate nuclei/katana/ffuf/nmap follow-up commands for results with confidence >= 80.
-4. For category=honeypot or evidence containing conflicts/similar responses, reduce intrusive probing and suggest low-impact confirmation steps.
-5. Output targets, evidence summaries, suggested commands, and risk notes for each group.
+Build a follow-up test plan from hfinger-results.jsonl:
+- Only process targets with confidence >= 80.
+- Write API gateways to api-gateway.txt and produce nuclei commands.
+- Write DevOps, admin, and middleware targets to high-value.txt and produce katana commands.
+- Mark WAF/CDN targets with rate-limit guidance.
+- For honeypot or conflicting fingerprints, output only low-impact confirmation steps.
+- Do not re-identify fingerprints or invent products not present in HFinger output.
 ```
 
-`hfinger llm skills` prints an array of external agent Skill templates. Key fields:
+`hfinger llm skills` prints machine-readable playbooks for external agents. These are not decorative docs for humans. Each playbook includes:
 
-- `name`: Skill name, such as result triage, toolchain orchestration, rule authoring, or honeypot review.
-- `description`: The problem solved by the Skill.
-- `when_to_use`: Penetration-testing situations where the Skill should be triggered.
-- `commands`: Example commands that the Skill can call, including HFinger, jq, and nuclei.
+- `name`: capability name, such as result triage, toolchain orchestration, rule authoring, or honeypot review.
+- `purpose`: the concrete problem solved by the playbook.
+- `inputs` / `outputs`: what the agent should read and produce.
+- `when_to_use`: when to trigger the playbook.
+- `decision_rules`: how to decide based on confidence, evidence, category, and honeypot risk.
+- `workflow`: executable or adaptable command steps.
 
 Typical LLM/Skill scenarios:
 

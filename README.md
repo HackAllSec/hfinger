@@ -566,23 +566,36 @@ katana -list high-value.txt -silent -o katana-high-value.txt
 jq -r 'select(.confidence>=80) | .url' hfinger-results.jsonl > confirmed-web.txt
 ```
 
-给 LLM/Agent 的推荐 Prompt 示例：
+LLM/Skill 的价值不在于“读取 `hfinger-results.jsonl` 再复述一遍结果”。如果只是单目标扫描、查看命中的产品名，直接用 HFinger CLI 即可，不需要 LLM。
+
+LLM/Skill 适合处理 HFinger 参数本身不应该内置的动态决策：
+
+- 把自然语言目标转换成筛选逻辑，例如“找出高置信度 API 网关和 Spring Boot 管理面，并生成后续 nuclei/katana 命令”。
+- 在大量结果中按业务优先级、工具类型、置信度、证据强弱和授权范围拆分目标文件。
+- 根据识别结果生成后续命令计划，但不替代 HFinger 的确定性指纹判定。
+- 根据一组 HTTP/TLS/DNS/Favicon 证据生成 YAML 规则草案，再交给 `rules lint/test/doctor` 做确定性校验。
+- 遇到蜜罐、冲突指纹、万能响应时，生成低风险复核步骤，而不是继续加大主动探测强度。
+
+一个更有用的 Agent 指令示例：
 
 ```text
-你是授权渗透测试中的资产分诊助手。读取 hfinger-results.jsonl 后：
-1. 只基于 HFinger 的 cms/category/version/confidence/evidence 做判断，不自行臆测指纹。
-2. 按 API 网关、DevOps、管理后台、安全设备、WAF/CDN、蜜罐风险分组。
-3. 对 confidence >= 80 的结果生成 nuclei/katana/ffuf/nmap 后续命令。
-4. 对 category=honeypot 或 evidence 中包含冲突/相似响应的目标，降低主动探测强度并给出低风险确认步骤。
-5. 输出每组目标、证据摘要、建议命令和风险备注。
+基于 hfinger-results.jsonl 生成后续测试计划：
+- 只处理 confidence >= 80 的目标。
+- API 网关输出 api-gateway.txt，并给出 nuclei 命令。
+- DevOps、管理后台、中间件输出 high-value.txt，并给出 katana 命令。
+- WAF/CDN 目标标记限速建议。
+- 蜜罐或冲突指纹目标只输出低风险确认步骤。
+- 不要重新判断指纹，不要编造 HFinger 没有输出的产品。
 ```
 
-`hfinger llm skills` 会输出外部 Agent 可参考的 Skill 模板数组，核心字段含义如下：
+`hfinger llm skills` 输出的是外部 Agent 可读取的 playbook，不是给人看的装饰性文档。每个 playbook 包含：
 
-- `name`：Skill 名称，例如结果分诊、工具链编排、规则生成、蜜罐研判。
-- `description`：Skill 要解决的问题。
-- `when_to_use`：适合触发该 Skill 的渗透测试场景。
-- `commands`：Skill 可调用的 HFinger、jq、nuclei 等命令示例。
+- `name`：能力名称，例如结果分诊、工具链编排、规则生成、蜜罐研判。
+- `purpose`：这个 playbook 要解决的具体问题。
+- `inputs` / `outputs`：Agent 需要读取什么、应该产出什么。
+- `when_to_use`：什么场景触发该 playbook。
+- `decision_rules`：如何基于置信度、证据、类别、蜜罐风险做决策。
+- `workflow`：可执行或可改写的命令步骤。
 
 典型 LLM/Skill 场景：
 

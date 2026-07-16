@@ -268,60 +268,97 @@ var llmManifestCmd = &cobra.Command{
 
 var llmSkillsCmd = &cobra.Command{
 	Use:   "skills",
-	Short: "Print external agent Skill templates as JSON",
+	Short: "Print external agent playbooks as JSON",
 	Run: func(cmd *cobra.Command, args []string) {
 		templates := []map[string]interface{}{
 			{
-				"name":        "hfinger-result-triage",
-				"description": "Group HFinger JSONL results by technology, confidence, evidence, and testing priority.",
+				"name":    "hfinger-result-triage",
+				"purpose": "Convert large HFinger result sets into testing queues and review notes.",
+				"inputs":  []string{"hfinger JSONL output", "optional passive JSONL store", "testing scope and risk constraints"},
+				"outputs": []string{"prioritized target groups", "evidence summaries", "targets requiring manual review"},
 				"when_to_use": []string{
-					"large asset scans need prioritization",
-					"results must be grouped by category, product, version, and confidence",
-					"security reports need concise evidence-backed summaries",
+					"scan results contain many targets and manual ordering is expensive",
+					"the operator asks for priority by exposure type, product, confidence, or evidence",
+					"passive and active results need to be merged into one review queue",
 				},
-				"commands": []string{
+				"decision_rules": []string{
+					"confidence >= 80 can enter automated follow-up queues",
+					"confidence < 80 or weak evidence should be marked for manual review",
+					"honeypot or conflicting evidence should lower probing intensity",
+					"never invent products that are not present in HFinger output",
+				},
+				"workflow": []string{
 					"hfinger -f alive.jsonl --output-jsonl hfinger-results.jsonl",
 					"hfinger passive query passive.jsonl --min-confidence 80 --limit 100",
+					"group by category, product, version, confidence, and evidence source",
+					"emit target files only for in-scope high-confidence groups",
 				},
 			},
 			{
-				"name":        "hfinger-toolchain",
-				"description": "Turn HFinger results into follow-up inputs for nuclei, ffuf, katana, nmap, ASM, or SIEM.",
+				"name":    "hfinger-toolchain",
+				"purpose": "Generate follow-up tool commands from confirmed HFinger technologies.",
+				"inputs":  []string{"hfinger-results.jsonl", "allowed tools", "testing scope", "rate limits"},
+				"outputs": []string{"jq filters", "target lists", "nuclei/ffuf/katana/nmap command plan"},
 				"when_to_use": []string{
-					"high-confidence fingerprints should drive focused validation",
-					"targets need to be split by technology or exposure type",
-					"plain CLI flags cannot express cross-tool orchestration decisions",
+					"the operator asks what to run next based on identified technologies",
+					"targets must be split by category, product, version, confidence, or exposure type",
+					"multiple tools need different target subsets from the same scan result",
 				},
-				"commands": []string{
+				"decision_rules": []string{
+					"API gateway and Swagger/OpenAPI targets can feed API-focused nuclei templates",
+					"DevOps and admin surfaces can feed katana discovery and focused nuclei checks",
+					"WAF/CDN findings should adjust rate limits and avoid noisy payloads",
+					"honeypot findings should produce confirmation steps, not aggressive exploitation commands",
+				},
+				"workflow": []string{
 					"jq -r 'select(.category==\"api-gateway\" and .confidence>=80) | .url' hfinger-results.jsonl > api-gateway.txt",
 					"nuclei -l api-gateway.txt -tags exposure,api,gateway -o nuclei-api-gateway.txt",
+					"jq -r 'select((.category==\"devops\" or .category==\"middleware\") and .confidence>=80) | .url' hfinger-results.jsonl > high-value.txt",
+					"katana -list high-value.txt -silent -o katana-high-value.txt",
 				},
 			},
 			{
-				"name":        "hfinger-rule-author",
-				"description": "Draft HFinger YAML rules from HTTP, TLS, DNS, favicon, JavaScript, and stylesheet evidence.",
+				"name":    "hfinger-rule-author",
+				"purpose": "Turn captured evidence for an unknown product into a reviewable HFinger YAML rule draft.",
+				"inputs":  []string{"HTTP response snippets", "headers", "favicon hashes", "TLS/DNS evidence", "known false-positive pages"},
+				"outputs": []string{"candidate YAML rule", "positive fixture", "negative fixture", "validation commands"},
 				"when_to_use": []string{
-					"a new product fingerprint is needed from captured evidence",
-					"manual evidence needs to be converted into score/negative/examples rule structure",
-					"AI output must be validated by deterministic rule tooling",
+					"a product is repeatedly observed but no built-in rule matches it",
+					"manual evidence must be converted into score/negative/examples rule structure",
+					"the operator wants a draft rule but final acceptance must remain deterministic",
 				},
-				"commands": []string{
+				"decision_rules": []string{
+					"prefer strong evidence: header, cookie, favicon hash, TLS/DNS, resource hash, or product-specific path",
+					"avoid generic words such as login, admin, dashboard, system, and documentation-only text",
+					"include negative matchers and positive/negative examples before accepting a rule",
+					"generated rules must pass lint, test, and doctor before use",
+				},
+				"workflow": []string{
 					"hfinger rules lint ./candidate-rule.yaml",
 					"hfinger rules test ./candidate-rule.yaml",
 					"hfinger rules doctor ./candidate-rule.yaml",
 				},
 			},
 			{
-				"name":        "hfinger-honeypot-review",
-				"description": "Assess honeypot, deception, conflicting-fingerprint, and universal-response signals.",
+				"name":    "hfinger-honeypot-review",
+				"purpose": "Review deception signals and generate low-impact confirmation steps.",
+				"inputs":  []string{"HFinger matches", "evidence list", "active probe responses", "passive observations"},
+				"outputs": []string{"honeypot risk label", "supporting evidence", "low-impact confirmation plan"},
 				"when_to_use": []string{
 					"results include category honeypot or Potential Honeypot",
 					"many unrelated technologies are detected on one target",
 					"many active probe paths return highly similar successful responses",
 				},
-				"commands": []string{
+				"decision_rules": []string{
+					"multiple unrelated high-confidence products on one endpoint increase deception risk",
+					"many different paths returning similar 2xx bodies indicate universal-response behavior",
+					"explicit honeypot product evidence should override normal technology prioritization",
+					"confirmation steps must avoid intrusive payloads unless the scope explicitly allows them",
+				},
+				"workflow": []string{
 					"hfinger -f suspicious-targets.txt --output-jsonl honeypot-review.jsonl",
 					"hfinger passive query passive.jsonl --category honeypot",
+					"compare products, categories, evidence sources, and response similarity signals",
 				},
 			},
 		}

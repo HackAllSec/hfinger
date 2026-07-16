@@ -466,7 +466,7 @@ hfinger llm skills
 hfinger -f alive.jsonl --output-jsonl hfinger-results.jsonl
 ```
 
-`hfinger llm skills` 会输出外部 Agent 可参考的 Skill 模板，包括结果分诊、工具链联动、规则生成和蜜罐研判。Skill 是用户侧 Agent 工作流，不是 HFinger 核心判定链路，也不是仓库必须携带的运行时目录。LLM/Skill 只负责辅助编排与解释，不进入最终指纹判定链路。
+`hfinger llm skills` 会输出外部 Agent 可读取的 playbook，包括结果分诊、工具链联动、规则生成和蜜罐研判。Skill 是用户侧 Agent 工作流，不是 HFinger 核心判定链路，也不是仓库必须携带的运行时目录。LLM/Skill 适合做目标拆分、后续命令生成、规则草案生成和低风险复核建议，不负责重新判断或编造指纹。
 
 ## 12. AI 辅助生成规则提示词
 
