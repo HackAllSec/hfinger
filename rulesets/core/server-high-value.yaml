@@ -2886,3 +2886,543 @@ rules:
     examples:
       positive: [{title: Adminer, body: "https://www.adminer.org/"}]
       negative: [{body: "Adminer documentation"}]
+
+  - id: core-0091-apache-guacamole
+    name: Apache Guacamole
+    category: middleware
+    vendor: Apache
+    priority: 85
+    tags: [guacamole, remote-access, middleware]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: apache-guacamole
+          request: {method: GET, path: /}
+          matchers:
+            - type: body.contains
+              value: "images/guacamole-logo"
+              weight: 55
+              evidence: Guacamole logo asset
+            - type: body.contains
+              value: "scripts/guac-ui.js"
+              weight: 45
+              evidence: Guacamole UI script
+    negative: [{type: body.contains, value: "Apache Guacamole documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://guacamole.apache.org/"], confidence: high}
+    examples:
+      positive: [{body: "images/guacamole-logo scripts/guac-ui.js"}]
+      negative: [{body: "Apache Guacamole documentation"}]
+
+  - id: core-0092-apache-solr
+    name: Apache Solr
+    category: database
+    vendor: Apache
+    priority: 85
+    tags: [solr, search, database]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: apache-solr
+          request: {method: GET, path: /solr/}
+          matchers:
+            - type: title.contains
+              value: Solr Admin
+              weight: 55
+              evidence: Solr Admin title
+            - type: body.contains
+              value: "app_config.solr_path"
+              weight: 45
+              evidence: Solr admin runtime config
+    negative: [{type: body.contains, value: "Apache Solr documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://solr.apache.org/"], confidence: high}
+    examples:
+      positive: [{path: /solr/, title: Solr Admin, body: "app_config.solr_path"}]
+      negative: [{body: "Apache Solr documentation"}]
+
+  - id: core-0093-apache-nifi
+    name: Apache NiFi
+    category: middleware
+    vendor: Apache
+    priority: 85
+    tags: [nifi, dataflow, middleware]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: apache-nifi
+          request: {method: GET, path: /nifi/}
+          matchers:
+            - type: title.contains
+              value: NiFi
+              weight: 45
+              evidence: NiFi title
+            - type: body.contains
+              value: "nf-canvas"
+              weight: 55
+              evidence: NiFi canvas frontend marker
+    negative: [{type: body.contains, value: "Apache NiFi documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://nifi.apache.org/"], confidence: high}
+    examples:
+      positive: [{path: /nifi/, title: NiFi, body: "nf-canvas"}]
+      negative: [{body: "Apache NiFi documentation"}]
+
+  - id: core-0094-apache-ranger
+    name: Apache Ranger
+    category: security-device
+    vendor: Apache
+    priority: 80
+    tags: [ranger, authorization, security]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: apache-ranger
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: Ranger
+              weight: 50
+              evidence: Apache Ranger title
+            - type: body.contains
+              value: "ranger-admin"
+              weight: 50
+              evidence: Ranger admin frontend marker
+    negative: [{type: body.contains, value: "Apache Ranger documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://ranger.apache.org/"], confidence: high}
+    examples:
+      positive: [{title: Ranger, body: "ranger-admin"}]
+      negative: [{body: "Apache Ranger documentation"}]
+
+  - id: core-0095-hadoop-yarn
+    name: Hadoop YARN ResourceManager
+    category: observability
+    vendor: Apache
+    priority: 80
+    tags: [hadoop, yarn, big-data]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: hadoop-yarn
+          request: {method: GET, path: /cluster}
+          matchers:
+            - type: title.contains
+              value: "All Applications"
+              weight: 45
+              evidence: YARN ResourceManager page title
+            - type: body.contains
+              value: "yarn.dt.plugins.js"
+              weight: 55
+              evidence: YARN DataTables plugin asset
+    negative: [{type: body.contains, value: "Hadoop YARN documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://hadoop.apache.org/docs/current/hadoop-yarn/hadoop-yarn-site/ResourceManager.html"], confidence: high}
+    examples:
+      positive: [{path: /cluster, title: "All Applications", body: "yarn.dt.plugins.js"}]
+      negative: [{body: "Hadoop YARN documentation"}]
+
+  - id: core-0096-hadoop-hdfs-namenode
+    name: Hadoop HDFS NameNode
+    category: storage
+    vendor: Apache
+    priority: 80
+    tags: [hadoop, hdfs, storage]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: hdfs-namenode
+          request: {method: GET, path: /dfshealth.html}
+          matchers:
+            - type: title.contains
+              value: "NameNode"
+              weight: 50
+              evidence: HDFS NameNode page title
+            - type: body.contains
+              value: "Hadoop"
+              weight: 40
+              evidence: Hadoop body marker
+    negative: [{type: body.contains, value: "HDFS documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://hadoop.apache.org/"], confidence: high}
+    examples:
+      positive: [{path: /dfshealth.html, title: NameNode, body: "Hadoop"}]
+      negative: [{body: "HDFS documentation"}]
+
+  - id: core-0097-artifactory
+    name: JFrog Artifactory
+    category: devops
+    vendor: JFrog
+    priority: 85
+    tags: [artifactory, repository, devops]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: artifactory
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: Artifactory
+              weight: 55
+              evidence: Artifactory title
+            - type: body.contains
+              value: "jfrog"
+              weight: 45
+              evidence: JFrog frontend marker
+    negative: [{type: body.contains, value: "Artifactory documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://jfrog.com/artifactory/"], confidence: high}
+    examples:
+      positive: [{title: Artifactory, body: "jfrog"}]
+      negative: [{body: "Artifactory documentation"}]
+
+  - id: core-0098-tyk-dashboard
+    name: Tyk Dashboard
+    category: api-gateway
+    vendor: Tyk
+    priority: 80
+    tags: [tyk, api-gateway, dashboard]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: tyk-dashboard
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: Tyk Dashboard
+              weight: 55
+              evidence: Tyk Dashboard title
+            - type: body.contains
+              value: "tyk-dashboard"
+              weight: 45
+              evidence: Tyk frontend marker
+    negative: [{type: body.contains, value: "Tyk documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://tyk.io/"], confidence: high}
+    examples:
+      positive: [{title: Tyk Dashboard, body: "tyk-dashboard"}]
+      negative: [{body: "Tyk documentation"}]
+
+  - id: core-0099-krakend
+    name: KrakenD
+    category: api-gateway
+    vendor: KrakenD
+    priority: 75
+    tags: [krakend, api-gateway, gateway]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: krakend
+          request: {method: GET, path: /__health}
+          matchers:
+            - type: body.contains
+              value: "krakend"
+              weight: 55
+              evidence: KrakenD health response marker
+            - type: header.contains
+              key: X-Krakend
+              weight: 45
+              evidence: KrakenD response header
+    negative: [{type: body.contains, value: "KrakenD documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://www.krakend.io/"], confidence: medium}
+    examples:
+      positive: [{path: /__health, headers: {X-Krakend: "Version 2"}, body: "krakend"}]
+      negative: [{body: "KrakenD documentation"}]
+
+  - id: core-0100-proxmox-ve
+    name: Proxmox VE
+    category: devops
+    vendor: Proxmox
+    priority: 85
+    tags: [proxmox, virtualization, management]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: proxmox-ve
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: Proxmox
+              weight: 50
+              evidence: Proxmox title
+            - type: body.contains
+              value: "PVE.window.LoginWindow"
+              weight: 50
+              evidence: Proxmox VE login window marker
+    negative: [{type: body.contains, value: "Proxmox documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://www.proxmox.com/en/proxmox-virtual-environment"], confidence: high}
+    examples:
+      positive: [{title: Proxmox, body: "PVE.window.LoginWindow"}]
+      negative: [{body: "Proxmox documentation"}]
+
+  - id: core-0101-cockpit
+    name: Cockpit
+    category: devops
+    vendor: Cockpit Project
+    priority: 75
+    tags: [cockpit, linux, management]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: cockpit
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: Cockpit
+              weight: 55
+              evidence: Cockpit title
+            - type: body.contains
+              value: "cockpit/static"
+              weight: 45
+              evidence: Cockpit static asset marker
+    negative: [{type: body.contains, value: "Cockpit documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://cockpit-project.org/"], confidence: high}
+    examples:
+      positive: [{title: Cockpit, body: "cockpit/static"}]
+      negative: [{body: "Cockpit documentation"}]
+
+  - id: core-0102-openwrt-luci
+    name: OpenWrt LuCI
+    category: iot-device
+    vendor: OpenWrt
+    priority: 80
+    tags: [openwrt, luci, router]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: openwrt-luci
+          request: {method: GET, path: /cgi-bin/luci/}
+          matchers:
+            - type: title.contains
+              value: OpenWrt
+              weight: 50
+              evidence: OpenWrt LuCI title
+            - type: body.contains
+              value: "LuCI"
+              weight: 40
+              evidence: LuCI body marker
+    negative: [{type: body.contains, value: "OpenWrt documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://openwrt.org/docs/guide-user/luci/start"], confidence: high}
+    examples:
+      positive: [{path: /cgi-bin/luci/, title: OpenWrt, body: "LuCI"}]
+      negative: [{body: "OpenWrt documentation"}]
+
+  - id: core-0103-wazuh-dashboard
+    name: Wazuh Dashboard
+    category: security-device
+    vendor: Wazuh
+    priority: 85
+    tags: [wazuh, siem, security]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: wazuh-dashboard
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: Wazuh
+              weight: 55
+              evidence: Wazuh title
+            - type: body.contains
+              value: "wazuh"
+              weight: 45
+              evidence: Wazuh frontend marker
+    negative: [{type: body.contains, value: "Wazuh documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://wazuh.com/"], confidence: high}
+    examples:
+      positive: [{title: Wazuh, body: "wazuh"}]
+      negative: [{body: "Wazuh documentation"}]
+
+  - id: core-0104-greenbone-security-assistant
+    name: Greenbone Security Assistant
+    category: security-device
+    vendor: Greenbone
+    priority: 85
+    tags: [greenbone, openvas, vulnerability-management]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: greenbone-security-assistant
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: Greenbone Security Assistant
+              weight: 60
+              evidence: Greenbone Security Assistant title
+            - type: body.contains
+              value: "greenbone"
+              weight: 40
+              evidence: Greenbone frontend marker
+    negative: [{type: body.contains, value: "Greenbone documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://www.greenbone.net/"], confidence: high}
+    examples:
+      positive: [{title: Greenbone Security Assistant, body: "greenbone"}]
+      negative: [{body: "Greenbone documentation"}]
+
+  - id: core-0105-sentry
+    name: Sentry
+    category: observability
+    vendor: Sentry
+    priority: 80
+    tags: [sentry, error-tracking, observability]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: sentry
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: Sentry
+              weight: 55
+              evidence: Sentry title
+            - type: body.contains
+              value: "sentry"
+              weight: 45
+              evidence: Sentry frontend marker
+    negative: [{type: body.contains, value: "Sentry documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://sentry.io/"], confidence: high}
+    examples:
+      positive: [{title: Sentry, body: "sentry"}]
+      negative: [{body: "Sentry documentation"}]
+
+  - id: core-0106-tensorboard
+    name: TensorBoard
+    category: ai-service
+    vendor: TensorFlow
+    priority: 80
+    tags: [ai, tensorflow, tensorboard]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: tensorboard
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: TensorBoard
+              weight: 55
+              evidence: TensorBoard title
+            - type: body.contains
+              value: "tf-tensorboard"
+              weight: 45
+              evidence: TensorBoard frontend marker
+    negative: [{type: body.contains, value: "TensorBoard documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://www.tensorflow.org/tensorboard"], confidence: high}
+    examples:
+      positive: [{title: TensorBoard, body: "tf-tensorboard"}]
+      negative: [{body: "TensorBoard documentation"}]
+
+  - id: core-0107-triton-inference-server
+    name: NVIDIA Triton Inference Server
+    category: ai-service
+    vendor: NVIDIA
+    priority: 80
+    tags: [ai, inference, triton]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: triton-inference-server
+          request: {method: GET, path: /v2}
+          matchers:
+            - type: json.key.exists
+              value: extensions
+              weight: 45
+              evidence: Triton v2 API extensions key
+            - type: body.contains
+              value: "model_repository"
+              weight: 45
+              evidence: Triton model repository extension
+    negative: [{type: body.contains, value: "Triton documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://github.com/triton-inference-server/server"], confidence: medium}
+    examples:
+      positive: [{path: /v2, body: '{"extensions":["model_repository","sequence"]}'}]
+      negative: [{body: "Triton documentation"}]
+
+  - id: core-0108-jupyterhub
+    name: JupyterHub
+    category: ai-service
+    vendor: Jupyter
+    priority: 80
+    tags: [ai, notebook, jupyterhub]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: jupyterhub
+          request: {method: GET, path: /hub/login}
+          matchers:
+            - type: title.contains
+              value: JupyterHub
+              weight: 55
+              evidence: JupyterHub login title
+            - type: body.contains
+              value: "jupyterhub"
+              weight: 45
+              evidence: JupyterHub body marker
+    negative: [{type: body.contains, value: "JupyterHub documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://jupyterhub.readthedocs.io/"], confidence: high}
+    examples:
+      positive: [{path: /hub/login, title: JupyterHub, body: "jupyterhub"}]
+      negative: [{body: "JupyterHub documentation"}]
+
+  - id: core-0109-prefect-server
+    name: Prefect Server
+    category: devops
+    vendor: Prefect
+    priority: 75
+    tags: [prefect, workflow, orchestration]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: prefect-server
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: Prefect
+              weight: 55
+              evidence: Prefect title
+            - type: body.contains
+              value: "prefect"
+              weight: 45
+              evidence: Prefect frontend marker
+    negative: [{type: body.contains, value: "Prefect documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://www.prefect.io/"], confidence: high}
+    examples:
+      positive: [{title: Prefect, body: "prefect"}]
+      negative: [{body: "Prefect documentation"}]
+
+  - id: core-0110-temporal-web
+    name: Temporal Web
+    category: devops
+    vendor: Temporal
+    priority: 75
+    tags: [temporal, workflow, orchestration]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: temporal-web
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: Temporal
+              weight: 55
+              evidence: Temporal Web title
+            - type: body.contains
+              value: "temporal"
+              weight: 45
+              evidence: Temporal frontend marker
+    negative: [{type: body.contains, value: "Temporal documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://temporal.io/"], confidence: high}
+    examples:
+      positive: [{title: Temporal, body: "temporal"}]
+      negative: [{body: "Temporal documentation"}]

@@ -433,7 +433,7 @@ Chinese prompt:
 
 ### Can I still use the old finger.json?
 
-No. Core rules are built into the binary. External rules use YAML.
+No. Built-in rule sources now live under `rulesets/core/*.yaml` and are embedded into release binaries. External rules also use YAML.
 
 ### Can external rules override built-in rules?
 

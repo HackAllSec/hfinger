@@ -8,7 +8,7 @@ HFinger is a server-side fingerprinting tool for security testing. It helps iden
 
 HFinger ships with built-in core fingerprint rules and works out of the box. It also supports external YAML rules for community contributions, private products, and internal enterprise systems.
 
-The current build includes **1711** built-in fingerprint rules covering **1444** server-side products, web frameworks, CMS products, middleware, CDN/WAF providers, and related components.
+The current build includes **1731** built-in fingerprint rules covering **1461** server-side products, web frameworks, CMS products, middleware, CDN/WAF providers, and related components.
 
 ## Positioning
 
@@ -311,14 +311,14 @@ jq -r '.[] | select(.category == "middleware") | .url' hfinger.json > middleware
 
 HFinger uses built-in core rules and no longer depends on a runtime JSON fingerprint file. User and community rules are written in YAML.
 
-### Rule Governance and Legacy Rule Migration
+### Rule Governance and Built-in Rule Sources
 
-Historical built-in rules are shipped with the binary, so users no longer need the old runtime `finger.json`. Future rule governance does not keep maintaining the old JSON format. Instead, legacy rules are migrated into the new YAML semantic model and compiled into release binaries.
+All built-in rule sources now live under `rulesets/core/*.yaml` and are embedded into release binaries, so users no longer need the old runtime `finger.json`. `legacy-migrated.yaml` contains migrated existing rules, while `server-high-value.yaml` contains continuously curated high-value server-side rules.
 
-Migration principles:
+Governance principles:
 
-- Do not keep legacy rules in the old format; migrate them to `id/name/category/vendor/tags/match/negative/metadata/examples`
-- Weak legacy evidence can be migrated, but should be marked as lower quality until negative matchers and fixtures are added
+- Built-in rules use the unified YAML semantic model: `id/name/category/vendor/tags/match/negative/metadata/examples`
+- Migrated existing rules preserve useful recognition coverage and should be improved with negative matchers and fixtures over time
 - New core rules must include clear evidence text, category, references, and positive/negative examples
 - Community contributions should use YAML; maintainers decide whether reviewed rules are promoted into built-in releases
 - Rule quality should be measured by `rules lint` and `rules test`, not by rule count alone

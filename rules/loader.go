@@ -16,12 +16,12 @@ import (
 var activeRules []Rule
 
 func Init(paths []string) error {
-	loaded := normalizeRules(append([]Rule{}, BuiltinRules()...))
+	var loaded []Rule
 	coreRules, err := LoadYAMLFS(rulesets.CoreFS, "core")
 	if err != nil {
 		return err
 	}
-	loaded = mergeRules(loaded, coreRules)
+	loaded = mergeRules(loaded, NormalizeRules(coreRules))
 	for _, path := range paths {
 		if strings.TrimSpace(path) == "" {
 			continue

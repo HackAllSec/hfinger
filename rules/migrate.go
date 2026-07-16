@@ -4,15 +4,15 @@ import "strings"
 
 const migratedLegacyReference = "builtin:migrated-legacy-rule"
 
-func normalizeRules(ruleSet []Rule) []Rule {
+func NormalizeRules(ruleSet []Rule) []Rule {
 	normalized := make([]Rule, 0, len(ruleSet))
 	for _, rule := range ruleSet {
-		normalized = append(normalized, normalizeRule(rule))
+		normalized = append(normalized, NormalizeRule(rule))
 	}
 	return normalized
 }
 
-func normalizeRule(rule Rule) Rule {
+func NormalizeRule(rule Rule) Rule {
 	if rule.Category == "" || rule.Category == "legacy" {
 		rule.Category = inferCategory(rule)
 	}

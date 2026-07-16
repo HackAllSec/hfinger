@@ -78,7 +78,7 @@ func TestInitLoadsEmbeddedCoreRules(t *testing.T) {
 }
 
 func TestNormalizeRuleMigratesLegacyMetadata(t *testing.T) {
-	rule := normalizeRule(Rule{
+	rule := NormalizeRule(Rule{
 		ID:       "legacy-test",
 		Name:     "Grafana",
 		Category: "legacy",

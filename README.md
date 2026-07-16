@@ -8,7 +8,7 @@ HFinger 是一个面向安全测试场景的服务端指纹识别工具，用于
 
 工具内置核心指纹规则，开箱即用；同时支持通过外置 YAML 规则扩展企业内部系统、社区规则和私有化产品识别能力。
 
-当前内置指纹规则 **1711** 条，覆盖产品、Web 框架、CMS、中间件、CDN/WAF 等服务端组件 **1444** 种。
+当前内置指纹规则 **1731** 条，覆盖产品、Web 框架、CMS、中间件、CDN/WAF 等服务端组件 **1461** 种。
 
 ## 工具定位
 
@@ -311,14 +311,14 @@ jq -r '.[] | select(.category == "middleware") | .url' hfinger.json > middleware
 
 HFinger 内置核心规则，不再依赖运行时 JSON 指纹文件。用户和社区规则使用 YAML 编写。
 
-### 规则治理与旧规则迁移
+### 规则治理与内置规则源
 
-历史内置规则已经随二进制发布，不需要用户携带旧版 `finger.json`。后续规则治理不继续维护旧 JSON 格式，而是统一迁移到新的 YAML 语义模型，再在发布时编译进二进制。
+所有内置规则源统一放在 `rulesets/core/*.yaml`，发布时随二进制内置，不需要用户携带旧版 `finger.json`。其中 `legacy-migrated.yaml` 存放已迁移的存量规则，`server-high-value.yaml` 存放持续治理的高价值服务端规则。
 
-迁移原则：
+治理原则：
 
-- 旧规则不保留旧格式，统一转换为 `id/name/category/vendor/tags/match/negative/metadata/examples`
-- 原有弱证据规则可以迁移，但默认标记为较低质量，后续逐步补充负向 matcher 和样本
+- 内置规则统一使用 YAML 语义模型：`id/name/category/vendor/tags/match/negative/metadata/examples`
+- 存量迁移规则保留可用识别能力，后续逐步补充负向 matcher 和样本
 - 新增核心规则必须提供明确 evidence、分类、引用和正负样本
 - 社区贡献优先提交 YAML 规则，内置规则由维护者审核后随版本发布
 - 规则质量以 `rules lint` 和 `rules test` 为准，不以规则数量作为主要指标
