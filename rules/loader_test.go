@@ -75,6 +75,33 @@ func TestInitLoadsEmbeddedCoreRules(t *testing.T) {
 	if !found {
 		t.Fatalf("embedded core rule was not loaded")
 	}
+	if len(activeCompiledRules) != len(activeRules) {
+		t.Fatalf("compiled rule count = %d, want %d", len(activeCompiledRules), len(activeRules))
+	}
+	if compiled, ok := activeCompiledFor(ActiveRules()); !ok || len(compiled) != len(activeRules) {
+		t.Fatalf("active compiled rules were not reused")
+	}
+	if activeHTTPProbePlan == nil {
+		t.Fatalf("active HTTP probe plan was not built")
+	}
+}
+
+func TestActiveHTTPProbesReturnsCopy(t *testing.T) {
+	if err := Init(nil); err != nil {
+		t.Fatalf("Init() error: %v", err)
+	}
+
+	probes := ActiveHTTPProbes()
+	if len(probes) == 0 {
+		t.Fatalf("ActiveHTTPProbes() returned no probes")
+	}
+	original := probes[0].ID
+	probes[0].ID = "mutated-by-test"
+
+	next := ActiveHTTPProbes()
+	if next[0].ID != original {
+		t.Fatalf("ActiveHTTPProbes() returned mutable plan: got %q, want %q", next[0].ID, original)
+	}
 }
 
 func TestNormalizeRuleMigratesLegacyMetadata(t *testing.T) {

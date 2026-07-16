@@ -1,96 +1,22 @@
 package rules
 
 import (
-	"encoding/json"
 	"fmt"
-	"net/http"
 	"net/url"
 	"regexp"
 	"strconv"
 	"strings"
-
-	"github.com/twmb/murmur3"
 )
 
 func MatchRules(responses []Response, ruleSet []Rule) []MatchResult {
-	results := make([]MatchResult, 0)
-	for _, rule := range ruleSet {
-		result := MatchRule(responses, rule)
-		if result.Matched {
-			results = append(results, result)
-		}
+	if compiled, ok := activeCompiledFor(ruleSet); ok {
+		return matchCompiledRules(responses, compiled)
 	}
-	return results
+	return matchCompiledRules(responses, compileRules(ruleSet))
 }
 
 func MatchRule(responses []Response, rule Rule) MatchResult {
-	result := MatchResult{Rule: rule}
-	if len(responses) == 0 {
-		return result
-	}
-
-	for _, negative := range rule.Negative {
-		if evidence, ok := matchAnyResponse(responses, negative); ok {
-			result.Excluded = true
-			result.ExcludeBy = append(result.ExcludeBy, evidence)
-			return result
-		}
-	}
-
-	probes := normalizedProbes(rule)
-	strategy := normalizedStrategy(rule.Match.Strategy)
-	threshold := rule.Match.Threshold
-	if threshold <= 0 {
-		threshold = 100
-	}
-
-	totalPossible := 0
-	totalScore := 0
-	allMatched := true
-	anyMatched := false
-
-	for _, probe := range probes {
-		candidates := filterResponsesForProbe(responses, probe)
-		for _, matcher := range probe.Matchers {
-			totalPossible += matcherWeight(matcher)
-		}
-		if len(candidates) == 0 {
-			allMatched = false
-			continue
-		}
-
-		for _, matcher := range probe.Matchers {
-			weight := matcherWeight(matcher)
-			evidence, ok := matchAnyResponse(candidates, matcher)
-			if !ok {
-				allMatched = false
-				continue
-			}
-			anyMatched = true
-			totalScore += weight
-			evidence.Weight = weight
-			result.Evidence = append(result.Evidence, evidence)
-			if result.Response.URL == "" {
-				result.Response = findEvidenceResponse(responses, evidence.ResponseURL)
-			}
-		}
-	}
-
-	switch strategy {
-	case StrategyAll:
-		result.Matched = allMatched && anyMatched
-	case StrategyAny:
-		result.Matched = anyMatched
-	default:
-		result.Matched = totalScore >= threshold
-	}
-
-	result.Score = totalScore
-	result.Confidence = confidence(totalScore, totalPossible, threshold, strategy)
-	if result.Matched {
-		result.Version = extractVersion(responses, rule)
-	}
-	return result
+	return matchCompiledRule(prepareResponses(responses), compileRule(rule))
 }
 
 func normalizedProbes(rule Rule) []Probe {
@@ -141,86 +67,9 @@ func confidence(score, totalPossible, threshold int, strategy string) int {
 	}
 }
 
-func filterResponsesForProbe(responses []Response, probe Probe) []Response {
-	path := probe.Request.Path
-	if path == "" {
-		return responses
-	}
-	filtered := make([]Response, 0, len(responses))
-	for _, response := range responses {
-		if response.ProbeID == probe.ID || response.Path == path {
-			filtered = append(filtered, response)
-		}
-	}
-	return filtered
-}
-
-func matchAnyResponse(responses []Response, matcher Matcher) (Evidence, bool) {
-	for _, response := range responses {
-		if evidence, ok := MatchResponse(response, matcher); ok {
-			return evidence, true
-		}
-	}
-	return Evidence{}, false
-}
-
 func MatchResponse(response Response, matcher Matcher) (Evidence, bool) {
-	values := matcherValues(matcher)
-	switch strings.ToLower(matcher.Type) {
-	case "body.contains":
-		return matchText("body", matcher, string(response.Body), values, response.URL)
-	case "body.regex":
-		return matchRegex("body", matcher, string(response.Body), values, response.URL)
-	case "header.contains":
-		return matchHeaderContains(response.Header, matcher, values, response.URL)
-	case "header.regex":
-		return matchHeaderRegex(response.Header, matcher, values, response.URL)
-	case "title.contains":
-		return matchText("title", matcher, response.Title, values, response.URL)
-	case "cookie.contains":
-		return matchHeaderContains(response.Header, Matcher{
-			Type:          matcher.Type,
-			Key:           "Set-Cookie",
-			Value:         matcher.Value,
-			Values:        matcher.Values,
-			Weight:        matcher.Weight,
-			Evidence:      matcher.Evidence,
-			CaseSensitive: matcher.CaseSensitive,
-		}, values, response.URL)
-	case "status.eq":
-		return matchStatus(response, matcher, values)
-	case "status.in":
-		return matchStatus(response, matcher, values)
-	case "favicon.hash":
-		return matchFavicon(response, matcher, values)
-	case "redirect.to":
-		return matchText("redirect", matcher, response.Header.Get("Location"), values, response.URL)
-	case "script.src.contains":
-		return matchRegex("script.src", matcher, string(response.Body), scriptPatterns(values), response.URL)
-	case "html.meta.contains":
-		return matchRegex("html.meta", matcher, string(response.Body), metaPatterns(values), response.URL)
-	case "path.exists":
-		if response.StatusCode >= 200 && response.StatusCode < 400 {
-			return evidence("path", matcher, response.Path, response.URL), true
-		}
-	case "json.key.exists":
-		return matchJSONKey(response, matcher, values)
-	case "json.path.eq":
-		return matchJSONPath(response, matcher, values)
-	case "server.banner.contains":
-		return matchText("server", matcher, response.Server, values, response.URL)
-	case "server.banner.regex":
-		return matchRegex("server", matcher, response.Server, values, response.URL)
-	case "tls.cert.subject.contains":
-		return matchText("tls.cert.subject", matcher, response.TLS.Subject, values, response.URL)
-	case "tls.cert.issuer.contains":
-		return matchText("tls.cert.issuer", matcher, response.TLS.Issuer, values, response.URL)
-	case "tls.cert.dns.contains":
-		return matchText("tls.cert.dns", matcher, strings.Join(response.TLS.DNSNames, ","), values, response.URL)
-	case "tls.alpn.contains":
-		return matchText("tls.alpn", matcher, response.TLS.ALPN, values, response.URL)
-	}
-	return Evidence{}, false
+	prepared := prepareResponses([]Response{response})
+	return matchPreparedResponse(prepared[0], compileMatcher(matcher))
 }
 
 func matcherValues(matcher Matcher) []string {
@@ -247,122 +96,6 @@ func matcherValues(matcher Matcher) []string {
 	default:
 		return []string{fmt.Sprint(value)}
 	}
-}
-
-func matchText(source string, matcher Matcher, target string, values []string, responseURL string) (Evidence, bool) {
-	targetToMatch := target
-	if !isCaseSensitive(matcher) {
-		targetToMatch = strings.ToLower(target)
-	}
-	for _, value := range values {
-		valueToMatch := value
-		if !isCaseSensitive(matcher) {
-			valueToMatch = strings.ToLower(value)
-		}
-		if strings.Contains(targetToMatch, valueToMatch) {
-			return evidence(source, matcher, snippet(target, value), responseURL), true
-		}
-	}
-	return Evidence{}, false
-}
-
-func matchRegex(source string, matcher Matcher, target string, values []string, responseURL string) (Evidence, bool) {
-	for _, value := range values {
-		re, err := regexp.Compile(value)
-		if err != nil {
-			continue
-		}
-		match := re.FindString(target)
-		if match != "" {
-			return evidence(source, matcher, truncate(match, 160), responseURL), true
-		}
-	}
-	return Evidence{}, false
-}
-
-func matchHeaderContains(headers http.Header, matcher Matcher, values []string, responseURL string) (Evidence, bool) {
-	for key, headerValues := range headers {
-		if matcher.Key != "" && !strings.EqualFold(key, matcher.Key) {
-			continue
-		}
-		if matcher.Key != "" && len(values) == 0 {
-			return evidence("header", matcher, key, responseURL), true
-		}
-		for _, headerValue := range headerValues {
-			if ev, ok := matchText("header", matcher, key+": "+headerValue, values, responseURL); ok {
-				return ev, true
-			}
-		}
-		if matcher.Key == "" {
-			if ev, ok := matchText("header", matcher, key, values, responseURL); ok {
-				return ev, true
-			}
-		}
-	}
-	return Evidence{}, false
-}
-
-func matchHeaderRegex(headers http.Header, matcher Matcher, values []string, responseURL string) (Evidence, bool) {
-	for key, headerValues := range headers {
-		if matcher.Key != "" && !strings.EqualFold(key, matcher.Key) {
-			continue
-		}
-		for _, headerValue := range headerValues {
-			if ev, ok := matchRegex("header", matcher, key+": "+headerValue, values, responseURL); ok {
-				return ev, true
-			}
-		}
-	}
-	return Evidence{}, false
-}
-
-func matchStatus(response Response, matcher Matcher, values []string) (Evidence, bool) {
-	status := strconv.Itoa(response.StatusCode)
-	for _, value := range values {
-		if status == value {
-			return evidence("status", matcher, status, response.URL), true
-		}
-	}
-	return Evidence{}, false
-}
-
-func matchJSONKey(response Response, matcher Matcher, values []string) (Evidence, bool) {
-	var data interface{}
-	if err := json.Unmarshal(response.Body, &data); err != nil {
-		return Evidence{}, false
-	}
-	for _, key := range values {
-		if jsonKeyExists(data, key) {
-			return evidence("json", matcher, key, response.URL), true
-		}
-	}
-	return Evidence{}, false
-}
-
-func matchJSONPath(response Response, matcher Matcher, values []string) (Evidence, bool) {
-	var data interface{}
-	if err := json.Unmarshal(response.Body, &data); err != nil {
-		return Evidence{}, false
-	}
-	path := matcher.Key
-	if path == "" && len(values) > 0 {
-		path = values[0]
-		values = values[1:]
-	}
-	if path == "" || len(values) == 0 {
-		return Evidence{}, false
-	}
-	actual, ok := jsonPathValue(data, strings.Split(path, "."))
-	if !ok {
-		return Evidence{}, false
-	}
-	actualText := fmt.Sprint(actual)
-	for _, expected := range values {
-		if actualText == expected {
-			return evidence("json", matcher, path+"="+actualText, response.URL), true
-		}
-	}
-	return Evidence{}, false
 }
 
 func jsonKeyExists(data interface{}, key string) bool {
@@ -399,20 +132,6 @@ func jsonPathValue(data interface{}, parts []string) (interface{}, bool) {
 		return nil, false
 	}
 	return jsonPathValue(next, parts[1:])
-}
-
-func matchFavicon(response Response, matcher Matcher, values []string) (Evidence, bool) {
-	if len(response.Favicon) == 0 {
-		return Evidence{}, false
-	}
-	hash := int32(murmur3.SeedSum32(0, response.Favicon))
-	hashText := strconv.FormatInt(int64(hash), 10)
-	for _, value := range values {
-		if hashText == value {
-			return evidence("favicon", matcher, hashText, response.URL), true
-		}
-	}
-	return Evidence{}, false
 }
 
 func scriptPatterns(values []string) []string {
@@ -473,87 +192,6 @@ func truncate(value string, limit int) string {
 		return value
 	}
 	return value[:limit] + "..."
-}
-
-func findEvidenceResponse(responses []Response, responseURL string) Response {
-	for _, response := range responses {
-		if response.URL == responseURL {
-			return response
-		}
-	}
-	return responses[0]
-}
-
-func extractVersion(responses []Response, rule Rule) string {
-	for _, extractor := range rule.Extract {
-		if strings.TrimSpace(extractor.Regex) == "" {
-			continue
-		}
-		for _, response := range responses {
-			if value := applyExtractor(response, extractor); value != "" {
-				return value
-			}
-		}
-	}
-	return ""
-}
-
-func applyExtractor(response Response, extractor Extractor) string {
-	source := extractorSource(response, extractor)
-	if source == "" {
-		return ""
-	}
-	re, err := regexp.Compile(extractor.Regex)
-	if err != nil {
-		return ""
-	}
-	matches := re.FindStringSubmatch(source)
-	if len(matches) == 0 {
-		return ""
-	}
-	group := extractor.Group
-	if group <= 0 {
-		group = 1
-	}
-	if group >= len(matches) {
-		return truncate(matches[0], 80)
-	}
-	return truncate(matches[group], 80)
-}
-
-func extractorSource(response Response, extractor Extractor) string {
-	switch strings.ToLower(strings.TrimSpace(extractor.Type)) {
-	case "body", "body.regex":
-		return string(response.Body)
-	case "title", "title.regex":
-		return response.Title
-	case "header", "header.regex":
-		if extractor.Key != "" {
-			return response.Header.Get(extractor.Key)
-		}
-		var builder strings.Builder
-		for key, values := range response.Header {
-			for _, value := range values {
-				builder.WriteString(key)
-				builder.WriteString(": ")
-				builder.WriteString(value)
-				builder.WriteString("\n")
-			}
-		}
-		return builder.String()
-	case "server", "server.banner", "server.banner.regex":
-		return response.Server
-	case "tls.cert.subject":
-		return response.TLS.Subject
-	case "tls.cert.issuer":
-		return response.TLS.Issuer
-	case "tls.cert.dns":
-		return strings.Join(response.TLS.DNSNames, ",")
-	case "tls.alpn":
-		return response.TLS.ALPN
-	default:
-		return ""
-	}
 }
 
 func PathFromURL(rawURL string) string {

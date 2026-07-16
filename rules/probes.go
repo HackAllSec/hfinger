@@ -3,9 +3,17 @@ package rules
 import "strings"
 
 func ActiveHTTPProbes() []Probe {
+	if activeHTTPProbePlan != nil {
+		return append([]Probe{}, activeHTTPProbePlan...)
+	}
+	_ = ActiveRules()
+	return append([]Probe{}, activeHTTPProbePlan...)
+}
+
+func buildHTTPProbePlan(ruleSet []Rule) []Probe {
 	seen := make(map[string]struct{})
 	var probes []Probe
-	for _, rule := range ActiveRules() {
+	for _, rule := range ruleSet {
 		for _, probe := range normalizedProbes(rule) {
 			path := strings.TrimSpace(probe.Request.Path)
 			if path == "" || path == "/" {

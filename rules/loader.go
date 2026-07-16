@@ -14,6 +14,8 @@ import (
 )
 
 var activeRules []Rule
+var activeCompiledRules []compiledRule
+var activeHTTPProbePlan []Probe
 
 func Init(paths []string) error {
 	var loaded []Rule
@@ -36,6 +38,8 @@ func Init(paths []string) error {
 		return err
 	}
 	activeRules = loaded
+	activeCompiledRules = compileRules(loaded)
+	activeHTTPProbePlan = buildHTTPProbePlan(activeRules)
 	return nil
 }
 
