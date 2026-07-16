@@ -22,6 +22,7 @@ type Rule struct {
 	Match    MatchBlock `yaml:"match"`
 	Negative []Matcher  `yaml:"negative,omitempty"`
 	Metadata Metadata   `yaml:"metadata,omitempty"`
+	Examples Examples   `yaml:"examples,omitempty"`
 }
 
 type MatchBlock struct {
@@ -65,6 +66,23 @@ type Metadata struct {
 	Notes       string   `yaml:"notes,omitempty"`
 }
 
+type Examples struct {
+	Positive []Fixture `yaml:"positive,omitempty"`
+	Negative []Fixture `yaml:"negative,omitempty"`
+}
+
+type Fixture struct {
+	Name       string            `yaml:"name,omitempty"`
+	URL        string            `yaml:"url,omitempty"`
+	Path       string            `yaml:"path,omitempty"`
+	StatusCode int               `yaml:"status_code,omitempty"`
+	Server     string            `yaml:"server,omitempty"`
+	Title      string            `yaml:"title,omitempty"`
+	Headers    map[string]string `yaml:"headers,omitempty"`
+	Body       string            `yaml:"body,omitempty"`
+	TLS        TLSInfo           `yaml:"tls,omitempty"`
+}
+
 type Response struct {
 	ProbeID    string
 	URL        string
@@ -75,6 +93,14 @@ type Response struct {
 	Header     http.Header
 	Body       []byte
 	Favicon    []byte
+	TLS        TLSInfo
+}
+
+type TLSInfo struct {
+	Subject  string   `json:"subject,omitempty" yaml:"subject,omitempty"`
+	Issuer   string   `json:"issuer,omitempty" yaml:"issuer,omitempty"`
+	DNSNames []string `json:"dns_names,omitempty" yaml:"dns_names,omitempty"`
+	ALPN     string   `json:"alpn,omitempty" yaml:"alpn,omitempty"`
 }
 
 type Evidence struct {

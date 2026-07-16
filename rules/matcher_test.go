@@ -92,3 +92,30 @@ func TestMatchResponseStatusAndRegex(t *testing.T) {
 		t.Fatalf("body.regex expected match")
 	}
 }
+
+func TestMatchResponseJSONAndTLS(t *testing.T) {
+	response := Response{
+		URL:        "https://api.example.com",
+		StatusCode: 401,
+		Body:       []byte(`{"error":{"code":"UNAUTHORIZED"},"request_id":"abc"}`),
+		TLS: TLSInfo{
+			Subject:  "CN=api.example.com",
+			Issuer:   "CN=Example CA",
+			DNSNames: []string{"api.example.com"},
+			ALPN:     "h2",
+		},
+	}
+
+	if _, ok := MatchResponse(response, Matcher{Type: "json.key.exists", Value: "request_id"}); !ok {
+		t.Fatalf("json.key.exists expected match")
+	}
+	if _, ok := MatchResponse(response, Matcher{Type: "json.path.eq", Key: "error.code", Value: "UNAUTHORIZED"}); !ok {
+		t.Fatalf("json.path.eq expected match")
+	}
+	if _, ok := MatchResponse(response, Matcher{Type: "tls.cert.issuer.contains", Value: "Example CA"}); !ok {
+		t.Fatalf("tls.cert.issuer.contains expected match")
+	}
+	if _, ok := MatchResponse(response, Matcher{Type: "tls.alpn.contains", Value: "h2"}); !ok {
+		t.Fatalf("tls.alpn.contains expected match")
+	}
+}

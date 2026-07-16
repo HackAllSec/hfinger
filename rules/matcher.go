@@ -1,6 +1,7 @@
 package rules
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -179,9 +180,9 @@ func MatchResponse(response Response, matcher Matcher) (Evidence, bool) {
 			CaseSensitive: matcher.CaseSensitive,
 		}, values, response.URL)
 	case "status.eq":
-		return matchStatus(response, matcher, values, false)
+		return matchStatus(response, matcher, values)
 	case "status.in":
-		return matchStatus(response, matcher, values, true)
+		return matchStatus(response, matcher, values)
 	case "favicon.hash":
 		return matchFavicon(response, matcher, values)
 	case "redirect.to":
@@ -194,6 +195,22 @@ func MatchResponse(response Response, matcher Matcher) (Evidence, bool) {
 		if response.StatusCode >= 200 && response.StatusCode < 400 {
 			return evidence("path", matcher, response.Path, response.URL), true
 		}
+	case "json.key.exists":
+		return matchJSONKey(response, matcher, values)
+	case "json.path.eq":
+		return matchJSONPath(response, matcher, values)
+	case "server.banner.contains":
+		return matchText("server", matcher, response.Server, values, response.URL)
+	case "server.banner.regex":
+		return matchRegex("server", matcher, response.Server, values, response.URL)
+	case "tls.cert.subject.contains":
+		return matchText("tls.cert.subject", matcher, response.TLS.Subject, values, response.URL)
+	case "tls.cert.issuer.contains":
+		return matchText("tls.cert.issuer", matcher, response.TLS.Issuer, values, response.URL)
+	case "tls.cert.dns.contains":
+		return matchText("tls.cert.dns", matcher, strings.Join(response.TLS.DNSNames, ","), values, response.URL)
+	case "tls.alpn.contains":
+		return matchText("tls.alpn", matcher, response.TLS.ALPN, values, response.URL)
 	}
 	return Evidence{}, false
 }
@@ -291,7 +308,7 @@ func matchHeaderRegex(headers http.Header, matcher Matcher, values []string, res
 	return Evidence{}, false
 }
 
-func matchStatus(response Response, matcher Matcher, values []string, in bool) (Evidence, bool) {
+func matchStatus(response Response, matcher Matcher, values []string) (Evidence, bool) {
 	status := strconv.Itoa(response.StatusCode)
 	for _, value := range values {
 		if status == value {
@@ -299,6 +316,81 @@ func matchStatus(response Response, matcher Matcher, values []string, in bool) (
 		}
 	}
 	return Evidence{}, false
+}
+
+func matchJSONKey(response Response, matcher Matcher, values []string) (Evidence, bool) {
+	var data interface{}
+	if err := json.Unmarshal(response.Body, &data); err != nil {
+		return Evidence{}, false
+	}
+	for _, key := range values {
+		if jsonKeyExists(data, key) {
+			return evidence("json", matcher, key, response.URL), true
+		}
+	}
+	return Evidence{}, false
+}
+
+func matchJSONPath(response Response, matcher Matcher, values []string) (Evidence, bool) {
+	var data interface{}
+	if err := json.Unmarshal(response.Body, &data); err != nil {
+		return Evidence{}, false
+	}
+	path := matcher.Key
+	if path == "" && len(values) > 0 {
+		path = values[0]
+		values = values[1:]
+	}
+	if path == "" || len(values) == 0 {
+		return Evidence{}, false
+	}
+	actual, ok := jsonPathValue(data, strings.Split(path, "."))
+	if !ok {
+		return Evidence{}, false
+	}
+	actualText := fmt.Sprint(actual)
+	for _, expected := range values {
+		if actualText == expected {
+			return evidence("json", matcher, path+"="+actualText, response.URL), true
+		}
+	}
+	return Evidence{}, false
+}
+
+func jsonKeyExists(data interface{}, key string) bool {
+	switch value := data.(type) {
+	case map[string]interface{}:
+		if _, ok := value[key]; ok {
+			return true
+		}
+		for _, child := range value {
+			if jsonKeyExists(child, key) {
+				return true
+			}
+		}
+	case []interface{}:
+		for _, child := range value {
+			if jsonKeyExists(child, key) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func jsonPathValue(data interface{}, parts []string) (interface{}, bool) {
+	if len(parts) == 0 {
+		return data, true
+	}
+	obj, ok := data.(map[string]interface{})
+	if !ok {
+		return nil, false
+	}
+	next, ok := obj[parts[0]]
+	if !ok {
+		return nil, false
+	}
+	return jsonPathValue(next, parts[1:])
 }
 
 func matchFavicon(response Response, matcher Matcher, values []string) (Evidence, bool) {

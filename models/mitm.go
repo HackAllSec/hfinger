@@ -19,6 +19,7 @@ import (
 	"hfinger/config"
 	"hfinger/logger"
 	"hfinger/output"
+	"hfinger/passive"
 	"hfinger/rules"
 	"hfinger/utils"
 )
@@ -488,6 +489,9 @@ func matchfingerprint(url string, statuscode int, body []byte, header http.Heade
 
 		for _, result := range newResults {
 			output.AddResults(result)
+			if err := passive.Append(result); err != nil {
+				logger.Error("Error writing passive store: %s", err)
+			}
 		}
 
 		if err := output.WriteOutputs(); err != nil {

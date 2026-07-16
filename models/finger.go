@@ -119,6 +119,7 @@ func process(url string, probeID string, headers map[string]string, responsesCha
 			Header:     resp.Header,
 			Body:       body,
 			Favicon:    faviconbody,
+			TLS:        tlsInfo(resp),
 		}
 		break // 退出循环
 	}
@@ -238,6 +239,19 @@ func countItems(m *sync.Map) int {
 		return true
 	})
 	return count
+}
+
+func tlsInfo(resp *http.Response) rules.TLSInfo {
+	if resp == nil || resp.TLS == nil || len(resp.TLS.PeerCertificates) == 0 {
+		return rules.TLSInfo{}
+	}
+	cert := resp.TLS.PeerCertificates[0]
+	return rules.TLSInfo{
+		Subject:  cert.Subject.String(),
+		Issuer:   cert.Issuer.String(),
+		DNSNames: cert.DNSNames,
+		ALPN:     resp.TLS.NegotiatedProtocol,
+	}
 }
 
 func ProcessFile(filePath string) {
