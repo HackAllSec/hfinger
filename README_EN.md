@@ -1,248 +1,237 @@
-## HFinger Introduction
+# HFinger
 
-#### English | [简体中文](README.md)
-![](https://github.com/HackAllSec/hfinger/blob/main/images/logo.png)
+#### [简体中文](README.md) | English
 
-**hfinger** is a high-performance and accurate command-line fingerprint recognition tool, It is used for fast and accurate identification of specified targets during Red Team RBI, including web frameworks, CDN, and CMS information. Since [EHole](https://github.com/EdgeSecurityTeam/EHole) has not been updated for a long time and has some shortcomings (false positives, false negatives, inflexible matching, etc.), this tool is based on the `finger.json` file Match the defined fingerprints, optimize the original file structure, add matching logic, and add error page recognition and passive recognition modes.
-﻿
-Although we are reinventing the wheel, the meaning of reinventing the wheel lies in optimization and improvement. In the future, we will continue to optimize the fingerprint database and carefully prepare each fingerprint. If you think it's good, give it a Star to encourage it.
+![logo](images/logo.png)
 
-How to prepare fingerprints to make matching more accurate?
+HFinger is a server-side fingerprinting tool for security testing. It helps identify websites, web services, CMS products, backend frameworks, middleware, API gateways, WAF/CDN providers, load balancers, and common server-side components.
 
-1. Prioritize looking for unique features, such as specific response headers, request headers and cookie fields, etc.
-2. Secondly, look for generally unchanged data, such as js files, path structures, body fields, error page characteristics, etc. that are dependent on the web page.
-3. If you really can’t find it, look for features that can be easily modified, such as icon hash, website title, etc.
+HFinger ships with built-in core fingerprint rules and works out of the box. It also supports external YAML rules for community contributions, private products, and internal enterprise systems.
 
-It is best to combine these methods to prevent secondary development systems from being unable to match the icons and page styles after modifying them.
+## Features
 
-### Characteristic
+- Server-side technology fingerprinting
+- Active scanning and passive MITM mode
+- Built-in core rules without runtime `finger.json` dependency
+- External YAML rule loading
+- Header, body, title, cookie, status, redirect, and favicon matching
+- Regex, path probe, script source, and HTML meta matching
+- Evidence and confidence in scan results
+- JSON, XML, and XLSX output
+- HTTP/1.1 and HTTP/2 support
+- Standard HTTPS and GM/TLS HTTPS support
+- Proxy, random User-Agent, and multithreading support
+- Rule validation commands for custom rule maintenance
 
-- High performance and accurate target recognition
-- Supports fingerprint recognition of multiple frames matching the same target
-- Support active mode and passive mode
-- Support error page identification
-- Match the response header, body and title against the fingerprint defined in finger.json
-- finger.json supports custom matching logic
-- Support random UA header
-- Supports multi-threading, the number of threads can be adjusted through the -t parameter
-- Support proxy, specify proxy through -p parameter
-- Output the matching results in real time. If the match is matched, the green output will be used. If the match is not matched, the white output will be used.
-- Supports output in JSON, XML and XLSX formats
-- Supports HTTP/2 and HTTP/1
-- Supports Standart TLS and GM TLS
-- Due to inconsistent calculation results of some of Fofa's icon_hash and Mmh3Hash32, a new icon_hash calculation tool has been added
+## Use Cases
 
-### Fingerprint database
+- Understanding server-side technology stacks during reconnaissance
+- Information gathering before penetration testing
+- Passive fingerprinting from proxied traffic
+- Internal asset technology inventory
+- Maintaining fingerprints for private or customized products
 
-- The total number of included products, web frameworks and CMS (based on the values ​​of different cms, fingerprints with the same name are only recorded once): **1177**
-- The total number of fingerprints (the reason for the small number is that the fingerprints have been optimized and merged, and the fingerprints of the same asset have been merged): **1412**
-- The rules in the fingerprint database are case-sensitive, and you need to pay attention to adding fingerprints by customization
+## Installation
 
-The soldiers are not numerous but refined, the same goes for the number of fingerprints. The total number of fingerprints is little significance. The key is the number of products, web frameworks and CMS that can be identified.
-
-#### Write rules
-
-The fingerprint database is located in the `finger.json` file, and the format is JSON. There are 5 fields in total:
-- **cms**: Product name, including CMS name, CDN name, etc
-- **method**: The matching method, the value of `keyword` or `faviconhash`, which means that the match is made by keyword or faviconhash, respectively, and the `location` field is ignored when the value is `faviconhash`
-- **location**: The matching position, with the values of `header`, `body`, and `title`, indicates the content in the header, body, and title of the matching response, respectively
-- **logic**: The matching logic, with the value of `and` or `or`, represents the AND and OR logic of the rule, respectively, and takes effect when the matching rule contains multiple conditions
-- **rule**: Matching rules, which contain multiple conditions, are split using `,` between conditions
-
-## How to use
-
-### Install
-
-Make sure you have the Go language environment installed, then clone this repository and compile:
 ```bash
 git clone https://github.com/HackAllSec/hfinger.git
 cd hfinger
 go build
 ```
 
-Under Windows, you can directly run `windows_build.bat` to compile.
-
-### Command line parameters
+On Windows:
 
 ```bash
-
- █████         ██████   ███
-▒▒███         ███▒▒███ ▒▒▒
- ▒███████    ▒███ ▒▒▒  ████  ████████    ███████  ██████  ████████
- ▒███▒▒███  ███████   ▒▒███ ▒▒███▒▒███  ███▒▒███ ███▒▒███▒▒███▒▒███
- ▒███ ▒███ ▒▒▒███▒     ▒███  ▒███ ▒███ ▒███ ▒███▒███████  ▒███ ▒▒▒
- ▒███ ▒███   ▒███      ▒███  ▒███ ▒███ ▒███ ▒███▒███▒▒▒   ▒███
- ████ █████  █████     █████ ████ █████▒▒███████▒▒██████  █████
-▒▒▒▒ ▒▒▒▒▒  ▒▒▒▒▒     ▒▒▒▒▒ ▒▒▒▒ ▒▒▒▒▒  ▒▒▒▒▒███ ▒▒▒▒▒▒  ▒▒▒▒▒
-                                        ███ ▒███
-                                       ▒▒██████
-                                        ▒▒▒▒▒▒                     By:Hack All Sec
-
-A high-performance command-line tool for web framework and CMS fingerprinting
-
-Usage:
-  hfinger [flags]
-
-Flags:
-  -f, --file string          Read assets from local files for fingerprint recognition, with one target per line
-  -h, --help                 help for hfinger
-  -l, --listen string        Using a proxy resource collector to retrieve targets, example: 127.0.0.1:6789
-  -j, --output-json string   Output all results to a JSON file
-  -s, --output-xlsx string   Output all results to a Excel file
-  -x, --output-xml string    Output all results to a XML file
-  -p, --proxy string         Specify the proxy for accessing the target, supporting HTTP and SOCKS, example: http://127.0.0.1:8080
-  -t, --thread int           Number of fingerprint recognition threads (default 100)
-      --update               Update fingerprint database
-      --upgrade              Upgrade to the latest version
-  -u, --url string           Specify the recognized target,example: https://www.example.com
-  -v, --version              Display the current version of the tool
+windows_build.bat
 ```
 
-### Usage example
+## Usage
 
-#### Active mode
+### Scan One Target
 
-Single URL identification:
 ```bash
-hfinger -u https://www.hackall.cn
+hfinger -u https://www.example.com
 ```
-Read the target from the file and identify it (one url per line, you need to add the protocol, such as http or https):
+
+### Scan Targets From File
+
 ```bash
 hfinger -f targets.txt
 ```
-Set proxy address:
+
+Use one URL per line. Including the scheme is recommended:
+
+```text
+https://www.example.com
+http://192.168.1.10
+```
+
+### Use Proxy
+
 ```bash
-hfinger -u https://www.hackall.cn -p http://127.0.0.1:8080
+hfinger -u https://www.example.com -p http://127.0.0.1:8080
 ```
-Output in JSON format:
+
+### Load External YAML Rules
+
 ```bash
-hfinger -u https://www.hackall.cn -j output.json
+hfinger -u https://www.example.com --rules ./rules/custom.yaml
+hfinger -f targets.txt --rules ./rules/community/
 ```
-Output in XML format:
+
+`--rules` accepts a YAML file or a directory and can be used multiple times.
+
+### Write Output
+
 ```bash
-hfinger -u https://www.hackall.cn -x output.xml
+hfinger -f targets.txt -j result.json
+hfinger -f targets.txt -x result.xml
+hfinger -f targets.txt -s result.xlsx
 ```
-Output in XLSX format:
+
+Results include product name, category, status code, Server header, title, confidence, and evidence.
+
+### Passive Mode
+
+Start a local proxy:
+
 ```bash
-hfinger -u https://www.hackall.cn -s output.xlsx
+hfinger -l 127.0.0.1:8888 -s result.xlsx
 ```
 
-#### Passive mode
+Configure your browser or another tool to use `127.0.0.1:8888` as the proxy. HFinger forwards traffic and fingerprints server responses at the same time.
 
-Usage is similar to `Xray`, including starting monitoring, adding upstream agents, tool linkage, etc. Passive mode can identify fingerprints that active mode cannot and is more comprehensive than active scanning.
+Use an upstream proxy:
 
-Just start monitoring：
-```bash 
-hfinger -l 127.0.0.1:8888 -s res.xlsx
-```
-![](https://github.com/HackAllSec/hfinger/blob/main/images/passivemode.png)
-![](https://github.com/HackAllSec/hfinger/blob/main/images/passive.png)
-
-To support HTTPS, you need to import the certificate in the `certs` directory into the browser.
-
-**Combine with other tools**
-
-There are two ways to combine `Xray` or other tools：
-
-Method 1:  `Target -> Xray/Burp -> hfinger`
-
-Based on the above, set the browser's proxy address to `Xray` or `Burp`, and then configure the upstream proxy in `Xray` or `Burp` to be the listening address of `hfinger`.
-
-Method 2: `Target -> hfinger -> Xray`
-
-Start `hfinger` passive mode, use the `-p` parameter to set the upstream proxy, and set the browser's proxy to the listening address of `hfinger`.
 ```bash
-hfinger -l 127.0.0.1:8888 -p http://127.0.0.1:7777 -s res.xlsx
+hfinger -l 127.0.0.1:8888 -p http://127.0.0.1:7777 -s result.xlsx
 ```
 
-### Output example
+For HTTPS passive fingerprinting, import the generated certificate under the `certs` directory into your browser or system trust store.
 
-real time output:
+## Rule Management
 
-![](https://github.com/HackAllSec/hfinger/blob/main/images/output.png)
+HFinger uses built-in core rules and no longer depends on a runtime JSON fingerprint file. User and community rules are written in YAML.
 
-JSON output format:
+Validate external rules:
+
+```bash
+hfinger rules lint ./rules/custom.yaml
+hfinger rules lint ./rules/community/
+```
+
+Run lightweight rule tests:
+
+```bash
+hfinger rules test ./rules/community/
+```
+
+Rule authoring documentation:
+
+- [中文规则 Wiki](docs/RULES_WIKI.md)
+- [English Rules Wiki](docs/RULES_WIKI_EN.md)
+
+## YAML Rule Example
+
+```yaml
+id: example-admin
+name: Example Admin
+category: web
+tags:
+  - admin
+  - example
+
+match:
+  strategy: score
+  threshold: 80
+  probes:
+    - id: homepage
+      request:
+        method: GET
+        path: /
+      matchers:
+        - type: title.contains
+          value: Example Admin
+          weight: 50
+          evidence: Page title matched
+        - type: header.contains
+          key: Set-Cookie
+          value: example_session
+          weight: 40
+          evidence: Cookie fingerprint matched
+
+negative:
+  - type: body.contains
+    value: unrelated product
+    reason: Avoid false positives from similar pages
+
+metadata:
+  references:
+    - https://example.com
+```
+
+## Output Example
+
 ```json
 [
   {
-    "url": "https://example.com",
-    "cms": "若依",
-    "server": "cloudflare",
+    "url": "https://www.example.com",
+    "cms": "Example Admin",
+    "category": "web",
+    "server": "nginx",
     "statuscode": 200,
-    "title": "登录"
-  },
-  {
-    "url": "https://example.com",
-    "cms": "Shiro",
-    "server": "cloudflare",
-    "statuscode": 200,
-    "title": "登录"
+    "title": "Example Admin",
+    "confidence": 100,
+    "evidence": [
+      {
+        "source": "title",
+        "matcher_type": "title.contains",
+        "matched_value": "Example Admin",
+        "weight": 50,
+        "message": "Page title matched",
+        "response_url": "https://www.example.com"
+      }
+    ]
   }
 ]
 ```
-XML output format:
-```
-<results>
-  <result>
-    <URL>https://blog.hackall.cn</URL>
-    <CMS>Typecho</CMS>
-    <Server>cloudflare</Server>
-    <StatusCode>404</StatusCode>
-    <Title>Hack All Sec的博客 - Hack All Sec&#39;s Blog</Title>
-  </result>
-</results>
-```
-XLSX output format：
-|URL|CMS|Server|StatusCode|Title|
-|-|-|-|-|-|
-|https://blog.hackall.cn|Typecho|cloudflare|200|Hack All Sec的博客 - Hack All Sec's Blog|
 
-![](https://github.com/HackAllSec/hfinger/blob/main/images/xlsx.png)
+## CLI Flags
 
-## Directory structure
-
-```
-hfinger/
-|-- main.go               // Start program entry
-|-- cmd/                  // Command line related code
-|   |-- banner.go
-|   |-- args.go
-|-- icon                  // Icon files
-|-- config/
-|   |-- config.go         // Config file
-|-- data/
-|   |-- finger.json       // Fingerprint data file
-|-- models/
-|   |-- finger.go         // Core fingerprint scanning logic
-|   |-- faviconhash.go    // favicon hash calculate
-|   |-- matcher.go        // matching logic
-|   |-- mitm.go           // MITM service
-|-- output
-|   |-- jsonoutput.go     // Output json file
-|   |-- xmloutput.go      // Output xml file
-|   |-- xlsxoutput.go     // Output xlsx file
-|-- utils/
-|   |-- http.go           // HTTP request
-|   |-- certs.go          // Certs
-|   |-- update.go         // Update and upgrade
+```text
+-u, --url string           Scan one target
+-f, --file string          Read targets from file
+-l, --listen string        Start passive proxy listener
+-p, --proxy string         Use upstream proxy
+-t, --thread int           Number of threads
+-r, --redirect int         Max redirects
+    --rules stringArray    Load external YAML rule file or directory
+-j, --output-json string   Write JSON output
+-x, --output-xml string    Write XML output
+-s, --output-xlsx string   Write XLSX output
+-c, --check-update         Check tool updates
+    --update               Show rule update guidance
+    --upgrade              Upgrade the tool
+-v, --version              Show version
 ```
 
-## Change log
+## Legal Use and Disclaimer
 
-[CHANGELOG](CHANGELOG.md)
+HFinger is intended only for authorized security testing, asset identification, internal security governance, and research.
 
-## Contribute
+Tools of this type can perform batch probing and fingerprinting, and may be abused for unauthorized scanning. You must ensure that you have explicit authorization for all targets and comply with applicable laws, contracts, and testing scopes.
 
-Submissions of PRs, Issues and Fingerprints are welcome.
+The developers are not responsible for unauthorized use, attacks, data leakage, service disruption, or any other consequences. By using this tool, you acknowledge and accept these limitations.
 
-You are welcome to develop other tools based on this project or extend the functionality of this tool.
+## Contribution
 
-You can append a new fingerprint to the end of the `data/finger.json` file and submit it via PR. Or submit Issues to tell us the unrecognized CMS or framework and more details.
+Issues, pull requests, and YAML fingerprint rules are welcome. Before submitting rules, run:
+
+```bash
+hfinger rules lint ./rules/your-rule.yaml
+hfinger rules test ./rules/your-rule.yaml
+```
 
 ## License
 
-Please comply with [MIT License](LICENSE)
-
-## Star History
-
-![](https://api.star-history.com/svg?repos=HackAllSec/hfinger&type=Date)
+See [MIT License](LICENSE).

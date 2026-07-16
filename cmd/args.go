@@ -155,7 +155,7 @@ func init() {
 	RootCmd.Flags().IntP("thread", "t", 100, "Number of fingerprint recognition threads")
 	RootCmd.Flags().IntP("redirect", "r", 5, "Number of max redirects")
 	RootCmd.Flags().BoolP("check-update", "c", false, "Check for updates and upgrades")
-	RootCmd.Flags().BoolP("update", "", false, "Update fingerprint database")
+	RootCmd.Flags().BoolP("update", "", false, "Show rule update guidance")
 	RootCmd.Flags().BoolP("upgrade", "", false, "Upgrade to the latest version")
 	RootCmd.Flags().BoolP("version", "v", false, "Display the current version of the tool")
 
