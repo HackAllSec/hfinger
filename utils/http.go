@@ -142,6 +142,7 @@ func createHybridTransport(proxy string) (*http.Transport, error) {
 				return conn, nil
 			}
 			if shouldFallbackToGMTLS(err) {
+				logger.Warn("Standard TLS connection failed for %s, trying GM/TLS fallback: %v", addr, err)
 				gmConn, gmErr := connectWithGMTLS(network, addr, gmTLSConfig)
 				if gmErr == nil {
 					return gmConn, nil
