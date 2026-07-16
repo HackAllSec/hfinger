@@ -160,6 +160,8 @@ Rule authoring documentation:
 - [中文规则 Wiki](docs/RULES_WIKI.md)
 - [English Rules Wiki](docs/RULES_WIKI_EN.md)
 
+The rules wiki includes prompts for AI-assisted rule drafting. AI output should be treated as a draft and must be manually reviewed and validated with `rules lint/test`.
+
 ## YAML Rule Example
 
 ```yaml

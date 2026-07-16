@@ -146,3 +146,24 @@ func TestSafeZipPath_BitsUT(t *testing.T) {
 		})
 	}
 }
+
+func TestSelectUpgradeAsset_BitsUT(t *testing.T) {
+	assets := []GitHubReleaseAsset{
+		{Name: "hfinger-darwin-arm64.zip.sha256", BrowserDownloadURL: "https://example.com/checksum"},
+		{Name: "hfinger-linux-amd64.zip", BrowserDownloadURL: "https://example.com/linux"},
+		{Name: "hfinger-darwin-arm64.zip", BrowserDownloadURL: "https://example.com/darwin"},
+		{Name: "hfinger-windows-amd64.zip", BrowserDownloadURL: "https://example.com/windows"},
+	}
+
+	got, err := selectUpgradeAsset(assets, "darwin")
+	if err != nil {
+		t.Fatalf("selectUpgradeAsset() unexpected error: %v", err)
+	}
+	if got.Name != "hfinger-darwin-arm64.zip" {
+		t.Fatalf("selectUpgradeAsset() = %q, want darwin zip asset", got.Name)
+	}
+
+	if _, err := selectUpgradeAsset(assets, "plan9"); err == nil {
+		t.Fatalf("selectUpgradeAsset() expected unsupported OS error")
+	}
+}

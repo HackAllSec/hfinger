@@ -469,7 +469,7 @@ func matchfingerprint(url string, statuscode int, body []byte, header http.Heade
 		cms = match.Rule.Name
 		key := fmt.Sprintf("%s::%s", url, cms)
 		if _, loaded := matchedCMS.LoadOrStore(key, true); !loaded {
-			logger.Success("[%s] [%s] [%d] [%s] [%s] [confidence=%d]", url, cms, statuscode, server, title, match.Confidence)
+			logger.Success("[%s] [%s] [%d] [%s] [%s] [confidence=%d%%]", url, cms, statuscode, server, title, match.Confidence)
 			result := config.Result{
 				URL:        url,
 				CMS:        cms,

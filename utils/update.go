@@ -197,32 +197,12 @@ func Upgrade() {
 		return
 	}
 
-	var assetName string
-	switch runtime.GOOS {
-	case "windows":
-		assetName = "windows"
-	case "linux":
-		assetName = "linux"
-	case "darwin":
-		assetName = "darwin"
-	default:
-		logger.Error("Unsupported OS: %s", runtime.GOOS)
+	asset, err := selectUpgradeAsset(release.Assets, runtime.GOOS)
+	if err != nil {
+		logger.Error("%v", err)
 		return
 	}
-
-	var downloadURL string
-	for _, asset := range release.Assets {
-		if strings.Contains(asset.Name, assetName) {
-			downloadURL = asset.BrowserDownloadURL
-			assetName = asset.Name
-			break
-		}
-	}
-
-	if downloadURL == "" {
-		logger.Error("No matching asset found for %s", assetName)
-		return
-	}
+	assetName := asset.Name
 
 	exePath, _ := os.Executable()
 	exeDir := filepath.Dir(exePath)
@@ -230,7 +210,7 @@ func Upgrade() {
 	backupExe := exePath + ".old"
 
 	// 下载新版本
-	if err := downloadFile(downloadURL, tempFile); err != nil {
+	if err := downloadFile(asset.BrowserDownloadURL, tempFile); err != nil {
 		logger.Error("Error downloading new version: %v", err)
 		_ = os.Remove(tempFile)
 		return
@@ -270,6 +250,35 @@ func Upgrade() {
 	_ = os.Remove(backupExe)
 
 	logger.Success("Upgrade complete. New version: %s", latestVersion)
+}
+
+func selectUpgradeAsset(assets []GitHubReleaseAsset, goos string) (GitHubReleaseAsset, error) {
+	var osName string
+	switch goos {
+	case "windows":
+		osName = "windows"
+	case "linux":
+		osName = "linux"
+	case "darwin":
+		osName = "darwin"
+	default:
+		return GitHubReleaseAsset{}, fmt.Errorf("unsupported OS: %s", goos)
+	}
+
+	for _, asset := range assets {
+		name := strings.ToLower(asset.Name)
+		if !strings.Contains(name, osName) {
+			continue
+		}
+		if strings.Contains(name, "sha256") || strings.Contains(name, "checksum") {
+			continue
+		}
+		if !strings.HasSuffix(name, ".zip") {
+			continue
+		}
+		return asset, nil
+	}
+	return GitHubReleaseAsset{}, fmt.Errorf("no matching asset found for %s", osName)
 }
 
 func extractZip(filePath, destDir string) error {

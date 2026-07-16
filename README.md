@@ -160,6 +160,8 @@ hfinger rules test ./rules/community/
 - [中文规则 Wiki](docs/RULES_WIKI.md)
 - [English Rules Wiki](docs/RULES_WIKI_EN.md)
 
+规则 Wiki 中提供了 AI 辅助生成规则草案的提示词模板。AI 输出仅建议作为草案，提交前仍需人工审核并通过 `rules lint/test`。
+
 ## YAML 规则示例
 
 ```yaml
