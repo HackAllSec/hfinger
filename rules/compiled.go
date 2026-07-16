@@ -37,6 +37,7 @@ type compiledMatcher struct {
 	lowerValues []string
 	regexps     []*regexp.Regexp
 	statusCodes map[int]struct{}
+	contains    *containsAutomaton
 	weight      int
 }
 
@@ -165,6 +166,15 @@ func compileMatcher(matcher Matcher) compiledMatcher {
 	}
 
 	switch cm.matcherType {
+	case "body.contains", "header.contains", "title.contains", "cookie.contains", "redirect.to", "server.banner.contains",
+		"tls.cert.subject.contains", "tls.cert.issuer.contains", "tls.cert.dns.contains", "tls.alpn.contains":
+		automatonValues := cm.values
+		if !isCaseSensitive(matcher) {
+			automatonValues = cm.lowerValues
+		}
+		if len(automatonValues) > 1 && !containsEmptyString(automatonValues) {
+			cm.contains = newContainsAutomaton(automatonValues)
+		}
 	case "body.regex", "header.regex", "server.banner.regex":
 		cm.regexps = compileRegexps(values)
 	case "script.src.contains":
@@ -182,6 +192,125 @@ func compileMatcher(matcher Matcher) compiledMatcher {
 		}
 	}
 	return cm
+}
+
+type containsAutomaton struct {
+	nodes []containsNode
+}
+
+type containsNode struct {
+	edges   []containsEdge
+	fail    int
+	outputs []int
+}
+
+type containsEdge struct {
+	ch   byte
+	next int
+}
+
+func newContainsAutomaton(patterns []string) *containsAutomaton {
+	automaton := &containsAutomaton{nodes: []containsNode{{}}}
+	nonEmpty := 0
+	for index, pattern := range patterns {
+		if pattern == "" {
+			continue
+		}
+		nonEmpty++
+		state := 0
+		for i := 0; i < len(pattern); i++ {
+			ch := pattern[i]
+			next, ok := automaton.nextState(state, ch)
+			if !ok {
+				next = len(automaton.nodes)
+				automaton.nodes[state].edges = append(automaton.nodes[state].edges, containsEdge{ch: ch, next: next})
+				automaton.nodes = append(automaton.nodes, containsNode{})
+			}
+			state = next
+		}
+		automaton.nodes[state].outputs = append(automaton.nodes[state].outputs, index)
+	}
+	if nonEmpty == 0 {
+		return nil
+	}
+
+	queue := make([]int, 0, len(automaton.nodes))
+	for _, edge := range automaton.nodes[0].edges {
+		queue = append(queue, edge.next)
+	}
+	for head := 0; head < len(queue); head++ {
+		state := queue[head]
+		for _, edge := range automaton.nodes[state].edges {
+			ch := edge.ch
+			child := edge.next
+			fail := automaton.nodes[state].fail
+			for fail != 0 {
+				if next, ok := automaton.nextState(fail, ch); ok {
+					fail = next
+					break
+				}
+				fail = automaton.nodes[fail].fail
+			}
+			if fail == 0 {
+				if next, ok := automaton.nextState(0, ch); ok && next != child {
+					fail = next
+				}
+			}
+			automaton.nodes[child].fail = fail
+			if len(automaton.nodes[fail].outputs) > 0 {
+				automaton.nodes[child].outputs = append(automaton.nodes[child].outputs, automaton.nodes[fail].outputs...)
+			}
+			queue = append(queue, child)
+		}
+	}
+	return automaton
+}
+
+func containsEmptyString(values []string) bool {
+	for _, value := range values {
+		if value == "" {
+			return true
+		}
+	}
+	return false
+}
+
+func (automaton *containsAutomaton) nextState(state int, ch byte) (int, bool) {
+	for _, edge := range automaton.nodes[state].edges {
+		if edge.ch == ch {
+			return edge.next, true
+		}
+	}
+	return 0, false
+}
+
+func (automaton *containsAutomaton) matchIndex(target string) (int, bool) {
+	if automaton == nil {
+		return 0, false
+	}
+	state := 0
+	best := -1
+	for i := 0; i < len(target); i++ {
+		ch := target[i]
+		for state != 0 {
+			if _, ok := automaton.nextState(state, ch); ok {
+				break
+			}
+			state = automaton.nodes[state].fail
+		}
+		if next, ok := automaton.nextState(state, ch); ok {
+			state = next
+		}
+		for _, patternIndex := range automaton.nodes[state].outputs {
+			if best == -1 || patternIndex < best {
+				best = patternIndex
+				if best == 0 {
+					return best, true
+				}
+			}
+		}
+	}
+	return best, best >= 0
 }
 
 func compileRegexps(values []string) []*regexp.Regexp {
@@ -593,6 +722,12 @@ func matchPreparedText(source string, matcher compiledMatcher, target string, lo
 	if !isCaseSensitive(matcher.matcher) {
 		values = matcher.lowerValues
 		targetToMatch = lowerTarget
+	}
+	if matcher.contains != nil {
+		if matchIndex, ok := matcher.contains.matchIndex(targetToMatch); ok && matchIndex < len(values) {
+			matchedValue := matcher.values[matchIndex]
+			return evidence(source, matcher.matcher, snippet(target, matchedValue), responseURL), true
+		}
 	}
 	for i, value := range values {
 		if strings.Contains(targetToMatch, value) {

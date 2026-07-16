@@ -23,6 +23,7 @@ type StatsReport struct {
 	Rules      int
 	Products   int
 	Categories map[string]int
+	Tiers      map[string]int
 }
 
 func Stats(ruleSet []Rule) StatsReport {
@@ -30,11 +31,24 @@ func Stats(ruleSet []Rule) StatsReport {
 		Rules:      len(ruleSet),
 		Products:   uniqueProducts(ruleSet),
 		Categories: make(map[string]int),
+		Tiers:      make(map[string]int),
 	}
 	for _, rule := range ruleSet {
 		report.Categories[rule.Category]++
+		report.Tiers[RuleTier(rule)]++
 	}
 	return report
+}
+
+func RuleTier(rule Rule) string {
+	switch {
+	case strings.HasPrefix(rule.ID, "core-"):
+		return "curated"
+	case strings.HasPrefix(rule.ID, "builtin-"):
+		return "migrated"
+	default:
+		return "external"
+	}
 }
 
 func LintRules(ruleSet []Rule) LintReport {

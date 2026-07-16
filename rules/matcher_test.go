@@ -2,6 +2,7 @@ package rules
 
 import (
 	"net/http"
+	"strings"
 	"testing"
 )
 
@@ -74,6 +75,65 @@ func TestMatchRuleNegativeExcludes(t *testing.T) {
 	}
 	if !result.Excluded {
 		t.Fatalf("MatchRule() expected excluded=true")
+	}
+}
+
+func TestMatchRuleContainsAutomatonKeepsMatcherValueOrder(t *testing.T) {
+	response := Response{
+		URL:  "https://example.com/",
+		Body: []byte("second signal appears before first signal"),
+	}
+	rule := Rule{
+		ID:       "contains-order",
+		Name:     "Contains Order",
+		Category: "test",
+		Match: MatchBlock{
+			Matchers: []Matcher{{
+				Type:   "body.contains",
+				Values: []string{"first signal", "second signal"},
+			}},
+		},
+	}
+
+	result := MatchRule([]Response{response}, rule)
+	if !result.Matched {
+		t.Fatalf("MatchRule() expected match")
+	}
+	if len(result.Evidence) != 1 {
+		t.Fatalf("evidence length = %d, want 1", len(result.Evidence))
+	}
+	if got := result.Evidence[0].MatchedValue; !strings.Contains(got, "first signal") {
+		t.Fatalf("MatchedValue = %q, want first signal evidence", got)
+	}
+}
+
+func TestMatchRuleContainsAutomatonKeepsEmptyValueSemantics(t *testing.T) {
+	body := strings.Repeat("prefix ", 40) + "second signal"
+	response := Response{
+		URL:  "https://example.com/",
+		Body: []byte(body),
+	}
+	rule := Rule{
+		ID:       "contains-empty-value",
+		Name:     "Contains Empty Value",
+		Category: "test",
+		Match: MatchBlock{
+			Matchers: []Matcher{{
+				Type:   "body.contains",
+				Values: []string{"", "second signal"},
+			}},
+		},
+	}
+
+	result := MatchRule([]Response{response}, rule)
+	if !result.Matched {
+		t.Fatalf("MatchRule() expected match")
+	}
+	if len(result.Evidence) != 1 {
+		t.Fatalf("evidence length = %d, want 1", len(result.Evidence))
+	}
+	if got := result.Evidence[0].MatchedValue; strings.Contains(got, "second signal") {
+		t.Fatalf("MatchedValue = %q, want empty value to keep first-match semantics", got)
 	}
 }
 

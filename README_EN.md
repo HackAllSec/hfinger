@@ -354,6 +354,8 @@ Show runtime rule distribution:
 hfinger rules stats
 ```
 
+The output includes total rule count, product count, `tier.curated` / `tier.migrated` tier counts, and category distribution.
+
 Validate external rules:
 
 ```bash

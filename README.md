@@ -354,6 +354,8 @@ framework, ai-service, iot-device
 hfinger rules stats
 ```
 
+输出包含规则总量、产品数量、`tier.curated` / `tier.migrated` 分层统计，以及各 category 的规则分布。
+
 校验外置规则：
 
 ```bash

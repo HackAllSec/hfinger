@@ -33,6 +33,19 @@ func BenchmarkMatchCompiledRuntimeContains(b *testing.B) {
 	}
 }
 
+func BenchmarkMatchCompiledRuntimeContainsValues(b *testing.B) {
+	compiled := compileRules(benchmarkValuesRuleSet(100, 20))
+	responses := []Response{benchmarkResponse()}
+
+	b.ReportAllocs()
+	for i := 0; i < b.N; i++ {
+		results := matchCompiledRules(responses, compiled)
+		if len(results) == 0 {
+			b.Fatal("expected at least one match")
+		}
+	}
+}
+
 func BenchmarkMatchRulesCompiledRegex(b *testing.B) {
 	ruleSet := benchmarkRuleSet(100, "body.regex")
 	responses := []Response{benchmarkResponse()}
@@ -181,6 +194,29 @@ func benchmarkRuleSet(count int, matcherType string) []Rule {
 				Strategy: StrategyAny,
 				Matchers: []Matcher{
 					{Type: matcherType, Value: value},
+				},
+			},
+		}
+	}
+	return ruleSet
+}
+
+func benchmarkValuesRuleSet(ruleCount int, valuesPerRule int) []Rule {
+	ruleSet := make([]Rule, ruleCount)
+	for i := range ruleSet {
+		values := make([]string, 0, valuesPerRule)
+		for valueIndex := 0; valueIndex < valuesPerRule; valueIndex++ {
+			values = append(values, fmt.Sprintf("missing-signal-%03d-%03d", i, valueIndex))
+		}
+		values = append(values, fmt.Sprintf("bench-signal-%03d", i))
+		ruleSet[i] = Rule{
+			ID:       fmt.Sprintf("bench-values-%03d", i),
+			Name:     fmt.Sprintf("Bench Values %03d", i),
+			Category: "benchmark",
+			Match: MatchBlock{
+				Strategy: StrategyAny,
+				Matchers: []Matcher{
+					{Type: "body.contains", Values: values},
 				},
 			},
 		}

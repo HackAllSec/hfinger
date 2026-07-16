@@ -1,12 +1,12 @@
 package cmd
 
 import (
-    "hfinger/config"
-    "github.com/fatih/color"
+	"github.com/fatih/color"
+	"hfinger/config"
 )
 
 func PrintBanner() {
-    banner := `
+	banner := `
  █████         ██████   ███                                        
 ▒▒███         ███▒▒███ ▒▒▒                                         
  ▒███████    ▒███ ▒▒▒  ████  ████████    ███████  ██████  ████████ 
@@ -20,5 +20,5 @@ func PrintBanner() {
                                         ▒▒▒▒▒▒                     ` + config.Version + ` By:Hack All Sec
 
 `
-    color.Green(banner)
+	color.Green(banner)
 }

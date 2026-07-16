@@ -41,3 +41,21 @@ func TestTestRulesFixtures(t *testing.T) {
 		t.Fatalf("TestRules() failures = %#v", failures)
 	}
 }
+
+func TestStatsReportsRuleTiers(t *testing.T) {
+	report := Stats([]Rule{
+		{ID: "core-0001-example", Name: "Curated", Category: "devops"},
+		{ID: "builtin-0001-example", Name: "Migrated", Category: "cms"},
+		{ID: "custom-example", Name: "External", Category: "internal"},
+	})
+
+	if report.Tiers["curated"] != 1 {
+		t.Fatalf("curated tier = %d, want 1", report.Tiers["curated"])
+	}
+	if report.Tiers["migrated"] != 1 {
+		t.Fatalf("migrated tier = %d, want 1", report.Tiers["migrated"])
+	}
+	if report.Tiers["external"] != 1 {
+		t.Fatalf("external tier = %d, want 1", report.Tiers["external"])
+	}
+}

@@ -323,6 +323,14 @@ var rulesStatsCmd = &cobra.Command{
 		}
 		report := rules.Stats(rules.ActiveRules())
 		fmt.Printf("rules=%d products=%d\n", report.Rules, report.Products)
+		tiers := make([]string, 0, len(report.Tiers))
+		for tier := range report.Tiers {
+			tiers = append(tiers, tier)
+		}
+		sort.Strings(tiers)
+		for _, tier := range tiers {
+			fmt.Printf("tier.%s=%d\n", tier, report.Tiers[tier])
+		}
 		categories := make([]string, 0, len(report.Categories))
 		for category := range report.Categories {
 			categories = append(categories, category)
