@@ -578,12 +578,6 @@ katana -list high-value.txt -silent -o katana-high-value.txt
 jq -r 'select(.confidence>=80) | .url' hfinger-results.jsonl > confirmed-web.txt
 ```
 
-当授权范围包含非 HTTP 端口时，可使用轻量服务指纹识别：
-
-```bash
-hfinger service scan 10.0.0.5 --ports 22,3306,5432,6379,3389,1883 --output-jsonl services.jsonl
-```
-
 大批量结果可做跨资产聚类，辅助识别疑似同源系统：
 
 ```bash
@@ -597,7 +591,7 @@ hfinger llm manifest
 hfinger llm skills
 ```
 
-`manifest` 提供工具能力、输入输出、结果字段和 Schema 路径；`skills` 提供资产分诊、工具链编排、规则生成、蜜罐复核、非 HTTP 服务识别、跨资产聚类等 playbook。相关 Schema 位于：
+`manifest` 提供工具能力、输入输出、结果字段和 Schema 路径；`skills` 提供资产分诊、工具链编排、规则生成、蜜罐复核、跨资产聚类等 playbook。相关 Schema 位于：
 
 - `schemas/result.schema.json`
 - `schemas/llm-skill.schema.json`
@@ -612,7 +606,6 @@ LLM/Skill 适合处理 HFinger 参数本身不应该内置的动态决策：
 - 根据识别结果生成后续命令计划，但不替代 HFinger 的确定性指纹判定。
 - 根据一组 HTTP/TLS/DNS/Favicon 证据生成 YAML 规则草案，再交给 `rules lint/test/doctor` 做确定性校验。
 - 遇到蜜罐、冲突指纹、万能响应时，生成低风险复核步骤，而不是继续加大主动探测强度。
-- 对授权范围内的非 HTTP 端口调用 `hfinger service scan`，识别 SSH、Redis、MySQL、PostgreSQL、RDP、MQTT 等服务。
 - 对大批量 JSONL 结果调用 `hfinger cluster jsonl`，基于 favicon、TLS、DNS、标题、Server、资源 Hash 做同源候选聚类。
 
 一个更有用的 Agent 指令示例：
@@ -646,7 +639,6 @@ LLM/Skill 适合处理 HFinger 参数本身不应该内置的动态决策：
 - 规则生成：根据 HTTP Header、Cookie、Body、Favicon、DNS CNAME、TLS 证书、JS/CSS Hash 等证据生成 YAML 规则草案，再由 `rules lint/test/doctor` 校验。
 - 规则审查：检查规则是否依赖泛化关键词、是否缺少 strong evidence、negative 和 positive/negative 样本。
 - 蜜罐研判：当结果出现 `category: honeypot`、`Potential Honeypot`、多个冲突技术栈或多路径相似响应时，降低主动探测强度并生成低风险确认建议。
-- 非 HTTP 服务识别：在明确授权端口范围内，对 SSH、Redis、MySQL、PostgreSQL、RDP、MQTT 做轻量协议指纹识别。
 - 跨资产聚类：将共享 favicon、TLS 证书、DNS 边缘网络、标题、Server 和静态资源 Hash 的资产归并为疑似同源系统。
 - 报告解释：把 evidence 和 confidence 转换为面向安全报告的可审计说明。
 

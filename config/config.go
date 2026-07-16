@@ -32,7 +32,7 @@ type LastResponse struct {
 }
 
 var (
-	Version      = "v1.0.9"
+	Version      = "v1.1.0"
 	CertsDir     = "certs"
 	CaCertFile   = "ca.crt"
 	CaKeyFile    = "ca.key"

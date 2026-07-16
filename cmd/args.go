@@ -202,7 +202,6 @@ func init() {
 	RootCmd.AddCommand(passiveCmd)
 	RootCmd.AddCommand(tlsCmd)
 	RootCmd.AddCommand(llmCmd)
-	RootCmd.AddCommand(serviceCmd)
 	RootCmd.AddCommand(clusterCmd)
 }
 
@@ -226,11 +225,6 @@ var llmCmd = &cobra.Command{
 	Short: "Expose machine-readable metadata for LLM and agent integrations",
 }
 
-var serviceCmd = &cobra.Command{
-	Use:   "service",
-	Short: "Probe non-HTTP service fingerprints",
-}
-
 var clusterCmd = &cobra.Command{
 	Use:   "cluster",
 	Short: "Cluster HFinger JSONL results across assets",
@@ -252,7 +246,6 @@ var llmManifestCmd = &cobra.Command{
 				"URL list or httpx JSONL via -f",
 				"passive MITM via -l",
 				"external YAML rules via --rules",
-				"host and port list via service scan",
 				"HFinger JSONL via cluster jsonl",
 			},
 			"outputs": []string{"terminal", "json", "jsonl", "xml", "xlsx", "passive-jsonl"},
@@ -264,13 +257,11 @@ var llmManifestCmd = &cobra.Command{
 				"http-head-options", "http-alt-svc-http3-hint", "quic-version-negotiation",
 				"cdn-cache-header-summary", "http-behavior", "waf-cdn",
 				"framework", "cms-middleware", "version-extraction",
-				"confidence-evidence", "honeypot-detection", "non-http-service-banner",
-				"cross-asset-clustering",
+				"confidence-evidence", "honeypot-detection", "cross-asset-clustering",
 			},
 			"commands": map[string]string{
 				"web_scan_jsonl":  "hfinger -f alive.jsonl --output-jsonl hfinger-results.jsonl",
 				"passive_query":   "hfinger passive query passive.jsonl --min-confidence 80 --limit 100",
-				"service_scan":    "hfinger service scan 10.0.0.5 --ports 22,3306,5432,6379,3389,1883 --output-jsonl services.jsonl",
 				"cluster_results": "hfinger cluster jsonl hfinger-results.jsonl --min-size 2",
 				"rule_validation": "hfinger rules lint ./candidate.yaml && hfinger rules test ./candidate.yaml && hfinger rules doctor ./candidate.yaml",
 			},
@@ -283,7 +274,6 @@ var llmManifestCmd = &cobra.Command{
 				"run hfinger with --output-jsonl for streaming analysis",
 				"group results by category, confidence, and evidence",
 				"send high-confidence technologies to nuclei/ffuf/katana/nmap workflows",
-				"use service scan only when the authorized scope includes non-HTTP ports",
 				"use cluster jsonl to find likely same-origin systems across large result sets",
 				"use rules doctor and schema before accepting generated rules",
 			},
@@ -421,32 +411,6 @@ var llmSkillsCmd = &cobra.Command{
 				},
 			},
 			{
-				"name":           "hfinger-service-fingerprint",
-				"purpose":        "Identify non-HTTP services only when the authorized scope includes TCP service probing.",
-				"inputs":         []string{"host or IP", "authorized port list", "timeout and rate limits"},
-				"outputs":        []string{"service JSONL", "protocol/product guesses", "banner evidence"},
-				"required_tools": []string{"hfinger"},
-				"risk_level":     "medium",
-				"do_not_do": []string{
-					"do not scan ports that are outside the authorized scope",
-					"do not confuse service banners with web fingerprints",
-				},
-				"example_user_prompt": "授权范围包含 10.0.0.5 的 22、3306、5432、6379、3389、1883 端口，请做轻量服务指纹识别并输出 JSONL。",
-				"when_to_use": []string{
-					"the operator needs SSH/Redis/MySQL/PostgreSQL/RDP/MQTT identification",
-					"web fingerprinting is insufficient because exposed services are not HTTP",
-				},
-				"decision_rules": []string{
-					"use explicit port scope from the operator",
-					"prefer protocol handshakes and banners as evidence",
-					"mark generic banners for manual review",
-				},
-				"workflow": []string{
-					"hfinger service scan 10.0.0.5 --ports 22,3306,5432,6379,3389,1883 --output-jsonl services.jsonl",
-					"group service results by protocol, product, confidence, and banner evidence",
-				},
-			},
-			{
 				"name":           "hfinger-cross-asset-cluster",
 				"purpose":        "Cluster large HFinger JSONL results to discover likely same-origin systems.",
 				"inputs":         []string{"hfinger-results.jsonl", "minimum cluster size"},
@@ -512,31 +476,6 @@ var passiveQueryCmd = &cobra.Command{
 			logger.Error("Error: %v", err)
 			os.Exit(1)
 		}
-	},
-}
-
-var serviceScanCmd = &cobra.Command{
-	Use:   "scan [host]",
-	Short: "Probe SSH, Redis, MySQL, PostgreSQL, RDP, MQTT and generic TCP banners",
-	Args:  cobra.ExactArgs(1),
-	Run: func(cmd *cobra.Command, args []string) {
-		portValue, _ := cmd.Flags().GetString("ports")
-		timeoutSeconds, _ := cmd.Flags().GetInt("timeout")
-		outputJSONL, _ := cmd.Flags().GetString("output-jsonl")
-		ports, err := models.ParsePorts(portValue)
-		if err != nil {
-			logger.Error("Error: %v", err)
-			os.Exit(1)
-		}
-		results := models.ProbeServices(args[0], ports, time.Duration(timeoutSeconds)*time.Second)
-		if outputJSONL != "" {
-			if err := models.WriteServiceJSONL(outputJSONL, results); err != nil {
-				logger.Error("Error: %v", err)
-				os.Exit(1)
-			}
-			return
-		}
-		models.PrintServiceResults(results)
 	},
 }
 
@@ -789,11 +728,6 @@ func init() {
 
 	llmCmd.AddCommand(llmManifestCmd)
 	llmCmd.AddCommand(llmSkillsCmd)
-
-	serviceScanCmd.Flags().String("ports", "22,3306,5432,6379,3389,1883", "Comma-separated ports or ranges to probe")
-	serviceScanCmd.Flags().Int("timeout", 3, "TCP probe timeout in seconds")
-	serviceScanCmd.Flags().String("output-jsonl", "", "Write service fingerprints to JSONL")
-	serviceCmd.AddCommand(serviceScanCmd)
 
 	clusterJSONLCmd.Flags().Int("min-size", 2, "Minimum cluster size to print")
 	clusterCmd.AddCommand(clusterJSONLCmd)

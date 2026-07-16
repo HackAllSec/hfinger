@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.1.0] - 2026-07-16
+
+- 完成规则库 YAML 化和内置规则源重构，核心规则统一维护在 `rulesets/core/`，支持外置 YAML 规则加载
+- 新增规则治理能力，支持 `rules lint`、`rules test`、`rules stats`、`rules doctor` 和 JSON Schema 校验
+- 新增证据化输出模型，JSON/JSONL 结果包含 category、version、confidence、evidence、DNS、TLS、行为信号和资源 Hash 信息
+- 新增完整 JA3S ServerHello 探测、QUIC Version Negotiation 探测、DNS 边缘网络识别、WAF 行为矩阵、API 语义规则和跨资产聚类能力
+- 新增蜜罐识别评分，覆盖明确蜜罐产品、冲突指纹、万能响应、相似响应、响应延迟和行为信号
+- 新增 LLM/Agent 集成元数据，提供 `llm manifest`、`llm skills`、结果 Schema 和 Skill Schema，便于外部 Agent 做资产分诊、工具链编排、规则草案生成和蜜罐复核
+- 优化主动/被动 TLS/TLCP 支持，主动模式默认 auto，支持标准 TLS 到 TLCP fallback，被动 MITM 支持标准 TLS/TLCP 握手阶段自动分流
+- 优化被动 JSONL 存储，支持查询过滤、limit、轮转和流式读取
+- 优化规则匹配性能，增加运行时预编译、Header 索引、响应缓存、Aho-Corasick 多模式匹配和资源 Hash 缓存
+- 删除非 HTTP service scan 子命令，保持 HFinger 聚焦 Web、HTTP/TLS、DNS、WAF/CDN、API、蜜罐和跨资产服务端指纹识别
+- 更新中英文 README 和规则 Wiki，补充合法使用声明、LLM/Skill 使用边界、规则编写规范和工具链联动示例
+
 ## [1.0.9] - 2025-07-15
 
 - 新增检查更新参数，改善用户体验，现在不会默认检查更新了

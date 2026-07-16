@@ -578,12 +578,6 @@ katana -list high-value.txt -silent -o katana-high-value.txt
 jq -r 'select(.confidence>=80) | .url' hfinger-results.jsonl > confirmed-web.txt
 ```
 
-When the authorized scope includes non-HTTP ports, use lightweight service fingerprinting:
-
-```bash
-hfinger service scan 10.0.0.5 --ports 22,3306,5432,6379,3389,1883 --output-jsonl services.jsonl
-```
-
 For large result sets, cluster likely same-origin systems:
 
 ```bash
@@ -597,7 +591,7 @@ hfinger llm manifest
 hfinger llm skills
 ```
 
-`manifest` exposes tool capabilities, inputs, outputs, result fields, and schema paths. `skills` exposes playbooks for asset triage, toolchain orchestration, rule authoring, honeypot review, non-HTTP service identification, and cross-asset clustering. Schemas are available at:
+`manifest` exposes tool capabilities, inputs, outputs, result fields, and schema paths. `skills` exposes playbooks for asset triage, toolchain orchestration, rule authoring, honeypot review, and cross-asset clustering. Schemas are available at:
 
 - `schemas/result.schema.json`
 - `schemas/llm-skill.schema.json`
@@ -612,7 +606,6 @@ LLM/Skill workflows are useful for dynamic decisions that should not be hard-cod
 - Generate follow-up command plans from fingerprints without replacing HFinger's deterministic matching.
 - Draft YAML rules from HTTP/TLS/DNS/favicon evidence, then validate them with `rules lint/test/doctor`.
 - When honeypot, conflicting-fingerprint, or universal-response signals appear, generate low-impact confirmation steps instead of increasing active probing.
-- For authorized non-HTTP ports, run `hfinger service scan` to identify SSH, Redis, MySQL, PostgreSQL, RDP, MQTT, and generic TCP banners.
 - For large JSONL outputs, run `hfinger cluster jsonl` to group likely same-origin systems by favicon, TLS, DNS, title, server, and resource hashes.
 
 A more useful agent instruction:
@@ -646,7 +639,6 @@ Typical LLM/Skill scenarios:
 - Rule authoring: generate YAML rule drafts from HTTP headers, cookies, body snippets, favicon, DNS CNAME, TLS certificates, and JavaScript/CSS hashes, then validate them with `rules lint/test/doctor`.
 - Rule review: check whether a rule depends on generic keywords or lacks strong evidence, negative matchers, and positive/negative examples.
 - Honeypot review: when results include `category: honeypot`, `Potential Honeypot`, conflicting technologies, or similar responses across many paths, reduce intrusive probing and generate low-impact confirmation steps.
-- Non-HTTP service identification: within an explicitly authorized port scope, identify SSH, Redis, MySQL, PostgreSQL, RDP, MQTT, and generic TCP services.
 - Cross-asset clustering: group assets that share favicon, TLS certificates, DNS edge networks, titles, server headers, or static resource hashes.
 - Report explanation: convert evidence and confidence into auditable security-report text.
 
