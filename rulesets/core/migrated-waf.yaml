@@ -18,6 +18,10 @@ rules:
                   value: commonFunction.js
                   weight: 100
                   evidence: Migrated response body evidence for 深信服 waf
+      negative:
+        - type: body.contains
+          value: 深信服 waf 漏洞
+          reason: Vulnerability articles can quote Sangfor WAF asset paths without being a deployed device.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -42,6 +46,10 @@ rules:
                   value: /LogInOut.php
                   weight: 100
                   evidence: Migrated response body evidence for 深信服防火墙数据中心
+      negative:
+        - type: body.contains
+          value: 深信服防火墙数据中心 漏洞
+          reason: Vulnerability articles can quote login paths without being a deployed device.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -70,6 +78,10 @@ rules:
                   value: username
                   weight: 100
                   evidence: Migrated response body evidence for 天融信防火墙
+      negative:
+        - type: body.contains
+          value: 天融信防火墙 漏洞
+          reason: Vulnerability articles can quote Topsec login markers without being a deployed device.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -94,6 +106,10 @@ rules:
                   value: 网御waf
                   weight: 100
                   evidence: Migrated response body evidence for Leadsec-WAF
+      negative:
+        - type: body.contains
+          value: Leadsec WAF 漏洞
+          reason: Vulnerability writeups can include Leadsec WAF login strings without being a live WAF.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -114,6 +130,10 @@ rules:
                   value: /cgi-bin/webui?op=get_product_model
                   weight: 100
                   evidence: Migrated response body evidence for 启明星辰天清汉马USG防火墙
+      negative:
+        - type: body.contains
+          value: 天清汉马USG 漏洞
+          reason: Vulnerability articles can quote product model endpoints without being a deployed firewall.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -134,6 +154,10 @@ rules:
                   value: 天清汉马USG
                   weight: 100
                   evidence: Migrated response body evidence for 启明星辰天清汉马USG防火墙
+      negative:
+        - type: body.contains
+          value: 天清汉马USG 使用手册
+          reason: Product manuals can mention the firewall name without exposing a live login surface.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -154,6 +178,10 @@ rules:
                   value: "1436966696"
                   weight: 100
                   evidence: Migrated favicon hash evidence for Barracuda
+      negative:
+        - type: body.contains
+          value: Barracuda documentation
+          reason: Documentation pages can mention Barracuda without being a deployed WAF.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -174,6 +202,10 @@ rules:
                   value: "123821839"
                   weight: 100
                   evidence: Migrated favicon hash evidence for 深信服下一代防火墙管理系统
+      negative:
+        - type: body.contains
+          value: 深信服下一代防火墙 漏洞
+          reason: Vulnerability articles can mention this product without exposing a live device.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -202,6 +234,10 @@ rules:
                   value: GLOBAL_CONFIG.js
                   weight: 100
                   evidence: Migrated response body evidence for 山石网科 防火墙
+      negative:
+        - type: body.contains
+          value: 山石网科 防火墙 漏洞
+          reason: Vulnerability articles can quote Hillstone resource names without being a deployed firewall.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -286,6 +322,10 @@ rules:
                   value: css/lsec/login.css
                   weight: 100
                   evidence: Migrated response body evidence for 网神SecGate 3600防火墙
+      negative:
+        - type: body.contains
+          value: 网神SecGate 3600防火墙 漏洞
+          reason: Vulnerability articles can quote SecGate login assets without being a deployed firewall.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -334,6 +374,10 @@ rules:
                   value: "5471989"
                   weight: 100
                   evidence: Migrated favicon hash evidence for 网康科技网关/防火墙
+      negative:
+        - type: body.contains
+          value: 网康科技网关 防火墙 漏洞
+          reason: Vulnerability articles can mention this gateway without exposing a live device.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -386,6 +430,10 @@ rules:
                   value: login_commit.php
                   weight: 100
                   evidence: Migrated response body evidence for AceNet 驰崴防火墙
+      negative:
+        - type: body.contains
+          value: AceNet 防火墙 漏洞
+          reason: Vulnerability articles can quote login endpoints without being a deployed firewall.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -406,6 +454,10 @@ rules:
                   value: WAF/
                   weight: 100
                   evidence: Migrated HTTP header evidence for WAF
+      negative:
+        - type: body.contains
+          value: WAF documentation
+          reason: Generic WAF references on documentation pages should not identify a deployed WAF.
       metadata:
         references:
             - builtin:migrated-legacy-rule

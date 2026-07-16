@@ -14,6 +14,10 @@ rules:
                   value: /seeyon/common/
                   weight: 100
                   evidence: Migrated response body evidence for 致远OA
+      negative:
+        - type: body.contains
+          value: 致远OA 漏洞
+          reason: Vulnerability articles can quote Seeyon paths without being a deployed OA system.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -38,6 +42,10 @@ rules:
                   value: /autoinstall/A6
                   weight: 100
                   evidence: Migrated response body evidence for 致远A6+协同管理软件
+      negative:
+        - type: body.contains
+          value: 致远A6 协同管理软件 漏洞
+          reason: Vulnerability articles can quote Seeyon A6 install paths without being a deployed OA system.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -62,6 +70,10 @@ rules:
                   value: /autoinstall/A8
                   weight: 100
                   evidence: Migrated response body evidence for 致远A8+协同管理软件
+      negative:
+        - type: body.contains
+          value: 致远A8 协同管理软件 漏洞
+          reason: Vulnerability articles can quote Seeyon A8 install paths without being a deployed OA system.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -82,6 +94,10 @@ rules:
                   value: M1-Server
                   weight: 100
                   evidence: Migrated HTML title evidence for 致远OA M1 Server
+      negative:
+        - type: body.contains
+          value: M1-Server 文档
+          reason: Documentation pages can mention M1-Server without being a deployed Seeyon service.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -102,6 +118,10 @@ rules:
                   value: M3 Server
                   weight: 100
                   evidence: Migrated HTML title evidence for 致远OA M3 Server
+      negative:
+        - type: body.contains
+          value: M3 Server 文档
+          reason: Documentation pages can mention M3 Server without being a deployed Seeyon service.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -122,6 +142,10 @@ rules:
                   value: "410106848"
                   weight: 100
                   evidence: Migrated favicon hash evidence for 致远互联-协同数据分析云
+      negative:
+        - type: body.contains
+          value: 致远互联 协同数据分析云 漏洞
+          reason: Vulnerability articles can mention this product without being a deployed OA system.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -142,6 +166,10 @@ rules:
                   value: /styles/dee/js/login/login.js
                   weight: 100
                   evidence: Migrated response body evidence for 致远互联-DEE
+      negative:
+        - type: body.contains
+          value: 致远互联 DEE 漏洞
+          reason: Vulnerability articles can quote DEE login paths without being a deployed OA system.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -162,6 +190,10 @@ rules:
                   value: hdn_valid_flag
                   weight: 100
                   evidence: Migrated response body evidence for 致远互联-FE
+      negative:
+        - type: body.contains
+          value: hdn_valid_flag 漏洞
+          reason: Vulnerability writeups can quote FE form fields without being a deployed OA system.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -182,6 +214,10 @@ rules:
                   value: "1578525679"
                   weight: 100
                   evidence: Migrated favicon hash evidence for 泛微 OA
+      negative:
+        - type: body.contains
+          value: 泛微 OA 漏洞
+          reason: Vulnerability articles can mention Weaver OA without being a deployed OA system.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -210,6 +246,10 @@ rules:
                   value: /wui/
                   weight: 100
                   evidence: Migrated response body evidence for 泛微 OA (e-cology)
+      negative:
+        - type: body.contains
+          value: 泛微 e-cology 漏洞
+          reason: Vulnerability articles can quote e-cology paths without being a deployed OA system.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -2422,4 +2462,3 @@ rules:
         references:
             - builtin:migrated-legacy-rule
         confidence: medium
-

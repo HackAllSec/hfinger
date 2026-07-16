@@ -14,6 +14,10 @@ rules:
                   value: /por/login_psw.csp
                   weight: 100
                   evidence: Migrated response body evidence for Sangfor SSL VPN
+      negative:
+        - type: body.contains
+          value: Sangfor SSL VPN 漏洞
+          reason: Vulnerability articles can quote Sangfor SSL VPN login paths without being a deployed VPN.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -34,6 +38,10 @@ rules:
                   value: loginPageSP/loginPrivacy.js
                   weight: 100
                   evidence: Migrated response body evidence for Sangfor SSL VPN
+      negative:
+        - type: body.contains
+          value: Sangfor SSL VPN 使用手册
+          reason: Product manuals can quote login JavaScript paths without exposing a live VPN.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -54,6 +62,10 @@ rules:
                   value: topsecsvportalname
                   weight: 100
                   evidence: Migrated HTTP header evidence for 天融信VPN设备
+      negative:
+        - type: body.contains
+          value: 天融信VPN设备 漏洞
+          reason: Vulnerability articles can mention this VPN without being a deployed device.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -78,6 +90,10 @@ rules:
                   value: SSLVPN LOGIN
                   weight: 100
                   evidence: Migrated response body evidence for 启明某VPN设备
+      negative:
+        - type: body.contains
+          value: SSLVPN LOGIN 漏洞
+          reason: Vulnerability writeups can quote SSLVPN login strings without being a live VPN.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -106,6 +122,10 @@ rules:
                   value: login
                   weight: 100
                   evidence: Migrated response body evidence for 天玥运维安全网关
+      negative:
+        - type: body.contains
+          value: 天玥运维安全网关 漏洞
+          reason: Vulnerability articles can quote login asset names without being a deployed gateway.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -126,6 +146,10 @@ rules:
                   value: "910523681"
                   weight: 100
                   evidence: Migrated favicon hash evidence for WiseGrid慧敏应用交付网关
+      negative:
+        - type: body.contains
+          value: WiseGrid 慧敏应用交付网关 漏洞
+          reason: Vulnerability articles can mention WiseGrid without being a deployed gateway.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -146,6 +170,10 @@ rules:
                   value: /+CSCOE+/logon.html
                   weight: 100
                   evidence: Migrated response body evidence for Cisco SSLVPN
+      negative:
+        - type: body.contains
+          value: Cisco SSLVPN vulnerability
+          reason: Vulnerability writeups can quote Cisco SSLVPN logon paths without being a live VPN.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -170,6 +198,10 @@ rules:
                   value: /html/wz_tooltip.js
                   weight: 100
                   evidence: Migrated response body evidence for 深信服一体化网关 MIG
+      negative:
+        - type: body.contains
+          value: 深信服一体化网关 MIG 漏洞
+          reason: Vulnerability articles can quote Sangfor MIG paths without being a deployed gateway.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -194,6 +226,10 @@ rules:
                   value: /vpn/user/common/custom/auth_home.css
                   weight: 100
                   evidence: Migrated response body evidence for 网御 vpn
+      negative:
+        - type: body.contains
+          value: 网御 vpn 漏洞
+          reason: Vulnerability articles can quote VPN asset paths without being a deployed VPN.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -1202,4 +1238,3 @@ rules:
         references:
             - builtin:migrated-legacy-rule
         confidence: low
-
