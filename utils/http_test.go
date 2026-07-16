@@ -251,6 +251,37 @@ func TestConfigureTLSMode(t *testing.T) {
 	}
 }
 
+func TestSupportedGMTLSCipherSuites(t *testing.T) {
+	got := SupportedGMTLSCipherSuites()
+	want := []uint16{gmtls.GMTLS_SM2_WITH_SM4_SM3, gmtls.GMTLS_ECDHE_SM2_WITH_SM4_SM3}
+	if len(got) != len(want) {
+		t.Fatalf("SupportedGMTLSCipherSuites() length = %d, want %d", len(got), len(want))
+	}
+	for i := range want {
+		if got[i] != want[i] {
+			t.Fatalf("SupportedGMTLSCipherSuites()[%d] = %#x, want %#x", i, got[i], want[i])
+		}
+	}
+
+	got[0] = 0
+	if SupportedGMTLSCipherSuites()[0] == 0 {
+		t.Fatalf("SupportedGMTLSCipherSuites() exposed mutable internal slice")
+	}
+}
+
+func TestFormatGMTLSConnectErrorAddsCapabilityForUnsupportedStack(t *testing.T) {
+	err := formatGMTLSConnectError(fmt.Errorf("tls: server selected unsupported protocol version 0x0303, while expecting 0x0101"))
+	if err == nil {
+		t.Fatalf("formatGMTLSConnectError() expected error")
+	}
+	if !strings.Contains(err.Error(), "unsupported GM/TLS version or cipher suite") {
+		t.Fatalf("formatGMTLSConnectError() = %q, want unsupported stack guidance", err.Error())
+	}
+	if !strings.Contains(err.Error(), "GMTLS_SM2_WITH_SM4_SM3") || !strings.Contains(err.Error(), "GMTLS_ECDHE_SM2_WITH_SM4_SM3") {
+		t.Fatalf("formatGMTLSConnectError() = %q, want supported cipher suites", err.Error())
+	}
+}
+
 func TestActiveTLSConnectorGMModeUsesGMTLSOnly(t *testing.T) {
 	connector := newActiveTLSConnector(TLSModeGM, nil, nil)
 	stdCalls := 0

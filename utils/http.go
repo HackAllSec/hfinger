@@ -79,6 +79,13 @@ const (
 	TLSModeStd  = "std"
 )
 
+var supportedGMTLSCipherSuites = []uint16{
+	gmtls.GMTLS_SM2_WITH_SM4_SM3,
+	gmtls.GMTLS_ECDHE_SM2_WITH_SM4_SM3,
+}
+
+const gmTLSCapabilitySummary = "supported GM/TLS stack: GM/T 0024-2014 VersionGMSSL(0x0101), cipher suites: GMTLS_SM2_WITH_SM4_SM3(0xe013), GMTLS_ECDHE_SM2_WITH_SM4_SM3(0xe011)"
+
 func init() {
 	rand.Seed(time.Now().UnixNano())
 }
@@ -105,6 +112,10 @@ func ConfigureTLSMode(mode string) error {
 	default:
 		return fmt.Errorf("invalid tls mode %q, allowed values: auto, gm, std", mode)
 	}
+}
+
+func SupportedGMTLSCipherSuites() []uint16 {
+	return append([]uint16(nil), supportedGMTLSCipherSuites...)
 }
 
 func InitializeHTTPClient(proxy string, timeout time.Duration, maxRedirects int) error {
@@ -151,6 +162,7 @@ func createHybridTransport(proxy string) (*http.Transport, error) {
 		InsecureSkipVerify: true,
 		RootCAs:            gmX509.NewCertPool(),
 		NextProtos:         []string{"h2", "http/1.1"},
+		CipherSuites:       supportedGMTLSCipherSuites,
 		Certificates:       gmClientCerts,
 	}
 	tlsConnector := newActiveTLSConnector(tlsMode, stdTLSConfig, gmTLSConfig)
@@ -285,7 +297,7 @@ func shouldFallbackToGMTLS(err error) bool {
 func connectWithGMTLS(network, addr string, tlsConfig *gmtls.Config) (net.Conn, error) {
 	conn, err := gmtls.Dial(network, addr, tlsConfig)
 	if err != nil {
-		return nil, fmt.Errorf("GM TLS connection failed: %v", err)
+		return nil, formatGMTLSConnectError(err)
 	}
 
 	state := conn.ConnectionState()
@@ -295,6 +307,38 @@ func connectWithGMTLS(network, addr string, tlsConfig *gmtls.Config) (net.Conn, 
 	}
 
 	return conn, nil
+}
+
+func formatGMTLSConnectError(err error) error {
+	if err == nil {
+		return nil
+	}
+	if isUnsupportedGMTLSStackError(err) {
+		return fmt.Errorf("GM TLS connection failed: %v; target may require an unsupported GM/TLS version or cipher suite; %s", err, gmTLSCapabilitySummary)
+	}
+	return fmt.Errorf("GM TLS connection failed: %v", err)
+}
+
+func isUnsupportedGMTLSStackError(err error) bool {
+	if err == nil {
+		return false
+	}
+	errText := strings.ToLower(err.Error())
+	signals := []string{
+		"unsupported protocol version",
+		"server selected unsupported protocol version",
+		"unsupported cipher suite",
+		"no cipher suite supported",
+		"cipher suite",
+		"handshake failure",
+		"illegal parameter",
+	}
+	for _, signal := range signals {
+		if strings.Contains(errText, signal) {
+			return true
+		}
+	}
+	return false
 }
 
 func setRequestHeaders(req *http.Request, headers map[string]string) {

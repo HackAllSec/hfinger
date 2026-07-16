@@ -107,6 +107,15 @@ func TestGetTLSConfigForHostUsesGMTLSAutoSwitch(t *testing.T) {
 	if tlsConfig.GetCertificate == nil || tlsConfig.GetKECertificate == nil {
 		t.Fatalf("getTLSConfigForHost() did not configure GM sign/encryption certificates")
 	}
+	wantSuites := utils.SupportedGMTLSCipherSuites()
+	if len(tlsConfig.CipherSuites) != len(wantSuites) {
+		t.Fatalf("CipherSuites length = %d, want %d", len(tlsConfig.CipherSuites), len(wantSuites))
+	}
+	for i := range wantSuites {
+		if tlsConfig.CipherSuites[i] != wantSuites[i] {
+			t.Fatalf("CipherSuites[%d] = %#x, want %#x", i, tlsConfig.CipherSuites[i], wantSuites[i])
+		}
+	}
 	cert, err := tlsConfig.GetCertificate(&gmtls.ClientHelloInfo{
 		SupportedVersions: []uint16{gmtls.VersionGMSSL},
 	})

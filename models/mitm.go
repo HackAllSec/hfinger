@@ -197,6 +197,7 @@ func getTLSConfigForHost(host string) (*gmtls.Config, error) {
 		return nil, err
 	}
 	tlsConfig.NextProtos = []string{"h2", "http/1.1"}
+	tlsConfig.CipherSuites = utils.SupportedGMTLSCipherSuites()
 
 	// 原子操作存储配置
 	actual, loaded := certCache.LoadOrStore(host, tlsConfig)
