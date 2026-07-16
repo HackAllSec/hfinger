@@ -184,10 +184,7 @@ func ProcessURL(url string) {
 		if _, loaded := matchedCMS.LoadOrStore(cms, true); loaded {
 			continue
 		}
-		response := match.Response
-		if response.URL == "" && len(responses) > 0 {
-			response = responses[0]
-		}
+		response := preferredResponse(responses, match.Response)
 		result := config.Result{
 			URL:        response.URL,
 			CMS:        cms,
@@ -217,6 +214,21 @@ func ProcessURL(url string) {
 			lastResp.Server,
 			lastResp.Title)
 	}
+}
+
+func preferredResponse(responses []rules.Response, matched rules.Response) rules.Response {
+	for _, response := range responses {
+		if response.ProbeID == "default" {
+			return response
+		}
+	}
+	if matched.URL != "" {
+		return matched
+	}
+	if len(responses) > 0 {
+		return responses[0]
+	}
+	return rules.Response{}
 }
 
 func countItems(m *sync.Map) int {
