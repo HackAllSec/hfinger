@@ -22,8 +22,12 @@ import (
 )
 
 var (
-	httpClient *http.Client
-	userAgents = []string{
+	httpClient          *http.Client
+	noScriptRe          = regexp.MustCompile(`(?is)<noscript[^>]*>.*?</noscript>`)
+	metaRefreshRe       = regexp.MustCompile(`(?is)<meta\b[^>]*http-equiv\s*=\s*['"]?refresh['"]?[^>]*>`)
+	jsLocationHrefRe    = regexp.MustCompile(`>window\.location\.href\s*=\s*['"]([^'"]+)['"]\s*;?\s*</script>`)
+	jsLocationReplaceRe = regexp.MustCompile(`>window\.location\.replace\s*$\s*['"]([^'"]+)['"]\s*$\s*;?\s*</script>`)
+	userAgents          = []string{
 		// Desktop User Agents
 		"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
 		"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:89.0) Gecko/20100101 Firefox/89.0",
@@ -345,13 +349,9 @@ func ExtractRedirectURL(resp *http.Response, body []byte) string {
 	}
 
 	// 3. 检查HTML Meta Refresh（自动跳转）
-	re := regexp.MustCompile(`(?is)<noscript[^>]*>.*?</noscript>`)
-	cleanBody := re.ReplaceAll(body, []byte{})
-	metaRefreshRe := regexp.MustCompile(`(?is)<meta\b[^>]*http-equiv\s*=\s*['"]?refresh['"]?[^>]*>`)
-	contentRe := regexp.MustCompile(`(?is)\bcontent\s*=\s*(['"])(.*?)\1`)
+	cleanBody := noScriptRe.ReplaceAll(body, []byte{})
 	if metaTag := metaRefreshRe.Find(cleanBody); len(metaTag) > 0 {
-		if matches := contentRe.FindSubmatch(metaTag); len(matches) > 2 {
-			content := string(matches[2])
+		if content := extractHTMLAttribute(metaTag, "content"); content != "" {
 			if urlStart := strings.Index(strings.ToLower(content), "url="); urlStart != -1 {
 				return strings.TrimSpace(content[urlStart+4:])
 			}
@@ -365,20 +365,81 @@ func ExtractRedirectURL(resp *http.Response, body []byte) string {
 // 专门处理两种特定的JavaScript跳转
 func extractSpecificJSRredirect(body []byte) string {
 	// 模式1: window.location.href = "URL";
-	re1 := regexp.MustCompile(`>window\.location\.href\s*=\s*['"]([^'"]+)['"]\s*;?\s*</script>`)
-	matches1 := re1.FindSubmatch(body)
+	matches1 := jsLocationHrefRe.FindSubmatch(body)
 	if len(matches1) > 1 {
 		return string(matches1[1])
 	}
 
 	// 模式2: window.location.replace("URL");
-	re2 := regexp.MustCompile(`>window\.location\.replace\s*$\s*['"]([^'"]+)['"]\s*$\s*;?\s*</script>`)
-	matches2 := re2.FindSubmatch(body)
+	matches2 := jsLocationReplaceRe.FindSubmatch(body)
 	if len(matches2) > 1 {
 		return string(matches2[1])
 	}
 
 	return ""
+}
+
+func extractHTMLAttribute(tag []byte, name string) string {
+	tagStr := string(tag)
+	lowerTag := strings.ToLower(tagStr)
+	lowerName := strings.ToLower(name)
+	searchFrom := 0
+
+	for {
+		idx := strings.Index(lowerTag[searchFrom:], lowerName)
+		if idx == -1 {
+			return ""
+		}
+		idx += searchFrom
+		beforeOK := idx == 0 || !isHTMLAttrNameChar(lowerTag[idx-1])
+		after := idx + len(lowerName)
+		afterOK := after < len(lowerTag) && !isHTMLAttrNameChar(lowerTag[after])
+		if beforeOK && afterOK {
+			pos := after
+			for pos < len(tagStr) && isHTMLSpace(tagStr[pos]) {
+				pos++
+			}
+			if pos >= len(tagStr) || tagStr[pos] != '=' {
+				searchFrom = after
+				continue
+			}
+			pos++
+			for pos < len(tagStr) && isHTMLSpace(tagStr[pos]) {
+				pos++
+			}
+			if pos >= len(tagStr) {
+				return ""
+			}
+
+			if tagStr[pos] == '"' || tagStr[pos] == '\'' {
+				quote := tagStr[pos]
+				pos++
+				end := strings.IndexByte(tagStr[pos:], quote)
+				if end == -1 {
+					return ""
+				}
+				return tagStr[pos : pos+end]
+			}
+
+			end := pos
+			for end < len(tagStr) && !isHTMLSpace(tagStr[end]) && tagStr[end] != '>' {
+				end++
+			}
+			return tagStr[pos:end]
+		}
+		searchFrom = after
+	}
+}
+
+func isHTMLAttrNameChar(ch byte) bool {
+	return ch == '-' || ch == '_' || ch == ':' || ch == '.' ||
+		(ch >= '0' && ch <= '9') ||
+		(ch >= 'a' && ch <= 'z') ||
+		(ch >= 'A' && ch <= 'Z')
+}
+
+func isHTMLSpace(ch byte) bool {
+	return ch == ' ' || ch == '\n' || ch == '\r' || ch == '\t' || ch == '\f'
 }
 
 // ResolveRelativeURL 解析相对URL为绝对URL
