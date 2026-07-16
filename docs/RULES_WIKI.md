@@ -35,6 +35,20 @@ match:
 metadata:
   references:
     - https://example.com
+
+examples:
+  positive:
+    - name: 首页命中
+      url: https://example.com/
+      status_code: 200
+      title: Example Admin
+      headers:
+        Set-Cookie: example_session=abc
+      body: "<html><title>Example Admin</title></html>"
+  negative:
+    - name: 相似页面
+      status_code: 200
+      body: "<html><title>Other Admin</title></html>"
 ```
 
 校验规则：
@@ -101,6 +115,7 @@ metadata:
 | `match` | 是 | 正向匹配规则 |
 | `negative` | 否 | 负向排除规则 |
 | `metadata` | 否 | 参考链接、维护信息等 |
+| `examples` | 否 | 正负样本，用于 `hfinger rules test` 回放 |
 
 ## 4. 匹配策略
 
@@ -173,6 +188,14 @@ Matcher 是具体匹配条件。
 | `redirect.to` | `Location` header 包含指定值 |
 | `script.src.contains` | script src 包含指定值 |
 | `html.meta.contains` | meta 标签包含指定值 |
+| `json.key.exists` | JSON 响应中存在指定 key |
+| `json.path.eq` | JSON 点分路径等于指定值 |
+| `server.banner.contains` | Server banner 包含指定值 |
+| `server.banner.regex` | Server banner 命中正则 |
+| `tls.cert.subject.contains` | TLS 证书 Subject 包含指定值 |
+| `tls.cert.issuer.contains` | TLS 证书 Issuer 包含指定值 |
+| `tls.cert.dns.contains` | TLS 证书 DNSNames 包含指定值 |
+| `tls.alpn.contains` | TLS ALPN 包含指定值 |
 
 ## 8. Negative 规则
 
@@ -203,7 +226,66 @@ hfinger rules lint ./rules/
 hfinger rules test ./rules/
 ```
 
-当前 `rules test` 会执行轻量规则校验。后续可扩展为 fixtures 正负样本回放。
+`rules lint` 会检查 schema、非法 matcher、空值、重复 ID、弱规则、缺少强证据、缺少 references、缺少 negative 等问题。
+
+`rules test` 会执行 `examples.positive` 和 `examples.negative` 回放：
+
+- positive 样本必须命中当前规则
+- negative 样本不能命中当前规则
+
+### JSON/API 规则示例
+
+```yaml
+id: example-api-gateway
+name: Example API Gateway
+category: gateway
+match:
+  strategy: score
+  threshold: 80
+  probes:
+    - id: api_error
+      request:
+        method: GET
+        path: /api/not-exists
+      matchers:
+        - type: json.key.exists
+          value: request_id
+          weight: 40
+        - type: json.path.eq
+          key: error.code
+          value: UNAUTHORIZED
+          weight: 40
+examples:
+  positive:
+    - name: 网关错误结构
+      status_code: 401
+      body: '{"error":{"code":"UNAUTHORIZED"},"request_id":"abc"}'
+  negative:
+    - name: 普通 JSON
+      status_code: 200
+      body: '{"message":"ok"}'
+```
+
+### TLS 规则示例
+
+```yaml
+id: example-tls-service
+name: Example TLS Service
+category: tls
+match:
+  strategy: any
+  matchers:
+    - type: tls.cert.issuer.contains
+      value: Example CA
+    - type: tls.alpn.contains
+      value: h2
+examples:
+  positive:
+    - name: TLS 样本
+      tls:
+        issuer: CN=Example CA
+        alpn: h2
+```
 
 ## 11. 常见问题
 

@@ -17,9 +17,10 @@ HFinger 是一个面向安全测试场景的服务端指纹识别工具，用于
 - 内置核心规则，无需依赖外部 `finger.json`
 - 外置 YAML 规则加载
 - Header、Body、Title、Cookie、Status、Redirect、Favicon 等多来源匹配
-- Regex、路径探测、脚本资源和 HTML Meta 特征匹配
+- Regex、路径探测、脚本资源、HTML Meta、JSON/API、TLS 证书和 Server banner 特征匹配
 - 识别结果包含证据与置信度
 - 支持 JSON、XML、XLSX 输出
+- 支持被动模式 JSONL 结构化落盘与查询
 - 支持 HTTP/1.1、HTTP/2
 - 支持标准 HTTPS 和国密 HTTPS
 - 支持代理、随机 UA、多线程
@@ -115,7 +116,7 @@ hfinger -f targets.txt -s result.xlsx
 启动本地代理监听：
 
 ```bash
-hfinger -l 127.0.0.1:8888 -s result.xlsx
+hfinger -l 127.0.0.1:8888 -s result.xlsx --passive-store passive.jsonl
 ```
 
 浏览器或其它工具将代理设置为 `127.0.0.1:8888` 后，HFinger 会在转发流量的同时识别响应中的服务端指纹。
@@ -123,10 +124,17 @@ hfinger -l 127.0.0.1:8888 -s result.xlsx
 如需联动上游代理：
 
 ```bash
-hfinger -l 127.0.0.1:8888 -p http://127.0.0.1:7777 -s result.xlsx
+hfinger -l 127.0.0.1:8888 -p http://127.0.0.1:7777 -s result.xlsx --passive-store passive.jsonl
 ```
 
 HTTPS 被动识别需要将 `certs` 目录下生成的证书导入浏览器或系统信任区。
+
+查询被动模式 JSONL 结果：
+
+```bash
+hfinger passive query passive.jsonl
+hfinger passive query passive.jsonl --cms Cloudflare --min-confidence 80
+```
 
 ## 规则管理
 
@@ -144,6 +152,8 @@ hfinger rules lint ./rules/community/
 ```bash
 hfinger rules test ./rules/community/
 ```
+
+`rules test` 支持规则内的正负样本回放，适合在提交社区规则前降低误报和漏报风险。
 
 规则编写说明：
 
@@ -225,6 +235,7 @@ metadata:
 -t, --thread int           指定线程数
 -r, --redirect int         最大重定向次数
     --rules stringArray    加载外置 YAML 规则文件或目录
+    --passive-store string 被动模式结果 JSONL 落盘路径
 -j, --output-json string   输出 JSON 文件
 -x, --output-xml string    输出 XML 文件
 -s, --output-xlsx string   输出 XLSX 文件
@@ -232,6 +243,16 @@ metadata:
     --update               显示规则更新说明
     --upgrade              升级工具
 -v, --version              显示版本
+```
+
+被动结果查询：
+
+```text
+hfinger passive query [jsonl-file]
+    --url string             按 URL 片段过滤
+    --cms string             按产品名过滤
+    --category string        按类别过滤
+    --min-confidence int     按最低置信度过滤
 ```
 
 ## 合法使用与免责声明

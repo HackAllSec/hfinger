@@ -35,6 +35,20 @@ match:
 metadata:
   references:
     - https://example.com
+
+examples:
+  positive:
+    - name: homepage matched
+      url: https://example.com/
+      status_code: 200
+      title: Example Admin
+      headers:
+        Set-Cookie: example_session=abc
+      body: "<html><title>Example Admin</title></html>"
+  negative:
+    - name: similar page
+      status_code: 200
+      body: "<html><title>Other Admin</title></html>"
 ```
 
 Validate the rule:
@@ -101,6 +115,7 @@ metadata:
 | `match` | Yes | Positive match rules |
 | `negative` | No | Negative rules to reduce false positives |
 | `metadata` | No | References and maintenance metadata |
+| `examples` | No | Positive and negative examples for `hfinger rules test` replay |
 
 ## 4. Match Strategy
 
@@ -173,6 +188,14 @@ Common fields:
 | `redirect.to` | `Location` header contains a value |
 | `script.src.contains` | Script src contains a value |
 | `html.meta.contains` | Meta tag contains a value |
+| `json.key.exists` | JSON response contains a key |
+| `json.path.eq` | JSON dotted path equals a value |
+| `server.banner.contains` | Server banner contains a value |
+| `server.banner.regex` | Server banner matches a regex |
+| `tls.cert.subject.contains` | TLS certificate Subject contains a value |
+| `tls.cert.issuer.contains` | TLS certificate Issuer contains a value |
+| `tls.cert.dns.contains` | TLS certificate DNSNames contains a value |
+| `tls.alpn.contains` | TLS ALPN contains a value |
 
 ## 8. Negative Rules
 
@@ -203,7 +226,66 @@ hfinger rules lint ./rules/
 hfinger rules test ./rules/
 ```
 
-Currently, `rules test` runs lightweight rule validation. Fixture-based positive and negative replay can be added later.
+`rules lint` checks schema issues, invalid matchers, empty values, duplicate IDs, weak rules, missing strong evidence, missing references, and missing negative matchers.
+
+`rules test` replays `examples.positive` and `examples.negative`:
+
+- Positive examples must match the rule
+- Negative examples must not match the rule
+
+### JSON/API Rule Example
+
+```yaml
+id: example-api-gateway
+name: Example API Gateway
+category: gateway
+match:
+  strategy: score
+  threshold: 80
+  probes:
+    - id: api_error
+      request:
+        method: GET
+        path: /api/not-exists
+      matchers:
+        - type: json.key.exists
+          value: request_id
+          weight: 40
+        - type: json.path.eq
+          key: error.code
+          value: UNAUTHORIZED
+          weight: 40
+examples:
+  positive:
+    - name: gateway error shape
+      status_code: 401
+      body: '{"error":{"code":"UNAUTHORIZED"},"request_id":"abc"}'
+  negative:
+    - name: generic json
+      status_code: 200
+      body: '{"message":"ok"}'
+```
+
+### TLS Rule Example
+
+```yaml
+id: example-tls-service
+name: Example TLS Service
+category: tls
+match:
+  strategy: any
+  matchers:
+    - type: tls.cert.issuer.contains
+      value: Example CA
+    - type: tls.alpn.contains
+      value: h2
+examples:
+  positive:
+    - name: TLS sample
+      tls:
+        issuer: CN=Example CA
+        alpn: h2
+```
 
 ## 11. FAQ
 

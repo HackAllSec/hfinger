@@ -17,9 +17,10 @@ The current build includes **1621** built-in fingerprint rules covering **1371**
 - Built-in core rules without runtime `finger.json` dependency
 - External YAML rule loading
 - Header, body, title, cookie, status, redirect, and favicon matching
-- Regex, path probe, script source, and HTML meta matching
+- Regex, path probe, script source, HTML meta, JSON/API, TLS certificate, and Server banner matching
 - Evidence and confidence in scan results
 - JSON, XML, and XLSX output
+- Passive mode JSONL persistence and query
 - HTTP/1.1 and HTTP/2 support
 - Standard HTTPS and GM/TLS HTTPS support
 - Proxy, random User-Agent, and multithreading support
@@ -115,7 +116,7 @@ Results include product name, category, status code, Server header, title, confi
 Start a local proxy:
 
 ```bash
-hfinger -l 127.0.0.1:8888 -s result.xlsx
+hfinger -l 127.0.0.1:8888 -s result.xlsx --passive-store passive.jsonl
 ```
 
 Configure your browser or another tool to use `127.0.0.1:8888` as the proxy. HFinger forwards traffic and fingerprints server responses at the same time.
@@ -123,10 +124,17 @@ Configure your browser or another tool to use `127.0.0.1:8888` as the proxy. HFi
 Use an upstream proxy:
 
 ```bash
-hfinger -l 127.0.0.1:8888 -p http://127.0.0.1:7777 -s result.xlsx
+hfinger -l 127.0.0.1:8888 -p http://127.0.0.1:7777 -s result.xlsx --passive-store passive.jsonl
 ```
 
 For HTTPS passive fingerprinting, import the generated certificate under the `certs` directory into your browser or system trust store.
+
+Query passive mode JSONL results:
+
+```bash
+hfinger passive query passive.jsonl
+hfinger passive query passive.jsonl --cms Cloudflare --min-confidence 80
+```
 
 ## Rule Management
 
@@ -144,6 +152,8 @@ Run lightweight rule tests:
 ```bash
 hfinger rules test ./rules/community/
 ```
+
+`rules test` replays positive and negative examples declared in rules. It is useful for reducing false positives and false negatives before submitting community rules.
 
 Rule authoring documentation:
 
@@ -225,6 +235,7 @@ metadata:
 -t, --thread int           Number of threads
 -r, --redirect int         Max redirects
     --rules stringArray    Load external YAML rule file or directory
+    --passive-store string Write passive mode results to a JSONL file
 -j, --output-json string   Write JSON output
 -x, --output-xml string    Write XML output
 -s, --output-xlsx string   Write XLSX output
@@ -232,6 +243,16 @@ metadata:
     --update               Show rule update guidance
     --upgrade              Upgrade the tool
 -v, --version              Show version
+```
+
+Passive result query:
+
+```text
+hfinger passive query [jsonl-file]
+    --url string             Filter by URL substring
+    --cms string             Filter by product name
+    --category string        Filter by category
+    --min-confidence int     Filter by minimum confidence
 ```
 
 ## Legal Use and Disclaimer
