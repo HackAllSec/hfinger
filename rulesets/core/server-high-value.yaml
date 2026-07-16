@@ -1,0 +1,1807 @@
+rules:
+  - id: core-0001-kubernetes-dashboard
+    name: Kubernetes Dashboard
+    category: cloud-native
+    vendor: Kubernetes
+    priority: 90
+    tags: [kubernetes, dashboard, cloud-native]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: kubernetes-dashboard
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: Kubernetes Dashboard
+              weight: 60
+              evidence: Kubernetes Dashboard page title
+            - type: body.contains
+              value: "kubernetes-dashboard"
+              weight: 40
+              evidence: Kubernetes Dashboard frontend asset marker
+    negative:
+      - type: body.contains
+        value: "This dashboard shows Kubernetes examples"
+        reason: Exclude documentation pages
+    metadata:
+      references: ["https://github.com/kubernetes/dashboard"]
+      confidence: high
+    examples:
+      positive:
+        - name: dashboard
+          title: Kubernetes Dashboard
+          body: '<script src="kubernetes-dashboard.js"></script>'
+      negative:
+        - name: docs
+          title: Kubernetes Dashboard Docs
+          body: "This dashboard shows Kubernetes examples"
+
+  - id: core-0002-argo-cd
+    name: Argo CD
+    category: devops
+    vendor: Argo Project
+    priority: 90
+    tags: [argocd, gitops, kubernetes]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: argo-cd
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: Argo CD
+              weight: 50
+              evidence: Argo CD page title
+            - type: body.contains
+              value: "argo-cd"
+              weight: 50
+              evidence: Argo CD frontend marker
+    negative:
+      - type: body.contains
+        value: "Argo CD documentation"
+        reason: Exclude documentation pages
+    metadata:
+      references: ["https://argo-cd.readthedocs.io/"]
+      confidence: high
+    examples:
+      positive:
+        - title: Argo CD
+          body: '<div id="argo-cd"></div>'
+      negative:
+        - body: "Argo CD documentation"
+
+  - id: core-0003-harbor
+    name: Harbor
+    category: devops
+    vendor: Harbor
+    priority: 90
+    tags: [harbor, registry, container]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: harbor
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: Harbor
+              weight: 45
+              evidence: Harbor page title
+            - type: body.contains
+              value: "harbor.app"
+              weight: 55
+              evidence: Harbor Angular app marker
+    negative:
+      - type: body.contains
+        value: "Harbor documentation"
+        reason: Exclude documentation pages
+    metadata:
+      references: ["https://goharbor.io/"]
+      confidence: high
+    examples:
+      positive:
+        - title: Harbor
+          body: '<harbor-app></harbor-app><script src="harbor.app.js"></script>'
+      negative:
+        - body: "Harbor documentation"
+
+  - id: core-0004-jenkins
+    name: Jenkins
+    category: devops
+    vendor: Jenkins
+    priority: 90
+    tags: [jenkins, ci, devops]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: jenkins
+          request: {method: GET, path: /}
+          matchers:
+            - type: header.contains
+              key: X-Jenkins
+              weight: 60
+              evidence: X-Jenkins response header
+            - type: body.contains
+              value: "jenkins.model.Jenkins"
+              weight: 40
+              evidence: Jenkins frontend initialization marker
+    negative:
+      - type: body.contains
+        value: "Jenkins user handbook"
+        reason: Exclude documentation pages
+    extract:
+      - name: version
+        type: header
+        key: X-Jenkins
+        regex: '([0-9]+(?:\.[0-9]+)+)'
+        group: 1
+        message: Jenkins version from X-Jenkins header
+    metadata:
+      references: ["https://www.jenkins.io/"]
+      confidence: high
+    examples:
+      positive:
+        - headers: {X-Jenkins: "2.440.1"}
+          body: "window.app = jenkins.model.Jenkins"
+      negative:
+        - body: "Jenkins user handbook"
+
+  - id: core-0005-gitlab
+    name: GitLab
+    category: devops
+    vendor: GitLab
+    priority: 90
+    tags: [gitlab, scm, devops]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: gitlab
+          request: {method: GET, path: /}
+          matchers:
+            - type: body.contains
+              value: "assets/gitlab_logo"
+              weight: 50
+              evidence: GitLab logo asset marker
+            - type: body.contains
+              value: "gon.gitlab_url"
+              weight: 50
+              evidence: GitLab runtime config marker
+    negative:
+      - type: body.contains
+        value: "GitLab documentation"
+        reason: Exclude documentation pages
+    metadata:
+      references: ["https://about.gitlab.com/"]
+      confidence: high
+    examples:
+      positive:
+        - body: 'assets/gitlab_logo gon.gitlab_url="https://gitlab.example"'
+      negative:
+        - body: "GitLab documentation"
+
+  - id: core-0006-sonarqube
+    name: SonarQube
+    category: devops
+    vendor: SonarSource
+    priority: 85
+    tags: [sonarqube, code-quality, devops]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: sonarqube
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: SonarQube
+              weight: 45
+              evidence: SonarQube page title
+            - type: body.contains
+              value: "sonarqube"
+              weight: 40
+              evidence: SonarQube frontend marker
+            - type: header.contains
+              key: X-SonarQube-Version
+              weight: 40
+              evidence: SonarQube version header
+    negative:
+      - type: body.contains
+        value: "SonarQube documentation"
+        reason: Exclude documentation pages
+    extract:
+      - name: version
+        type: header
+        key: X-SonarQube-Version
+        regex: '([0-9]+(?:\.[0-9]+)+)'
+        group: 1
+        message: SonarQube version from response header
+    metadata:
+      references: ["https://www.sonarsource.com/products/sonarqube/"]
+      confidence: high
+    examples:
+      positive:
+        - title: SonarQube
+          headers: {X-SonarQube-Version: "10.4"}
+          body: "sonarqube"
+      negative:
+        - body: "SonarQube documentation"
+
+  - id: core-0007-nexus-repository
+    name: Nexus Repository Manager
+    category: devops
+    vendor: Sonatype
+    priority: 85
+    tags: [nexus, repository, devops]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: nexus
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: Nexus Repository Manager
+              weight: 60
+              evidence: Nexus Repository Manager title
+            - type: body.contains
+              value: "Sonatype Nexus"
+              weight: 40
+              evidence: Sonatype Nexus body marker
+    negative:
+      - type: body.contains
+        value: "Nexus Repository Manager documentation"
+        reason: Exclude documentation pages
+    metadata:
+      references: ["https://www.sonatype.com/products/sonatype-nexus-repository"]
+      confidence: high
+    examples:
+      positive:
+        - title: Nexus Repository Manager
+          body: "Sonatype Nexus"
+      negative:
+        - body: "Nexus Repository Manager documentation"
+
+  - id: core-0008-minio-console
+    name: MinIO Console
+    category: storage
+    vendor: MinIO
+    priority: 85
+    tags: [minio, object-storage, console]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: minio-console
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: MinIO Console
+              weight: 55
+              evidence: MinIO Console page title
+            - type: body.contains
+              value: "MinIO Console"
+              weight: 45
+              evidence: MinIO Console body marker
+    negative:
+      - type: body.contains
+        value: "MinIO Console documentation"
+        reason: Exclude documentation pages
+    metadata:
+      references: ["https://min.io/docs/minio/linux/administration/minio-console.html"]
+      confidence: high
+    examples:
+      positive:
+        - title: MinIO Console
+          body: "MinIO Console"
+      negative:
+        - body: "MinIO Console documentation"
+
+  - id: core-0009-consul
+    name: Consul
+    category: cloud-native
+    vendor: HashiCorp
+    priority: 80
+    tags: [consul, service-discovery, cloud-native]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: consul
+          request: {method: GET, path: /ui/}
+          matchers:
+            - type: title.contains
+              value: Consul
+              weight: 50
+              evidence: Consul UI title
+            - type: body.contains
+              value: "consul-ui"
+              weight: 50
+              evidence: Consul UI frontend marker
+    negative:
+      - type: body.contains
+        value: "Consul documentation"
+        reason: Exclude documentation pages
+    metadata:
+      references: ["https://developer.hashicorp.com/consul"]
+      confidence: high
+    examples:
+      positive:
+        - path: /ui/
+          title: Consul
+          body: '<div id="consul-ui"></div>'
+      negative:
+        - body: "Consul documentation"
+
+  - id: core-0010-vault
+    name: HashiCorp Vault
+    category: security-device
+    vendor: HashiCorp
+    priority: 80
+    tags: [vault, secrets, security]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: vault
+          request: {method: GET, path: /ui/}
+          matchers:
+            - type: title.contains
+              value: Vault
+              weight: 45
+              evidence: Vault UI title
+            - type: body.contains
+              value: "vault-ui"
+              weight: 55
+              evidence: Vault UI frontend marker
+    negative:
+      - type: body.contains
+        value: "Vault documentation"
+        reason: Exclude documentation pages
+    metadata:
+      references: ["https://developer.hashicorp.com/vault"]
+      confidence: high
+    examples:
+      positive:
+        - path: /ui/
+          title: Vault
+          body: '<div id="vault-ui"></div>'
+      negative:
+        - body: "Vault documentation"
+
+  - id: core-0011-keycloak
+    name: Keycloak
+    category: middleware
+    vendor: Keycloak
+    priority: 85
+    tags: [keycloak, iam, oidc]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: keycloak
+          request: {method: GET, path: /}
+          matchers:
+            - type: body.contains
+              value: "keycloak"
+              weight: 45
+              evidence: Keycloak body marker
+            - type: cookie.contains
+              value: "KEYCLOAK"
+              weight: 45
+              evidence: Keycloak cookie marker
+    negative:
+      - type: body.contains
+        value: "Keycloak documentation"
+        reason: Exclude documentation pages
+    metadata:
+      references: ["https://www.keycloak.org/"]
+      confidence: high
+    examples:
+      positive:
+        - headers: {Set-Cookie: "KEYCLOAK_SESSION=abc"}
+          body: "keycloak"
+      negative:
+        - body: "Keycloak documentation"
+
+  - id: core-0012-apache-apisix
+    name: Apache APISIX
+    category: api-gateway
+    vendor: Apache
+    priority: 90
+    tags: [apisix, api-gateway, gateway]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: apisix
+          request: {method: GET, path: /}
+          matchers:
+            - type: header.contains
+              key: Server
+              value: APISIX
+              weight: 60
+              evidence: APISIX Server header
+            - type: body.contains
+              value: "Apache APISIX"
+              weight: 40
+              evidence: Apache APISIX body marker
+    negative:
+      - type: body.contains
+        value: "Apache APISIX documentation"
+        reason: Exclude documentation pages
+    extract:
+      - name: version
+        type: header
+        key: Server
+        regex: 'APISIX/?([0-9]+(?:\.[0-9]+)+)'
+        group: 1
+        message: APISIX version from Server header
+    metadata:
+      references: ["https://apisix.apache.org/"]
+      confidence: high
+    examples:
+      positive:
+        - headers: {Server: "APISIX/3.9"}
+          body: "Apache APISIX"
+      negative:
+        - body: "Apache APISIX documentation"
+
+  - id: core-0013-kong-gateway
+    name: Kong Gateway
+    category: api-gateway
+    vendor: Kong
+    priority: 90
+    tags: [kong, api-gateway, gateway]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: kong
+          request: {method: GET, path: /}
+          matchers:
+            - type: header.contains
+              key: Server
+              value: kong
+              weight: 60
+              evidence: Kong Server header
+            - type: header.contains
+              key: Via
+              value: kong
+              weight: 40
+              evidence: Kong Via header
+    negative:
+      - type: body.contains
+        value: "Kong documentation"
+        reason: Exclude documentation pages
+    extract:
+      - name: version
+        type: header
+        key: Server
+        regex: 'kong/?([0-9]+(?:\.[0-9]+)+)'
+        group: 1
+        message: Kong version from Server header
+    metadata:
+      references: ["https://konghq.com/products/kong-gateway"]
+      confidence: high
+    examples:
+      positive:
+        - headers: {Server: "kong/3.6", Via: "kong/3.6"}
+      negative:
+        - body: "Kong documentation"
+
+  - id: core-0014-traefik
+    name: Traefik
+    category: api-gateway
+    vendor: Traefik Labs
+    priority: 85
+    tags: [traefik, reverse-proxy, gateway]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: traefik
+          request: {method: GET, path: /dashboard/}
+          matchers:
+            - type: title.contains
+              value: Traefik
+              weight: 50
+              evidence: Traefik dashboard title
+            - type: body.contains
+              value: "traefik"
+              weight: 40
+              evidence: Traefik frontend marker
+    negative:
+      - type: body.contains
+        value: "Traefik documentation"
+        reason: Exclude documentation pages
+    metadata:
+      references: ["https://traefik.io/traefik/"]
+      confidence: high
+    examples:
+      positive:
+        - path: /dashboard/
+          title: Traefik
+          body: "traefik"
+      negative:
+        - body: "Traefik documentation"
+
+  - id: core-0015-envoy
+    name: Envoy Proxy
+    category: api-gateway
+    vendor: Envoy
+    priority: 85
+    tags: [envoy, proxy, gateway]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: envoy
+          request: {method: GET, path: /}
+          matchers:
+            - type: header.contains
+              key: Server
+              value: envoy
+              weight: 70
+              evidence: Envoy Server header
+            - type: header.contains
+              key: X-Envoy-Upstream-Service-Time
+              weight: 40
+              evidence: Envoy upstream timing header
+    negative:
+      - type: body.contains
+        value: "Envoy documentation"
+        reason: Exclude documentation pages
+    extract:
+      - name: version
+        type: header
+        key: Server
+        regex: 'envoy/?([0-9]+(?:\.[0-9]+)+)'
+        group: 1
+        message: Envoy version from Server header
+    metadata:
+      references: ["https://www.envoyproxy.io/"]
+      confidence: high
+    examples:
+      positive:
+        - headers: {Server: "envoy", X-Envoy-Upstream-Service-Time: "12"}
+      negative:
+        - body: "Envoy documentation"
+
+  - id: core-0016-nacos
+    name: Nacos
+    category: middleware
+    vendor: Alibaba
+    priority: 90
+    tags: [nacos, service-discovery, config]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: nacos
+          request: {method: GET, path: /nacos/}
+          matchers:
+            - type: body.contains
+              value: "console-ui/public"
+              weight: 50
+              evidence: Nacos console asset path
+            - type: body.contains
+              value: "nacos"
+              weight: 40
+              evidence: Nacos console marker
+    negative:
+      - type: body.contains
+        value: "Nacos documentation"
+        reason: Exclude documentation pages
+    metadata:
+      references: ["https://nacos.io/"]
+      confidence: high
+    examples:
+      positive:
+        - path: /nacos/
+          body: "console-ui/public/js/merge.js nacos"
+      negative:
+        - body: "Nacos documentation"
+
+  - id: core-0017-dubbo-admin
+    name: Dubbo Admin
+    category: middleware
+    vendor: Apache
+    priority: 80
+    tags: [dubbo, admin, middleware]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: dubbo-admin
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: Dubbo Admin
+              weight: 60
+              evidence: Dubbo Admin page title
+            - type: body.contains
+              value: "dubbo-admin"
+              weight: 40
+              evidence: Dubbo Admin frontend marker
+    negative:
+      - type: body.contains
+        value: "Dubbo Admin documentation"
+        reason: Exclude documentation pages
+    metadata:
+      references: ["https://github.com/apache/dubbo-admin"]
+      confidence: high
+    examples:
+      positive:
+        - title: Dubbo Admin
+          body: "dubbo-admin"
+      negative:
+        - body: "Dubbo Admin documentation"
+
+  - id: core-0018-spring-cloud-gateway
+    name: Spring Cloud Gateway
+    category: api-gateway
+    vendor: VMware
+    priority: 80
+    tags: [spring, gateway, java]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: spring-cloud-gateway
+          request: {method: GET, path: /actuator/gateway/routes}
+          matchers:
+            - type: json.key.exists
+              value: route_id
+              weight: 50
+              evidence: Spring Cloud Gateway route_id key
+            - type: body.contains
+              value: "predicates"
+              weight: 30
+              evidence: Gateway route predicates in actuator response
+    negative:
+      - type: body.contains
+        value: "Spring Cloud Gateway documentation"
+        reason: Exclude documentation pages
+    metadata:
+      references: ["https://spring.io/projects/spring-cloud-gateway"]
+      confidence: medium
+    examples:
+      positive:
+        - path: /actuator/gateway/routes
+          body: '[{"route_id":"demo","predicates":["Path=/api/**"]}]'
+      negative:
+        - body: "Spring Cloud Gateway documentation"
+
+  - id: core-0019-sentinel-dashboard
+    name: Sentinel Dashboard
+    category: middleware
+    vendor: Alibaba
+    priority: 80
+    tags: [sentinel, dashboard, middleware]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: sentinel-dashboard
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: Sentinel Dashboard
+              weight: 60
+              evidence: Sentinel Dashboard title
+            - type: body.contains
+              value: "sentinel-dashboard"
+              weight: 40
+              evidence: Sentinel Dashboard frontend marker
+    negative:
+      - type: body.contains
+        value: "Sentinel documentation"
+        reason: Exclude documentation pages
+    metadata:
+      references: ["https://github.com/alibaba/Sentinel"]
+      confidence: high
+    examples:
+      positive:
+        - title: Sentinel Dashboard
+          body: "sentinel-dashboard"
+      negative:
+        - body: "Sentinel documentation"
+
+  - id: core-0020-grafana
+    name: Grafana
+    category: observability
+    vendor: Grafana Labs
+    priority: 90
+    tags: [grafana, observability, dashboard]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: grafana
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: Grafana
+              weight: 45
+              evidence: Grafana title
+            - type: body.contains
+              value: "grafana-app"
+              weight: 55
+              evidence: Grafana app root marker
+    negative:
+      - type: body.contains
+        value: "Grafana documentation"
+        reason: Exclude documentation pages
+    metadata:
+      references: ["https://grafana.com/"]
+      confidence: high
+    examples:
+      positive:
+        - title: Grafana
+          body: '<grafana-app></grafana-app>'
+      negative:
+        - body: "Grafana documentation"
+
+  - id: core-0021-prometheus
+    name: Prometheus
+    category: observability
+    vendor: Prometheus
+    priority: 85
+    tags: [prometheus, metrics, observability]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: prometheus
+          request: {method: GET, path: /graph}
+          matchers:
+            - type: title.contains
+              value: Prometheus Time Series Collection and Processing Server
+              weight: 60
+              evidence: Prometheus graph page title
+            - type: body.contains
+              value: "prometheus"
+              weight: 30
+              evidence: Prometheus frontend marker
+    negative:
+      - type: body.contains
+        value: "Prometheus documentation"
+        reason: Exclude documentation pages
+    metadata:
+      references: ["https://prometheus.io/"]
+      confidence: high
+    examples:
+      positive:
+        - path: /graph
+          title: Prometheus Time Series Collection and Processing Server
+          body: "prometheus"
+      negative:
+        - body: "Prometheus documentation"
+
+  - id: core-0022-alertmanager
+    name: Alertmanager
+    category: observability
+    vendor: Prometheus
+    priority: 80
+    tags: [alertmanager, prometheus, observability]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: alertmanager
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: Alertmanager
+              weight: 55
+              evidence: Alertmanager title
+            - type: body.contains
+              value: "alertmanager"
+              weight: 35
+              evidence: Alertmanager frontend marker
+    negative:
+      - type: body.contains
+        value: "Alertmanager documentation"
+        reason: Exclude documentation pages
+    metadata:
+      references: ["https://prometheus.io/docs/alerting/latest/alertmanager/"]
+      confidence: high
+    examples:
+      positive:
+        - title: Alertmanager
+          body: "alertmanager"
+      negative:
+        - body: "Alertmanager documentation"
+
+  - id: core-0023-kibana
+    name: Kibana
+    category: observability
+    vendor: Elastic
+    priority: 85
+    tags: [kibana, elasticsearch, observability]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: kibana
+          request: {method: GET, path: /}
+          matchers:
+            - type: header.contains
+              key: Kbn-Name
+              weight: 50
+              evidence: Kibana response header
+            - type: body.contains
+              value: "kbn-injected-metadata"
+              weight: 50
+              evidence: Kibana injected metadata marker
+    negative:
+      - type: body.contains
+        value: "Kibana documentation"
+        reason: Exclude documentation pages
+    metadata:
+      references: ["https://www.elastic.co/kibana"]
+      confidence: high
+    examples:
+      positive:
+        - headers: {Kbn-Name: "kibana"}
+          body: "kbn-injected-metadata"
+      negative:
+        - body: "Kibana documentation"
+
+  - id: core-0024-elasticsearch
+    name: Elasticsearch
+    category: database
+    vendor: Elastic
+    priority: 85
+    tags: [elasticsearch, search, database]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: elasticsearch
+          request: {method: GET, path: /}
+          matchers:
+            - type: json.key.exists
+              value: cluster_name
+              weight: 45
+              evidence: Elasticsearch cluster_name key
+            - type: json.key.exists
+              value: tagline
+              weight: 45
+              evidence: Elasticsearch tagline key
+            - type: body.contains
+              value: "You Know, for Search"
+              weight: 30
+              evidence: Elasticsearch tagline
+    negative:
+      - type: body.contains
+        value: "Elasticsearch documentation"
+        reason: Exclude documentation pages
+    metadata:
+      references: ["https://www.elastic.co/elasticsearch"]
+      confidence: high
+    examples:
+      positive:
+        - body: '{"cluster_name":"elastic","tagline":"You Know, for Search"}'
+      negative:
+        - body: "Elasticsearch documentation"
+
+  - id: core-0025-clickhouse-http
+    name: ClickHouse HTTP
+    category: database
+    vendor: ClickHouse
+    priority: 80
+    tags: [clickhouse, database, http]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: clickhouse
+          request: {method: GET, path: /ping}
+          matchers:
+            - type: body.regex
+              value: '(?m)^Ok\.$'
+              weight: 50
+              evidence: ClickHouse /ping response
+            - type: header.contains
+              key: X-ClickHouse-Server-Display-Name
+              weight: 50
+              evidence: ClickHouse server display header
+    negative:
+      - type: body.contains
+        value: "ClickHouse documentation"
+        reason: Exclude documentation pages
+    metadata:
+      references: ["https://clickhouse.com/docs/interfaces/http"]
+      confidence: medium
+    examples:
+      positive:
+        - path: /ping
+          headers: {X-ClickHouse-Server-Display-Name: "clickhouse"}
+          body: "Ok."
+      negative:
+        - body: "ClickHouse documentation"
+
+  - id: core-0026-apache-druid
+    name: Apache Druid
+    category: database
+    vendor: Apache
+    priority: 80
+    tags: [druid, analytics, database]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: apache-druid
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: Apache Druid
+              weight: 55
+              evidence: Apache Druid console title
+            - type: body.contains
+              value: "druid-console"
+              weight: 45
+              evidence: Druid console frontend marker
+    negative:
+      - type: body.contains
+        value: "Apache Druid documentation"
+        reason: Exclude documentation pages
+    metadata:
+      references: ["https://druid.apache.org/"]
+      confidence: high
+    examples:
+      positive:
+        - title: Apache Druid
+          body: "druid-console"
+      negative:
+        - body: "Apache Druid documentation"
+
+  - id: core-0027-apache-flink
+    name: Apache Flink
+    category: observability
+    vendor: Apache
+    priority: 80
+    tags: [flink, big-data, dashboard]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: apache-flink
+          request: {method: GET, path: /}
+          matchers:
+            - type: body.contains
+              value: "<flink-root></flink-root>"
+              weight: 60
+              evidence: Flink dashboard root element
+            - type: body.contains
+              value: "apache flink dashboard"
+              weight: 40
+              evidence: Flink dashboard image alt text
+    negative:
+      - type: body.contains
+        value: "Apache Flink documentation"
+        reason: Exclude documentation pages
+    metadata:
+      references: ["https://flink.apache.org/"]
+      confidence: high
+    examples:
+      positive:
+        - body: '<flink-root></flink-root><img alt="apache flink dashboard">'
+      negative:
+        - body: "Apache Flink documentation"
+
+  - id: core-0028-apache-spark
+    name: Apache Spark
+    category: observability
+    vendor: Apache
+    priority: 80
+    tags: [spark, big-data, dashboard]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: apache-spark
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: Spark
+              weight: 40
+              evidence: Spark UI title
+            - type: body.contains
+              value: "/static/spark-logo"
+              weight: 50
+              evidence: Spark logo asset
+    negative:
+      - type: body.contains
+        value: "Apache Spark documentation"
+        reason: Exclude documentation pages
+    metadata:
+      references: ["https://spark.apache.org/"]
+      confidence: high
+    examples:
+      positive:
+        - title: Spark Jobs
+          body: '<img src="/static/spark-logo.png">'
+      negative:
+        - body: "Apache Spark documentation"
+
+  - id: core-0029-apache-airflow
+    name: Apache Airflow
+    category: devops
+    vendor: Apache
+    priority: 80
+    tags: [airflow, workflow, devops]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: apache-airflow
+          request: {method: GET, path: /}
+          matchers:
+            - type: body.contains
+              value: "<span>airflow</span>"
+              weight: 50
+              evidence: Airflow UI marker
+            - type: body.contains
+              value: "/static/pin_100.png"
+              weight: 40
+              evidence: Airflow static asset
+    negative:
+      - type: body.contains
+        value: "Apache Airflow documentation"
+        reason: Exclude documentation pages
+    metadata:
+      references: ["https://airflow.apache.org/"]
+      confidence: high
+    examples:
+      positive:
+        - body: '<span>airflow</span><img src="/static/pin_100.png">'
+      negative:
+        - body: "Apache Airflow documentation"
+
+  - id: core-0030-rabbitmq-management
+    name: RabbitMQ Management
+    category: middleware
+    vendor: VMware
+    priority: 80
+    tags: [rabbitmq, message-queue, middleware]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: rabbitmq
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: RabbitMQ Management
+              weight: 60
+              evidence: RabbitMQ Management title
+            - type: body.contains
+              value: "RabbitMQ"
+              weight: 30
+              evidence: RabbitMQ body marker
+    negative:
+      - type: body.contains
+        value: "RabbitMQ documentation"
+        reason: Exclude documentation pages
+    metadata:
+      references: ["https://www.rabbitmq.com/docs/management"]
+      confidence: high
+    examples:
+      positive:
+        - title: RabbitMQ Management
+          body: "RabbitMQ"
+      negative:
+        - body: "RabbitMQ documentation"
+
+  - id: core-0031-rocketmq-console
+    name: RocketMQ Console
+    category: middleware
+    vendor: Apache
+    priority: 80
+    tags: [rocketmq, message-queue, middleware]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: rocketmq
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: RocketMQ
+              weight: 50
+              evidence: RocketMQ console title
+            - type: body.contains
+              value: "rocketmq-console"
+              weight: 50
+              evidence: RocketMQ console marker
+    negative:
+      - type: body.contains
+        value: "RocketMQ documentation"
+        reason: Exclude documentation pages
+    metadata:
+      references: ["https://rocketmq.apache.org/"]
+      confidence: high
+    examples:
+      positive:
+        - title: RocketMQ
+          body: "rocketmq-console"
+      negative:
+        - body: "RocketMQ documentation"
+
+  - id: core-0032-kafka-ui
+    name: Kafka UI
+    category: middleware
+    vendor: Provectus
+    priority: 75
+    tags: [kafka, message-queue, ui]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: kafka-ui
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: Kafka UI
+              weight: 55
+              evidence: Kafka UI title
+            - type: body.contains
+              value: "kafka-ui"
+              weight: 45
+              evidence: Kafka UI app marker
+    negative:
+      - type: body.contains
+        value: "Kafka UI documentation"
+        reason: Exclude documentation pages
+    metadata:
+      references: ["https://github.com/provectus/kafka-ui"]
+      confidence: high
+    examples:
+      positive:
+        - title: Kafka UI
+          body: "kafka-ui"
+      negative:
+        - body: "Kafka UI documentation"
+
+  - id: core-0033-redisinsight
+    name: RedisInsight
+    category: database
+    vendor: Redis
+    priority: 75
+    tags: [redis, redisinsight, database]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: redisinsight
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: RedisInsight
+              weight: 60
+              evidence: RedisInsight title
+            - type: body.contains
+              value: "redisinsight"
+              weight: 40
+              evidence: RedisInsight frontend marker
+    negative:
+      - type: body.contains
+        value: "RedisInsight documentation"
+        reason: Exclude documentation pages
+    metadata:
+      references: ["https://redis.io/insight/"]
+      confidence: high
+    examples:
+      positive:
+        - title: RedisInsight
+          body: "redisinsight"
+      negative:
+        - body: "RedisInsight documentation"
+
+  - id: core-0034-mongo-express
+    name: mongo-express
+    category: database
+    vendor: mongo-express
+    priority: 75
+    tags: [mongodb, mongo-express, database]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: mongo-express
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: mongo-express
+              weight: 60
+              evidence: mongo-express title
+            - type: body.contains
+              value: "mongo-express"
+              weight: 40
+              evidence: mongo-express body marker
+    negative:
+      - type: body.contains
+        value: "mongo-express documentation"
+        reason: Exclude documentation pages
+    metadata:
+      references: ["https://github.com/mongo-express/mongo-express"]
+      confidence: high
+    examples:
+      positive:
+        - title: mongo-express
+          body: "mongo-express"
+      negative:
+        - body: "mongo-express documentation"
+
+  - id: core-0035-phpmyadmin
+    name: phpMyAdmin
+    category: database
+    vendor: phpMyAdmin
+    priority: 75
+    tags: [mysql, phpmyadmin, database]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: phpmyadmin
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: phpMyAdmin
+              weight: 55
+              evidence: phpMyAdmin title
+            - type: cookie.contains
+              value: "phpMyAdmin"
+              weight: 45
+              evidence: phpMyAdmin session cookie
+    negative:
+      - type: body.contains
+        value: "phpMyAdmin documentation"
+        reason: Exclude documentation pages
+    metadata:
+      references: ["https://www.phpmyadmin.net/"]
+      confidence: high
+    examples:
+      positive:
+        - title: phpMyAdmin
+          headers: {Set-Cookie: "phpMyAdmin=abc"}
+      negative:
+        - body: "phpMyAdmin documentation"
+
+  - id: core-0036-spring-boot-actuator
+    name: Spring Boot Actuator
+    category: framework
+    vendor: VMware
+    priority: 90
+    tags: [spring, actuator, java]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: spring-actuator
+          request: {method: GET, path: /actuator}
+          matchers:
+            - type: json.key.exists
+              value: _links
+              weight: 50
+              evidence: Spring Boot Actuator links object
+            - type: body.contains
+              value: "/actuator/health"
+              weight: 40
+              evidence: Actuator health endpoint link
+    negative:
+      - type: body.contains
+        value: "Spring Boot Actuator documentation"
+        reason: Exclude documentation pages
+    metadata:
+      references: ["https://docs.spring.io/spring-boot/reference/actuator/index.html"]
+      confidence: high
+    examples:
+      positive:
+        - path: /actuator
+          body: '{"_links":{"health":{"href":"http://example/actuator/health"}}}'
+      negative:
+        - body: "Spring Boot Actuator documentation"
+
+  - id: core-0037-spring-boot-admin
+    name: Spring Boot Admin
+    category: devops
+    vendor: Codecentric
+    priority: 80
+    tags: [spring, admin, java]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: spring-boot-admin
+          request: {method: GET, path: /}
+          matchers:
+            - type: body.contains
+              value: "assets/img/icon-spring-boot-admin.svg"
+              weight: 60
+              evidence: Spring Boot Admin icon asset
+            - type: title.contains
+              value: Spring Boot Admin
+              weight: 40
+              evidence: Spring Boot Admin title
+    negative:
+      - type: body.contains
+        value: "Spring Boot Admin documentation"
+        reason: Exclude documentation pages
+    metadata:
+      references: ["https://github.com/codecentric/spring-boot-admin"]
+      confidence: high
+    examples:
+      positive:
+        - title: Spring Boot Admin
+          body: "assets/img/icon-spring-boot-admin.svg"
+      negative:
+        - body: "Spring Boot Admin documentation"
+
+  - id: core-0038-swagger-ui
+    name: Swagger UI
+    category: framework
+    vendor: SmartBear
+    priority: 80
+    tags: [swagger, openapi, api-docs]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: swagger-ui
+          request: {method: GET, path: /swagger-ui/}
+          matchers:
+            - type: body.contains
+              value: "swagger-ui-bundle.js"
+              weight: 50
+              evidence: Swagger UI bundle asset
+            - type: body.contains
+              value: "Swagger UI"
+              weight: 40
+              evidence: Swagger UI page marker
+    negative:
+      - type: body.contains
+        value: "Swagger UI documentation"
+        reason: Exclude documentation pages
+    metadata:
+      references: ["https://swagger.io/tools/swagger-ui/"]
+      confidence: high
+    examples:
+      positive:
+        - path: /swagger-ui/
+          body: "Swagger UI swagger-ui-bundle.js"
+      negative:
+        - body: "Swagger UI documentation"
+
+  - id: core-0039-openapi-json
+    name: OpenAPI JSON
+    category: framework
+    vendor: OpenAPI Initiative
+    priority: 80
+    tags: [openapi, api-docs, framework]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: openapi-json
+          request: {method: GET, path: /v3/api-docs}
+          matchers:
+            - type: json.key.exists
+              value: openapi
+              weight: 60
+              evidence: OpenAPI version key
+            - type: json.key.exists
+              value: paths
+              weight: 30
+              evidence: OpenAPI paths key
+    negative:
+      - type: body.contains
+        value: "OpenAPI documentation"
+        reason: Exclude documentation pages
+    metadata:
+      references: ["https://www.openapis.org/"]
+      confidence: high
+    examples:
+      positive:
+        - path: /v3/api-docs
+          body: '{"openapi":"3.0.1","paths":{"/api":{}}}'
+      negative:
+        - body: "OpenAPI documentation"
+
+  - id: core-0040-druid-monitor
+    name: Alibaba Druid Monitor
+    category: middleware
+    vendor: Alibaba
+    priority: 80
+    tags: [druid, java, monitor]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: druid-monitor
+          request: {method: GET, path: /druid/index.html}
+          matchers:
+            - type: title.contains
+              value: Druid Stat Index
+              weight: 60
+              evidence: Druid monitor title
+            - type: body.contains
+              value: "Druid Stat"
+              weight: 40
+              evidence: Druid monitor body marker
+    negative:
+      - type: body.contains
+        value: "Druid documentation"
+        reason: Exclude documentation pages
+    metadata:
+      references: ["https://github.com/alibaba/druid"]
+      confidence: high
+    examples:
+      positive:
+        - path: /druid/index.html
+          title: Druid Stat Index
+          body: "Druid Stat"
+      negative:
+        - body: "Druid documentation"
+
+  - id: core-0041-tomcat-manager
+    name: Apache Tomcat Manager
+    category: middleware
+    vendor: Apache
+    priority: 80
+    tags: [tomcat, java, middleware]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: tomcat-manager
+          request: {method: GET, path: /manager/html}
+          matchers:
+            - type: title.contains
+              value: Tomcat Web Application Manager
+              weight: 60
+              evidence: Tomcat Manager title
+            - type: header.contains
+              key: WWW-Authenticate
+              value: "Tomcat Manager Application"
+              weight: 50
+              evidence: Tomcat Manager authentication realm
+    negative:
+      - type: body.contains
+        value: "Tomcat Manager documentation"
+        reason: Exclude documentation pages
+    metadata:
+      references: ["https://tomcat.apache.org/"]
+      confidence: high
+    examples:
+      positive:
+        - path: /manager/html
+          title: Tomcat Web Application Manager
+          headers: {WWW-Authenticate: 'Basic realm="Tomcat Manager Application"'}
+      negative:
+        - body: "Tomcat Manager documentation"
+
+  - id: core-0042-weblogic-console
+    name: WebLogic Console
+    category: middleware
+    vendor: Oracle
+    priority: 80
+    tags: [weblogic, java, middleware]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: weblogic-console
+          request: {method: GET, path: /console/}
+          matchers:
+            - type: body.contains
+              value: "WebLogic Server Administration Console"
+              weight: 60
+              evidence: WebLogic console body marker
+            - type: body.contains
+              value: "login_WebLogic_branding.png"
+              weight: 40
+              evidence: WebLogic branding asset
+    negative:
+      - type: body.contains
+        value: "WebLogic documentation"
+        reason: Exclude documentation pages
+    metadata:
+      references: ["https://www.oracle.com/middleware/technologies/weblogic.html"]
+      confidence: high
+    examples:
+      positive:
+        - path: /console/
+          body: "WebLogic Server Administration Console login_WebLogic_branding.png"
+      negative:
+        - body: "WebLogic documentation"
+
+  - id: core-0043-wildfly
+    name: WildFly
+    category: middleware
+    vendor: Red Hat
+    priority: 75
+    tags: [wildfly, jboss, java]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: wildfly
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: WildFly
+              weight: 50
+              evidence: WildFly title
+            - type: body.contains
+              value: "wildfly.css"
+              weight: 40
+              evidence: WildFly CSS asset
+    negative:
+      - type: body.contains
+        value: "WildFly documentation"
+        reason: Exclude documentation pages
+    metadata:
+      references: ["https://www.wildfly.org/"]
+      confidence: high
+    examples:
+      positive:
+        - title: WildFly
+          body: "wildfly.css"
+      negative:
+        - body: "WildFly documentation"
+
+  - id: core-0044-gradio
+    name: Gradio
+    category: ai-service
+    vendor: Gradio
+    priority: 85
+    tags: [ai, gradio, ml]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: gradio
+          request: {method: GET, path: /}
+          matchers:
+            - type: body.contains
+              value: "gradio-app"
+              weight: 55
+              evidence: Gradio app root marker
+            - type: body.contains
+              value: "__gradio_mode__"
+              weight: 45
+              evidence: Gradio runtime mode marker
+    negative:
+      - type: body.contains
+        value: "Gradio documentation"
+        reason: Exclude documentation pages
+    metadata:
+      references: ["https://www.gradio.app/"]
+      confidence: high
+    examples:
+      positive:
+        - body: '<gradio-app></gradio-app><script>window.__gradio_mode__="app"</script>'
+      negative:
+        - body: "Gradio documentation"
+
+  - id: core-0045-fastapi-docs
+    name: FastAPI Docs
+    category: framework
+    vendor: FastAPI
+    priority: 80
+    tags: [fastapi, openapi, api-docs]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: fastapi-docs
+          request: {method: GET, path: /docs}
+          matchers:
+            - type: title.contains
+              value: FastAPI
+              weight: 45
+              evidence: FastAPI docs title
+            - type: body.contains
+              value: "swagger-ui-bundle.js"
+              weight: 35
+              evidence: FastAPI Swagger UI asset
+            - type: body.contains
+              value: "openapi.json"
+              weight: 30
+              evidence: FastAPI OpenAPI endpoint reference
+    negative:
+      - type: body.contains
+        value: "FastAPI documentation"
+        reason: Exclude documentation pages
+    metadata:
+      references: ["https://fastapi.tiangolo.com/"]
+      confidence: medium
+    examples:
+      positive:
+        - path: /docs
+          title: FastAPI
+          body: "swagger-ui-bundle.js openapi.json"
+      negative:
+        - body: "FastAPI documentation"
+
+  - id: core-0046-streamlit
+    name: Streamlit
+    category: ai-service
+    vendor: Streamlit
+    priority: 80
+    tags: [ai, streamlit, data-app]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: streamlit
+          request: {method: GET, path: /}
+          matchers:
+            - type: body.contains
+              value: "streamlit"
+              weight: 45
+              evidence: Streamlit body marker
+            - type: body.contains
+              value: "stApp"
+              weight: 45
+              evidence: Streamlit app root marker
+    negative:
+      - type: body.contains
+        value: "Streamlit documentation"
+        reason: Exclude documentation pages
+    metadata:
+      references: ["https://streamlit.io/"]
+      confidence: high
+    examples:
+      positive:
+        - body: '<div class="stApp">streamlit</div>'
+      negative:
+        - body: "Streamlit documentation"
+
+  - id: core-0047-jupyter-lab
+    name: JupyterLab
+    category: ai-service
+    vendor: Jupyter
+    priority: 80
+    tags: [ai, notebook, jupyter]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: jupyter-lab
+          request: {method: GET, path: /lab}
+          matchers:
+            - type: title.contains
+              value: JupyterLab
+              weight: 55
+              evidence: JupyterLab title
+            - type: body.contains
+              value: "jupyter-config-data"
+              weight: 45
+              evidence: JupyterLab config data marker
+    negative:
+      - type: body.contains
+        value: "JupyterLab documentation"
+        reason: Exclude documentation pages
+    metadata:
+      references: ["https://jupyterlab.readthedocs.io/"]
+      confidence: high
+    examples:
+      positive:
+        - path: /lab
+          title: JupyterLab
+          body: '<script id="jupyter-config-data"></script>'
+      negative:
+        - body: "JupyterLab documentation"
+
+  - id: core-0048-ollama-api
+    name: Ollama API
+    category: ai-service
+    vendor: Ollama
+    priority: 85
+    tags: [ai, llm, ollama]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: ollama-api
+          request: {method: GET, path: /api/tags}
+          matchers:
+            - type: json.key.exists
+              value: models
+              weight: 60
+              evidence: Ollama models key
+            - type: body.contains
+              value: "model"
+              weight: 30
+              evidence: Ollama model list field
+    negative:
+      - type: body.contains
+        value: "Ollama documentation"
+        reason: Exclude documentation pages
+    metadata:
+      references: ["https://github.com/ollama/ollama/blob/main/docs/api.md"]
+      confidence: medium
+    examples:
+      positive:
+        - path: /api/tags
+          body: '{"models":[{"name":"llama3","model":"llama3"}]}'
+      negative:
+        - body: "Ollama documentation"
+
+  - id: core-0049-open-webui
+    name: Open WebUI
+    category: ai-service
+    vendor: Open WebUI
+    priority: 80
+    tags: [ai, llm, open-webui]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: open-webui
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: Open WebUI
+              weight: 60
+              evidence: Open WebUI title
+            - type: body.contains
+              value: "open-webui"
+              weight: 40
+              evidence: Open WebUI frontend marker
+    negative:
+      - type: body.contains
+        value: "Open WebUI documentation"
+        reason: Exclude documentation pages
+    metadata:
+      references: ["https://github.com/open-webui/open-webui"]
+      confidence: high
+    examples:
+      positive:
+        - title: Open WebUI
+          body: "open-webui"
+      negative:
+        - body: "Open WebUI documentation"
+
+  - id: core-0050-dify
+    name: Dify
+    category: ai-service
+    vendor: Dify
+    priority: 80
+    tags: [ai, llmops, dify]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: dify
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: Dify
+              weight: 50
+              evidence: Dify title
+            - type: body.contains
+              value: "dify"
+              weight: 40
+              evidence: Dify frontend marker
+    negative:
+      - type: body.contains
+        value: "Dify documentation"
+        reason: Exclude documentation pages
+    metadata:
+      references: ["https://github.com/langgenius/dify"]
+      confidence: high
+    examples:
+      positive:
+        - title: Dify
+          body: "dify"
+      negative:
+        - body: "Dify documentation"

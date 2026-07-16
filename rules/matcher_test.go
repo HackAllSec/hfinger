@@ -149,6 +149,38 @@ func TestMatchRuleAnyConfidenceIncludesMissingProbeWeight(t *testing.T) {
 	}
 }
 
+func TestMatchRuleExtractsVersion(t *testing.T) {
+	response := Response{
+		URL: "https://jenkins.example",
+		Header: map[string][]string{
+			"X-Jenkins": {"2.440.1"},
+		},
+	}
+	rule := Rule{
+		ID:       "jenkins-version",
+		Name:     "Jenkins",
+		Category: "devops",
+		Match: MatchBlock{Matchers: []Matcher{
+			{Type: "header.contains", Key: "X-Jenkins", Weight: 100},
+		}},
+		Extract: []Extractor{{
+			Name:  "version",
+			Type:  "header",
+			Key:   "X-Jenkins",
+			Regex: `([0-9]+(?:\.[0-9]+)+)`,
+			Group: 1,
+		}},
+	}
+
+	result := MatchRule([]Response{response}, rule)
+	if !result.Matched {
+		t.Fatalf("MatchRule() expected match")
+	}
+	if result.Version != "2.440.1" {
+		t.Fatalf("Version = %q, want 2.440.1", result.Version)
+	}
+}
+
 func TestMatchResponseStatusAndRegex(t *testing.T) {
 	response := Response{
 		URL:        "https://example.com/login",

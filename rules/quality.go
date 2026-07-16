@@ -19,6 +19,24 @@ type LintReport struct {
 	Warnings []LintIssue
 }
 
+type StatsReport struct {
+	Rules      int
+	Products   int
+	Categories map[string]int
+}
+
+func Stats(ruleSet []Rule) StatsReport {
+	report := StatsReport{
+		Rules:      len(ruleSet),
+		Products:   uniqueProducts(ruleSet),
+		Categories: make(map[string]int),
+	}
+	for _, rule := range ruleSet {
+		report.Categories[rule.Category]++
+	}
+	return report
+}
+
 func LintRules(ruleSet []Rule) LintReport {
 	report := LintReport{Rules: len(ruleSet), Products: uniqueProducts(ruleSet)}
 	seen := make(map[string]struct{}, len(ruleSet))
@@ -78,7 +96,7 @@ func LintRules(ruleSet []Rule) LintReport {
 				}
 			}
 		}
-		if !hasStrongEvidence {
+		if !hasStrongEvidence && !hasCorroboratedEvidence(rule) {
 			report.Warnings = append(report.Warnings, issue(rule.ID, "warning", "rule has no strong evidence matcher"))
 		}
 	}
@@ -126,6 +144,29 @@ func collectMatchers(rule Rule) []Matcher {
 		matchers = append(matchers, probe.Matchers...)
 	}
 	return matchers
+}
+
+func hasCorroboratedEvidence(rule Rule) bool {
+	if len(rule.Negative) == 0 || len(rule.Metadata.References) == 0 {
+		return false
+	}
+	positiveMatchers := 0
+	sources := map[string]struct{}{}
+	for _, probe := range normalizedProbes(rule) {
+		for _, matcher := range probe.Matchers {
+			positiveMatchers++
+			sources[matcherSource(matcher.Type)] = struct{}{}
+		}
+	}
+	return positiveMatchers >= 2 && len(sources) >= 1
+}
+
+func matcherSource(matcherType string) string {
+	matcherType = strings.ToLower(strings.TrimSpace(matcherType))
+	if idx := strings.Index(matcherType, "."); idx >= 0 {
+		return matcherType[:idx]
+	}
+	return matcherType
 }
 
 func uniqueProducts(ruleSet []Rule) int {

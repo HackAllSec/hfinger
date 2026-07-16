@@ -505,6 +505,7 @@ func matchfingerprint(url string, statuscode int, body []byte, header http.Heade
 				URL:        url,
 				CMS:        cms,
 				Category:   match.Rule.Category,
+				Version:    match.Version,
 				Server:     server,
 				StatusCode: statuscode,
 				Title:      title,

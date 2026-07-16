@@ -13,16 +13,17 @@ type Library struct {
 }
 
 type Rule struct {
-	ID       string     `yaml:"id"`
-	Name     string     `yaml:"name"`
-	Category string     `yaml:"category"`
-	Vendor   string     `yaml:"vendor,omitempty"`
-	Priority int        `yaml:"priority,omitempty"`
-	Tags     []string   `yaml:"tags,omitempty"`
-	Match    MatchBlock `yaml:"match"`
-	Negative []Matcher  `yaml:"negative,omitempty"`
-	Metadata Metadata   `yaml:"metadata,omitempty"`
-	Examples Examples   `yaml:"examples,omitempty"`
+	ID       string      `yaml:"id"`
+	Name     string      `yaml:"name"`
+	Category string      `yaml:"category"`
+	Vendor   string      `yaml:"vendor,omitempty"`
+	Priority int         `yaml:"priority,omitempty"`
+	Tags     []string    `yaml:"tags,omitempty"`
+	Match    MatchBlock  `yaml:"match"`
+	Extract  []Extractor `yaml:"extract,omitempty"`
+	Negative []Matcher   `yaml:"negative,omitempty"`
+	Metadata Metadata    `yaml:"metadata,omitempty"`
+	Examples Examples    `yaml:"examples,omitempty"`
 }
 
 type MatchBlock struct {
@@ -56,6 +57,15 @@ type Matcher struct {
 	Evidence      string      `yaml:"evidence,omitempty"`
 	CaseSensitive *bool       `yaml:"case_sensitive,omitempty"`
 	Reason        string      `yaml:"reason,omitempty"`
+}
+
+type Extractor struct {
+	Name    string `yaml:"name"`
+	Type    string `yaml:"type"`
+	Key     string `yaml:"key,omitempty"`
+	Regex   string `yaml:"regex"`
+	Group   int    `yaml:"group,omitempty"`
+	Message string `yaml:"message,omitempty"`
 }
 
 type Metadata struct {
@@ -118,6 +128,7 @@ type MatchResult struct {
 	Matched    bool
 	Score      int
 	Confidence int
+	Version    string
 	Evidence   []Evidence
 	Response   Response
 	Excluded   bool

@@ -8,7 +8,7 @@ HFinger is a server-side fingerprinting tool for security testing. It helps iden
 
 HFinger ships with built-in core fingerprint rules and works out of the box. It also supports external YAML rules for community contributions, private products, and internal enterprise systems.
 
-The current build includes **1621** built-in fingerprint rules covering **1371** server-side products, web frameworks, CMS products, middleware, CDN/WAF providers, and related components.
+The current build includes **1671** built-in fingerprint rules covering **1409** server-side products, web frameworks, CMS products, middleware, CDN/WAF providers, and related components.
 
 ## Positioning
 
@@ -51,6 +51,7 @@ Compared with simple keyword-based fingerprinting, HFinger focuses on:
 ├── models/              Active scanning and passive proxy fingerprinting
 ├── output/              JSON, XML, and XLSX output
 ├── rules/               Built-in rules, YAML loading, validation, and matching engine
+├── rulesets/            Curated YAML rule sources embedded into release binaries
 ├── utils/               HTTP, certificates, upgrade, and shared utilities
 ├── README.md            Chinese documentation
 └── README_EN.md         English documentation
@@ -99,6 +100,13 @@ https://www.example.com
 http://192.168.1.10
 ```
 
+`-f` also supports common JSONL liveness output such as `httpx -json`. HFinger reads `url` first, then falls back to `input` / `host` plus `scheme`:
+
+```bash
+httpx -l domains.txt -json -silent > alive.jsonl
+hfinger -f alive.jsonl -j hfinger.json
+```
+
 ### Use Proxy
 
 ```bash
@@ -122,7 +130,7 @@ hfinger -f targets.txt -x result.xml
 hfinger -f targets.txt -s result.xlsx
 ```
 
-Results include product name, category, status code, Server header, title, confidence, and evidence.
+Results include product name, category, version, status code, Server header, title, confidence, and evidence.
 
 ### Passive Mode
 
@@ -305,7 +313,7 @@ HFinger uses built-in core rules and no longer depends on a runtime JSON fingerp
 
 ### Rule Governance and Legacy Rule Migration
 
-Historical built-in rules are shipped with the binary, so users no longer need the old runtime `finger.json`. Future rule governance should not keep maintaining the old JSON format. Instead, legacy rules should be migrated into the new YAML semantic model and compiled into release binaries.
+Historical built-in rules are shipped with the binary, so users no longer need the old runtime `finger.json`. Future rule governance does not keep maintaining the old JSON format. Instead, legacy rules are migrated into the new YAML semantic model and compiled into release binaries.
 
 Migration principles:
 
@@ -321,6 +329,12 @@ Recommended rule categories:
 cms, oa, middleware, api-gateway, devops, cloud-native,
 observability, storage, database, security-device, cdn, waf,
 framework, ai-service, iot-device
+```
+
+Show runtime rule distribution:
+
+```bash
+hfinger rules stats
 ```
 
 Validate external rules:
@@ -392,6 +406,7 @@ metadata:
     "url": "https://www.example.com",
     "cms": "Example Admin",
     "category": "web",
+    "version": "1.2.3",
     "server": "nginx",
     "statuscode": 200,
     "title": "Example Admin",
@@ -414,7 +429,7 @@ metadata:
 
 ```text
 -u, --url string           Scan one target
--f, --file string          Read targets from file
+-f, --file string          Read targets from a URL list or httpx JSONL file
 -l, --listen string        Start passive proxy listener
 -p, --proxy string         Use upstream proxy
 -t, --thread int           Number of threads

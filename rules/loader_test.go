@@ -51,3 +51,52 @@ func TestValidateRulesRejectsDuplicateID(t *testing.T) {
 		t.Fatalf("ValidateRules() expected duplicate id error")
 	}
 }
+
+func TestInitLoadsEmbeddedCoreRules(t *testing.T) {
+	if err := Init(nil); err != nil {
+		t.Fatalf("Init() error: %v", err)
+	}
+
+	var found bool
+	for _, rule := range ActiveRules() {
+		if rule.ID == "core-0048-ollama-api" {
+			found = true
+			if rule.Category != "ai-service" {
+				t.Fatalf("core rule category = %q, want ai-service", rule.Category)
+			}
+			if len(rule.Metadata.References) == 0 {
+				t.Fatalf("core rule should include metadata references")
+			}
+		}
+		if rule.Category == "legacy" {
+			t.Fatalf("rule %s was not migrated from legacy category", rule.ID)
+		}
+	}
+	if !found {
+		t.Fatalf("embedded core rule was not loaded")
+	}
+}
+
+func TestNormalizeRuleMigratesLegacyMetadata(t *testing.T) {
+	rule := normalizeRule(Rule{
+		ID:       "legacy-test",
+		Name:     "Grafana",
+		Category: "legacy",
+		Match: MatchBlock{Matchers: []Matcher{
+			{Type: "body.contains", Value: "grafana-app", Evidence: "legacy rule match"},
+		}},
+	})
+
+	if rule.Category != "observability" {
+		t.Fatalf("category = %q, want observability", rule.Category)
+	}
+	if len(rule.Tags) == 0 || rule.Tags[0] != "migrated" {
+		t.Fatalf("tags were not populated: %#v", rule.Tags)
+	}
+	if len(rule.Metadata.References) != 1 || rule.Metadata.References[0] != migratedLegacyReference {
+		t.Fatalf("references were not populated: %#v", rule.Metadata.References)
+	}
+	if rule.Match.Matchers[0].Evidence == "legacy rule match" || rule.Match.Matchers[0].Evidence == "" {
+		t.Fatalf("evidence was not migrated: %#v", rule.Match.Matchers[0])
+	}
+}

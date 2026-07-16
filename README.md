@@ -8,7 +8,7 @@ HFinger 是一个面向安全测试场景的服务端指纹识别工具，用于
 
 工具内置核心指纹规则，开箱即用；同时支持通过外置 YAML 规则扩展企业内部系统、社区规则和私有化产品识别能力。
 
-当前内置指纹规则 **1621** 条，覆盖产品、Web 框架、CMS、中间件、CDN/WAF 等服务端组件 **1371** 种。
+当前内置指纹规则 **1671** 条，覆盖产品、Web 框架、CMS、中间件、CDN/WAF 等服务端组件 **1409** 种。
 
 ## 工具定位
 
@@ -51,6 +51,7 @@ HFinger 的目标不是替代漏洞扫描器，而是成为安全测试链路中
 ├── models/              主动扫描与被动代理识别逻辑
 ├── output/              JSON、XML、XLSX 输出
 ├── rules/               内置规则、YAML 加载、规则校验与匹配引擎
+├── rulesets/            高质量 YAML 规则源，发布时内置到二进制
 ├── utils/               HTTP、证书、升级等通用能力
 ├── README.md            中文说明文档
 └── README_EN.md         英文说明文档
@@ -99,6 +100,13 @@ https://www.example.com
 http://192.168.1.10
 ```
 
+`-f` 也支持常见 JSONL 探活结果，例如 `httpx -json` 输出。工具会优先读取 `url` 字段，其次读取 `input` / `host` 并结合 `scheme` 生成目标：
+
+```bash
+httpx -l domains.txt -json -silent > alive.jsonl
+hfinger -f alive.jsonl -j hfinger.json
+```
+
 ### 指定代理
 
 ```bash
@@ -122,7 +130,7 @@ hfinger -f targets.txt -x result.xml
 hfinger -f targets.txt -s result.xlsx
 ```
 
-输出结果会包含命中产品、类别、状态码、Server、Title、置信度和证据。
+输出结果会包含命中产品、类别、版本、状态码、Server、Title、置信度和证据。
 
 ### 被动模式
 
@@ -305,7 +313,7 @@ HFinger 内置核心规则，不再依赖运行时 JSON 指纹文件。用户和
 
 ### 规则治理与旧规则迁移
 
-历史内置规则已经随二进制发布，不需要用户携带旧版 `finger.json`。后续规则治理不建议继续维护旧 JSON 格式，而应统一迁移到新的 YAML 语义模型，再在发布时编译进二进制。
+历史内置规则已经随二进制发布，不需要用户携带旧版 `finger.json`。后续规则治理不继续维护旧 JSON 格式，而是统一迁移到新的 YAML 语义模型，再在发布时编译进二进制。
 
 迁移原则：
 
@@ -321,6 +329,12 @@ HFinger 内置核心规则，不再依赖运行时 JSON 指纹文件。用户和
 cms, oa, middleware, api-gateway, devops, cloud-native,
 observability, storage, database, security-device, cdn, waf,
 framework, ai-service, iot-device
+```
+
+查看当前运行时规则分布：
+
+```bash
+hfinger rules stats
 ```
 
 校验外置规则：
@@ -392,6 +406,7 @@ metadata:
     "url": "https://www.example.com",
     "cms": "Example Admin",
     "category": "web",
+    "version": "1.2.3",
     "server": "nginx",
     "statuscode": 200,
     "title": "Example Admin",
@@ -414,7 +429,7 @@ metadata:
 
 ```text
 -u, --url string           指定单个识别目标
--f, --file string          从文件读取目标
+-f, --file string          从文件读取目标，支持纯 URL 列表或 httpx JSONL
 -l, --listen string        启动被动代理监听
 -p, --proxy string         指定上游代理
 -t, --thread int           指定线程数

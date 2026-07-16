@@ -1,6 +1,7 @@
 package models
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"math/rand"
@@ -190,6 +191,7 @@ func ProcessURL(url string) {
 			URL:        response.URL,
 			CMS:        cms,
 			Category:   match.Rule.Category,
+			Version:    match.Version,
 			Server:     response.Server,
 			StatusCode: response.StatusCode,
 			Title:      response.Title,
@@ -270,7 +272,7 @@ func ProcessFile(filePath string) {
 	var sem = make(chan struct{}, workerCount)
 
 	for _, url := range urls {
-		url = strings.TrimSpace(url)
+		url = targetFromInputLine(url)
 		if url == "" {
 			continue
 		}
@@ -292,6 +294,34 @@ func ProcessFile(filePath string) {
 	if err := output.WriteOutputs(); err != nil {
 		logger.Error("Error writing output: %s", err)
 	}
+}
+
+func targetFromInputLine(line string) string {
+	line = strings.TrimSpace(line)
+	if line == "" {
+		return ""
+	}
+	if !strings.HasPrefix(line, "{") {
+		return line
+	}
+
+	var record map[string]interface{}
+	if err := json.Unmarshal([]byte(line), &record); err != nil {
+		return line
+	}
+	for _, key := range []string{"url", "input", "host"} {
+		if value, ok := record[key].(string); ok && strings.TrimSpace(value) != "" {
+			target := strings.TrimSpace(value)
+			if strings.HasPrefix(target, "http://") || strings.HasPrefix(target, "https://") {
+				return target
+			}
+			if scheme, ok := record["scheme"].(string); ok && scheme != "" {
+				return scheme + "://" + target
+			}
+			return target
+		}
+	}
+	return ""
 }
 
 func SetThread(thread int) {

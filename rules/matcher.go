@@ -87,6 +87,9 @@ func MatchRule(responses []Response, rule Rule) MatchResult {
 
 	result.Score = totalScore
 	result.Confidence = confidence(totalScore, totalPossible, threshold, strategy)
+	if result.Matched {
+		result.Version = extractVersion(responses, rule)
+	}
 	return result
 }
 
@@ -479,6 +482,78 @@ func findEvidenceResponse(responses []Response, responseURL string) Response {
 		}
 	}
 	return responses[0]
+}
+
+func extractVersion(responses []Response, rule Rule) string {
+	for _, extractor := range rule.Extract {
+		if strings.TrimSpace(extractor.Regex) == "" {
+			continue
+		}
+		for _, response := range responses {
+			if value := applyExtractor(response, extractor); value != "" {
+				return value
+			}
+		}
+	}
+	return ""
+}
+
+func applyExtractor(response Response, extractor Extractor) string {
+	source := extractorSource(response, extractor)
+	if source == "" {
+		return ""
+	}
+	re, err := regexp.Compile(extractor.Regex)
+	if err != nil {
+		return ""
+	}
+	matches := re.FindStringSubmatch(source)
+	if len(matches) == 0 {
+		return ""
+	}
+	group := extractor.Group
+	if group <= 0 {
+		group = 1
+	}
+	if group >= len(matches) {
+		return truncate(matches[0], 80)
+	}
+	return truncate(matches[group], 80)
+}
+
+func extractorSource(response Response, extractor Extractor) string {
+	switch strings.ToLower(strings.TrimSpace(extractor.Type)) {
+	case "body", "body.regex":
+		return string(response.Body)
+	case "title", "title.regex":
+		return response.Title
+	case "header", "header.regex":
+		if extractor.Key != "" {
+			return response.Header.Get(extractor.Key)
+		}
+		var builder strings.Builder
+		for key, values := range response.Header {
+			for _, value := range values {
+				builder.WriteString(key)
+				builder.WriteString(": ")
+				builder.WriteString(value)
+				builder.WriteString("\n")
+			}
+		}
+		return builder.String()
+	case "server", "server.banner", "server.banner.regex":
+		return response.Server
+	case "tls.cert.subject":
+		return response.TLS.Subject
+	case "tls.cert.issuer":
+		return response.TLS.Issuer
+	case "tls.cert.dns":
+		return strings.Join(response.TLS.DNSNames, ",")
+	case "tls.alpn":
+		return response.TLS.ALPN
+	default:
+		return ""
+	}
 }
 
 func PathFromURL(rawURL string) string {

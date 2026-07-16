@@ -38,6 +38,7 @@ func WriteXLSXOutput(filename string, results []config.Result) error {
 	header.AddCell().Value = "URL"
 	header.AddCell().Value = "CMS"
 	header.AddCell().Value = "Category"
+	header.AddCell().Value = "Version"
 	header.AddCell().Value = "Server"
 	header.AddCell().Value = "StatusCode"
 	header.AddCell().Value = "Title"
@@ -53,6 +54,7 @@ func WriteXLSXOutput(filename string, results []config.Result) error {
 		row.AddCell().Value = result.URL
 		row.AddCell().Value = result.CMS
 		row.AddCell().Value = result.Category
+		row.AddCell().Value = result.Version
 		row.AddCell().Value = result.Server
 		row.AddCell().Value = strconv.Itoa(result.StatusCode)
 		row.AddCell().Value = result.Title
@@ -72,6 +74,7 @@ func WriteXLSXOutput(filename string, results []config.Result) error {
 			cmsHeader := cmsSheet.AddRow()
 			cmsHeader.AddCell().Value = "URL"
 			cmsHeader.AddCell().Value = "Category"
+			cmsHeader.AddCell().Value = "Version"
 			cmsHeader.AddCell().Value = "Server"
 			cmsHeader.AddCell().Value = "StatusCode"
 			cmsHeader.AddCell().Value = "Title"
@@ -83,6 +86,7 @@ func WriteXLSXOutput(filename string, results []config.Result) error {
 		cmsRow := cmsSheets[result.CMS].AddRow()
 		cmsRow.AddCell().Value = result.URL
 		cmsRow.AddCell().Value = result.Category
+		cmsRow.AddCell().Value = result.Version
 		cmsRow.AddCell().Value = result.Server
 		cmsRow.AddCell().Value = strconv.Itoa(result.StatusCode)
 		cmsRow.AddCell().Value = result.Title

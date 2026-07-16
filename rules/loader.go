@@ -3,9 +3,12 @@ package rules
 import (
 	"errors"
 	"fmt"
+	"io/fs"
 	"os"
 	"path/filepath"
 	"strings"
+
+	"hfinger/rulesets"
 
 	"gopkg.in/yaml.v3"
 )
@@ -13,7 +16,12 @@ import (
 var activeRules []Rule
 
 func Init(paths []string) error {
-	loaded := append([]Rule{}, BuiltinRules()...)
+	loaded := normalizeRules(append([]Rule{}, BuiltinRules()...))
+	coreRules, err := LoadYAMLFS(rulesets.CoreFS, "core")
+	if err != nil {
+		return err
+	}
+	loaded = mergeRules(loaded, coreRules)
 	for _, path := range paths {
 		if strings.TrimSpace(path) == "" {
 			continue
@@ -86,7 +94,37 @@ func LoadYAMLFile(path string) ([]Rule, error) {
 	if err != nil {
 		return nil, err
 	}
+	return parseYAMLRules(data)
+}
 
+func LoadYAMLFS(fsys fs.FS, root string) ([]Rule, error) {
+	var loaded []Rule
+	err := fs.WalkDir(fsys, root, func(item string, entry fs.DirEntry, walkErr error) error {
+		if walkErr != nil {
+			return walkErr
+		}
+		if entry.IsDir() {
+			return nil
+		}
+		ext := strings.ToLower(filepath.Ext(item))
+		if ext != ".yaml" && ext != ".yml" {
+			return nil
+		}
+		data, err := fs.ReadFile(fsys, item)
+		if err != nil {
+			return err
+		}
+		rules, err := parseYAMLRules(data)
+		if err != nil {
+			return fmt.Errorf("%s: %w", item, err)
+		}
+		loaded = append(loaded, rules...)
+		return nil
+	})
+	return loaded, err
+}
+
+func parseYAMLRules(data []byte) ([]Rule, error) {
 	var lib Library
 	if err := yaml.Unmarshal(data, &lib); err == nil && len(lib.Rules) > 0 {
 		return lib.Rules, nil

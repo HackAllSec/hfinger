@@ -11,6 +11,7 @@ type Result struct {
 	URL        string           `json:"url" xml:"URL"`
 	CMS        string           `json:"cms" xml:"CMS"`
 	Category   string           `json:"category,omitempty" xml:"Category,omitempty"`
+	Version    string           `json:"version,omitempty" xml:"Version,omitempty"`
 	Server     string           `json:"server" xml:"Server"`
 	StatusCode int              `json:"statuscode" xml:"StatusCode"`
 	Title      string           `json:"title" xml:"Title"`

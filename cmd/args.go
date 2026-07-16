@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"sort"
 	"time"
 
 	"github.com/fatih/color"
@@ -311,6 +312,28 @@ var rulesTestCmd = &cobra.Command{
 	},
 }
 
+var rulesStatsCmd = &cobra.Command{
+	Use:   "stats",
+	Short: "Show built-in and loaded rule statistics",
+	Run: func(cmd *cobra.Command, args []string) {
+		rulePaths, _ := cmd.Root().Flags().GetStringArray("rules")
+		if err := rules.Init(rulePaths); err != nil {
+			logger.Error("Error: Failed to load fingerprint rules: %v", err)
+			os.Exit(1)
+		}
+		report := rules.Stats(rules.ActiveRules())
+		fmt.Printf("rules=%d products=%d\n", report.Rules, report.Products)
+		categories := make([]string, 0, len(report.Categories))
+		for category := range report.Categories {
+			categories = append(categories, category)
+		}
+		sort.Strings(categories)
+		for _, category := range categories {
+			fmt.Printf("%s=%d\n", category, report.Categories[category])
+		}
+	},
+}
+
 func countRuleProducts(ruleSet []rules.Rule) int {
 	seen := map[string]struct{}{}
 	for _, rule := range ruleSet {
@@ -341,6 +364,7 @@ func init() {
 	rulesCmd.AddCommand(rulesLintCmd)
 	rulesCmd.AddCommand(rulesCompileCmd)
 	rulesCmd.AddCommand(rulesTestCmd)
+	rulesCmd.AddCommand(rulesStatsCmd)
 
 	passiveQueryCmd.Flags().String("url", "", "Filter by URL substring")
 	passiveQueryCmd.Flags().String("cms", "", "Filter by product name")
