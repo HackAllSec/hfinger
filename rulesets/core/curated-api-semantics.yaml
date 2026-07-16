@@ -1,0 +1,122 @@
+rules:
+  - id: core-0136-openapi-json-document
+    name: OpenAPI JSON Document
+    category: api-gateway
+    vendor: Generic
+    priority: 80
+    tags: [api, openapi, swagger]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: openapi-json
+          request: {method: GET, path: /openapi.json}
+          matchers:
+            - type: json.key.exists
+              value: openapi
+              weight: 45
+              evidence: OpenAPI version field
+            - type: json.key.exists
+              value: paths
+              weight: 35
+              evidence: OpenAPI paths field
+            - type: json.key.exists
+              value: info
+              weight: 20
+              evidence: OpenAPI info field
+    negative:
+      - type: body.contains
+        value: OpenAPI documentation
+        reason: Exclude documentation pages
+    metadata:
+      confidence: high
+      references: ["https://spec.openapis.org/oas/latest.html"]
+    examples:
+      positive:
+        - name: openapi-json
+          path: /openapi.json
+          body: '{"openapi":"3.0.1","info":{"title":"API"},"paths":{"/health":{"get":{}}}}'
+      negative:
+        - name: openapi-doc
+          body: OpenAPI documentation
+
+  - id: core-0137-graphql-error-semantics
+    name: GraphQL Error Semantics
+    category: framework
+    vendor: Generic
+    priority: 75
+    tags: [api, graphql]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: graphql-probe
+          request:
+            method: POST
+            path: /graphql
+            headers: {Content-Type: application/json}
+            body: '{"query":"query HFingerProbe { __typename }"}'
+          matchers:
+            - type: json.key.exists
+              value: data
+              weight: 40
+              evidence: GraphQL data field
+            - type: body.regex
+              values:
+                - (?i)\b(graphql|__typename|errors|Cannot query field)\b
+              weight: 60
+              evidence: GraphQL response semantics
+    negative:
+      - type: body.contains
+        value: GraphQL documentation
+        reason: Exclude documentation pages
+    metadata:
+      confidence: medium
+      references: ["https://graphql.org/learn/serving-over-http/"]
+    examples:
+      positive:
+        - name: graphql-error
+          path: /graphql
+          body: '{"data":null,"errors":[{"message":"Cannot query field"}]}'
+      negative:
+        - name: graphql-doc
+          body: GraphQL documentation
+
+  - id: core-0138-spring-actuator-health-json
+    name: Spring Boot Actuator Health
+    category: framework
+    vendor: VMware
+    priority: 85
+    tags: [spring, actuator, api]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: actuator-health
+          request: {method: GET, path: /actuator/health}
+          matchers:
+            - type: json.key.exists
+              value: status
+              weight: 40
+              evidence: Spring Actuator health status field
+            - type: body.regex
+              values:
+                - '"status"\s*:\s*"UP"'
+                - (?i)\b(components|diskSpace|ping|groups)\b
+              weight: 60
+              evidence: Spring Actuator health semantics
+    negative:
+      - type: body.contains
+        value: Actuator health documentation
+        reason: Exclude documentation pages
+    metadata:
+      confidence: high
+      references: ["https://docs.spring.io/spring-boot/reference/actuator/endpoints.html"]
+    examples:
+      positive:
+        - name: actuator-health
+          path: /actuator/health
+          body: '{"status":"UP","components":{"ping":{"status":"UP"}}}'
+      negative:
+        - name: actuator-doc
+          body: Actuator health documentation

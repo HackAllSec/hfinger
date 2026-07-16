@@ -211,20 +211,24 @@ Common fields:
 | `tls.alpn.contains` | TLS ALPN contains a value |
 | `tls.version.contains` | TLS version contains a value, such as `TLS1.3` |
 | `tls.cipher.contains` | TLS Cipher Suite contains a value |
-| `tls.ja3s.hash` | JA3S-style summary matches |
+| `tls.ja3s.hash` | JA3S hash matches, preferring raw ServerHello extension sequence |
+| `tls.ja3s.raw.contains` | JA3S raw string contains a value, such as `771,4865,43-51` |
 | `dns.cname.contains` | DNS CNAME contains a value, useful for CDN/WAF identification |
 | `dns.ns.contains` | DNS NS record contains a value, useful for authoritative DNS/CDN identification |
 | `dns.txt.contains` | DNS TXT record contains a value |
 | `dns.ip.contains` | DNS resolved IP contains a value |
+| `dns.edge.contains` | DNS resolved IP matches a built-in CDN/edge network range |
 | `http.version.contains` | HTTP protocol version contains a value, such as `HTTP/2` |
 | `http.method.allowed` | `OPTIONS` response `Allow` methods contain a value |
 | `http.alt_svc.contains` | `Alt-Svc` contains a value, useful for HTTP/3/QUIC hints |
+| `http.quic.version.contains` | QUIC Version Negotiation response contains a version |
 | `response.compression.contains` | `Content-Encoding` contains a value |
 | `response.cache.contains` | CDN/cache response-header summary contains a value |
+| `response.behavior.contains` | Advanced response behavior signals contain a value, such as `universal-route-suspected` |
 | `response.etag.exists` | Response has an `ETag` header |
 | `response.accept_ranges.exists` | Response has an `Accept-Ranges` header |
 
-Note: `tls.ja3s.hash` currently builds a stable summary from TLS version, Cipher Suite, and ALPN values exposed by Go's standard library. It is JA3S-style metadata, not a full standard JA3S implementation.
+Note: `tls.ja3s.hash` prefers a raw TCP ClientHello probe that parses ServerHello version, Cipher Suite, and extension type sequence into a standard JA3S-shaped hash. If the raw probe fails, HFinger falls back to a stable summary from TLS version, Cipher Suite, and ALPN exposed by Go's standard library.
 
 ## 8. Negative Rules
 

@@ -8,7 +8,7 @@ HFinger is a server-side fingerprinting tool for security testing. It helps iden
 
 HFinger ships with built-in core fingerprint rules and works out of the box. It also supports external YAML rules for community contributions, private products, and internal enterprise systems.
 
-The current build includes **1746** built-in fingerprint rules covering **1478** server-side products, web frameworks, CMS products, middleware, CDN/WAF providers, honeypots, and related components.
+The current build includes **1756** built-in fingerprint rules covering **1488** server-side products, web frameworks, CMS products, middleware, CDN/WAF providers, honeypots, and related components.
 
 ## Positioning
 
@@ -545,6 +545,18 @@ Run batch scanning with JSONL output for streaming LLM/agent consumption:
 hfinger -f alive.jsonl --output-jsonl hfinger-results.jsonl
 ```
 
+The integration chain is:
+
+```text
+user intent
+  -> LLM/Agent parses scope and objectives
+  -> Agent runs hfinger or reads existing JSONL
+  -> HFinger emits deterministic evidence/confidence
+  -> Agent applies Skill/playbook logic for triage, clustering, tool orchestration, or rule drafting
+```
+
+HFinger does not call an LLM by itself. In daily penetration testing, this is useful when your environment can execute commands and read files, such as Trae, Claude Code, Cursor Agent, a custom agent, Dify, Coze, LangChain, or AutoGen. A normal chat UI that cannot run commands is only useful for explaining JSONL snippets you provide.
+
 A directly usable penetration-testing orchestration flow:
 
 ```bash
@@ -566,7 +578,32 @@ katana -list high-value.txt -silent -o katana-high-value.txt
 jq -r 'select(.confidence>=80) | .url' hfinger-results.jsonl > confirmed-web.txt
 ```
 
-The value of LLM/Skill integration is not "read `hfinger-results.jsonl` and repeat the results". For a single target or a simple product check, use the HFinger CLI directly; an LLM adds little value there.
+When the authorized scope includes non-HTTP ports, use lightweight service fingerprinting:
+
+```bash
+hfinger service scan 10.0.0.5 --ports 22,3306,5432,6379,3389,1883 --output-jsonl services.jsonl
+```
+
+For large result sets, cluster likely same-origin systems:
+
+```bash
+hfinger cluster jsonl hfinger-results.jsonl --min-size 2
+```
+
+For AI penetration-testing systems, load these at startup:
+
+```bash
+hfinger llm manifest
+hfinger llm skills
+```
+
+`manifest` exposes tool capabilities, inputs, outputs, result fields, and schema paths. `skills` exposes playbooks for asset triage, toolchain orchestration, rule authoring, honeypot review, non-HTTP service identification, and cross-asset clustering. Schemas are available at:
+
+- `schemas/result.schema.json`
+- `schemas/llm-skill.schema.json`
+- `schemas/rule.schema.json`
+
+
 
 LLM/Skill workflows are useful for dynamic decisions that should not be hard-coded into HFinger flags:
 
@@ -575,6 +612,8 @@ LLM/Skill workflows are useful for dynamic decisions that should not be hard-cod
 - Generate follow-up command plans from fingerprints without replacing HFinger's deterministic matching.
 - Draft YAML rules from HTTP/TLS/DNS/favicon evidence, then validate them with `rules lint/test/doctor`.
 - When honeypot, conflicting-fingerprint, or universal-response signals appear, generate low-impact confirmation steps instead of increasing active probing.
+- For authorized non-HTTP ports, run `hfinger service scan` to identify SSH, Redis, MySQL, PostgreSQL, RDP, MQTT, and generic TCP banners.
+- For large JSONL outputs, run `hfinger cluster jsonl` to group likely same-origin systems by favicon, TLS, DNS, title, server, and resource hashes.
 
 A more useful agent instruction:
 
@@ -593,6 +632,9 @@ Build a follow-up test plan from hfinger-results.jsonl:
 - `name`: capability name, such as result triage, toolchain orchestration, rule authoring, or honeypot review.
 - `purpose`: the concrete problem solved by the playbook.
 - `inputs` / `outputs`: what the agent should read and produce.
+- `required_tools`: external tools required by the workflow.
+- `risk_level` / `do_not_do`: risk boundaries and prohibited actions.
+- `example_user_prompt`: natural-language examples that should trigger the playbook.
 - `when_to_use`: when to trigger the playbook.
 - `decision_rules`: how to decide based on confidence, evidence, category, and honeypot risk.
 - `workflow`: executable or adaptable command steps.
@@ -604,6 +646,8 @@ Typical LLM/Skill scenarios:
 - Rule authoring: generate YAML rule drafts from HTTP headers, cookies, body snippets, favicon, DNS CNAME, TLS certificates, and JavaScript/CSS hashes, then validate them with `rules lint/test/doctor`.
 - Rule review: check whether a rule depends on generic keywords or lacks strong evidence, negative matchers, and positive/negative examples.
 - Honeypot review: when results include `category: honeypot`, `Potential Honeypot`, conflicting technologies, or similar responses across many paths, reduce intrusive probing and generate low-impact confirmation steps.
+- Non-HTTP service identification: within an explicitly authorized port scope, identify SSH, Redis, MySQL, PostgreSQL, RDP, MQTT, and generic TCP services.
+- Cross-asset clustering: group assets that share favicon, TLS certificates, DNS edge networks, titles, server headers, or static resource hashes.
 - Report explanation: convert evidence and confidence into auditable security-report text.
 
 Skills are external agent workflows, not runtime directories required by the HFinger repository. Users can define Skills in their own agent environment and have them call `hfinger llm manifest`, `hfinger llm skills`, `hfinger --output-jsonl`, and `hfinger rules lint/test/doctor` for more complex penetration-testing workflows.

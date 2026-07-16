@@ -82,6 +82,7 @@ type preparedResponse struct {
 	tlsCipher       string
 	lowerTLSCipher  string
 	tlsJA3S         string
+	tlsJA3SRaw      string
 
 	faviconMMH3      string
 	faviconMD5       string
@@ -90,25 +91,31 @@ type preparedResponse struct {
 	scriptHashes     []ResourceHash
 	stylesheetHashes []ResourceHash
 
-	dnsCNAME            string
-	lowerDNSCNAME       string
-	dnsNameservers      string
-	lowerDNSNameservers string
-	dnsTXT              string
-	lowerDNSTXT         string
-	dnsIPs              string
-	lowerDNSIPs         string
+	dnsCNAME             string
+	lowerDNSCNAME        string
+	dnsNameservers       string
+	lowerDNSNameservers  string
+	dnsTXT               string
+	lowerDNSTXT          string
+	dnsIPs               string
+	lowerDNSIPs          string
+	dnsEdgeNetworks      string
+	lowerDNSEdgeNetworks string
 
-	httpVersion         string
-	lowerHTTPVersion    string
-	allowedMethods      string
-	lowerAllowedMethods string
-	compression         string
-	lowerCompression    string
-	altSvc              string
-	lowerAltSvc         string
-	cacheHeaders        string
-	lowerCacheHeaders   string
+	httpVersion          string
+	lowerHTTPVersion     string
+	allowedMethods       string
+	lowerAllowedMethods  string
+	compression          string
+	lowerCompression     string
+	altSvc               string
+	lowerAltSvc          string
+	cacheHeaders         string
+	lowerCacheHeaders    string
+	quicVersions         string
+	lowerQUICVersions    string
+	behaviorSignals      string
+	lowerBehaviorSignals string
 
 	jsonParsed bool
 	jsonOK     bool
@@ -204,9 +211,10 @@ func compileMatcher(matcher Matcher) compiledMatcher {
 	switch cm.matcherType {
 	case "body.contains", "header.contains", "title.contains", "cookie.contains", "redirect.to", "server.banner.contains",
 		"tls.cert.subject.contains", "tls.cert.issuer.contains", "tls.cert.dns.contains", "tls.alpn.contains",
-		"tls.version.contains", "tls.cipher.contains", "http.version.contains", "http.method.allowed",
+		"tls.version.contains", "tls.cipher.contains", "tls.ja3s.raw.contains", "http.version.contains", "http.method.allowed",
 		"response.compression.contains", "response.cache.contains", "http.alt_svc.contains",
-		"dns.cname.contains", "dns.ns.contains", "dns.txt.contains", "dns.ip.contains":
+		"http.quic.version.contains", "response.behavior.contains",
+		"dns.cname.contains", "dns.ns.contains", "dns.txt.contains", "dns.ip.contains", "dns.edge.contains":
 		automatonValues := cm.values
 		if !isCaseSensitive(matcher) {
 			automatonValues = cm.lowerValues
@@ -557,31 +565,38 @@ func prepareResponseSet(responses []Response) preparedResponses {
 			tlsCipher:       response.TLS.CipherSuite,
 			lowerTLSCipher:  strings.ToLower(response.TLS.CipherSuite),
 			tlsJA3S:         response.TLS.JA3S,
+			tlsJA3SRaw:      response.TLS.JA3SRaw,
 
-			faviconMMH3:         faviconMMH3,
-			faviconMD5:          faviconMD5,
-			faviconSHA1:         faviconSHA1,
-			faviconSHA256:       faviconSHA256,
-			scriptHashes:        response.Scripts,
-			stylesheetHashes:    response.Stylesheets,
-			dnsCNAME:            response.DNS.CNAME,
-			lowerDNSCNAME:       strings.ToLower(response.DNS.CNAME),
-			dnsNameservers:      strings.Join(response.DNS.Nameservers, ","),
-			lowerDNSNameservers: strings.ToLower(strings.Join(response.DNS.Nameservers, ",")),
-			dnsTXT:              strings.Join(response.DNS.TXT, ","),
-			lowerDNSTXT:         strings.ToLower(strings.Join(response.DNS.TXT, ",")),
-			dnsIPs:              strings.Join(response.DNS.IPs, ","),
-			lowerDNSIPs:         strings.ToLower(strings.Join(response.DNS.IPs, ",")),
-			httpVersion:         response.Behavior.HTTPVersion,
-			lowerHTTPVersion:    strings.ToLower(response.Behavior.HTTPVersion),
-			allowedMethods:      allowedMethods,
-			lowerAllowedMethods: strings.ToLower(allowedMethods),
-			compression:         response.Behavior.Compression,
-			lowerCompression:    strings.ToLower(response.Behavior.Compression),
-			altSvc:              response.Behavior.AltSvc,
-			lowerAltSvc:         strings.ToLower(response.Behavior.AltSvc),
-			cacheHeaders:        response.Behavior.Cache,
-			lowerCacheHeaders:   strings.ToLower(response.Behavior.Cache),
+			faviconMMH3:          faviconMMH3,
+			faviconMD5:           faviconMD5,
+			faviconSHA1:          faviconSHA1,
+			faviconSHA256:        faviconSHA256,
+			scriptHashes:         response.Scripts,
+			stylesheetHashes:     response.Stylesheets,
+			dnsCNAME:             response.DNS.CNAME,
+			lowerDNSCNAME:        strings.ToLower(response.DNS.CNAME),
+			dnsNameservers:       strings.Join(response.DNS.Nameservers, ","),
+			lowerDNSNameservers:  strings.ToLower(strings.Join(response.DNS.Nameservers, ",")),
+			dnsTXT:               strings.Join(response.DNS.TXT, ","),
+			lowerDNSTXT:          strings.ToLower(strings.Join(response.DNS.TXT, ",")),
+			dnsIPs:               strings.Join(response.DNS.IPs, ","),
+			lowerDNSIPs:          strings.ToLower(strings.Join(response.DNS.IPs, ",")),
+			dnsEdgeNetworks:      strings.Join(response.DNS.EdgeNetworks, ","),
+			lowerDNSEdgeNetworks: strings.ToLower(strings.Join(response.DNS.EdgeNetworks, ",")),
+			httpVersion:          response.Behavior.HTTPVersion,
+			lowerHTTPVersion:     strings.ToLower(response.Behavior.HTTPVersion),
+			allowedMethods:       allowedMethods,
+			lowerAllowedMethods:  strings.ToLower(allowedMethods),
+			compression:          response.Behavior.Compression,
+			lowerCompression:     strings.ToLower(response.Behavior.Compression),
+			altSvc:               response.Behavior.AltSvc,
+			lowerAltSvc:          strings.ToLower(response.Behavior.AltSvc),
+			cacheHeaders:         response.Behavior.Cache,
+			lowerCacheHeaders:    strings.ToLower(response.Behavior.Cache),
+			quicVersions:         strings.Join(response.Behavior.QUICVersions, ","),
+			lowerQUICVersions:    strings.ToLower(strings.Join(response.Behavior.QUICVersions, ",")),
+			behaviorSignals:      strings.Join(response.Behavior.Signals, ","),
+			lowerBehaviorSignals: strings.ToLower(strings.Join(response.Behavior.Signals, ",")),
 		}
 		prepared.items = append(prepared.items, item)
 		if response.ProbeID != "" {
@@ -807,6 +822,8 @@ func matchPreparedResponse(response *preparedResponse, matcher compiledMatcher) 
 		return matchPreparedText("tls.cipher", matcher, response.tlsCipher, response.lowerTLSCipher, response.response.URL)
 	case "tls.ja3s.hash":
 		return matchPreparedExact("tls.ja3s", matcher, response.tlsJA3S, response.response.URL)
+	case "tls.ja3s.raw.contains":
+		return matchPreparedText("tls.ja3s.raw", matcher, response.tlsJA3SRaw, strings.ToLower(response.tlsJA3SRaw), response.response.URL)
 	case "dns.cname.contains":
 		return matchPreparedText("dns.cname", matcher, response.dnsCNAME, response.lowerDNSCNAME, response.response.URL)
 	case "dns.ns.contains":
@@ -815,16 +832,22 @@ func matchPreparedResponse(response *preparedResponse, matcher compiledMatcher) 
 		return matchPreparedText("dns.txt", matcher, response.dnsTXT, response.lowerDNSTXT, response.response.URL)
 	case "dns.ip.contains":
 		return matchPreparedText("dns.ip", matcher, response.dnsIPs, response.lowerDNSIPs, response.response.URL)
+	case "dns.edge.contains":
+		return matchPreparedText("dns.edge", matcher, response.dnsEdgeNetworks, response.lowerDNSEdgeNetworks, response.response.URL)
 	case "http.version.contains":
 		return matchPreparedText("http.version", matcher, response.httpVersion, response.lowerHTTPVersion, response.response.URL)
 	case "http.alt_svc.contains":
 		return matchPreparedText("http.alt_svc", matcher, response.altSvc, response.lowerAltSvc, response.response.URL)
+	case "http.quic.version.contains":
+		return matchPreparedText("http.quic.version", matcher, response.quicVersions, response.lowerQUICVersions, response.response.URL)
 	case "http.method.allowed":
 		return matchPreparedText("http.allow", matcher, response.allowedMethods, response.lowerAllowedMethods, response.response.URL)
 	case "response.compression.contains":
 		return matchPreparedText("response.compression", matcher, response.compression, response.lowerCompression, response.response.URL)
 	case "response.cache.contains":
 		return matchPreparedText("response.cache", matcher, response.cacheHeaders, response.lowerCacheHeaders, response.response.URL)
+	case "response.behavior.contains":
+		return matchPreparedText("response.behavior", matcher, response.behaviorSignals, response.lowerBehaviorSignals, response.response.URL)
 	case "response.etag.exists":
 		if value := headerValue(response.response.Header, "ETag"); value != "" {
 			return evidence("response.etag", matcher.matcher, value, response.response.URL), true

@@ -15,8 +15,10 @@ import (
 	"net/url"
 	"os"
 	"regexp"
+	"sort"
 	"strings"
 	"sync"
+	"time"
 
 	"hfinger/config"
 	"hfinger/logger"
@@ -33,7 +35,7 @@ var (
 	stylesheetHrefRe = regexp.MustCompile(`(?is)<link[^>]+(?:rel=["'][^"']*stylesheet[^"']*["'][^>]+href=["']([^"']+)["']|href=["']([^"']+)["'][^>]+rel=["'][^"']*stylesheet[^"']*["'])`)
 )
 
-func process(url string, probeID string, request rules.Request, dns rules.DNSInfo, responsesChannel chan<- rules.Response, mu *sync.Mutex, wg *sync.WaitGroup, errOccurred *bool, saveResponse func(int, string, string)) {
+func process(url string, probeID string, request rules.Request, dns rules.DNSInfo, rawJA3S rawJA3SInfo, quicVersions []string, responsesChannel chan<- rules.Response, mu *sync.Mutex, wg *sync.WaitGroup, errOccurred *bool, saveResponse func(int, string, string)) {
 	defer wg.Done()
 
 	currentURL := url
@@ -47,6 +49,7 @@ func process(url string, probeID string, request rules.Request, dns rules.DNSInf
 		}
 		mu.Unlock()
 
+		startedAt := time.Now()
 		resp, err := utils.Do(request.Method, currentURL, []byte(request.Body), request.Headers)
 		if err != nil {
 			mu.Lock()
@@ -133,8 +136,8 @@ func process(url string, probeID string, request rules.Request, dns rules.DNSInf
 			Scripts:     scriptHashes(currentURL, body),
 			Stylesheets: stylesheetHashes(currentURL, body),
 			DNS:         dns,
-			TLS:         tlsInfo(resp),
-			Behavior:    behaviorInfo(resp),
+			TLS:         tlsInfo(resp, rawJA3S),
+			Behavior:    behaviorInfo(resp, quicVersions, time.Since(startedAt)),
 		}
 		break // 退出循环
 	}
@@ -147,6 +150,8 @@ func ProcessURL(url string) {
 	var matchedCMS sync.Map
 	responsesChannel := make(chan rules.Response, workerCount+len(rules.ActiveHTTPProbes())+5)
 	dns := dnsInfo(url)
+	rawJA3S := probeRawJA3S(url)
+	quicVersions := probeQUICVersions(url)
 
 	var lastResp config.LastResponse
 	var firstRespOnce sync.Once
@@ -168,30 +173,30 @@ func ProcessURL(url string) {
 	}
 
 	wg.Add(6)
-	go process(url, "default", rules.Request{Method: "GET"}, dns, responsesChannel, &mu, &wg, &errOccurred, saveFirstResponse)
-	go process(url, "head", rules.Request{Method: "HEAD"}, dns, responsesChannel, &mu, &wg, &errOccurred, nil)
-	go process(url, "remember-me", rules.Request{Method: "GET", Headers: map[string]string{"Cookie": "rememberMe=1"}}, dns, responsesChannel, &mu, &wg, &errOccurred, nil)
-	go process(url, "options", rules.Request{Method: "OPTIONS"}, dns, responsesChannel, &mu, &wg, &errOccurred, nil)
+	go process(url, "default", rules.Request{Method: "GET"}, dns, rawJA3S, quicVersions, responsesChannel, &mu, &wg, &errOccurred, saveFirstResponse)
+	go process(url, "head", rules.Request{Method: "HEAD"}, dns, rawJA3S, quicVersions, responsesChannel, &mu, &wg, &errOccurred, nil)
+	go process(url, "remember-me", rules.Request{Method: "GET", Headers: map[string]string{"Cookie": "rememberMe=1"}}, dns, rawJA3S, quicVersions, responsesChannel, &mu, &wg, &errOccurred, nil)
+	go process(url, "options", rules.Request{Method: "OPTIONS"}, dns, rawJA3S, quicVersions, responsesChannel, &mu, &wg, &errOccurred, nil)
 
 	suffix := fmt.Sprintf("/%x", rand.Int())
 	if url[len(url)-1] == '/' {
 		suffix = fmt.Sprintf("%x", rand.Int())
 	}
 	newUrl := url + suffix
-	go process(newUrl, "error-page", rules.Request{Method: "GET"}, dns, responsesChannel, &mu, &wg, &errOccurred, nil)
+	go process(newUrl, "error-page", rules.Request{Method: "GET"}, dns, rawJA3S, quicVersions, responsesChannel, &mu, &wg, &errOccurred, nil)
 
 	suffix2 := fmt.Sprintf("/%x", rand.Int())
 	if url[len(url)-1] == '/' {
 		suffix2 = fmt.Sprintf("%x", rand.Int())
 	}
-	go process(url+suffix2, "error-page-2", rules.Request{Method: "GET"}, dns, responsesChannel, &mu, &wg, &errOccurred, nil)
+	go process(url+suffix2, "error-page-2", rules.Request{Method: "GET"}, dns, rawJA3S, quicVersions, responsesChannel, &mu, &wg, &errOccurred, nil)
 
 	baseURL, baseErr := utils.GetBaseURL(url)
 	if baseErr == nil {
 		for _, probe := range rules.ActiveHTTPProbes() {
 			probeURL := baseURL + probe.Request.Path
 			wg.Add(1)
-			go process(probeURL, probe.ID, probe.Request, dns, responsesChannel, &mu, &wg, &errOccurred, nil)
+			go process(probeURL, probe.ID, probe.Request, dns, rawJA3S, quicVersions, responsesChannel, &mu, &wg, &errOccurred, nil)
 		}
 	}
 
@@ -203,6 +208,7 @@ func ProcessURL(url string) {
 	for response := range responsesChannel {
 		responses = append(responses, response)
 	}
+	enrichBehaviorSignals(responses)
 	var results []config.Result
 	matches := rules.MatchRules(responses, rules.ActiveRules())
 	if honeypot := rules.AssessHoneypot(matches, responses); honeypot.Matched {
@@ -215,15 +221,21 @@ func ProcessURL(url string) {
 		}
 		response := preferredResponse(responses, match.Response)
 		result := config.Result{
-			URL:        response.URL,
-			CMS:        cms,
-			Category:   match.Rule.Category,
-			Version:    match.Version,
-			Server:     response.Server,
-			StatusCode: response.StatusCode,
-			Title:      response.Title,
-			Confidence: match.Confidence,
-			Evidence:   match.Evidence,
+			URL:         response.URL,
+			CMS:         cms,
+			Category:    match.Rule.Category,
+			Version:     match.Version,
+			Server:      response.Server,
+			StatusCode:  response.StatusCode,
+			Title:       response.Title,
+			Confidence:  match.Confidence,
+			Evidence:    match.Evidence,
+			DNS:         optionalDNS(response.DNS),
+			TLS:         optionalTLS(response.TLS),
+			Behavior:    optionalBehavior(response.Behavior),
+			Favicon:     optionalFaviconHash(response.Favicon),
+			Scripts:     response.Scripts,
+			Stylesheets: response.Stylesheets,
 		}
 		results = append(results, result)
 		logger.Success("[%s] [%s] [%d] [%s] [%s] [Confidence %d%%]", result.URL, result.CMS, result.StatusCode, result.Server, result.Title, result.Confidence)
@@ -243,6 +255,39 @@ func ProcessURL(url string) {
 			lastResp.StatusCode,
 			lastResp.Server,
 			lastResp.Title)
+	}
+}
+
+func optionalDNS(value rules.DNSInfo) *rules.DNSInfo {
+	if value.CNAME == "" && len(value.Nameservers) == 0 && len(value.TXT) == 0 && len(value.IPs) == 0 && len(value.EdgeNetworks) == 0 {
+		return nil
+	}
+	return &value
+}
+
+func optionalTLS(value rules.TLSInfo) *rules.TLSInfo {
+	if value.Subject == "" && value.Issuer == "" && len(value.DNSNames) == 0 && value.ALPN == "" && value.Version == "" && value.CipherSuite == "" && value.JA3S == "" && value.JA3SRaw == "" {
+		return nil
+	}
+	return &value
+}
+
+func optionalBehavior(value rules.BehaviorInfo) *rules.BehaviorInfo {
+	if value.HTTPVersion == "" && value.Compression == "" && len(value.Allowed) == 0 && value.AltSvc == "" && value.Cache == "" && len(value.QUICVersions) == 0 && len(value.Signals) == 0 && value.DurationMS == 0 {
+		return nil
+	}
+	return &value
+}
+
+func optionalFaviconHash(favicon []byte) *rules.ResourceHash {
+	if len(favicon) == 0 {
+		return nil
+	}
+	md5Value, sha1Value, sha256Value := resourceHashes(favicon)
+	return &rules.ResourceHash{
+		MD5:    md5Value,
+		SHA1:   sha1Value,
+		SHA256: sha256Value,
 	}
 }
 
@@ -270,7 +315,7 @@ func countItems(m *sync.Map) int {
 	return count
 }
 
-func tlsInfo(resp *http.Response) rules.TLSInfo {
+func tlsInfo(resp *http.Response, raw rawJA3SInfo) rules.TLSInfo {
 	if resp == nil || resp.TLS == nil || len(resp.TLS.PeerCertificates) == 0 {
 		return rules.TLSInfo{}
 	}
@@ -284,20 +329,23 @@ func tlsInfo(resp *http.Response) rules.TLSInfo {
 		ALPN:        resp.TLS.NegotiatedProtocol,
 		Version:     version,
 		CipherSuite: cipher,
-		JA3S:        serverTLSHash(version, cipher, resp.TLS.NegotiatedProtocol),
+		JA3S:        firstNonEmpty(raw.Hash, serverTLSHash(version, cipher, resp.TLS.NegotiatedProtocol)),
+		JA3SRaw:     raw.Raw,
 	}
 }
 
-func behaviorInfo(resp *http.Response) rules.BehaviorInfo {
+func behaviorInfo(resp *http.Response, quicVersions []string, duration time.Duration) rules.BehaviorInfo {
 	if resp == nil {
 		return rules.BehaviorInfo{}
 	}
 	return rules.BehaviorInfo{
-		HTTPVersion: resp.Proto,
-		Compression: resp.Header.Get("Content-Encoding"),
-		Allowed:     splitHeaderList(resp.Header.Get("Allow")),
-		AltSvc:      resp.Header.Get("Alt-Svc"),
-		Cache:       cacheHeaderSummary(resp.Header),
+		HTTPVersion:  resp.Proto,
+		Compression:  resp.Header.Get("Content-Encoding"),
+		Allowed:      splitHeaderList(resp.Header.Get("Allow")),
+		AltSvc:       resp.Header.Get("Alt-Svc"),
+		Cache:        cacheHeaderSummary(resp.Header),
+		QUICVersions: append([]string{}, quicVersions...),
+		DurationMS:   duration.Milliseconds(),
 	}
 }
 
@@ -382,7 +430,70 @@ func dnsInfo(targetURL string) rules.DNSInfo {
 			info.IPs = append(info.IPs, ip.String())
 		}
 	}
+	enrichEdgeNetworks(&info)
 	return info
+}
+
+func enrichBehaviorSignals(responses []rules.Response) {
+	signals := responseBehaviorSignals(responses)
+	if len(signals) == 0 {
+		return
+	}
+	for i := range responses {
+		responses[i].Behavior.Signals = append(responses[i].Behavior.Signals, signals...)
+	}
+}
+
+func responseBehaviorSignals(responses []rules.Response) []string {
+	seen := map[string]struct{}{}
+	statusByProbe := map[string]int{}
+	pathByProbe := map[string]string{}
+	for _, response := range responses {
+		statusByProbe[response.ProbeID] = response.StatusCode
+		pathByProbe[response.ProbeID] = response.Path
+		if response.ProbeID == "head" && response.StatusCode >= 200 && response.StatusCode < 400 {
+			seen["head-success"] = struct{}{}
+		}
+		if response.ProbeID == "options" && len(response.Behavior.Allowed) > 0 {
+			seen["options-allow"] = struct{}{}
+		}
+		if response.ProbeID == "error-page" || response.ProbeID == "error-page-2" {
+			if response.StatusCode >= 200 && response.StatusCode < 300 {
+				seen["random-path-2xx"] = struct{}{}
+			}
+		}
+		if strings.TrimSpace(response.Behavior.Cache) != "" {
+			seen["cache-header-present"] = struct{}{}
+		}
+		if strings.TrimSpace(response.Behavior.AltSvc) != "" {
+			seen["alt-svc-present"] = struct{}{}
+		}
+		if len(response.Behavior.QUICVersions) > 0 {
+			seen["quic-version-negotiation"] = struct{}{}
+		}
+	}
+	if statusByProbe["error-page"] >= 200 && statusByProbe["error-page"] < 300 &&
+		statusByProbe["error-page-2"] >= 200 && statusByProbe["error-page-2"] < 300 {
+		seen["universal-route-suspected"] = struct{}{}
+	}
+	if pathByProbe["default"] != "" && pathByProbe["head"] != "" && statusByProbe["default"] != statusByProbe["head"] {
+		seen["head-get-status-diff"] = struct{}{}
+	}
+	signals := make([]string, 0, len(seen))
+	for signal := range seen {
+		signals = append(signals, signal)
+	}
+	sort.Strings(signals)
+	return signals
+}
+
+func firstNonEmpty(values ...string) string {
+	for _, value := range values {
+		if strings.TrimSpace(value) != "" {
+			return value
+		}
+	}
+	return ""
 }
 
 func scriptHashes(pageURL string, body []byte) []rules.ResourceHash {

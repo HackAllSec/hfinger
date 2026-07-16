@@ -211,20 +211,24 @@ Matcher 是具体匹配条件。
 | `tls.alpn.contains` | TLS ALPN 包含指定值 |
 | `tls.version.contains` | TLS 版本包含指定值，如 `TLS1.3` |
 | `tls.cipher.contains` | TLS Cipher Suite 包含指定值 |
-| `tls.ja3s.hash` | JA3S 风格摘要命中 |
+| `tls.ja3s.hash` | JA3S hash 命中，优先使用 ServerHello 原始扩展序列 |
+| `tls.ja3s.raw.contains` | JA3S 原始串包含指定值，如 `771,4865,43-51` |
 | `dns.cname.contains` | DNS CNAME 包含指定值，适合 CDN/WAF 识别 |
 | `dns.ns.contains` | DNS NS 记录包含指定值，适合权威 DNS/CDN 识别 |
 | `dns.txt.contains` | DNS TXT 记录包含指定值 |
 | `dns.ip.contains` | DNS 解析 IP 包含指定值 |
+| `dns.edge.contains` | DNS 解析 IP 命中内置 CDN/边缘网络段 |
 | `http.version.contains` | HTTP 协议版本包含指定值，如 `HTTP/2` |
 | `http.method.allowed` | `OPTIONS` 响应的 `Allow` 方法包含指定值 |
 | `http.alt_svc.contains` | `Alt-Svc` 包含指定值，适合 HTTP/3/QUIC 提示识别 |
+| `http.quic.version.contains` | QUIC Version Negotiation 响应包含指定版本 |
 | `response.compression.contains` | `Content-Encoding` 包含指定值 |
 | `response.cache.contains` | CDN/缓存相关响应头摘要包含指定值 |
+| `response.behavior.contains` | 高级响应行为信号包含指定值，如 `universal-route-suspected` |
 | `response.etag.exists` | 响应存在 `ETag` |
 | `response.accept_ranges.exists` | 响应存在 `Accept-Ranges` |
 
-说明：`tls.ja3s.hash` 当前使用 Go 标准库可获得的 TLS 版本、Cipher Suite 和 ALPN 生成稳定摘要，属于 JA3S 风格摘要，不等同于完整标准 JA3S。
+说明：`tls.ja3s.hash` 优先使用原始 TCP ClientHello 探针解析 ServerHello 的版本、Cipher Suite 和扩展类型序列生成标准 JA3S 形态 hash；当原始探针失败时，回退为 Go 标准库可获得的 TLS 版本、Cipher Suite 和 ALPN 摘要。
 
 ## 8. Negative 规则
 

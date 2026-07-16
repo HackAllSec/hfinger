@@ -202,6 +202,8 @@ func init() {
 	RootCmd.AddCommand(passiveCmd)
 	RootCmd.AddCommand(tlsCmd)
 	RootCmd.AddCommand(llmCmd)
+	RootCmd.AddCommand(serviceCmd)
+	RootCmd.AddCommand(clusterCmd)
 }
 
 var rulesCmd = &cobra.Command{
@@ -224,36 +226,65 @@ var llmCmd = &cobra.Command{
 	Short: "Expose machine-readable metadata for LLM and agent integrations",
 }
 
+var serviceCmd = &cobra.Command{
+	Use:   "service",
+	Short: "Probe non-HTTP service fingerprints",
+}
+
+var clusterCmd = &cobra.Command{
+	Use:   "cluster",
+	Short: "Cluster HFinger JSONL results across assets",
+}
+
 var llmManifestCmd = &cobra.Command{
 	Use:   "manifest",
 	Short: "Print HFinger capability manifest as JSON",
 	Run: func(cmd *cobra.Command, args []string) {
 		manifest := map[string]interface{}{
-			"name":        "hfinger",
-			"version":     config.Version,
-			"description": "Deterministic server-side fingerprinting tool for penetration testing and asset analysis.",
-			"rule_schema": "schemas/rule.schema.json",
+			"name":          "hfinger",
+			"version":       config.Version,
+			"description":   "Deterministic server-side fingerprinting tool for penetration testing and asset analysis.",
+			"rule_schema":   "schemas/rule.schema.json",
+			"result_schema": "schemas/result.schema.json",
+			"skill_schema":  "schemas/llm-skill.schema.json",
 			"inputs": []string{
 				"single URL via -u",
 				"URL list or httpx JSONL via -f",
 				"passive MITM via -l",
 				"external YAML rules via --rules",
+				"host and port list via service scan",
+				"HFinger JSONL via cluster jsonl",
 			},
 			"outputs": []string{"terminal", "json", "jsonl", "xml", "xlsx", "passive-jsonl"},
 			"capabilities": []string{
 				"http-header", "cookie", "html-body", "html-meta", "script-src",
 				"html-selector", "script-hash", "stylesheet-hash", "favicon-mmh3-md5-sha1-sha256",
 				"active-probe", "api-endpoint", "error-page", "status-redirect", "tls-cert",
-				"tls-alpn-version-cipher", "dns-cname-ns-txt-ip", "http-head-options",
-				"http-alt-svc-http3-hint", "cdn-cache-header-summary", "http-behavior", "waf-cdn",
+				"tls-alpn-version-cipher", "tls-ja3s-serverhello", "dns-cname-ns-txt-ip-edge-network",
+				"http-head-options", "http-alt-svc-http3-hint", "quic-version-negotiation",
+				"cdn-cache-header-summary", "http-behavior", "waf-cdn",
 				"framework", "cms-middleware", "version-extraction",
-				"confidence-evidence", "honeypot-detection",
+				"confidence-evidence", "honeypot-detection", "non-http-service-banner",
+				"cross-asset-clustering",
+			},
+			"commands": map[string]string{
+				"web_scan_jsonl":  "hfinger -f alive.jsonl --output-jsonl hfinger-results.jsonl",
+				"passive_query":   "hfinger passive query passive.jsonl --min-confidence 80 --limit 100",
+				"service_scan":    "hfinger service scan 10.0.0.5 --ports 22,3306,5432,6379,3389,1883 --output-jsonl services.jsonl",
+				"cluster_results": "hfinger cluster jsonl hfinger-results.jsonl --min-size 2",
+				"rule_validation": "hfinger rules lint ./candidate.yaml && hfinger rules test ./candidate.yaml && hfinger rules doctor ./candidate.yaml",
+			},
+			"result_fields": []string{
+				"url", "cms", "category", "version", "server", "statuscode", "title",
+				"confidence", "evidence", "dns", "tls", "behavior", "favicon", "scripts", "stylesheets",
 			},
 			"skill_templates_command": "hfinger llm skills",
 			"recommended_agent_flow": []string{
 				"run hfinger with --output-jsonl for streaming analysis",
 				"group results by category, confidence, and evidence",
 				"send high-confidence technologies to nuclei/ffuf/katana/nmap workflows",
+				"use service scan only when the authorized scope includes non-HTTP ports",
+				"use cluster jsonl to find likely same-origin systems across large result sets",
 				"use rules doctor and schema before accepting generated rules",
 			},
 		}
@@ -272,10 +303,17 @@ var llmSkillsCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		templates := []map[string]interface{}{
 			{
-				"name":    "hfinger-result-triage",
-				"purpose": "Convert large HFinger result sets into testing queues and review notes.",
-				"inputs":  []string{"hfinger JSONL output", "optional passive JSONL store", "testing scope and risk constraints"},
-				"outputs": []string{"prioritized target groups", "evidence summaries", "targets requiring manual review"},
+				"name":           "hfinger-result-triage",
+				"purpose":        "Convert large HFinger result sets into testing queues and review notes.",
+				"inputs":         []string{"hfinger JSONL output", "optional passive JSONL store", "testing scope and risk constraints"},
+				"outputs":        []string{"prioritized target groups", "evidence summaries", "targets requiring manual review"},
+				"required_tools": []string{"hfinger", "jq"},
+				"risk_level":     "low",
+				"do_not_do": []string{
+					"do not rescan out-of-scope targets",
+					"do not treat low confidence matches as confirmed technologies",
+				},
+				"example_user_prompt": "基于 hfinger-results.jsonl，把高置信度 API 网关、DevOps、管理后台和疑似蜜罐分别分组，并给出后续测试优先级。",
 				"when_to_use": []string{
 					"scan results contain many targets and manual ordering is expensive",
 					"the operator asks for priority by exposure type, product, confidence, or evidence",
@@ -295,10 +333,17 @@ var llmSkillsCmd = &cobra.Command{
 				},
 			},
 			{
-				"name":    "hfinger-toolchain",
-				"purpose": "Generate follow-up tool commands from confirmed HFinger technologies.",
-				"inputs":  []string{"hfinger-results.jsonl", "allowed tools", "testing scope", "rate limits"},
-				"outputs": []string{"jq filters", "target lists", "nuclei/ffuf/katana/nmap command plan"},
+				"name":           "hfinger-toolchain",
+				"purpose":        "Generate follow-up tool commands from confirmed HFinger technologies.",
+				"inputs":         []string{"hfinger-results.jsonl", "allowed tools", "testing scope", "rate limits"},
+				"outputs":        []string{"jq filters", "target lists", "nuclei/ffuf/katana/nmap command plan"},
+				"required_tools": []string{"hfinger", "jq", "nuclei", "katana"},
+				"risk_level":     "medium",
+				"do_not_do": []string{
+					"do not auto-run intrusive payloads without explicit authorization",
+					"do not run aggressive follow-up commands against honeypot findings",
+				},
+				"example_user_prompt": "根据 HFinger 的 JSONL 结果，为 API 网关、Spring Boot、DevOps 和 WAF/CDN 目标生成后续 nuclei/katana 命令计划。",
 				"when_to_use": []string{
 					"the operator asks what to run next based on identified technologies",
 					"targets must be split by category, product, version, confidence, or exposure type",
@@ -318,10 +363,17 @@ var llmSkillsCmd = &cobra.Command{
 				},
 			},
 			{
-				"name":    "hfinger-rule-author",
-				"purpose": "Turn captured evidence for an unknown product into a reviewable HFinger YAML rule draft.",
-				"inputs":  []string{"HTTP response snippets", "headers", "favicon hashes", "TLS/DNS evidence", "known false-positive pages"},
-				"outputs": []string{"candidate YAML rule", "positive fixture", "negative fixture", "validation commands"},
+				"name":           "hfinger-rule-author",
+				"purpose":        "Turn captured evidence for an unknown product into a reviewable HFinger YAML rule draft.",
+				"inputs":         []string{"HTTP response snippets", "headers", "favicon hashes", "TLS/DNS evidence", "known false-positive pages"},
+				"outputs":        []string{"candidate YAML rule", "positive fixture", "negative fixture", "validation commands"},
+				"required_tools": []string{"hfinger"},
+				"risk_level":     "low",
+				"do_not_do": []string{
+					"do not accept generated rules without lint/test/doctor",
+					"do not use generic words as the only evidence",
+				},
+				"example_user_prompt": "根据这组 HTTP Header、favicon hash、TLS 证书和 DNS 证据，生成一条 HFinger YAML 规则草案，并附 positive/negative examples。",
 				"when_to_use": []string{
 					"a product is repeatedly observed but no built-in rule matches it",
 					"manual evidence must be converted into score/negative/examples rule structure",
@@ -340,10 +392,17 @@ var llmSkillsCmd = &cobra.Command{
 				},
 			},
 			{
-				"name":    "hfinger-honeypot-review",
-				"purpose": "Review deception signals and generate low-impact confirmation steps.",
-				"inputs":  []string{"HFinger matches", "evidence list", "active probe responses", "passive observations"},
-				"outputs": []string{"honeypot risk label", "supporting evidence", "low-impact confirmation plan"},
+				"name":           "hfinger-honeypot-review",
+				"purpose":        "Review deception signals and generate low-impact confirmation steps.",
+				"inputs":         []string{"HFinger matches", "evidence list", "active probe responses", "passive observations"},
+				"outputs":        []string{"honeypot risk label", "supporting evidence", "low-impact confirmation plan"},
+				"required_tools": []string{"hfinger"},
+				"risk_level":     "low",
+				"do_not_do": []string{
+					"do not escalate probing intensity when deception risk is high",
+					"do not mark normal multi-product pages as honeypots without evidence",
+				},
+				"example_user_prompt": "检查这些 HFinger 结果里的冲突指纹、万能响应和 honeypot 规则命中，只输出低风险复核步骤。",
 				"when_to_use": []string{
 					"results include category honeypot or Potential Honeypot",
 					"many unrelated technologies are detected on one target",
@@ -359,6 +418,57 @@ var llmSkillsCmd = &cobra.Command{
 					"hfinger -f suspicious-targets.txt --output-jsonl honeypot-review.jsonl",
 					"hfinger passive query passive.jsonl --category honeypot",
 					"compare products, categories, evidence sources, and response similarity signals",
+				},
+			},
+			{
+				"name":           "hfinger-service-fingerprint",
+				"purpose":        "Identify non-HTTP services only when the authorized scope includes TCP service probing.",
+				"inputs":         []string{"host or IP", "authorized port list", "timeout and rate limits"},
+				"outputs":        []string{"service JSONL", "protocol/product guesses", "banner evidence"},
+				"required_tools": []string{"hfinger"},
+				"risk_level":     "medium",
+				"do_not_do": []string{
+					"do not scan ports that are outside the authorized scope",
+					"do not confuse service banners with web fingerprints",
+				},
+				"example_user_prompt": "授权范围包含 10.0.0.5 的 22、3306、5432、6379、3389、1883 端口，请做轻量服务指纹识别并输出 JSONL。",
+				"when_to_use": []string{
+					"the operator needs SSH/Redis/MySQL/PostgreSQL/RDP/MQTT identification",
+					"web fingerprinting is insufficient because exposed services are not HTTP",
+				},
+				"decision_rules": []string{
+					"use explicit port scope from the operator",
+					"prefer protocol handshakes and banners as evidence",
+					"mark generic banners for manual review",
+				},
+				"workflow": []string{
+					"hfinger service scan 10.0.0.5 --ports 22,3306,5432,6379,3389,1883 --output-jsonl services.jsonl",
+					"group service results by protocol, product, confidence, and banner evidence",
+				},
+			},
+			{
+				"name":           "hfinger-cross-asset-cluster",
+				"purpose":        "Cluster large HFinger JSONL results to discover likely same-origin systems.",
+				"inputs":         []string{"hfinger-results.jsonl", "minimum cluster size"},
+				"outputs":        []string{"cluster summaries", "same-origin candidate URL groups"},
+				"required_tools": []string{"hfinger"},
+				"risk_level":     "low",
+				"do_not_do": []string{
+					"do not claim business ownership solely from a cluster",
+					"do not merge unrelated authorization scopes",
+				},
+				"example_user_prompt": "对 hfinger-results.jsonl 做跨资产聚类，找出疑似同源系统，并说明聚类依据。",
+				"when_to_use": []string{
+					"many assets share favicon, TLS certificate, server, title, or resource hashes",
+					"the operator needs likely same-origin groups before deeper testing",
+				},
+				"decision_rules": []string{
+					"clusters are triage hints, not final ownership proof",
+					"prefer clusters with multiple independent shared signals",
+				},
+				"workflow": []string{
+					"hfinger cluster jsonl hfinger-results.jsonl --min-size 2",
+					"review cluster reason, shared products, URLs, TLS, DNS and resource signals",
 				},
 			},
 		}
@@ -402,6 +512,46 @@ var passiveQueryCmd = &cobra.Command{
 			logger.Error("Error: %v", err)
 			os.Exit(1)
 		}
+	},
+}
+
+var serviceScanCmd = &cobra.Command{
+	Use:   "scan [host]",
+	Short: "Probe SSH, Redis, MySQL, PostgreSQL, RDP, MQTT and generic TCP banners",
+	Args:  cobra.ExactArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		portValue, _ := cmd.Flags().GetString("ports")
+		timeoutSeconds, _ := cmd.Flags().GetInt("timeout")
+		outputJSONL, _ := cmd.Flags().GetString("output-jsonl")
+		ports, err := models.ParsePorts(portValue)
+		if err != nil {
+			logger.Error("Error: %v", err)
+			os.Exit(1)
+		}
+		results := models.ProbeServices(args[0], ports, time.Duration(timeoutSeconds)*time.Second)
+		if outputJSONL != "" {
+			if err := models.WriteServiceJSONL(outputJSONL, results); err != nil {
+				logger.Error("Error: %v", err)
+				os.Exit(1)
+			}
+			return
+		}
+		models.PrintServiceResults(results)
+	},
+}
+
+var clusterJSONLCmd = &cobra.Command{
+	Use:   "jsonl [hfinger-results.jsonl]",
+	Short: "Cluster JSONL scan results by technology, TLS, DNS and resource fingerprints",
+	Args:  cobra.ExactArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		minSize, _ := cmd.Flags().GetInt("min-size")
+		clusters, err := models.ClusterResults(args[0], minSize)
+		if err != nil {
+			logger.Error("Error: %v", err)
+			os.Exit(1)
+		}
+		models.PrintClusters(clusters)
 	},
 }
 
@@ -639,4 +789,12 @@ func init() {
 
 	llmCmd.AddCommand(llmManifestCmd)
 	llmCmd.AddCommand(llmSkillsCmd)
+
+	serviceScanCmd.Flags().String("ports", "22,3306,5432,6379,3389,1883", "Comma-separated ports or ranges to probe")
+	serviceScanCmd.Flags().Int("timeout", 3, "TCP probe timeout in seconds")
+	serviceScanCmd.Flags().String("output-jsonl", "", "Write service fingerprints to JSONL")
+	serviceCmd.AddCommand(serviceScanCmd)
+
+	clusterJSONLCmd.Flags().Int("min-size", 2, "Minimum cluster size to print")
+	clusterCmd.AddCommand(clusterJSONLCmd)
 }

@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/HackAllSec/hfinger/schemas/llm-skill.schema.json",
+  "title": "HFinger LLM Skill Playbook",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "additionalProperties": true,
+    "required": ["name", "purpose", "inputs", "outputs", "when_to_use", "decision_rules", "workflow"],
+    "properties": {
+      "name": {"type": "string"},
+      "purpose": {"type": "string"},
+      "inputs": {"type": "array", "items": {"type": "string"}},
+      "outputs": {"type": "array", "items": {"type": "string"}},
+      "required_tools": {"type": "array", "items": {"type": "string"}},
+      "risk_level": {"type": "string", "enum": ["low", "medium", "high"]},
+      "do_not_do": {"type": "array", "items": {"type": "string"}},
+      "example_user_prompt": {"type": "string"},
+      "when_to_use": {"type": "array", "items": {"type": "string"}},
+      "decision_rules": {"type": "array", "items": {"type": "string"}},
+      "workflow": {"type": "array", "items": {"type": "string"}}
+    }
+  }
+}

@@ -1,0 +1,119 @@
+rules:
+  - id: core-0133-generic-waf-sqli-block
+    name: Generic WAF SQLi Block
+    category: waf
+    vendor: Generic
+    priority: 75
+    tags: [waf, behavior, sqli]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: waf-sqli-safe-probe
+          request:
+            method: GET
+            path: "/?hfinger_probe=1%27%20or%20%271%27%3D%272"
+          matchers:
+            - type: status.in
+              values: ["403", "406", "418", "429"]
+              weight: 40
+              evidence: WAF-like SQLi blocking status
+            - type: body.regex
+              values:
+                - (?i)\b(access denied|blocked|request rejected|security policy|web application firewall|waf)\b
+              weight: 60
+              evidence: WAF-like SQLi blocking page
+    negative:
+      - type: body.contains
+        value: WAF SQLi documentation
+        reason: Exclude documentation pages
+    metadata:
+      confidence: medium
+      references: ["https://owasp.org/www-community/attacks/SQL_Injection"]
+    examples:
+      positive:
+        - name: waf-sqli-block
+          path: "/?hfinger_probe=1%27%20or%20%271%27%3D%272"
+          status_code: 403
+          body: Request rejected by web application firewall
+      negative:
+        - name: waf-sqli-doc
+          body: WAF SQLi documentation
+
+  - id: core-0134-generic-waf-xss-block
+    name: Generic WAF XSS Block
+    category: waf
+    vendor: Generic
+    priority: 75
+    tags: [waf, behavior, xss]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: waf-xss-safe-probe
+          request:
+            method: GET
+            path: "/?hfinger_probe=%3Cscript%3Ealert%281%29%3C%2Fscript%3E"
+          matchers:
+            - type: status.in
+              values: ["403", "406", "418", "429"]
+              weight: 40
+              evidence: WAF-like XSS blocking status
+            - type: body.regex
+              values:
+                - (?i)\b(access denied|blocked|request rejected|security policy|web application firewall|waf)\b
+              weight: 60
+              evidence: WAF-like XSS blocking page
+    negative:
+      - type: body.contains
+        value: WAF XSS documentation
+        reason: Exclude documentation pages
+    metadata:
+      confidence: medium
+      references: ["https://owasp.org/www-community/attacks/xss/"]
+    examples:
+      positive:
+        - name: waf-xss-block
+          path: "/?hfinger_probe=%3Cscript%3Ealert%281%29%3C%2Fscript%3E"
+          status_code: 406
+          body: Access denied by security policy
+      negative:
+        - name: waf-xss-doc
+          body: WAF XSS documentation
+
+  - id: core-0135-cloudflare-waf-managed-challenge
+    name: Cloudflare WAF Managed Challenge
+    category: waf
+    vendor: Cloudflare
+    priority: 90
+    tags: [waf, cdn, challenge]
+    match:
+      strategy: score
+      threshold: 80
+      matchers:
+        - type: header.contains
+          key: cf-mitigated
+          value: challenge
+          weight: 60
+          evidence: Cloudflare mitigated challenge header
+        - type: header.contains
+          key: server
+          value: cloudflare
+          weight: 40
+          evidence: Cloudflare server header
+    negative:
+      - type: body.contains
+        value: Cloudflare managed challenge documentation
+        reason: Exclude documentation pages
+    metadata:
+      confidence: high
+      references: ["https://developers.cloudflare.com/cloudflare-challenges/"]
+    examples:
+      positive:
+        - name: cloudflare-managed-challenge
+          headers:
+            Server: cloudflare
+            cf-mitigated: challenge
+      negative:
+        - name: cloudflare-challenge-doc
+          body: Cloudflare managed challenge documentation

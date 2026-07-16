@@ -203,15 +203,19 @@
             "tls.version.contains",
             "tls.cipher.contains",
             "tls.ja3s.hash",
+            "tls.ja3s.raw.contains",
             "dns.cname.contains",
             "dns.ns.contains",
             "dns.txt.contains",
             "dns.ip.contains",
+            "dns.edge.contains",
             "http.version.contains",
             "http.alt_svc.contains",
+            "http.quic.version.contains",
             "http.method.allowed",
             "response.compression.contains",
             "response.cache.contains",
+            "response.behavior.contains",
             "response.etag.exists",
             "response.accept_ranges.exists"
           ]
@@ -389,6 +393,9 @@
         },
         "ja3s": {
           "type": "string"
+        },
+        "ja3s_raw": {
+          "type": "string"
         }
       }
     },
@@ -412,6 +419,12 @@
           }
         },
         "ips": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "edge_networks": {
           "type": "array",
           "items": {
             "type": "string"

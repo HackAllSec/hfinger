@@ -119,6 +119,7 @@ type TLSInfo struct {
 	Version     string   `json:"version,omitempty" yaml:"version,omitempty"`
 	CipherSuite string   `json:"cipher_suite,omitempty" yaml:"cipher_suite,omitempty"`
 	JA3S        string   `json:"ja3s,omitempty" yaml:"ja3s,omitempty"`
+	JA3SRaw     string   `json:"ja3s_raw,omitempty" yaml:"ja3s_raw,omitempty"`
 }
 
 type ResourceHash struct {
@@ -129,18 +130,22 @@ type ResourceHash struct {
 }
 
 type DNSInfo struct {
-	CNAME       string   `json:"cname,omitempty" yaml:"cname,omitempty"`
-	Nameservers []string `json:"nameservers,omitempty" yaml:"nameservers,omitempty"`
-	TXT         []string `json:"txt,omitempty" yaml:"txt,omitempty"`
-	IPs         []string `json:"ips,omitempty" yaml:"ips,omitempty"`
+	CNAME        string   `json:"cname,omitempty" yaml:"cname,omitempty"`
+	Nameservers  []string `json:"nameservers,omitempty" yaml:"nameservers,omitempty"`
+	TXT          []string `json:"txt,omitempty" yaml:"txt,omitempty"`
+	IPs          []string `json:"ips,omitempty" yaml:"ips,omitempty"`
+	EdgeNetworks []string `json:"edge_networks,omitempty" yaml:"edge_networks,omitempty"`
 }
 
 type BehaviorInfo struct {
-	HTTPVersion string   `json:"http_version,omitempty" yaml:"http_version,omitempty"`
-	Compression string   `json:"compression,omitempty" yaml:"compression,omitempty"`
-	Allowed     []string `json:"allowed,omitempty" yaml:"allowed,omitempty"`
-	AltSvc      string   `json:"alt_svc,omitempty" yaml:"alt_svc,omitempty"`
-	Cache       string   `json:"cache,omitempty" yaml:"cache,omitempty"`
+	HTTPVersion  string   `json:"http_version,omitempty" yaml:"http_version,omitempty"`
+	Compression  string   `json:"compression,omitempty" yaml:"compression,omitempty"`
+	Allowed      []string `json:"allowed,omitempty" yaml:"allowed,omitempty"`
+	AltSvc       string   `json:"alt_svc,omitempty" yaml:"alt_svc,omitempty"`
+	Cache        string   `json:"cache,omitempty" yaml:"cache,omitempty"`
+	QUICVersions []string `json:"quic_versions,omitempty" yaml:"quic_versions,omitempty"`
+	Signals      []string `json:"signals,omitempty" yaml:"signals,omitempty"`
+	DurationMS   int64    `json:"duration_ms,omitempty" yaml:"duration_ms,omitempty"`
 }
 
 type Evidence struct {

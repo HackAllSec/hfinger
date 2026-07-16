@@ -1,0 +1,120 @@
+rules:
+  - id: core-0129-quic-version-negotiation
+    name: QUIC Version Negotiation
+    category: cdn
+    vendor: Generic
+    priority: 75
+    tags: [quic, http3, protocol]
+    match:
+      strategy: score
+      threshold: 80
+      matchers:
+        - type: http.quic.version.contains
+          value: "0x00000001"
+          weight: 100
+          evidence: Native QUIC version negotiation response
+    negative:
+      - type: body.contains
+        value: QUIC Version Negotiation documentation
+        reason: Exclude documentation pages
+    metadata:
+      confidence: medium
+      references: ["https://www.rfc-editor.org/rfc/rfc9000"]
+    examples:
+      positive:
+        - name: quic-negotiation
+          headers:
+            X-HFinger-Fixture-QUIC-Versions: "0x00000001,0x709a50c4"
+      negative:
+        - name: quic-doc
+          body: QUIC Version Negotiation documentation
+
+  - id: core-0130-cloudflare-edge-network
+    name: Cloudflare Edge Network
+    category: cdn
+    vendor: Cloudflare
+    priority: 90
+    tags: [cdn, waf, edge-network]
+    match:
+      strategy: score
+      threshold: 80
+      matchers:
+        - type: dns.edge.contains
+          value: Cloudflare
+          weight: 100
+          evidence: Resolved IP belongs to Cloudflare edge network
+    negative:
+      - type: body.contains
+        value: Cloudflare IP ranges
+        reason: Exclude documentation pages
+    metadata:
+      confidence: high
+      references: ["https://www.cloudflare.com/ips/"]
+    examples:
+      positive:
+        - name: cloudflare-edge
+          dns:
+            edge_networks: [Cloudflare]
+      negative:
+        - name: cloudflare-doc
+          body: Cloudflare IP ranges
+
+  - id: core-0131-fastly-edge-network
+    name: Fastly Edge Network
+    category: cdn
+    vendor: Fastly
+    priority: 85
+    tags: [cdn, edge-network]
+    match:
+      strategy: score
+      threshold: 80
+      matchers:
+        - type: dns.edge.contains
+          value: Fastly
+          weight: 100
+          evidence: Resolved IP belongs to Fastly edge network
+    negative:
+      - type: body.contains
+        value: Fastly IP ranges
+        reason: Exclude documentation pages
+    metadata:
+      confidence: high
+      references: ["https://api.fastly.com/public-ip-list"]
+    examples:
+      positive:
+        - name: fastly-edge
+          dns:
+            edge_networks: [Fastly]
+      negative:
+        - name: fastly-doc
+          body: Fastly IP ranges
+
+  - id: core-0132-universal-route-suspected
+    name: Universal Route Behavior
+    category: honeypot
+    vendor: Generic
+    priority: 70
+    tags: [honeypot, deception, behavior]
+    match:
+      strategy: score
+      threshold: 80
+      matchers:
+        - type: response.behavior.contains
+          value: universal-route-suspected
+          weight: 100
+          evidence: Multiple random paths returned successful responses
+    negative:
+      - type: body.contains
+        value: universal route documentation
+        reason: Exclude documentation pages
+    metadata:
+      confidence: medium
+      references: ["https://owasp.org/www-community/attacks/Forced_browsing"]
+    examples:
+      positive:
+        - name: universal-route
+          headers:
+            X-HFinger-Fixture-Behavior-Signals: universal-route-suspected
+      negative:
+        - name: universal-route-doc
+          body: universal route documentation

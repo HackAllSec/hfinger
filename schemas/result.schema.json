@@ -1,0 +1,88 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/HackAllSec/hfinger/schemas/result.schema.json",
+  "title": "HFinger Result",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["url", "cms", "server", "statuscode", "title"],
+  "properties": {
+    "url": {"type": "string"},
+    "cms": {"type": "string"},
+    "category": {"type": "string"},
+    "version": {"type": "string"},
+    "server": {"type": "string"},
+    "statuscode": {"type": "integer"},
+    "title": {"type": "string"},
+    "confidence": {"type": "integer", "minimum": 0, "maximum": 100},
+    "evidence": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true,
+        "properties": {
+          "source": {"type": "string"},
+          "matcher_type": {"type": "string"},
+          "key": {"type": "string"},
+          "matched_value": {"type": "string"},
+          "weight": {"type": "integer"},
+          "message": {"type": "string"},
+          "response_url": {"type": "string"}
+        }
+      }
+    },
+    "dns": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "cname": {"type": "string"},
+        "nameservers": {"type": "array", "items": {"type": "string"}},
+        "txt": {"type": "array", "items": {"type": "string"}},
+        "ips": {"type": "array", "items": {"type": "string"}},
+        "edge_networks": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "tls": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "subject": {"type": "string"},
+        "issuer": {"type": "string"},
+        "dns_names": {"type": "array", "items": {"type": "string"}},
+        "alpn": {"type": "string"},
+        "version": {"type": "string"},
+        "cipher_suite": {"type": "string"},
+        "ja3s": {"type": "string"},
+        "ja3s_raw": {"type": "string"}
+      }
+    },
+    "behavior": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "http_version": {"type": "string"},
+        "compression": {"type": "string"},
+        "allowed": {"type": "array", "items": {"type": "string"}},
+        "alt_svc": {"type": "string"},
+        "cache": {"type": "string"},
+        "quic_versions": {"type": "array", "items": {"type": "string"}},
+        "signals": {"type": "array", "items": {"type": "string"}},
+        "duration_ms": {"type": "integer"}
+      }
+    },
+    "favicon": {"$ref": "#/$defs/resource_hash"},
+    "scripts": {"type": "array", "items": {"$ref": "#/$defs/resource_hash"}},
+    "stylesheets": {"type": "array", "items": {"$ref": "#/$defs/resource_hash"}}
+  },
+  "$defs": {
+    "resource_hash": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "url": {"type": "string"},
+        "md5": {"type": "string"},
+        "sha1": {"type": "string"},
+        "sha256": {"type": "string"}
+      }
+    }
+  }
+}

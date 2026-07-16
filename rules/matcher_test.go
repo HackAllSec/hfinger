@@ -339,6 +339,7 @@ func TestMatchResponseJSONAndTLS(t *testing.T) {
 			Version:     "TLS1.3",
 			CipherSuite: "TLS_AES_128_GCM_SHA256",
 			JA3S:        "abc123",
+			JA3SRaw:     "771,4865,43-51-16",
 		},
 	}
 
@@ -363,6 +364,9 @@ func TestMatchResponseJSONAndTLS(t *testing.T) {
 	if _, ok := MatchResponse(response, Matcher{Type: "tls.ja3s.hash", Value: "abc123"}); !ok {
 		t.Fatalf("tls.ja3s.hash expected match")
 	}
+	if _, ok := MatchResponse(response, Matcher{Type: "tls.ja3s.raw.contains", Value: "43-51"}); !ok {
+		t.Fatalf("tls.ja3s.raw.contains expected match")
+	}
 }
 
 func TestMatchResponseResourceHashesAndBehavior(t *testing.T) {
@@ -381,21 +385,24 @@ func TestMatchResponseResourceHashesAndBehavior(t *testing.T) {
 			SHA256: "style-sha256",
 		}},
 		DNS: DNSInfo{
-			CNAME:       "example.cloudflare.net",
-			Nameservers: []string{"ns1.cloudflare.com"},
-			TXT:         []string{"v=spf1 include:_spf.google.com"},
-			IPs:         []string{"203.0.113.10"},
+			CNAME:        "example.cloudflare.net",
+			Nameservers:  []string{"ns1.cloudflare.com"},
+			TXT:          []string{"v=spf1 include:_spf.google.com"},
+			IPs:          []string{"203.0.113.10"},
+			EdgeNetworks: []string{"Cloudflare"},
 		},
 		Header: http.Header{
 			"ETag":          {`"abc"`},
 			"Accept-Ranges": {"bytes"},
 		},
 		Behavior: BehaviorInfo{
-			HTTPVersion: "HTTP/2.0",
-			Compression: "gzip",
-			Allowed:     []string{"GET", "POST", "OPTIONS"},
-			AltSvc:      `h3=":443"; ma=86400`,
-			Cache:       "HIT cloudflare",
+			HTTPVersion:  "HTTP/2.0",
+			Compression:  "gzip",
+			Allowed:      []string{"GET", "POST", "OPTIONS"},
+			AltSvc:       `h3=":443"; ma=86400`,
+			Cache:        "HIT cloudflare",
+			QUICVersions: []string{"0x00000001"},
+			Signals:      []string{"universal-route-suspected", "options-allow"},
 		},
 	}
 
@@ -420,6 +427,9 @@ func TestMatchResponseResourceHashesAndBehavior(t *testing.T) {
 	if _, ok := MatchResponse(response, Matcher{Type: "dns.ip.contains", Value: "203.0.113.10"}); !ok {
 		t.Fatalf("dns.ip.contains expected match")
 	}
+	if _, ok := MatchResponse(response, Matcher{Type: "dns.edge.contains", Value: "Cloudflare"}); !ok {
+		t.Fatalf("dns.edge.contains expected match")
+	}
 	if _, ok := MatchResponse(response, Matcher{Type: "html.selector.exists", Value: "body"}); !ok {
 		t.Fatalf("html.selector.exists expected match")
 	}
@@ -435,8 +445,14 @@ func TestMatchResponseResourceHashesAndBehavior(t *testing.T) {
 	if _, ok := MatchResponse(response, Matcher{Type: "http.alt_svc.contains", Value: "h3"}); !ok {
 		t.Fatalf("http.alt_svc.contains expected match")
 	}
+	if _, ok := MatchResponse(response, Matcher{Type: "http.quic.version.contains", Value: "0x00000001"}); !ok {
+		t.Fatalf("http.quic.version.contains expected match")
+	}
 	if _, ok := MatchResponse(response, Matcher{Type: "response.cache.contains", Value: "cloudflare"}); !ok {
 		t.Fatalf("response.cache.contains expected match")
+	}
+	if _, ok := MatchResponse(response, Matcher{Type: "response.behavior.contains", Value: "universal-route"}); !ok {
+		t.Fatalf("response.behavior.contains expected match")
 	}
 	if _, ok := MatchResponse(response, Matcher{Type: "response.etag.exists"}); !ok {
 		t.Fatalf("response.etag.exists expected match")
@@ -485,6 +501,20 @@ func TestAssessHoneypotDetectsSimilarProbeBodies(t *testing.T) {
 	}
 	if result.Confidence < 60 {
 		t.Fatalf("confidence = %d, want >= 60", result.Confidence)
+	}
+}
+
+func TestAssessHoneypotDetectsDelayAndBehaviorSignals(t *testing.T) {
+	responses := []Response{
+		{ProbeID: "default", StatusCode: 200, Behavior: BehaviorInfo{DurationMS: 2500, Signals: []string{"universal-route-suspected"}}},
+		{ProbeID: "head", StatusCode: 200, Behavior: BehaviorInfo{DurationMS: 2600}},
+		{ProbeID: "options", StatusCode: 200, Behavior: BehaviorInfo{DurationMS: 2700}},
+		{ProbeID: "error-page", StatusCode: 200, Behavior: BehaviorInfo{DurationMS: 100}},
+	}
+
+	result := AssessHoneypot(nil, responses)
+	if !result.Matched {
+		t.Fatalf("AssessHoneypot() expected delay and behavior signals to match")
 	}
 }
 

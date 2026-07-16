@@ -522,6 +522,8 @@ func matchfingerprint(url string, statuscode int, body []byte, header http.Heade
 				Title:      title,
 				Confidence: match.Confidence,
 				Evidence:   match.Evidence,
+				Behavior:   optionalBehavior(response.Behavior),
+				Favicon:    optionalFaviconHash(favicon),
 			}
 			newResults = append(newResults, result)
 		}

@@ -82,6 +82,28 @@ func AssessHoneypot(matches []MatchResult, responses []Response) MatchResult {
 		})
 	}
 
+	if slow, total := slowResponseCount(responses); total >= 4 && slow*100/total >= 60 {
+		score += 30
+		result.Evidence = append(result.Evidence, Evidence{
+			Source:       "honeypot.heuristic",
+			MatcherType:  "response.delay",
+			MatchedValue: fmt.Sprintf("%d/%d responses are slow", slow, total),
+			Weight:       30,
+			Message:      "多个探测响应存在明显延迟，需确认是否为交互式蜜罐或诱捕限速",
+		})
+	}
+
+	if countBehaviorSignal(responses, "universal-route-suspected") > 0 {
+		score += 30
+		result.Evidence = append(result.Evidence, Evidence{
+			Source:       "honeypot.heuristic",
+			MatcherType:  "response.behavior",
+			MatchedValue: "universal-route-suspected",
+			Weight:       30,
+			Message:      "响应行为信号显示随机路径疑似被万能路由接管",
+		})
+	}
+
 	result.Score = score
 	result.Confidence = min(100, score)
 	result.Matched = score >= 60
@@ -89,6 +111,33 @@ func AssessHoneypot(matches []MatchResult, responses []Response) MatchResult {
 		result.Response = responses[0]
 	}
 	return result
+}
+
+func slowResponseCount(responses []Response) (int, int) {
+	slow := 0
+	total := 0
+	for _, response := range responses {
+		if response.Behavior.DurationMS <= 0 {
+			continue
+		}
+		total++
+		if response.Behavior.DurationMS >= 2000 {
+			slow++
+		}
+	}
+	return slow, total
+}
+
+func countBehaviorSignal(responses []Response, signal string) int {
+	count := 0
+	for _, response := range responses {
+		for _, item := range response.Behavior.Signals {
+			if item == signal {
+				count++
+			}
+		}
+	}
+	return count
 }
 
 func duplicateBodyFingerprintCount(responses []Response) (int, int) {
