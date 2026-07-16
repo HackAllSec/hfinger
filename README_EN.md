@@ -140,7 +140,7 @@ Use an upstream proxy:
 hfinger -l 127.0.0.1:8888 -p http://127.0.0.1:7777 -s result.xlsx --passive-store passive.jsonl
 ```
 
-For HTTPS passive fingerprinting, import the generated certificate under the `certs` directory into your browser or system trust store.
+For HTTPS passive fingerprinting, import the generated certificates under the `certs` directory into your browser or system trust store. Standard TLS clients should trust `ca.crt`, while GM/TLS clients should trust `gm_ca.crt`.
 
 Note: passive mode uses an adaptive TLS/GM/TLS handshake. Standard TLS clients and GM/TLS clients are handled on the same listener and automatically select the matching handshake flow.
 

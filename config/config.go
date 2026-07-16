@@ -25,11 +25,15 @@ type LastResponse struct {
 }
 
 var (
-	Version    = "v1.0.9"
-	CertsDir   = "certs"
-	CaCertFile = "ca.crt"
-	CaKeyFile  = "ca.key"
-	CertsPath  = filepath.Join(CertsDir, CaCertFile)
-	KeyPath    = filepath.Join(CertsDir, CaKeyFile)
-	ReleaseUrl = "https://api.github.com/repos/HackAllSec/hfinger/releases/latest"
+	Version      = "v1.0.9"
+	CertsDir     = "certs"
+	CaCertFile   = "ca.crt"
+	CaKeyFile    = "ca.key"
+	GMCaCertFile = "gm_ca.crt"
+	GMCaKeyFile  = "gm_ca.key"
+	CertsPath    = filepath.Join(CertsDir, CaCertFile)
+	KeyPath      = filepath.Join(CertsDir, CaKeyFile)
+	GMCertsPath  = filepath.Join(CertsDir, GMCaCertFile)
+	GMKeyPath    = filepath.Join(CertsDir, GMCaKeyFile)
+	ReleaseUrl   = "https://api.github.com/repos/HackAllSec/hfinger/releases/latest"
 )

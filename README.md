@@ -140,7 +140,7 @@ hfinger -l 127.0.0.1:8888 -s result.xlsx --passive-store passive.jsonl
 hfinger -l 127.0.0.1:8888 -p http://127.0.0.1:7777 -s result.xlsx --passive-store passive.jsonl
 ```
 
-HTTPS 被动识别需要将 `certs` 目录下生成的证书导入浏览器或系统信任区。
+HTTPS 被动识别需要将 `certs` 目录下生成的证书导入浏览器或系统信任区。标准 TLS 客户端导入 `ca.crt`，GM/TLS 客户端导入 `gm_ca.crt`。
 
 说明：被动模式使用自适应 TLS/GM/TLS 握手。标准 TLS 客户端和 GM/TLS 客户端会在同一监听端口下自动选择对应握手流程。
 

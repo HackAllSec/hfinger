@@ -78,13 +78,19 @@ func TestGetTLSConfigForHostUsesGMTLSAutoSwitch(t *testing.T) {
 	oldCertsDir := config.CertsDir
 	oldCertsPath := config.CertsPath
 	oldKeyPath := config.KeyPath
+	oldGMCertsPath := config.GMCertsPath
+	oldGMKeyPath := config.GMKeyPath
 	config.CertsDir = certDir
 	config.CertsPath = filepath.Join(certDir, config.CaCertFile)
 	config.KeyPath = filepath.Join(certDir, config.CaKeyFile)
+	config.GMCertsPath = filepath.Join(certDir, config.GMCaCertFile)
+	config.GMKeyPath = filepath.Join(certDir, config.GMCaKeyFile)
 	t.Cleanup(func() {
 		config.CertsDir = oldCertsDir
 		config.CertsPath = oldCertsPath
 		config.KeyPath = oldKeyPath
+		config.GMCertsPath = oldGMCertsPath
+		config.GMKeyPath = oldGMKeyPath
 	})
 
 	if err := utils.EnsureCerts(); err != nil {
