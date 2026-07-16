@@ -1,6 +1,7 @@
 package rules
 
 import (
+	"bytes"
 	"crypto/md5"
 	"crypto/sha1"
 	"crypto/sha256"
@@ -16,6 +17,7 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/PuerkitoBio/goquery"
 	"github.com/twmb/murmur3"
 )
 
@@ -81,11 +83,15 @@ type preparedResponse struct {
 	lowerTLSCipher  string
 	tlsJA3S         string
 
-	faviconMMH3   string
-	faviconMD5    string
-	faviconSHA1   string
-	faviconSHA256 string
-	scriptHashes  []ResourceHash
+	faviconMMH3      string
+	faviconMD5       string
+	faviconSHA1      string
+	faviconSHA256    string
+	scriptHashes     []ResourceHash
+	stylesheetHashes []ResourceHash
+
+	dnsCNAME      string
+	lowerDNSCNAME string
 
 	httpVersion         string
 	lowerHTTPVersion    string
@@ -189,7 +195,7 @@ func compileMatcher(matcher Matcher) compiledMatcher {
 	case "body.contains", "header.contains", "title.contains", "cookie.contains", "redirect.to", "server.banner.contains",
 		"tls.cert.subject.contains", "tls.cert.issuer.contains", "tls.cert.dns.contains", "tls.alpn.contains",
 		"tls.version.contains", "tls.cipher.contains", "http.version.contains", "http.method.allowed",
-		"response.compression.contains":
+		"response.compression.contains", "dns.cname.contains":
 		automatonValues := cm.values
 		if !isCaseSensitive(matcher) {
 			automatonValues = cm.lowerValues
@@ -546,6 +552,9 @@ func prepareResponseSet(responses []Response) preparedResponses {
 			faviconSHA1:         faviconSHA1,
 			faviconSHA256:       faviconSHA256,
 			scriptHashes:        response.Scripts,
+			stylesheetHashes:    response.Stylesheets,
+			dnsCNAME:            response.DNS.CNAME,
+			lowerDNSCNAME:       strings.ToLower(response.DNS.CNAME),
 			httpVersion:         response.Behavior.HTTPVersion,
 			lowerHTTPVersion:    strings.ToLower(response.Behavior.HTTPVersion),
 			allowedMethods:      allowedMethods,
@@ -741,8 +750,16 @@ func matchPreparedResponse(response *preparedResponse, matcher compiledMatcher) 
 		return matchPreparedResourceHash("script.sha1", matcher, response.scriptHashes, func(item ResourceHash) string { return item.SHA1 }, response.response.URL)
 	case "script.hash.sha256":
 		return matchPreparedResourceHash("script.sha256", matcher, response.scriptHashes, func(item ResourceHash) string { return item.SHA256 }, response.response.URL)
+	case "stylesheet.hash.md5":
+		return matchPreparedResourceHash("stylesheet.md5", matcher, response.stylesheetHashes, func(item ResourceHash) string { return item.MD5 }, response.response.URL)
+	case "stylesheet.hash.sha1":
+		return matchPreparedResourceHash("stylesheet.sha1", matcher, response.stylesheetHashes, func(item ResourceHash) string { return item.SHA1 }, response.response.URL)
+	case "stylesheet.hash.sha256":
+		return matchPreparedResourceHash("stylesheet.sha256", matcher, response.stylesheetHashes, func(item ResourceHash) string { return item.SHA256 }, response.response.URL)
 	case "html.meta.contains":
 		return matchPreparedRegex("html.meta", matcher, response.body, response.response.URL)
+	case "html.selector.exists":
+		return matchPreparedHTMLSelector(response, matcher)
 	case "path.exists":
 		if response.response.StatusCode >= 200 && response.response.StatusCode < 400 {
 			return evidence("path", matcher.matcher, response.response.Path, response.response.URL), true
@@ -769,6 +786,8 @@ func matchPreparedResponse(response *preparedResponse, matcher compiledMatcher) 
 		return matchPreparedText("tls.cipher", matcher, response.tlsCipher, response.lowerTLSCipher, response.response.URL)
 	case "tls.ja3s.hash":
 		return matchPreparedExact("tls.ja3s", matcher, response.tlsJA3S, response.response.URL)
+	case "dns.cname.contains":
+		return matchPreparedText("dns.cname", matcher, response.dnsCNAME, response.lowerDNSCNAME, response.response.URL)
 	case "http.version.contains":
 		return matchPreparedText("http.version", matcher, response.httpVersion, response.lowerHTTPVersion, response.response.URL)
 	case "http.method.allowed":
@@ -782,6 +801,26 @@ func matchPreparedResponse(response *preparedResponse, matcher compiledMatcher) 
 	case "response.accept_ranges.exists":
 		if value := headerValue(response.response.Header, "Accept-Ranges"); value != "" {
 			return evidence("response.accept_ranges", matcher.matcher, value, response.response.URL), true
+		}
+	}
+	return Evidence{}, false
+}
+
+func matchPreparedHTMLSelector(response *preparedResponse, matcher compiledMatcher) (Evidence, bool) {
+	if strings.TrimSpace(response.body) == "" {
+		return Evidence{}, false
+	}
+	document, err := goquery.NewDocumentFromReader(bytes.NewBufferString(response.body))
+	if err != nil {
+		return Evidence{}, false
+	}
+	for _, selector := range matcher.values {
+		selector = strings.TrimSpace(selector)
+		if selector == "" {
+			continue
+		}
+		if document.Find(selector).Length() > 0 {
+			return evidence("html.selector", matcher.matcher, selector, response.response.URL), true
 		}
 	}
 	return Evidence{}, false

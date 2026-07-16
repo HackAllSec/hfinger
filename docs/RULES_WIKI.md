@@ -196,7 +196,11 @@ Matcher 是具体匹配条件。
 | `script.hash.md5` | 外链 JavaScript 内容 MD5 hash 命中 |
 | `script.hash.sha1` | 外链 JavaScript 内容 SHA1 hash 命中 |
 | `script.hash.sha256` | 外链 JavaScript 内容 SHA256 hash 命中 |
+| `stylesheet.hash.md5` | 外链 Stylesheet/CSS 内容 MD5 hash 命中 |
+| `stylesheet.hash.sha1` | 外链 Stylesheet/CSS 内容 SHA1 hash 命中 |
+| `stylesheet.hash.sha256` | 外链 Stylesheet/CSS 内容 SHA256 hash 命中 |
 | `html.meta.contains` | meta 标签包含指定值 |
+| `html.selector.exists` | HTML DOM selector 存在 |
 | `json.key.exists` | JSON 响应中存在指定 key |
 | `json.path.eq` | JSON 点分路径等于指定值 |
 | `server.banner.contains` | Server banner 包含指定值 |
@@ -208,6 +212,7 @@ Matcher 是具体匹配条件。
 | `tls.version.contains` | TLS 版本包含指定值，如 `TLS1.3` |
 | `tls.cipher.contains` | TLS Cipher Suite 包含指定值 |
 | `tls.ja3s.hash` | JA3S 风格摘要命中 |
+| `dns.cname.contains` | DNS CNAME 包含指定值，适合 CDN/WAF 识别 |
 | `http.version.contains` | HTTP 协议版本包含指定值，如 `HTTP/2` |
 | `http.method.allowed` | `OPTIONS` 响应的 `Allow` 方法包含指定值 |
 | `response.compression.contains` | `Content-Encoding` 包含指定值 |
@@ -444,7 +449,7 @@ negative:
     reason: 排除产品文档页面
 ```
 
-HFinger 同时内置启发式蜜罐研判：当多个互斥产品/分类同时命中，或大量主动探测路径均返回 2xx 时，会输出 `Potential Honeypot` 作为风险提示。启发式结果用于辅助人工判断，不替代明确产品规则。
+HFinger 同时内置启发式蜜罐研判：当多个互斥产品/分类同时命中、大量主动探测路径均返回 2xx，或多个不同路径返回高度相似内容时，会输出 `Potential Honeypot` 作为风险提示。启发式结果用于辅助人工判断，不替代明确产品规则。
 
 ## 11. LLM / Agent 集成
 
@@ -452,10 +457,11 @@ HFinger 提供机器可读能力清单和 JSONL 输出，便于 LLM、Agent、AS
 
 ```bash
 hfinger llm manifest
+hfinger llm skills
 hfinger -f alive.jsonl --output-jsonl hfinger-results.jsonl
 ```
 
-项目级 Skill 位于 `.trae/skills/`，覆盖规则生成、规则审查、结果分诊、工具链联动和蜜罐研判。LLM/Skill 只负责辅助编排与解释，不进入最终指纹判定链路。
+`hfinger llm skills` 会输出外部 Agent 可参考的 Skill 模板，包括结果分诊、工具链联动、规则生成和蜜罐研判。Skill 是用户侧 Agent 工作流，不是 HFinger 核心判定链路，也不是仓库必须携带的运行时目录。LLM/Skill 只负责辅助编排与解释，不进入最终指纹判定链路。
 
 ## 12. AI 辅助生成规则提示词
 

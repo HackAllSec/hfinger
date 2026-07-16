@@ -234,8 +234,13 @@ func LintRules(ruleSet []Rule) LintReport {
 		"script.hash.md5":           {},
 		"script.hash.sha1":          {},
 		"script.hash.sha256":        {},
+		"stylesheet.hash.md5":       {},
+		"stylesheet.hash.sha1":      {},
+		"stylesheet.hash.sha256":    {},
+		"html.selector.exists":      {},
 		"json.key.exists":           {},
 		"json.path.eq":              {},
+		"dns.cname.contains":        {},
 		"tls.cert.subject.contains": {},
 		"tls.cert.issuer.contains":  {},
 		"tls.cert.dns.contains":     {},
@@ -379,6 +384,9 @@ func issue(ruleID, severity, message string) LintIssue {
 }
 
 func isWeakValue(matcherType, value string) bool {
+	if matcherType == "status.eq" || matcherType == "status.in" {
+		return false
+	}
 	value = strings.TrimSpace(value)
 	if value == "" {
 		return true
@@ -410,6 +418,7 @@ func fixtureResponse(fixture Fixture) Response {
 		Title:      fixture.Title,
 		Header:     header,
 		Body:       []byte(fixture.Body),
+		DNS:        fixture.DNS,
 		TLS:        fixture.TLS,
 	}
 }

@@ -42,6 +42,8 @@ jobs:
           go run main.go llm manifest | tee /tmp/hfinger-llm-manifest.json
           grep -q '"name": "hfinger"' /tmp/hfinger-llm-manifest.json
           grep -q '"capabilities":' /tmp/hfinger-llm-manifest.json
+          go run main.go llm skills | tee /tmp/hfinger-llm-skills.json
+          grep -q '"name": "hfinger-result-triage"' /tmp/hfinger-llm-skills.json
 
       - name: Check rule quality baseline
         run: |

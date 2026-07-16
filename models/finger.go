@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"io"
 	"math/rand"
+	"net"
 	"net/http"
 	"net/url"
 	"os"
@@ -25,13 +26,14 @@ import (
 )
 
 var (
-	workerCount  int
-	maxRedirects int
-	outputLock   sync.Mutex // 全局锁保护output操作
-	scriptSrcRe  = regexp.MustCompile(`(?is)<script[^>]+src=["']([^"']+)["']`)
+	workerCount      int
+	maxRedirects     int
+	outputLock       sync.Mutex // 全局锁保护output操作
+	scriptSrcRe      = regexp.MustCompile(`(?is)<script[^>]+src=["']([^"']+)["']`)
+	stylesheetHrefRe = regexp.MustCompile(`(?is)<link[^>]+(?:rel=["'][^"']*stylesheet[^"']*["'][^>]+href=["']([^"']+)["']|href=["']([^"']+)["'][^>]+rel=["'][^"']*stylesheet[^"']*["'])`)
 )
 
-func process(url string, probeID string, request rules.Request, responsesChannel chan<- rules.Response, mu *sync.Mutex, wg *sync.WaitGroup, errOccurred *bool, saveResponse func(int, string, string)) {
+func process(url string, probeID string, request rules.Request, dns rules.DNSInfo, responsesChannel chan<- rules.Response, mu *sync.Mutex, wg *sync.WaitGroup, errOccurred *bool, saveResponse func(int, string, string)) {
 	defer wg.Done()
 
 	currentURL := url
@@ -119,18 +121,20 @@ func process(url string, probeID string, request rules.Request, responsesChannel
 		}
 
 		responsesChannel <- rules.Response{
-			ProbeID:    probeID,
-			URL:        currentURL,
-			Path:       rules.PathFromURL(currentURL),
-			StatusCode: statusCode,
-			Server:     server,
-			Title:      title,
-			Header:     resp.Header,
-			Body:       body,
-			Favicon:    faviconbody,
-			Scripts:    scriptHashes(currentURL, body),
-			TLS:        tlsInfo(resp),
-			Behavior:   behaviorInfo(resp),
+			ProbeID:     probeID,
+			URL:         currentURL,
+			Path:        rules.PathFromURL(currentURL),
+			StatusCode:  statusCode,
+			Server:      server,
+			Title:       title,
+			Header:      resp.Header,
+			Body:        body,
+			Favicon:     faviconbody,
+			Scripts:     scriptHashes(currentURL, body),
+			Stylesheets: stylesheetHashes(currentURL, body),
+			DNS:         dns,
+			TLS:         tlsInfo(resp),
+			Behavior:    behaviorInfo(resp),
 		}
 		break // 退出循环
 	}
@@ -141,7 +145,8 @@ func ProcessURL(url string) {
 	var mu sync.Mutex
 	var errOccurred bool
 	var matchedCMS sync.Map
-	responsesChannel := make(chan rules.Response, workerCount+len(rules.ActiveHTTPProbes())+3)
+	responsesChannel := make(chan rules.Response, workerCount+len(rules.ActiveHTTPProbes())+4)
+	dns := dnsInfo(url)
 
 	var lastResp config.LastResponse
 	var firstRespOnce sync.Once
@@ -162,24 +167,30 @@ func ProcessURL(url string) {
 		})
 	}
 
-	wg.Add(4)
-	go process(url, "default", rules.Request{Method: "GET"}, responsesChannel, &mu, &wg, &errOccurred, saveFirstResponse)
-	go process(url, "remember-me", rules.Request{Method: "GET", Headers: map[string]string{"Cookie": "rememberMe=1"}}, responsesChannel, &mu, &wg, &errOccurred, nil)
-	go process(url, "options", rules.Request{Method: "OPTIONS"}, responsesChannel, &mu, &wg, &errOccurred, nil)
+	wg.Add(5)
+	go process(url, "default", rules.Request{Method: "GET"}, dns, responsesChannel, &mu, &wg, &errOccurred, saveFirstResponse)
+	go process(url, "remember-me", rules.Request{Method: "GET", Headers: map[string]string{"Cookie": "rememberMe=1"}}, dns, responsesChannel, &mu, &wg, &errOccurred, nil)
+	go process(url, "options", rules.Request{Method: "OPTIONS"}, dns, responsesChannel, &mu, &wg, &errOccurred, nil)
 
 	suffix := fmt.Sprintf("/%x", rand.Int())
 	if url[len(url)-1] == '/' {
 		suffix = fmt.Sprintf("%x", rand.Int())
 	}
 	newUrl := url + suffix
-	go process(newUrl, "error-page", rules.Request{Method: "GET"}, responsesChannel, &mu, &wg, &errOccurred, nil)
+	go process(newUrl, "error-page", rules.Request{Method: "GET"}, dns, responsesChannel, &mu, &wg, &errOccurred, nil)
+
+	suffix2 := fmt.Sprintf("/%x", rand.Int())
+	if url[len(url)-1] == '/' {
+		suffix2 = fmt.Sprintf("%x", rand.Int())
+	}
+	go process(url+suffix2, "error-page-2", rules.Request{Method: "GET"}, dns, responsesChannel, &mu, &wg, &errOccurred, nil)
 
 	baseURL, baseErr := utils.GetBaseURL(url)
 	if baseErr == nil {
 		for _, probe := range rules.ActiveHTTPProbes() {
 			probeURL := baseURL + probe.Request.Path
 			wg.Add(1)
-			go process(probeURL, probe.ID, probe.Request, responsesChannel, &mu, &wg, &errOccurred, nil)
+			go process(probeURL, probe.ID, probe.Request, dns, responsesChannel, &mu, &wg, &errOccurred, nil)
 		}
 	}
 
@@ -324,6 +335,18 @@ func serverTLSHash(version string, cipher string, alpn string) string {
 	return hex.EncodeToString(sum[:])
 }
 
+func dnsInfo(targetURL string) rules.DNSInfo {
+	parsed, err := url.Parse(targetURL)
+	if err != nil || parsed.Hostname() == "" {
+		return rules.DNSInfo{}
+	}
+	cname, err := net.LookupCNAME(parsed.Hostname())
+	if err != nil {
+		return rules.DNSInfo{}
+	}
+	return rules.DNSInfo{CNAME: strings.TrimSuffix(cname, ".")}
+}
+
 func scriptHashes(pageURL string, body []byte) []rules.ResourceHash {
 	// JS Hash 用于识别强绑定版本的前端静态资源；限制数量避免主动扫描放大流量。
 	matches := scriptSrcRe.FindAllSubmatch(body, 16)
@@ -343,6 +366,40 @@ func scriptHashes(pageURL string, body []byte) []rules.ResourceHash {
 		md5Value, sha1Value, sha256Value := resourceHashes(data)
 		hashes = append(hashes, rules.ResourceHash{
 			URL:    scriptURL,
+			MD5:    md5Value,
+			SHA1:   sha1Value,
+			SHA256: sha256Value,
+		})
+	}
+	return hashes
+}
+
+func stylesheetHashes(pageURL string, body []byte) []rules.ResourceHash {
+	// CSS Hash 补足部分 CDN、前端框架和后台系统只暴露样式资源的场景。
+	matches := stylesheetHrefRe.FindAllSubmatch(body, 16)
+	hashes := make([]rules.ResourceHash, 0, len(matches))
+	for _, match := range matches {
+		raw := ""
+		for i := 1; i < len(match); i++ {
+			if len(match[i]) > 0 {
+				raw = string(match[i])
+				break
+			}
+		}
+		if raw == "" {
+			continue
+		}
+		stylesheetURL, ok := resolveResourceURL(pageURL, raw)
+		if !ok {
+			continue
+		}
+		data, ok := fetchHashableResource(stylesheetURL)
+		if !ok {
+			continue
+		}
+		md5Value, sha1Value, sha256Value := resourceHashes(data)
+		hashes = append(hashes, rules.ResourceHash{
+			URL:    stylesheetURL,
 			MD5:    md5Value,
 			SHA1:   sha1Value,
 			SHA256: sha256Value,

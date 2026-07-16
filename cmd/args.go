@@ -242,12 +242,13 @@ var llmManifestCmd = &cobra.Command{
 			"outputs": []string{"terminal", "json", "jsonl", "xml", "xlsx", "passive-jsonl"},
 			"capabilities": []string{
 				"http-header", "cookie", "html-body", "html-meta", "script-src",
-				"script-hash", "favicon-mmh3-md5-sha1-sha256", "active-probe",
-				"api-endpoint", "error-page", "status-redirect", "tls-cert",
-				"tls-alpn-version-cipher", "http-behavior", "waf-cdn",
+				"html-selector", "script-hash", "stylesheet-hash", "favicon-mmh3-md5-sha1-sha256",
+				"active-probe", "api-endpoint", "error-page", "status-redirect", "tls-cert",
+				"tls-alpn-version-cipher", "dns-cname", "http-behavior", "waf-cdn",
 				"framework", "cms-middleware", "version-extraction",
 				"confidence-evidence", "honeypot-detection",
 			},
+			"skill_templates_command": "hfinger llm skills",
 			"recommended_agent_flow": []string{
 				"run hfinger with --output-jsonl for streaming analysis",
 				"group results by category, confidence, and evidence",
@@ -256,6 +257,74 @@ var llmManifestCmd = &cobra.Command{
 			},
 		}
 		data, err := json.MarshalIndent(manifest, "", "  ")
+		if err != nil {
+			logger.Error("Error: %v", err)
+			os.Exit(1)
+		}
+		fmt.Println(string(data))
+	},
+}
+
+var llmSkillsCmd = &cobra.Command{
+	Use:   "skills",
+	Short: "Print external agent Skill templates as JSON",
+	Run: func(cmd *cobra.Command, args []string) {
+		templates := []map[string]interface{}{
+			{
+				"name":        "hfinger-result-triage",
+				"description": "Group HFinger JSONL results by technology, confidence, evidence, and testing priority.",
+				"when_to_use": []string{
+					"large asset scans need prioritization",
+					"results must be grouped by category, product, version, and confidence",
+					"security reports need concise evidence-backed summaries",
+				},
+				"commands": []string{
+					"hfinger -f alive.jsonl --output-jsonl hfinger-results.jsonl",
+					"hfinger passive query passive.jsonl --min-confidence 80 --limit 100",
+				},
+			},
+			{
+				"name":        "hfinger-toolchain",
+				"description": "Turn HFinger results into follow-up inputs for nuclei, ffuf, katana, nmap, ASM, or SIEM.",
+				"when_to_use": []string{
+					"high-confidence fingerprints should drive focused validation",
+					"targets need to be split by technology or exposure type",
+					"plain CLI flags cannot express cross-tool orchestration decisions",
+				},
+				"commands": []string{
+					"jq -r 'select(.category==\"api-gateway\" and .confidence>=80) | .url' hfinger-results.jsonl > api-gateway.txt",
+					"nuclei -l api-gateway.txt -tags exposure,api,gateway -o nuclei-api-gateway.txt",
+				},
+			},
+			{
+				"name":        "hfinger-rule-author",
+				"description": "Draft HFinger YAML rules from HTTP, TLS, DNS, favicon, JavaScript, and stylesheet evidence.",
+				"when_to_use": []string{
+					"a new product fingerprint is needed from captured evidence",
+					"manual evidence needs to be converted into score/negative/examples rule structure",
+					"AI output must be validated by deterministic rule tooling",
+				},
+				"commands": []string{
+					"hfinger rules lint ./candidate-rule.yaml",
+					"hfinger rules test ./candidate-rule.yaml",
+					"hfinger rules doctor ./candidate-rule.yaml",
+				},
+			},
+			{
+				"name":        "hfinger-honeypot-review",
+				"description": "Assess honeypot, deception, conflicting-fingerprint, and universal-response signals.",
+				"when_to_use": []string{
+					"results include category honeypot or Potential Honeypot",
+					"many unrelated technologies are detected on one target",
+					"many active probe paths return highly similar successful responses",
+				},
+				"commands": []string{
+					"hfinger -f suspicious-targets.txt --output-jsonl honeypot-review.jsonl",
+					"hfinger passive query passive.jsonl --category honeypot",
+				},
+			},
+		}
+		data, err := json.MarshalIndent(templates, "", "  ")
 		if err != nil {
 			logger.Error("Error: %v", err)
 			os.Exit(1)
@@ -531,4 +600,5 @@ func init() {
 	tlsCmd.AddCommand(tlsCapabilitiesCmd)
 
 	llmCmd.AddCommand(llmManifestCmd)
+	llmCmd.AddCommand(llmSkillsCmd)
 }

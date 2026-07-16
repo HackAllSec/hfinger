@@ -187,7 +187,11 @@
             "script.hash.md5",
             "script.hash.sha1",
             "script.hash.sha256",
+            "stylesheet.hash.md5",
+            "stylesheet.hash.sha1",
+            "stylesheet.hash.sha256",
             "html.meta.contains",
+            "html.selector.exists",
             "json.key.exists",
             "json.path.eq",
             "server.banner.contains",
@@ -199,6 +203,7 @@
             "tls.version.contains",
             "tls.cipher.contains",
             "tls.ja3s.hash",
+            "dns.cname.contains",
             "http.version.contains",
             "http.method.allowed",
             "response.compression.contains",
@@ -346,6 +351,9 @@
         },
         "tls": {
           "$ref": "#/$defs/tls"
+        },
+        "dns": {
+          "$ref": "#/$defs/dns"
         }
       }
     },
@@ -366,6 +374,24 @@
           }
         },
         "alpn": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        },
+        "cipher_suite": {
+          "type": "string"
+        },
+        "ja3s": {
+          "type": "string"
+        }
+      }
+    },
+    "dns": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "cname": {
           "type": "string"
         }
       }

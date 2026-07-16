@@ -1,0 +1,229 @@
+rules:
+  - id: core-0116-cloudflare-cname
+    name: Cloudflare CDN
+    category: cdn
+    vendor: Cloudflare
+    priority: 90
+    tags: [cdn, waf, dns]
+    match:
+      strategy: any
+      matchers:
+        - type: dns.cname.contains
+          value: cloudflare.net
+          weight: 100
+          evidence: Cloudflare CNAME target
+    negative:
+      - type: body.contains
+        value: Cloudflare documentation
+        reason: Exclude documentation pages
+    metadata:
+      references: ["https://developers.cloudflare.com/dns/"]
+      confidence: high
+    examples:
+      positive:
+        - name: cloudflare-cname
+          dns: {cname: example.cloudflare.net}
+      negative:
+        - name: cloudflare-doc
+          body: Cloudflare documentation
+
+  - id: core-0117-akamai-cname
+    name: Akamai CDN
+    category: cdn
+    vendor: Akamai
+    priority: 90
+    tags: [cdn, dns]
+    match:
+      strategy: score
+      threshold: 80
+      matchers:
+        - type: dns.cname.contains
+          values: [akamai.net, akamaiedge.net, edgesuite.net, edgekey.net]
+          weight: 100
+          evidence: Akamai CNAME target
+    negative:
+      - type: body.contains
+        value: Akamai documentation
+        reason: Exclude documentation pages
+    metadata:
+      references: ["https://techdocs.akamai.com/"]
+      confidence: high
+    examples:
+      positive:
+        - name: akamai-cname
+          dns: {cname: example.akamaiedge.net}
+      negative:
+        - name: akamai-doc
+          body: Akamai documentation
+
+  - id: core-0118-fastly-cname
+    name: Fastly CDN
+    category: cdn
+    vendor: Fastly
+    priority: 90
+    tags: [cdn, dns]
+    match:
+      strategy: any
+      matchers:
+        - type: dns.cname.contains
+          value: fastly.net
+          weight: 100
+          evidence: Fastly CNAME target
+    negative:
+      - type: body.contains
+        value: Fastly documentation
+        reason: Exclude documentation pages
+    metadata:
+      references: ["https://docs.fastly.com/"]
+      confidence: high
+    examples:
+      positive:
+        - name: fastly-cname
+          dns: {cname: example.map.fastly.net}
+      negative:
+        - name: fastly-doc
+          body: Fastly documentation
+
+  - id: core-0119-cloudfront-cname
+    name: Amazon CloudFront
+    category: cdn
+    vendor: AWS
+    priority: 90
+    tags: [cdn, dns, aws]
+    match:
+      strategy: any
+      matchers:
+        - type: dns.cname.contains
+          value: cloudfront.net
+          weight: 100
+          evidence: CloudFront CNAME target
+    negative:
+      - type: body.contains
+        value: CloudFront documentation
+        reason: Exclude documentation pages
+    metadata:
+      references: ["https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/"]
+      confidence: high
+    examples:
+      positive:
+        - name: cloudfront-cname
+          dns: {cname: d111111abcdef8.cloudfront.net}
+      negative:
+        - name: cloudfront-doc
+          body: CloudFront documentation
+
+  - id: core-0120-azure-front-door-cname
+    name: Azure Front Door
+    category: cdn
+    vendor: Microsoft
+    priority: 85
+    tags: [cdn, waf, dns, azure]
+    match:
+      strategy: score
+      threshold: 80
+      matchers:
+        - type: dns.cname.contains
+          values: [azurefd.net, azureedge.net, trafficmanager.net]
+          weight: 100
+          evidence: Azure Front Door or Azure edge CNAME target
+    negative:
+      - type: body.contains
+        value: Azure Front Door documentation
+        reason: Exclude documentation pages
+    metadata:
+      references: ["https://learn.microsoft.com/en-us/azure/frontdoor/"]
+      confidence: high
+    examples:
+      positive:
+        - name: azure-front-door-cname
+          dns: {cname: example.azurefd.net}
+      negative:
+        - name: azure-front-door-doc
+          body: Azure Front Door documentation
+
+  - id: core-0121-alibaba-cloud-cdn-cname
+    name: Alibaba Cloud CDN
+    category: cdn
+    vendor: Alibaba Cloud
+    priority: 85
+    tags: [cdn, waf, dns, aliyun]
+    match:
+      strategy: score
+      threshold: 80
+      matchers:
+        - type: dns.cname.contains
+          values: [kunlun, alikunlun, aliyuncs.com, cdn.aliyun.com]
+          weight: 100
+          evidence: Alibaba Cloud CDN CNAME target
+    negative:
+      - type: body.contains
+        value: Alibaba Cloud CDN documentation
+        reason: Exclude documentation pages
+    metadata:
+      references: ["https://www.alibabacloud.com/help/en/cdn/"]
+      confidence: medium
+    examples:
+      positive:
+        - name: aliyun-cdn-cname
+          dns: {cname: example.alikunlun.com}
+      negative:
+        - name: aliyun-doc
+          body: Alibaba Cloud CDN documentation
+
+  - id: core-0122-tencent-cloud-cdn-cname
+    name: Tencent Cloud CDN
+    category: cdn
+    vendor: Tencent Cloud
+    priority: 85
+    tags: [cdn, waf, dns, tencent]
+    match:
+      strategy: score
+      threshold: 80
+      matchers:
+        - type: dns.cname.contains
+          values: [cdn.dnsv1.com, qcloudcdn.com, tencent-cloud.net]
+          weight: 100
+          evidence: Tencent Cloud CDN CNAME target
+    negative:
+      - type: body.contains
+        value: Tencent Cloud CDN documentation
+        reason: Exclude documentation pages
+    metadata:
+      references: ["https://www.tencentcloud.com/document/product/228"]
+      confidence: medium
+    examples:
+      positive:
+        - name: tencent-cdn-cname
+          dns: {cname: example.qcloudcdn.com}
+      negative:
+        - name: tencent-doc
+          body: Tencent Cloud CDN documentation
+
+  - id: core-0123-huawei-cloud-cdn-cname
+    name: Huawei Cloud CDN
+    category: cdn
+    vendor: Huawei Cloud
+    priority: 80
+    tags: [cdn, dns, huawei]
+    match:
+      strategy: score
+      threshold: 80
+      matchers:
+        - type: dns.cname.contains
+          values: [cdnhwc, cdn.huaweicloud.com]
+          weight: 100
+          evidence: Huawei Cloud CDN CNAME target
+    negative:
+      - type: body.contains
+        value: Huawei Cloud CDN documentation
+        reason: Exclude documentation pages
+    metadata:
+      references: ["https://support.huaweicloud.com/intl/en-us/cdn/"]
+      confidence: medium
+    examples:
+      positive:
+        - name: huawei-cdn-cname
+          dns: {cname: example.cdnhwc1.com}
+      negative:
+        - name: huawei-doc
+          body: Huawei Cloud CDN documentation

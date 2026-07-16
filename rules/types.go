@@ -91,21 +91,24 @@ type Fixture struct {
 	Headers    map[string]string `yaml:"headers,omitempty"`
 	Body       string            `yaml:"body,omitempty"`
 	TLS        TLSInfo           `yaml:"tls,omitempty"`
+	DNS        DNSInfo           `yaml:"dns,omitempty"`
 }
 
 type Response struct {
-	ProbeID    string
-	URL        string
-	Path       string
-	StatusCode int
-	Server     string
-	Title      string
-	Header     http.Header
-	Body       []byte
-	Favicon    []byte
-	Scripts    []ResourceHash
-	TLS        TLSInfo
-	Behavior   BehaviorInfo
+	ProbeID     string
+	URL         string
+	Path        string
+	StatusCode  int
+	Server      string
+	Title       string
+	Header      http.Header
+	Body        []byte
+	Favicon     []byte
+	Scripts     []ResourceHash
+	Stylesheets []ResourceHash
+	DNS         DNSInfo
+	TLS         TLSInfo
+	Behavior    BehaviorInfo
 }
 
 type TLSInfo struct {
@@ -123,6 +126,10 @@ type ResourceHash struct {
 	MD5    string `json:"md5,omitempty" yaml:"md5,omitempty"`
 	SHA1   string `json:"sha1,omitempty" yaml:"sha1,omitempty"`
 	SHA256 string `json:"sha256,omitempty" yaml:"sha256,omitempty"`
+}
+
+type DNSInfo struct {
+	CNAME string `json:"cname,omitempty" yaml:"cname,omitempty"`
 }
 
 type BehaviorInfo struct {

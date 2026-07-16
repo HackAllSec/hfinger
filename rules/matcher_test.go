@@ -371,10 +371,16 @@ func TestMatchResponseResourceHashesAndBehavior(t *testing.T) {
 	response := Response{
 		URL:     "https://example.com/",
 		Favicon: favicon,
+		Body:    []byte(`<html><body><main id="app"></main></body></html>`),
 		Scripts: []ResourceHash{{
 			URL:    "https://example.com/app.js",
 			SHA256: "script-sha256",
 		}},
+		Stylesheets: []ResourceHash{{
+			URL:    "https://example.com/app.css",
+			SHA256: "style-sha256",
+		}},
+		DNS: DNSInfo{CNAME: "example.cloudflare.net"},
 		Header: http.Header{
 			"ETag":          {`"abc"`},
 			"Accept-Ranges": {"bytes"},
@@ -391,6 +397,15 @@ func TestMatchResponseResourceHashesAndBehavior(t *testing.T) {
 	}
 	if _, ok := MatchResponse(response, Matcher{Type: "script.hash.sha256", Value: "script-sha256"}); !ok {
 		t.Fatalf("script.hash.sha256 expected match")
+	}
+	if _, ok := MatchResponse(response, Matcher{Type: "stylesheet.hash.sha256", Value: "style-sha256"}); !ok {
+		t.Fatalf("stylesheet.hash.sha256 expected match")
+	}
+	if _, ok := MatchResponse(response, Matcher{Type: "dns.cname.contains", Value: "cloudflare.net"}); !ok {
+		t.Fatalf("dns.cname.contains expected match")
+	}
+	if _, ok := MatchResponse(response, Matcher{Type: "html.selector.exists", Value: "body"}); !ok {
+		t.Fatalf("html.selector.exists expected match")
 	}
 	if _, ok := MatchResponse(response, Matcher{Type: "http.version.contains", Value: "HTTP/2"}); !ok {
 		t.Fatalf("http.version.contains expected match")
@@ -430,6 +445,24 @@ func TestMatchResponseHeaderIndexPreservesSemantics(t *testing.T) {
 		if _, ok := MatchResponse(response, matcher); !ok {
 			t.Fatalf("%s key=%q value=%v expected match", matcher.Type, matcher.Key, matcher.Value)
 		}
+	}
+}
+
+func TestAssessHoneypotDetectsSimilarProbeBodies(t *testing.T) {
+	responses := []Response{
+		{URL: "https://example.com/", StatusCode: 200, Body: []byte("<html>same login</html>")},
+		{URL: "https://example.com/a", StatusCode: 200, Body: []byte("<html>same login</html>")},
+		{URL: "https://example.com/b", StatusCode: 200, Body: []byte("<html>same login</html>")},
+		{URL: "https://example.com/c", StatusCode: 200, Body: []byte("<html>same login</html>")},
+		{URL: "https://example.com/d", StatusCode: 404, Body: []byte("<html>same login</html>")},
+	}
+
+	result := AssessHoneypot(nil, responses)
+	if !result.Matched {
+		t.Fatalf("AssessHoneypot() expected similar response bodies to match")
+	}
+	if result.Confidence < 60 {
+		t.Fatalf("confidence = %d, want >= 60", result.Confidence)
 	}
 }
 

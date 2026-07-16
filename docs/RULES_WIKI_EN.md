@@ -196,7 +196,11 @@ Common fields:
 | `script.hash.md5` | External JavaScript content MD5 hash matches |
 | `script.hash.sha1` | External JavaScript content SHA1 hash matches |
 | `script.hash.sha256` | External JavaScript content SHA256 hash matches |
+| `stylesheet.hash.md5` | External stylesheet/CSS content MD5 hash matches |
+| `stylesheet.hash.sha1` | External stylesheet/CSS content SHA1 hash matches |
+| `stylesheet.hash.sha256` | External stylesheet/CSS content SHA256 hash matches |
 | `html.meta.contains` | Meta tag contains a value |
+| `html.selector.exists` | HTML DOM selector exists |
 | `json.key.exists` | JSON response contains a key |
 | `json.path.eq` | JSON dotted path equals a value |
 | `server.banner.contains` | Server banner contains a value |
@@ -208,6 +212,7 @@ Common fields:
 | `tls.version.contains` | TLS version contains a value, such as `TLS1.3` |
 | `tls.cipher.contains` | TLS Cipher Suite contains a value |
 | `tls.ja3s.hash` | JA3S-style summary matches |
+| `dns.cname.contains` | DNS CNAME contains a value, useful for CDN/WAF identification |
 | `http.version.contains` | HTTP protocol version contains a value, such as `HTTP/2` |
 | `http.method.allowed` | `OPTIONS` response `Allow` methods contain a value |
 | `response.compression.contains` | `Content-Encoding` contains a value |
@@ -444,7 +449,7 @@ negative:
     reason: Exclude product documentation pages
 ```
 
-HFinger also includes heuristic honeypot assessment. If many mutually conflicting products/categories match, or many active probe paths return 2xx, HFinger emits `Potential Honeypot` as a risk signal. Heuristic results assist manual judgment and do not replace explicit product rules.
+HFinger also includes heuristic honeypot assessment. If many mutually conflicting products/categories match, many active probe paths return 2xx, or many different paths return highly similar content, HFinger emits `Potential Honeypot` as a risk signal. Heuristic results assist manual judgment and do not replace explicit product rules.
 
 ## 11. LLM / Agent Integration
 
@@ -452,10 +457,11 @@ HFinger exposes a machine-readable capability manifest and JSONL output for LLM,
 
 ```bash
 hfinger llm manifest
+hfinger llm skills
 hfinger -f alive.jsonl --output-jsonl hfinger-results.jsonl
 ```
 
-Project-level Skills live under `.trae/skills/` and cover rule authoring, rule review, result triage, toolchain chaining, and honeypot review. LLM/Skill workflows only assist orchestration and explanation; they do not participate in final fingerprint decisions.
+`hfinger llm skills` prints external agent Skill templates for result triage, toolchain chaining, rule authoring, and honeypot review. Skills are user-side agent workflows, not part of HFinger's final decision path and not runtime directories that must be committed with the repository. LLM/Skill workflows only assist orchestration and explanation; they do not participate in final fingerprint decisions.
 
 ## 12. AI-Assisted Rule Drafting Prompt
 

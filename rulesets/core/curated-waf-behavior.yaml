@@ -1,0 +1,41 @@
+rules:
+  - id: core-0124-generic-waf-challenge
+    name: Generic WAF Challenge Response
+    category: waf
+    vendor: Generic
+    priority: 70
+    tags: [waf, behavior, active-probe]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: waf-safe-challenge
+          request:
+            method: GET
+            path: "/?hfinger_probe=%3Cscript%3Ealert%281%29%3C%2Fscript%3E"
+          matchers:
+            - type: status.in
+              values: ["403", "406", "429"]
+              weight: 40
+              evidence: WAF-like blocking status code
+            - type: body.regex
+              value: "(?i)(access denied|request blocked|security policy|web application firewall|waf|bot detection|forbidden by policy)"
+              weight: 50
+              evidence: WAF-like blocking page text
+    negative:
+      - type: body.contains
+        value: Generic WAF Challenge Response documentation
+        reason: Exclude documentation pages
+    metadata:
+      references: ["https://owasp.org/www-community/attacks/xss/"]
+      confidence: medium
+    examples:
+      positive:
+        - name: blocked-response
+          path: "/?hfinger_probe=%3Cscript%3Ealert%281%29%3C%2Fscript%3E"
+          status_code: 403
+          body: "Access denied by web application firewall"
+      negative:
+        - name: ordinary-403
+          status_code: 403
+          body: "Generic WAF Challenge Response documentation"

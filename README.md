@@ -8,7 +8,7 @@ HFinger 是一个面向安全测试场景的服务端指纹识别工具，用于
 
 工具内置核心指纹规则，开箱即用；同时支持通过外置 YAML 规则扩展企业内部系统、社区规则和私有化产品识别能力。
 
-当前内置指纹规则 **1735** 条，覆盖产品、Web 框架、CMS、中间件、CDN/WAF、蜜罐等服务端组件 **1465** 种。
+当前内置指纹规则 **1744** 条，覆盖产品、Web 框架、CMS、中间件、CDN/WAF、蜜罐等服务端组件 **1474** 种。
 
 ## 工具定位
 
@@ -40,7 +40,7 @@ HFinger 的设计重点是把服务端指纹识别做成可治理、可复核、
 - 内置核心规则，开箱即用
 - 外置 YAML 规则加载
 - Header、Body、Title、Cookie、Status、Redirect、Favicon 等多来源匹配
-- HTML Meta、Script src、JS Hash、Favicon mmh3/MD5/SHA1/SHA256、JSON/API、TLS 证书/ALPN/版本/Cipher、HTTP 行为和 Server banner 特征匹配
+- HTML Meta、DOM selector、Script src、JS/CSS Hash、Favicon mmh3/MD5/SHA1/SHA256、DNS CNAME、JSON/API、TLS 证书/ALPN/版本/Cipher、HTTP 行为和 Server banner 特征匹配
 - 主动探测常见路径、API 接口、错误页、404 页面和 OPTIONS 行为
 - WAF/CDN、框架、CMS、中间件、版本提取和蜜罐识别
 - 识别结果包含证据与置信度
@@ -60,19 +60,20 @@ HFinger 的设计重点是把服务端指纹识别做成可治理、可复核、
 | HTTP Header 指纹 | `header.contains`、`header.regex` |
 | Cookie 指纹 | `cookie.contains` |
 | HTML 内容指纹 | `body.contains`、`body.regex` |
-| HTML 标签 / Meta | `html.meta.contains`、`script.src.contains`、Body/Regex |
+| HTML 标签 / Meta / DOM | `html.meta.contains`、`html.selector.exists`、`script.src.contains`、Body/Regex |
 | JavaScript 引用路径 | `script.src.contains`、`body.contains` |
 | JavaScript Hash | `script.hash.md5`、`script.hash.sha1`、`script.hash.sha256` |
+| Stylesheet / CSS Hash | `stylesheet.hash.md5`、`stylesheet.hash.sha1`、`stylesheet.hash.sha256` |
 | Favicon 指纹 | `favicon.hash`、`favicon.hash.md5`、`favicon.hash.sha1`、`favicon.hash.sha256` |
 | 静态资源路径 | 主动 probe、`path.exists`、`script.src.contains`、Body/Regex |
 | 404 / 错误页指纹 | 默认 error-page 探测与规则级 probe |
 | TLS/HTTPS 指纹 | 证书 Subject/Issuer/DNSNames、ALPN、TLS 版本、Cipher、JA3S 风格摘要 |
 | HTTP 协议行为 | HTTP 版本、OPTIONS Allow、压缩、ETag、Accept-Ranges、状态码、重定向 |
 | 主动探测 / API 指纹 | 规则 `probes.request` 支持 method/path/header/body |
-| WAF/CDN / 框架 / CMS / 中间件 | 内置分类规则与多证据融合 |
+| WAF/CDN / 框架 / CMS / 中间件 | 内置分类规则、DNS CNAME、Header/Cookie/Body/TLS 与行为探测 |
 | 版本特征 | `extract` 正则提取版本 |
 | 综合识别 | score/any/all、negative、confidence、evidence |
-| 蜜罐识别 | 明确蜜罐产品规则 + 多产品冲突/异常响应启发式识别 |
+| 蜜罐识别 | 明确蜜罐产品规则 + 多产品冲突/异常响应/响应相似度启发式识别 |
 
 ## 项目结构
 
@@ -531,6 +532,12 @@ HFinger 不把 LLM 放进最终指纹判定链路。LLM/Agent 应该把 HFinger 
 hfinger llm manifest
 ```
 
+查看外部 Agent 可参考的 Skill 模板：
+
+```text
+hfinger llm skills
+```
+
 批量扫描并输出 JSONL，供 LLM/Agent 流式消费：
 
 ```bash
@@ -541,12 +548,12 @@ hfinger -f alive.jsonl --output-jsonl hfinger-results.jsonl
 
 - 资产分诊：读取 `hfinger-results.jsonl`，按 `category`、`cms`、`version`、`confidence` 和 `evidence` 归类，输出优先测试目标。
 - 工具链编排：把高置信度 API 网关、DevOps、管理后台、安全设备等结果转换为 nuclei、ffuf、katana、nmap 的输入。
-- 规则生成：根据 HTTP Header、Cookie、Body、Favicon、TLS 证书、JS Hash 等证据生成 YAML 规则草案，再由 `rules lint/test/doctor` 校验。
+- 规则生成：根据 HTTP Header、Cookie、Body、Favicon、DNS CNAME、TLS 证书、JS/CSS Hash 等证据生成 YAML 规则草案，再由 `rules lint/test/doctor` 校验。
 - 规则审查：检查规则是否依赖泛化关键词、是否缺少 strong evidence、negative 和 positive/negative 样本。
-- 蜜罐研判：当结果出现 `category: honeypot`、`Potential Honeypot` 或多个冲突技术栈时，降低主动探测强度并生成低风险确认建议。
+- 蜜罐研判：当结果出现 `category: honeypot`、`Potential Honeypot`、多个冲突技术栈或多路径相似响应时，降低主动探测强度并生成低风险确认建议。
 - 报告解释：把 evidence 和 confidence 转换为面向安全报告的可审计说明。
 
-Skill 是外部 Agent 的工作流能力，不是 HFinger 仓库必须携带的运行时目录。仓库不提交 `.trae/`；用户可以在自己的 Agent 环境中编写 Skill，让 Skill 调用 `hfinger llm manifest`、`hfinger --output-jsonl`、`hfinger rules lint/test/doctor` 等命令完成更复杂的渗透测试任务。
+Skill 是外部 Agent 的工作流能力，不是 HFinger 仓库必须携带的运行时目录。用户可以在自己的 Agent 环境中编写 Skill，让 Skill 调用 `hfinger llm manifest`、`hfinger llm skills`、`hfinger --output-jsonl`、`hfinger rules lint/test/doctor` 等命令完成更复杂的渗透测试任务。
 
 ## 合法使用与免责声明
 

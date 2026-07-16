@@ -1,6 +1,14 @@
 package rules
 
-import "fmt"
+import (
+	"crypto/sha256"
+	"encoding/hex"
+	"fmt"
+	"regexp"
+	"strings"
+)
+
+var honeypotBodySpaceRe = regexp.MustCompile(`\s+`)
 
 func AssessHoneypot(matches []MatchResult, responses []Response) MatchResult {
 	// 蜜罐识别分两层：明确产品规则负责确定性命中，本函数只输出可疑度提示。
@@ -63,6 +71,17 @@ func AssessHoneypot(matches []MatchResult, responses []Response) MatchResult {
 		})
 	}
 
+	if duplicate, total := duplicateBodyFingerprintCount(responses); total >= 4 && duplicate*100/total >= 75 {
+		score += 30
+		result.Evidence = append(result.Evidence, Evidence{
+			Source:       "honeypot.heuristic",
+			MatcherType:  "response.similarity",
+			MatchedValue: fmt.Sprintf("%d/%d responses share normalized body fingerprints", duplicate, total),
+			Weight:       30,
+			Message:      "多个不同探测路径返回高度相似内容，存在万能响应或蜜罐伪装嫌疑",
+		})
+	}
+
 	result.Score = score
 	result.Confidence = min(100, score)
 	result.Matched = score >= 60
@@ -70,4 +89,37 @@ func AssessHoneypot(matches []MatchResult, responses []Response) MatchResult {
 		result.Response = responses[0]
 	}
 	return result
+}
+
+func duplicateBodyFingerprintCount(responses []Response) (int, int) {
+	counts := make(map[string]int)
+	total := 0
+	for _, response := range responses {
+		fingerprint := normalizedBodyFingerprint(response.Body)
+		if fingerprint == "" {
+			continue
+		}
+		counts[fingerprint]++
+		total++
+	}
+	duplicate := 0
+	for _, count := range counts {
+		if count > duplicate {
+			duplicate = count
+		}
+	}
+	return duplicate, total
+}
+
+func normalizedBodyFingerprint(body []byte) string {
+	normalized := strings.TrimSpace(strings.ToLower(string(body)))
+	if normalized == "" {
+		return ""
+	}
+	if len(normalized) > 4096 {
+		normalized = normalized[:4096]
+	}
+	normalized = honeypotBodySpaceRe.ReplaceAllString(normalized, " ")
+	sum := sha256.Sum256([]byte(normalized))
+	return hex.EncodeToString(sum[:])
 }

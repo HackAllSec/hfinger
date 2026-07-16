@@ -8,7 +8,7 @@ HFinger is a server-side fingerprinting tool for security testing. It helps iden
 
 HFinger ships with built-in core fingerprint rules and works out of the box. It also supports external YAML rules for community contributions, private products, and internal enterprise systems.
 
-The current build includes **1735** built-in fingerprint rules covering **1465** server-side products, web frameworks, CMS products, middleware, CDN/WAF providers, honeypots, and related components.
+The current build includes **1744** built-in fingerprint rules covering **1474** server-side products, web frameworks, CMS products, middleware, CDN/WAF providers, honeypots, and related components.
 
 ## Positioning
 
@@ -40,7 +40,7 @@ HFinger is designed to make server-side fingerprinting governable, reviewable, a
 - Built-in core rules that work out of the box
 - External YAML rule loading
 - Header, body, title, cookie, status, redirect, and favicon matching
-- HTML meta, script source, JavaScript hash, favicon mmh3/MD5/SHA1/SHA256, JSON/API, TLS certificate/ALPN/version/cipher, HTTP behavior, and Server banner matching
+- HTML meta, DOM selectors, script source, JavaScript/CSS hash, favicon mmh3/MD5/SHA1/SHA256, DNS CNAME, JSON/API, TLS certificate/ALPN/version/cipher, HTTP behavior, and Server banner matching
 - Active probes for common paths, API endpoints, error pages, 404 pages, and OPTIONS behavior
 - WAF/CDN, framework, CMS, middleware, version extraction, and honeypot identification
 - Evidence and confidence in scan results
@@ -60,19 +60,20 @@ HFinger is designed to make server-side fingerprinting governable, reviewable, a
 | HTTP Header fingerprints | `header.contains`, `header.regex` |
 | Cookie fingerprints | `cookie.contains` |
 | HTML body fingerprints | `body.contains`, `body.regex` |
-| HTML tags / Meta | `html.meta.contains`, `script.src.contains`, Body/Regex |
+| HTML tags / Meta / DOM | `html.meta.contains`, `html.selector.exists`, `script.src.contains`, Body/Regex |
 | JavaScript reference paths | `script.src.contains`, `body.contains` |
 | JavaScript Hash | `script.hash.md5`, `script.hash.sha1`, `script.hash.sha256` |
+| Stylesheet / CSS Hash | `stylesheet.hash.md5`, `stylesheet.hash.sha1`, `stylesheet.hash.sha256` |
 | Favicon fingerprints | `favicon.hash`, `favicon.hash.md5`, `favicon.hash.sha1`, `favicon.hash.sha256` |
 | Static resource paths | Active probes, `path.exists`, `script.src.contains`, Body/Regex |
 | 404 / error page fingerprints | Default error-page probe and rule-level probes |
 | TLS/HTTPS fingerprints | Certificate Subject/Issuer/DNSNames, ALPN, TLS version, cipher, JA3S-style summary |
 | HTTP protocol behavior | HTTP version, OPTIONS Allow, compression, ETag, Accept-Ranges, status code, redirect |
 | Active probes / API fingerprints | Rule `probes.request` supports method/path/header/body |
-| WAF/CDN / framework / CMS / middleware | Built-in category rules and multi-evidence scoring |
+| WAF/CDN / framework / CMS / middleware | Built-in category rules, DNS CNAME, Header/Cookie/Body/TLS, and behavior probes |
 | Version fingerprints | Regex version extraction with `extract` |
 | Combined identification | score/any/all, negative matchers, confidence, evidence |
-| Honeypot identification | Explicit honeypot rules plus conflict and abnormal-response heuristics |
+| Honeypot identification | Explicit honeypot rules plus conflict, abnormal-response, and response-similarity heuristics |
 
 ## Project Structure
 
@@ -531,6 +532,12 @@ Print the machine-readable capability manifest:
 hfinger llm manifest
 ```
 
+Print external agent Skill templates:
+
+```text
+hfinger llm skills
+```
+
 Run batch scanning with JSONL output for streaming LLM/agent consumption:
 
 ```bash
@@ -541,12 +548,12 @@ Typical LLM/Skill scenarios:
 
 - Asset triage: read `hfinger-results.jsonl`, group findings by `category`, `cms`, `version`, `confidence`, and `evidence`, then produce prioritized targets.
 - Toolchain orchestration: turn high-confidence API gateway, DevOps, admin surface, security device, or middleware findings into nuclei, ffuf, katana, or nmap inputs.
-- Rule authoring: generate YAML rule drafts from HTTP headers, cookies, body snippets, favicon, TLS certificates, and JavaScript hashes, then validate them with `rules lint/test/doctor`.
+- Rule authoring: generate YAML rule drafts from HTTP headers, cookies, body snippets, favicon, DNS CNAME, TLS certificates, and JavaScript/CSS hashes, then validate them with `rules lint/test/doctor`.
 - Rule review: check whether a rule depends on generic keywords or lacks strong evidence, negative matchers, and positive/negative examples.
-- Honeypot review: when results include `category: honeypot`, `Potential Honeypot`, or conflicting technologies, reduce intrusive probing and generate low-impact confirmation steps.
+- Honeypot review: when results include `category: honeypot`, `Potential Honeypot`, conflicting technologies, or similar responses across many paths, reduce intrusive probing and generate low-impact confirmation steps.
 - Report explanation: convert evidence and confidence into auditable security-report text.
 
-Skills are external agent workflows, not runtime directories required by the HFinger repository. This repository does not commit `.trae/`; users can define Skills in their own agent environment and have them call `hfinger llm manifest`, `hfinger --output-jsonl`, and `hfinger rules lint/test/doctor` for more complex penetration-testing workflows.
+Skills are external agent workflows, not runtime directories required by the HFinger repository. Users can define Skills in their own agent environment and have them call `hfinger llm manifest`, `hfinger llm skills`, `hfinger --output-jsonl`, and `hfinger rules lint/test/doctor` for more complex penetration-testing workflows.
 
 ## Legal Use and Disclaimer
 
