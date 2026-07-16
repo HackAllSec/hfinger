@@ -1,302 +1,425 @@
 package utils
 
 import (
-    "archive/zip"
-    "crypto/sha256"
-    "encoding/hex"
-    "encoding/json"
-    "io"
-    "os"
-    "path/filepath"
-    "runtime"
-    "strings"
+	"archive/zip"
+	"crypto/sha256"
+	"encoding/hex"
+	"encoding/json"
+	"fmt"
+	"io"
+	"os"
+	"path/filepath"
+	"runtime"
+	"strings"
 
-    "hfinger/config"
-    "hfinger/logger"
+	"hfinger/config"
+	"hfinger/logger"
 )
 
 type GitHubReleaseAsset struct {
-    Name               string `json:"name"`
-    BrowserDownloadURL string `json:"browser_download_url"`
+	Name               string `json:"name"`
+	BrowserDownloadURL string `json:"browser_download_url"`
 }
 
 type GitHubReleaseResponse struct {
-    TagName string               `json:"tag_name"`
-    Assets  []GitHubReleaseAsset `json:"assets"`
+	TagName string               `json:"tag_name"`
+	Assets  []GitHubReleaseAsset `json:"assets"`
 }
 
 func calculateHash(data []byte) string {
-    sha := sha256.New()
-    sha.Write(data)
-    return hex.EncodeToString(sha.Sum(nil))
+	sha := sha256.New()
+	sha.Write(data)
+	return hex.EncodeToString(sha.Sum(nil))
 }
 
 func getRemoteFileHash() string {
-    resp, err := Get(config.FingerUrl, nil)
-    if err != nil {
-        return ""
-    }
-    defer resp.Body.Close()
+	resp, err := Get(config.FingerUrl, nil)
+	if err != nil {
+		return ""
+	}
+	defer resp.Body.Close()
 
-    if resp.StatusCode != 200 {
-        return ""
-    }
+	if resp.StatusCode != 200 {
+		return ""
+	}
 
-    body, err := io.ReadAll(resp.Body)
-    if err != nil {
-        return ""
-    }
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return ""
+	}
 
-    return calculateHash(body)
+	return calculateHash(body)
 }
 
 func getLocalFileHash() string {
-    file, err := os.Open(config.Fingerfullpath)
-    if err != nil {
-        return ""
-    }
-    defer file.Close()
+	file, err := os.Open(config.Fingerfullpath)
+	if err != nil {
+		return ""
+	}
+	defer file.Close()
 
-    body, err := io.ReadAll(file)
-    if err != nil {
-        return ""
-    }
+	body, err := io.ReadAll(file)
+	if err != nil {
+		return ""
+	}
 
-    return calculateHash(body)
+	return calculateHash(body)
 }
 
 func getLatestRelease() (*GitHubReleaseResponse, error) {
-    resp, err := Get(config.ReleaseUrl, nil)
-    if err != nil {
-        return nil, err
-    }
-    defer resp.Body.Close()
+	resp, err := Get(config.ReleaseUrl, nil)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
 
-    var release GitHubReleaseResponse
-    if err := json.NewDecoder(resp.Body).Decode(&release); err != nil {
-        return nil, err
-    }
+	var release GitHubReleaseResponse
+	if err := json.NewDecoder(resp.Body).Decode(&release); err != nil {
+		return nil, err
+	}
 
-    return &release, nil
+	return &release, nil
 }
 
 func downloadFile(url, filepath string) error {
-    resp, err := Get(url, nil)
-    if err != nil {
-        return err
-    }
-    defer resp.Body.Close()
+	resp, err := Get(url, nil)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
+		return fmt.Errorf("download failed with status %d", resp.StatusCode)
+	}
 
-    out, err := os.Create(filepath)
-    if err != nil {
-        return err
-    }
-    defer out.Close()
+	out, err := os.Create(filepath)
+	if err != nil {
+		return err
+	}
+	defer out.Close()
 
-    _, err = io.Copy(out, resp.Body)
-    return err
+	_, err = io.Copy(out, resp.Body)
+	return err
+}
+
+func verifyAssetChecksum(release *GitHubReleaseResponse, assetName, filePath string) error {
+	checksumAsset, ok := findChecksumAsset(release.Assets, assetName)
+	if !ok {
+		return fmt.Errorf("missing checksum asset for %s", assetName)
+	}
+
+	checksumPath := filePath + ".sha256"
+	defer os.Remove(checksumPath)
+	if err := downloadFile(checksumAsset.BrowserDownloadURL, checksumPath); err != nil {
+		return fmt.Errorf("download checksum: %w", err)
+	}
+
+	checksumData, err := os.ReadFile(checksumPath)
+	if err != nil {
+		return err
+	}
+
+	expectedHash, err := parseChecksum(string(checksumData), assetName)
+	if err != nil {
+		return err
+	}
+
+	assetData, err := os.ReadFile(filePath)
+	if err != nil {
+		return err
+	}
+
+	actualHash := calculateHash(assetData)
+	if !strings.EqualFold(expectedHash, actualHash) {
+		return fmt.Errorf("checksum mismatch for %s", assetName)
+	}
+	return nil
+}
+
+func findChecksumAsset(assets []GitHubReleaseAsset, assetName string) (GitHubReleaseAsset, bool) {
+	lowerAssetName := strings.ToLower(assetName)
+	for _, asset := range assets {
+		name := strings.ToLower(asset.Name)
+		if !strings.Contains(name, "sha256") && !strings.Contains(name, "checksum") {
+			continue
+		}
+		if strings.Contains(name, lowerAssetName) || strings.Contains(name, runtime.GOOS) || name == "checksums.txt" || name == "sha256sums.txt" {
+			return asset, true
+		}
+	}
+	return GitHubReleaseAsset{}, false
+}
+
+func parseChecksum(content, assetName string) (string, error) {
+	for _, line := range strings.Split(content, "\n") {
+		line = strings.TrimSpace(line)
+		if line == "" || strings.HasPrefix(line, "#") {
+			continue
+		}
+
+		fields := strings.Fields(line)
+		if len(fields) == 1 && isSHA256Hex(fields[0]) {
+			return fields[0], nil
+		}
+		if len(fields) < 2 || !isSHA256Hex(fields[0]) {
+			continue
+		}
+
+		filename := strings.TrimPrefix(fields[len(fields)-1], "*")
+		if filepath.Base(filename) == assetName {
+			return fields[0], nil
+		}
+	}
+	return "", fmt.Errorf("checksum for %s not found", assetName)
+}
+
+func isSHA256Hex(value string) bool {
+	if len(value) != sha256.Size*2 {
+		return false
+	}
+	for _, r := range value {
+		if (r < '0' || r > '9') && (r < 'a' || r > 'f') && (r < 'A' || r > 'F') {
+			return false
+		}
+	}
+	return true
 }
 
 func verifyZip(filePath string) error {
-    r, err := zip.OpenReader(filePath)
-    if err != nil {
-        return err
-    }
-    defer r.Close()
+	r, err := zip.OpenReader(filePath)
+	if err != nil {
+		return err
+	}
+	defer r.Close()
 
-    for _, f := range r.File {
-        rc, err := f.Open()
-        if err != nil {
-            return err
-        }
-        _, _ = io.Copy(io.Discard, rc)
-        rc.Close()
-    }
-    return nil
+	for _, f := range r.File {
+		rc, err := f.Open()
+		if err != nil {
+			return err
+		}
+		_, _ = io.Copy(io.Discard, rc)
+		rc.Close()
+	}
+	return nil
 }
 
 func CheckForUpdates() {
-    release, err := getLatestRelease()
-    if err != nil {
-        return
-    }
+	release, err := getLatestRelease()
+	if err != nil {
+		return
+	}
 
-    latestVersion := release.TagName
-    if latestVersion != config.Version {
-        logger.Warn("Your current hfinger %s is outdated. Latest is %s. You can use the --upgrade option to upgrade.", config.Version, latestVersion)
-    }
-    remotehash := getRemoteFileHash()
-    localhash := getLocalFileHash()
-    if remotehash != "" && localhash != "" {
-        if remotehash != localhash {
-            logger.Warn("There is a new update to the hfinger fingerprint database, you can use the --update option to update it.")
-        }
-    }
+	latestVersion := release.TagName
+	if latestVersion != config.Version {
+		logger.Warn("Your current hfinger %s is outdated. Latest is %s. You can use the --upgrade option to upgrade.", config.Version, latestVersion)
+	}
+	remotehash := getRemoteFileHash()
+	localhash := getLocalFileHash()
+	if remotehash != "" && localhash != "" {
+		if remotehash != localhash {
+			logger.Warn("There is a new update to the hfinger fingerprint database, you can use the --update option to update it.")
+		}
+	}
 }
 
 func Update() {
-    backupPath := config.Fingerfullpath + ".bak"
+	backupPath := config.Fingerfullpath + ".bak"
 
-    err := os.MkdirAll(config.Datapath, os.ModePerm)
-    if err != nil {
-        return
-    }
+	err := os.MkdirAll(config.Datapath, os.ModePerm)
+	if err != nil {
+		return
+	}
 
-    // 备份旧文件
-    if _, err := os.Stat(config.Fingerfullpath); err == nil {
-        _ = os.Rename(config.Fingerfullpath, backupPath)
-    }
+	// 备份旧文件
+	if _, err := os.Stat(config.Fingerfullpath); err == nil {
+		_ = os.Rename(config.Fingerfullpath, backupPath)
+	}
 
-    // 下载新文件
-    err = downloadFile(config.FingerUrl, config.Fingerfullpath)
-    if err != nil {
-        logger.Error("Error downloading file: %v", err)
-        _ = os.Remove(config.Fingerfullpath)
-        if _, err := os.Stat(backupPath); err == nil {
-            _ = os.Rename(backupPath, config.Fingerfullpath)
-            logger.Success("Rollback to previous version.")
-        }
-        return
-    }
+	// 下载新文件
+	err = downloadFile(config.FingerUrl, config.Fingerfullpath)
+	if err != nil {
+		logger.Error("Error downloading file: %v", err)
+		_ = os.Remove(config.Fingerfullpath)
+		if _, err := os.Stat(backupPath); err == nil {
+			_ = os.Rename(backupPath, config.Fingerfullpath)
+			logger.Success("Rollback to previous version.")
+		}
+		return
+	}
 
-    // 哈希验证
-    remoteHash := getRemoteFileHash()
-    localHash := getLocalFileHash()
-    if remoteHash != "" && localHash != "" && remoteHash != localHash {
-        logger.Error("Hash mismatch. Update failed.")
-        _ = os.Remove(config.Fingerfullpath)
-        if _, err := os.Stat(backupPath); err == nil {
-            _ = os.Rename(backupPath, config.Fingerfullpath)
-            logger.Success("Rollback to previous version.")
-        }
-        return
-    }
+	// 哈希验证
+	remoteHash := getRemoteFileHash()
+	localHash := getLocalFileHash()
+	if remoteHash != "" && localHash != "" && remoteHash != localHash {
+		logger.Error("Hash mismatch. Update failed.")
+		_ = os.Remove(config.Fingerfullpath)
+		if _, err := os.Stat(backupPath); err == nil {
+			_ = os.Rename(backupPath, config.Fingerfullpath)
+			logger.Success("Rollback to previous version.")
+		}
+		return
+	}
 
-    logger.Success("Update successful.")
+	logger.Success("Update successful.")
 }
 
 func Upgrade() {
-    release, err := getLatestRelease()
-    if err != nil {
-        logger.Error("Error fetching release info: %v", err)
-        return
-    }
+	release, err := getLatestRelease()
+	if err != nil {
+		logger.Error("Error fetching release info: %v", err)
+		return
+	}
 
-    latestVersion := release.TagName
-    if latestVersion == config.Version {
-        logger.Success("Already on the latest version: %s", latestVersion)
-        return
-    }
+	latestVersion := release.TagName
+	if latestVersion == config.Version {
+		logger.Success("Already on the latest version: %s", latestVersion)
+		return
+	}
 
-    var assetName string
-    switch runtime.GOOS {
-    case "windows":
-        assetName = "windows"
-    case "linux":
-        assetName = "linux"
-    case "darwin":
-        assetName = "darwin"
-    default:
-        logger.Error("Unsupported OS: %s", runtime.GOOS)
-        return
-    }
+	var assetName string
+	switch runtime.GOOS {
+	case "windows":
+		assetName = "windows"
+	case "linux":
+		assetName = "linux"
+	case "darwin":
+		assetName = "darwin"
+	default:
+		logger.Error("Unsupported OS: %s", runtime.GOOS)
+		return
+	}
 
-    var downloadURL string
-    for _, asset := range release.Assets {
-        if strings.Contains(asset.Name, assetName) {
-            downloadURL = asset.BrowserDownloadURL
-            assetName = asset.Name
-            break
-        }
-    }
+	var downloadURL string
+	for _, asset := range release.Assets {
+		if strings.Contains(asset.Name, assetName) {
+			downloadURL = asset.BrowserDownloadURL
+			assetName = asset.Name
+			break
+		}
+	}
 
-    if downloadURL == "" {
-        logger.Error("No matching asset found for %s", assetName)
-        return
-    }
+	if downloadURL == "" {
+		logger.Error("No matching asset found for %s", assetName)
+		return
+	}
 
-    exePath, _ := os.Executable()
-    exeDir := filepath.Dir(exePath)
-    tempFile := filepath.Join(exeDir, assetName)
-    backupExe := exePath + ".old"
+	exePath, _ := os.Executable()
+	exeDir := filepath.Dir(exePath)
+	tempFile := filepath.Join(exeDir, assetName)
+	backupExe := exePath + ".old"
 
-    // 备份当前程序
-    if err := os.Rename(exePath, backupExe); err != nil {
-        logger.Error("Error backing up executable: %v", err)
-        return
-    }
+	// 下载新版本
+	if err := downloadFile(downloadURL, tempFile); err != nil {
+		logger.Error("Error downloading new version: %v", err)
+		_ = os.Remove(tempFile)
+		return
+	}
 
-    // 下载新版本
-    if err := downloadFile(downloadURL, tempFile); err != nil {
-        logger.Error("Error downloading new version: %v", err)
-        _ = os.Remove(tempFile)
-        _ = os.Rename(backupExe, exePath)
-        return
-    }
+	// 校验发布包哈希，避免下载内容被替换。
+	if err := verifyAssetChecksum(release, assetName, tempFile); err != nil {
+		logger.Error("Checksum verification failed: %v", err)
+		_ = os.Remove(tempFile)
+		return
+	}
 
-    // 解压前校验 ZIP
-    if err := verifyZip(tempFile); err != nil {
-        logger.Error("ZIP verification failed: %v", err)
-        _ = os.Remove(tempFile)
-        _ = os.Rename(backupExe, exePath)
-        return
-    }
+	// 解压前校验 ZIP
+	if err := verifyZip(tempFile); err != nil {
+		logger.Error("ZIP verification failed: %v", err)
+		_ = os.Remove(tempFile)
+		return
+	}
 
-    // 解压 ZIP 到可执行文件目录
-    if err := extractZip(tempFile, exeDir); err != nil {
-        logger.Error("Error extracting ZIP: %v", err)
-        _ = os.Remove(tempFile)
-        _ = os.Rename(backupExe, exePath)
-        return
-    }
+	// 备份当前程序
+	if err := os.Rename(exePath, backupExe); err != nil {
+		logger.Error("Error backing up executable: %v", err)
+		_ = os.Remove(tempFile)
+		return
+	}
 
-    // 清理临时文件
-    _ = os.Remove(tempFile)
-    _ = os.Remove(backupExe)
+	// 解压 ZIP 到可执行文件目录
+	if err := extractZip(tempFile, exeDir); err != nil {
+		logger.Error("Error extracting ZIP: %v", err)
+		_ = os.Remove(tempFile)
+		_ = os.Rename(backupExe, exePath)
+		return
+	}
 
-    logger.Success("Upgrade complete. New version: %s", latestVersion)
+	// 清理临时文件
+	_ = os.Remove(tempFile)
+	_ = os.Remove(backupExe)
+
+	logger.Success("Upgrade complete. New version: %s", latestVersion)
 }
 
 func extractZip(filePath, destDir string) error {
-    zipReader, err := zip.OpenReader(filePath)
-    if err != nil {
-        return err
-    }
-    defer zipReader.Close()
+	zipReader, err := zip.OpenReader(filePath)
+	if err != nil {
+		return err
+	}
+	defer zipReader.Close()
 
-    for _, file := range zipReader.File {
-        cleanedName := filepath.Clean(file.Name)
-        if filepath.IsAbs(cleanedName) || strings.Contains(cleanedName, "../") {
-            continue
-        }
-        fullPath := filepath.Join(destDir, cleanedName)
+	for _, file := range zipReader.File {
+		fullPath, ok, err := safeZipPath(destDir, file.Name)
+		if err != nil {
+			return err
+		}
+		if !ok {
+			continue
+		}
+		if file.FileInfo().Mode()&os.ModeSymlink != 0 {
+			continue
+		}
 
-        if file.FileInfo().IsDir() {
-            if err := os.MkdirAll(fullPath, file.Mode()); err != nil {
-                return err
-            }
-            continue
-        }
+		if file.FileInfo().IsDir() {
+			if err := os.MkdirAll(fullPath, file.Mode()); err != nil {
+				return err
+			}
+			continue
+		}
 
-        if err := os.MkdirAll(filepath.Dir(fullPath), os.ModePerm); err != nil {
-            return err
-        }
+		if err := os.MkdirAll(filepath.Dir(fullPath), os.ModePerm); err != nil {
+			return err
+		}
 
-        outFile, err := os.OpenFile(fullPath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, file.Mode())
-        if err != nil {
-            return err
-        }
-        defer outFile.Close()
+		outFile, err := os.OpenFile(fullPath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, file.Mode())
+		if err != nil {
+			return err
+		}
 
-        rc, err := file.Open()
-        if err != nil {
-            return err
-        }
-        defer rc.Close()
+		rc, err := file.Open()
+		if err != nil {
+			outFile.Close()
+			return err
+		}
 
-        if _, err := io.Copy(outFile, rc); err != nil {
-            return err
-        }
-    }
-    return nil
+		if _, err := io.Copy(outFile, rc); err != nil {
+			rc.Close()
+			outFile.Close()
+			return err
+		}
+		rc.Close()
+		outFile.Close()
+	}
+	return nil
+}
+
+func safeZipPath(destDir, name string) (string, bool, error) {
+	cleanedName := filepath.Clean(filepath.FromSlash(name))
+	if cleanedName == "." || filepath.IsAbs(cleanedName) {
+		return "", false, nil
+	}
+	for _, part := range strings.Split(cleanedName, string(os.PathSeparator)) {
+		if part == ".." {
+			return "", false, nil
+		}
+	}
+
+	fullPath := filepath.Join(destDir, cleanedName)
+	rel, err := filepath.Rel(destDir, fullPath)
+	if err != nil {
+		return "", false, err
+	}
+	if rel == ".." || strings.HasPrefix(rel, ".."+string(os.PathSeparator)) || filepath.IsAbs(rel) {
+		return "", false, nil
+	}
+	return fullPath, true, nil
 }
