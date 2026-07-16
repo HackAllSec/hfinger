@@ -1,0 +1,356 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/HackAllSec/hfinger/main/schemas/rule.schema.json",
+  "title": "HFinger YAML Rule",
+  "description": "Schema for HFinger server-side fingerprint YAML rules.",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/rule"
+    },
+    {
+      "type": "object",
+      "required": ["rules"],
+      "additionalProperties": false,
+      "properties": {
+        "rules": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/rule"
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "rule": {
+      "type": "object",
+      "required": ["id", "name", "category", "match"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "category": {
+          "type": "string",
+          "minLength": 1
+        },
+        "vendor": {
+          "type": "string"
+        },
+        "priority": {
+          "type": "integer"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "match": {
+          "$ref": "#/$defs/match"
+        },
+        "extract": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/extractor"
+          }
+        },
+        "negative": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/matcher"
+          }
+        },
+        "metadata": {
+          "$ref": "#/$defs/metadata"
+        },
+        "examples": {
+          "$ref": "#/$defs/examples"
+        }
+      }
+    },
+    "match": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "strategy": {
+          "type": "string",
+          "enum": ["score", "any", "all"]
+        },
+        "threshold": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "probes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/probe"
+          }
+        },
+        "matchers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/matcher"
+          }
+        }
+      },
+      "anyOf": [
+        {
+          "required": ["probes"]
+        },
+        {
+          "required": ["matchers"]
+        }
+      ]
+    },
+    "probe": {
+      "type": "object",
+      "required": ["id", "matchers"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "request": {
+          "$ref": "#/$defs/request"
+        },
+        "matchers": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/matcher"
+          }
+        }
+      }
+    },
+    "request": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "method": {
+          "type": "string"
+        },
+        "path": {
+          "type": "string"
+        },
+        "headers": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "body": {
+          "type": "string"
+        },
+        "follow_redirects": {
+          "type": "boolean"
+        },
+        "allow_status": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        }
+      }
+    },
+    "matcher": {
+      "type": "object",
+      "required": ["type"],
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "body.contains",
+            "body.regex",
+            "header.contains",
+            "header.regex",
+            "title.contains",
+            "title.regex",
+            "cookie.contains",
+            "status.eq",
+            "status.in",
+            "favicon.hash",
+            "path.exists",
+            "redirect.to",
+            "json.key.exists",
+            "json.path.eq",
+            "server.banner.contains",
+            "tls.cert.subject.contains",
+            "tls.cert.issuer.contains",
+            "tls.cert.dns.contains"
+          ]
+        },
+        "key": {
+          "type": "string"
+        },
+        "value": {
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "integer"
+            },
+            {
+              "type": "boolean"
+            }
+          ]
+        },
+        "values": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "weight": {
+          "type": "integer"
+        },
+        "evidence": {
+          "type": "string"
+        },
+        "case_sensitive": {
+          "type": "boolean"
+        },
+        "reason": {
+          "type": "string"
+        }
+      }
+    },
+    "extractor": {
+      "type": "object",
+      "required": ["name", "type", "regex"],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "key": {
+          "type": "string"
+        },
+        "regex": {
+          "type": "string"
+        },
+        "group": {
+          "type": "integer"
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "references": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "confidence": {
+          "type": "string",
+          "enum": ["low", "medium", "high"]
+        },
+        "updated_at": {
+          "type": "string"
+        },
+        "maintainers": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "notes": {
+          "type": "string"
+        }
+      }
+    },
+    "examples": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "positive": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/fixture"
+          }
+        },
+        "negative": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/fixture"
+          }
+        }
+      }
+    },
+    "fixture": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        },
+        "path": {
+          "type": "string"
+        },
+        "status_code": {
+          "type": "integer"
+        },
+        "server": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "headers": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "body": {
+          "type": "string"
+        },
+        "tls": {
+          "$ref": "#/$defs/tls"
+        }
+      }
+    },
+    "tls": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "subject": {
+          "type": "string"
+        },
+        "issuer": {
+          "type": "string"
+        },
+        "dns_names": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "alpn": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

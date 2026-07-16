@@ -274,6 +274,10 @@ rules:
                   value: login.jsp
                   weight: 100
                   evidence: Migrated response body evidence for 科荣 AIO 运营管理系统
+      negative:
+        - type: body.contains
+          value: phpMyAdmin
+          reason: Generic login pages can include login.jsp-like paths in documentation or proxy pages.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -410,6 +414,10 @@ rules:
                   value: 广联达
                   weight: 100
                   evidence: Migrated response body evidence for 广联达 Glodon
+      negative:
+        - type: body.contains
+          value: 广联达招聘
+          reason: Public corporate and recruiting pages can mention the vendor without exposing the product UI.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -778,6 +786,10 @@ rules:
                   value: canvas
                   weight: 100
                   evidence: Migrated response body evidence for 思迪数据池管理平台
+      negative:
+        - type: body.contains
+          value: Canvas LMS
+          reason: Generic canvas UI text can appear in unrelated web applications.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -1110,6 +1122,10 @@ rules:
                   value: 天融信
                   weight: 100
                   evidence: Migrated response body evidence for 天融信TopAPP负载均衡系统
+      negative:
+        - type: body.contains
+          value: 天融信招聘
+          reason: Public corporate and recruiting pages can mention the vendor without exposing the product UI.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -1474,6 +1490,10 @@ rules:
                   value: 宝塔
                   weight: 100
                   evidence: Migrated response body evidence for 宝塔-BT.cn
+      negative:
+        - type: body.contains
+          value: 宝塔面板教程
+          reason: Documentation pages can contain Baota keywords without being the server panel itself.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -9883,13 +9903,13 @@ rules:
                   weight: 100
                   evidence: Migrated response body evidence for YApi 可视化接口管理平台
                 - type: body.contains
-                  value: prd
-                  weight: 100
-                  evidence: Migrated response body evidence for YApi 可视化接口管理平台
-                - type: body.contains
                   value: 可视化接口管理平台
                   weight: 100
                   evidence: Migrated response body evidence for YApi 可视化接口管理平台
+      negative:
+        - type: body.contains
+          value: YApi 使用文档
+          reason: Documentation pages can describe YApi without being a deployed YApi service.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -12770,30 +12790,6 @@ rules:
                   value: Minio Browser
                   weight: 100
                   evidence: Migrated HTML title evidence for Minio Browser
-      metadata:
-        references:
-            - builtin:migrated-legacy-rule
-        confidence: low
-
-    - id: builtin-0857
-      name: 管理后台登录
-      category: middleware
-      tags:
-        - migrated
-        - middleware
-      match:
-        strategy: all
-        probes:
-            - id: default
-              matchers:
-                - type: title.contains
-                  value: 管理员
-                  weight: 100
-                  evidence: Migrated HTML title evidence for 管理后台登录
-                - type: title.contains
-                  value: 登录
-                  weight: 100
-                  evidence: Migrated HTML title evidence for 管理后台登录
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -22058,4 +22054,3 @@ rules:
         references:
             - builtin:migrated-legacy-rule
         confidence: low
-

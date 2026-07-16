@@ -1062,10 +1062,10 @@ rules:
                   value: webman/modules
                   weight: 100
                   evidence: Migrated response body evidence for 群晖 NAS
-                - type: body.contains
-                  value: NAS
-                  weight: 100
-                  evidence: Migrated response body evidence for 群晖 NAS
+      negative:
+        - type: body.contains
+          value: QNAP
+          reason: Avoid matching generic NAS product comparison pages.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -1754,4 +1754,3 @@ rules:
         references:
             - builtin:migrated-legacy-rule
         confidence: medium
-

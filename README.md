@@ -8,7 +8,7 @@ HFinger 是一个面向安全测试场景的服务端指纹识别工具，用于
 
 工具内置核心指纹规则，开箱即用；同时支持通过外置 YAML 规则扩展企业内部系统、社区规则和私有化产品识别能力。
 
-当前内置指纹规则 **1731** 条，覆盖产品、Web 框架、CMS、中间件、CDN/WAF 等服务端组件 **1461** 种。
+当前内置指纹规则 **1730** 条，覆盖产品、Web 框架、CMS、中间件、CDN/WAF 等服务端组件 **1460** 种。
 
 ## 工具定位
 
@@ -338,6 +338,7 @@ HFinger 内置核心规则，用户和社区规则使用 YAML 编写。
 - 新增核心规则必须提供明确 evidence、分类、引用和正负样本
 - 社区贡献优先提交 YAML 规则，内置规则由维护者审核后随版本发布
 - 规则质量以 `rules lint` 和 `rules test` 为准，不以规则数量作为主要指标
+- 规则 Schema 位于 `schemas/rule.schema.json`，可在 IDE 中关联 YAML 文件进行字段和 matcher 类型校验
 
 推荐的新规则分类包括：
 
@@ -363,6 +364,14 @@ hfinger rules doctor --max-rules 0
 ```
 
 `rules doctor` 会聚合 lint 问题、输出高频问题类型，并列出最需要治理的规则及建议修复方向。`--max-rules 0` 只输出汇总，适合 CI 基线检查。
+
+发布前检查版本和规则 Schema：
+
+```bash
+hfinger dev release-check
+```
+
+该命令会校验 `config.Version`、`CHANGELOG.md`、`winres/winres.json` 和 `schemas/rule.schema.json`，避免发布资产中的版本元数据不一致。
 
 校验外置规则：
 
@@ -492,6 +501,12 @@ hfinger passive query [jsonl-file]
     --category string        按类别过滤
     --min-confidence int     按最低置信度过滤
     --limit int              限制返回记录数量
+```
+
+开发维护命令：
+
+```text
+hfinger dev release-check     检查版本元数据和规则 Schema
 ```
 
 ## 合法使用与免责声明

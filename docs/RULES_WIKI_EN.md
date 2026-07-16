@@ -57,6 +57,8 @@ Validate the rule:
 hfinger rules lint ./example-admin.yaml
 ```
 
+If your IDE supports JSON Schema, associate `schemas/rule.schema.json` with HFinger `*.yaml` rule files to catch field, matcher type, and structure errors earlier.
+
 Use the rule:
 
 ```bash

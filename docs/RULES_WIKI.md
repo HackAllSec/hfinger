@@ -57,6 +57,8 @@ examples:
 hfinger rules lint ./example-admin.yaml
 ```
 
+如果 IDE 支持 JSON Schema，可以将 `schemas/rule.schema.json` 关联到 `*.yaml` 规则文件，提前发现字段名、matcher 类型和结构错误。
+
 使用规则：
 
 ```bash

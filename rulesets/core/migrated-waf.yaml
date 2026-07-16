@@ -223,13 +223,13 @@ rules:
                   weight: 100
                   evidence: Migrated response body evidence for 360天堤新一代智慧防火墙
                 - type: body.contains
-                  value: "360"
-                  weight: 100
-                  evidence: Migrated response body evidence for 360天堤新一代智慧防火墙
-                - type: body.contains
                   value: 360防火墙
                   weight: 100
                   evidence: Migrated response body evidence for 360天堤新一代智慧防火墙
+      negative:
+        - type: body.contains
+          value: 360安全浏览器
+          reason: Browser product pages can contain 360 and firewall-related marketing text.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -251,13 +251,13 @@ rules:
                   weight: 100
                   evidence: Migrated response body evidence for 360网神防火墙系统
                 - type: body.contains
-                  value: "360"
-                  weight: 100
-                  evidence: Migrated response body evidence for 360网神防火墙系统
-                - type: body.contains
                   value: 网神防火墙系统
                   weight: 100
                   evidence: Migrated response body evidence for 360网神防火墙系统
+      negative:
+        - type: body.contains
+          value: 360安全浏览器
+          reason: Browser product pages can contain 360 and firewall-related marketing text.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -974,4 +974,3 @@ rules:
         references:
             - builtin:migrated-legacy-rule
         confidence: low
-

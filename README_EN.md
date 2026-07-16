@@ -8,7 +8,7 @@ HFinger is a server-side fingerprinting tool for security testing. It helps iden
 
 HFinger ships with built-in core fingerprint rules and works out of the box. It also supports external YAML rules for community contributions, private products, and internal enterprise systems.
 
-The current build includes **1731** built-in fingerprint rules covering **1461** server-side products, web frameworks, CMS products, middleware, CDN/WAF providers, and related components.
+The current build includes **1730** built-in fingerprint rules covering **1460** server-side products, web frameworks, CMS products, middleware, CDN/WAF providers, and related components.
 
 ## Positioning
 
@@ -338,6 +338,7 @@ Governance principles:
 - New core rules must include clear evidence text, category, references, and positive/negative examples
 - Community contributions should use YAML; maintainers decide whether reviewed rules are promoted into built-in releases
 - Rule quality should be measured by `rules lint` and `rules test`, not by rule count alone
+- The rule schema is available at `schemas/rule.schema.json` and can be associated with YAML files in IDEs for field and matcher validation
 
 Recommended rule categories:
 
@@ -363,6 +364,14 @@ hfinger rules doctor --max-rules 0
 ```
 
 `rules doctor` aggregates lint findings, prints the most common issue types, and lists rules that should be cleaned up first with suggested remediation directions. `--max-rules 0` prints summary output only and is suitable for CI baseline checks.
+
+Check release metadata and the rule schema before publishing:
+
+```bash
+hfinger dev release-check
+```
+
+This command checks `config.Version`, `CHANGELOG.md`, `winres/winres.json`, and `schemas/rule.schema.json` to avoid inconsistent version metadata in release assets.
 
 Validate external rules:
 
@@ -492,6 +501,12 @@ hfinger passive query [jsonl-file]
     --category string        Filter by category
     --min-confidence int     Filter by minimum confidence
     --limit int              Limit returned records
+```
+
+Developer maintenance command:
+
+```text
+hfinger dev release-check     Check version metadata and the rule schema
 ```
 
 ## Legal Use and Disclaimer

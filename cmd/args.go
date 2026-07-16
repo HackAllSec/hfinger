@@ -16,6 +16,7 @@ import (
 	"hfinger/models"
 	"hfinger/output"
 	"hfinger/passive"
+	"hfinger/releasecheck"
 	"hfinger/rules"
 	"hfinger/utils"
 )
@@ -196,6 +197,7 @@ func init() {
 	RootCmd.AddCommand(rulesCmd)
 	RootCmd.AddCommand(passiveCmd)
 	RootCmd.AddCommand(tlsCmd)
+	RootCmd.AddCommand(devCmd)
 }
 
 var rulesCmd = &cobra.Command{
@@ -213,6 +215,11 @@ var tlsCmd = &cobra.Command{
 	Short: "Inspect TLS and TLCP capabilities",
 }
 
+var devCmd = &cobra.Command{
+	Use:   "dev",
+	Short: "Developer maintenance commands",
+}
+
 var tlsCapabilitiesCmd = &cobra.Command{
 	Use:   "capabilities",
 	Short: "Show built-in TLS and TLCP providers",
@@ -220,6 +227,22 @@ var tlsCapabilitiesCmd = &cobra.Command{
 		for _, capability := range utils.TLSCapabilities() {
 			fmt.Println(capability)
 		}
+	},
+}
+
+var devReleaseCheckCmd = &cobra.Command{
+	Use:   "release-check",
+	Short: "Check release version metadata and rule schema presence",
+	Run: func(cmd *cobra.Command, args []string) {
+		report, err := releasecheck.Check()
+		if err != nil {
+			logger.Error("Error: %v", err)
+			os.Exit(1)
+		}
+		fmt.Printf("version=%s\n", report.Version)
+		fmt.Printf("changelog.version=%s\n", report.ChangelogVersion)
+		fmt.Printf("winres.version=%s\n", report.WinresVersion)
+		fmt.Printf("schema=%s\n", report.SchemaPath)
 	},
 }
 
@@ -478,4 +501,5 @@ func init() {
 	passiveCmd.AddCommand(passiveQueryCmd)
 
 	tlsCmd.AddCommand(tlsCapabilitiesCmd)
+	devCmd.AddCommand(devReleaseCheckCmd)
 }
