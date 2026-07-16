@@ -8,7 +8,7 @@ HFinger is a server-side fingerprinting tool for security testing. It helps iden
 
 HFinger ships with built-in core fingerprint rules and works out of the box. It also supports external YAML rules for community contributions, private products, and internal enterprise systems.
 
-The current build includes **1671** built-in fingerprint rules covering **1409** server-side products, web frameworks, CMS products, middleware, CDN/WAF providers, and related components.
+The current build includes **1711** built-in fingerprint rules covering **1444** server-side products, web frameworks, CMS products, middleware, CDN/WAF providers, and related components.
 
 ## Positioning
 

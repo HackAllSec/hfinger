@@ -1805,3 +1805,1084 @@ rules:
           body: "dify"
       negative:
         - body: "Dify documentation"
+
+  - id: core-0051-portainer
+    name: Portainer
+    category: devops
+    vendor: Portainer
+    priority: 85
+    tags: [portainer, docker, container]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: portainer
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: Portainer
+              weight: 55
+              evidence: Portainer page title
+            - type: body.contains
+              value: "portainer"
+              weight: 45
+              evidence: Portainer frontend marker
+    negative: [{type: body.contains, value: "Portainer documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://www.portainer.io/"], confidence: high}
+    examples:
+      positive: [{title: Portainer, body: "portainer"}]
+      negative: [{body: "Portainer documentation"}]
+
+  - id: core-0052-rancher
+    name: Rancher
+    category: cloud-native
+    vendor: SUSE
+    priority: 85
+    tags: [rancher, kubernetes, cloud-native]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: rancher
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: Rancher
+              weight: 55
+              evidence: Rancher page title
+            - type: body.contains
+              value: "rancher"
+              weight: 45
+              evidence: Rancher frontend marker
+    negative: [{type: body.contains, value: "Rancher documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://www.rancher.com/"], confidence: high}
+    examples:
+      positive: [{title: Rancher, body: "rancher"}]
+      negative: [{body: "Rancher documentation"}]
+
+  - id: core-0053-longhorn
+    name: Longhorn
+    category: cloud-native
+    vendor: SUSE
+    priority: 80
+    tags: [longhorn, kubernetes, storage]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: longhorn
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: Longhorn
+              weight: 55
+              evidence: Longhorn UI title
+            - type: body.contains
+              value: "longhorn"
+              weight: 45
+              evidence: Longhorn frontend marker
+    negative: [{type: body.contains, value: "Longhorn documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://longhorn.io/"], confidence: high}
+    examples:
+      positive: [{title: Longhorn, body: "longhorn"}]
+      negative: [{body: "Longhorn documentation"}]
+
+  - id: core-0054-kubesphere
+    name: KubeSphere
+    category: cloud-native
+    vendor: KubeSphere
+    priority: 85
+    tags: [kubesphere, kubernetes, cloud-native]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: kubesphere
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: KubeSphere
+              weight: 55
+              evidence: KubeSphere title
+            - type: body.contains
+              value: "kubesphere"
+              weight: 45
+              evidence: KubeSphere frontend marker
+    negative: [{type: body.contains, value: "KubeSphere documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://kubesphere.io/"], confidence: high}
+    examples:
+      positive: [{title: KubeSphere, body: "kubesphere"}]
+      negative: [{body: "KubeSphere documentation"}]
+
+  - id: core-0055-openshift-console
+    name: OpenShift Console
+    category: cloud-native
+    vendor: Red Hat
+    priority: 85
+    tags: [openshift, kubernetes, cloud-native]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: openshift-console
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: OpenShift
+              weight: 50
+              evidence: OpenShift console title
+            - type: body.contains
+              value: "openshift-console"
+              weight: 50
+              evidence: OpenShift console marker
+    negative: [{type: body.contains, value: "OpenShift documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://www.redhat.com/en/technologies/cloud-computing/openshift"], confidence: high}
+    examples:
+      positive: [{title: OpenShift Console, body: "openshift-console"}]
+      negative: [{body: "OpenShift documentation"}]
+
+  - id: core-0056-gitea
+    name: Gitea
+    category: devops
+    vendor: Gitea
+    priority: 80
+    tags: [gitea, git, scm]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: gitea
+          request: {method: GET, path: /}
+          matchers:
+            - type: body.contains
+              value: "content=\"Gitea"
+              weight: 55
+              evidence: Gitea meta generator
+            - type: cookie.contains
+              value: "i_like_gitea"
+              weight: 45
+              evidence: Gitea session cookie
+    negative: [{type: body.contains, value: "Gitea documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://about.gitea.com/"], confidence: high}
+    examples:
+      positive: [{headers: {Set-Cookie: "i_like_gitea=abc"}, body: 'content="Gitea - Git with a cup of tea"'}]
+      negative: [{body: "Gitea documentation"}]
+
+  - id: core-0057-gogs
+    name: Gogs
+    category: devops
+    vendor: Gogs
+    priority: 75
+    tags: [gogs, git, scm]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: gogs
+          request: {method: GET, path: /}
+          matchers:
+            - type: body.contains
+              value: "content=\"Gogs"
+              weight: 55
+              evidence: Gogs meta generator
+            - type: cookie.contains
+              value: "i_like_gogs"
+              weight: 45
+              evidence: Gogs session cookie
+    negative: [{type: body.contains, value: "Gogs documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://gogs.io/"], confidence: high}
+    examples:
+      positive: [{headers: {Set-Cookie: "i_like_gogs=abc"}, body: 'content="Gogs"'}]
+      negative: [{body: "Gogs documentation"}]
+
+  - id: core-0058-drone-ci
+    name: Drone CI
+    category: devops
+    vendor: Drone
+    priority: 75
+    tags: [drone, ci, devops]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: drone-ci
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: Drone
+              weight: 50
+              evidence: Drone CI title
+            - type: body.contains
+              value: "drone-ui"
+              weight: 50
+              evidence: Drone UI marker
+    negative: [{type: body.contains, value: "Drone documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://www.drone.io/"], confidence: high}
+    examples:
+      positive: [{title: Drone, body: "drone-ui"}]
+      negative: [{body: "Drone documentation"}]
+
+  - id: core-0059-teamcity
+    name: TeamCity
+    category: devops
+    vendor: JetBrains
+    priority: 80
+    tags: [teamcity, ci, devops]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: teamcity
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: TeamCity
+              weight: 50
+              evidence: TeamCity title
+            - type: cookie.contains
+              value: "TCSESSIONID"
+              weight: 50
+              evidence: TeamCity session cookie
+    negative: [{type: body.contains, value: "TeamCity documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://www.jetbrains.com/teamcity/"], confidence: high}
+    examples:
+      positive: [{title: TeamCity, headers: {Set-Cookie: "TCSESSIONID=abc"}}]
+      negative: [{body: "TeamCity documentation"}]
+
+  - id: core-0060-rundeck
+    name: Rundeck
+    category: devops
+    vendor: Rundeck
+    priority: 75
+    tags: [rundeck, automation, devops]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: rundeck
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: Rundeck
+              weight: 55
+              evidence: Rundeck title
+            - type: cookie.contains
+              value: "rundeck"
+              weight: 45
+              evidence: Rundeck cookie marker
+    negative: [{type: body.contains, value: "Rundeck documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://www.rundeck.com/open-source"], confidence: high}
+    examples:
+      positive: [{title: Rundeck, headers: {Set-Cookie: "rundeck=abc"}}]
+      negative: [{body: "Rundeck documentation"}]
+
+  - id: core-0061-awx
+    name: AWX
+    category: devops
+    vendor: Ansible
+    priority: 80
+    tags: [awx, ansible, automation]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: awx
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: AWX Login
+              weight: 55
+              evidence: AWX title
+            - type: body.contains
+              value: "awx-logo"
+              weight: 45
+              evidence: AWX frontend marker
+    negative: [{type: body.contains, value: "AWX documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://github.com/ansible/awx"], confidence: high}
+    examples:
+      positive: [{title: AWX Login, body: "awx-logo"}]
+      negative: [{body: "AWX documentation"}]
+
+  - id: core-0062-zabbix
+    name: Zabbix
+    category: observability
+    vendor: Zabbix
+    priority: 80
+    tags: [zabbix, monitoring, observability]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: zabbix
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: Zabbix
+              weight: 55
+              evidence: Zabbix title
+            - type: body.contains
+              value: "zabbix"
+              weight: 45
+              evidence: Zabbix frontend marker
+    negative: [{type: body.contains, value: "Zabbix documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://www.zabbix.com/"], confidence: high}
+    examples:
+      positive: [{title: Zabbix, body: "zabbix"}]
+      negative: [{body: "Zabbix documentation"}]
+
+  - id: core-0063-nagios
+    name: Nagios
+    category: observability
+    vendor: Nagios
+    priority: 75
+    tags: [nagios, monitoring, observability]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: nagios
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: Nagios
+              weight: 55
+              evidence: Nagios title
+            - type: body.contains
+              value: "nagios"
+              weight: 45
+              evidence: Nagios body marker
+    negative: [{type: body.contains, value: "Nagios documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://www.nagios.org/"], confidence: high}
+    examples:
+      positive: [{title: Nagios, body: "nagios"}]
+      negative: [{body: "Nagios documentation"}]
+
+  - id: core-0064-netdata
+    name: Netdata
+    category: observability
+    vendor: Netdata
+    priority: 80
+    tags: [netdata, monitoring, observability]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: netdata
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: Netdata
+              weight: 55
+              evidence: Netdata dashboard title
+            - type: body.contains
+              value: "netdata"
+              weight: 45
+              evidence: Netdata frontend marker
+    negative: [{type: body.contains, value: "Netdata documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://www.netdata.cloud/"], confidence: high}
+    examples:
+      positive: [{title: Netdata, body: "netdata"}]
+      negative: [{body: "Netdata documentation"}]
+
+  - id: core-0065-graylog
+    name: Graylog
+    category: observability
+    vendor: Graylog
+    priority: 80
+    tags: [graylog, logs, observability]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: graylog
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: Graylog
+              weight: 55
+              evidence: Graylog title
+            - type: body.contains
+              value: "graylog"
+              weight: 45
+              evidence: Graylog frontend marker
+    negative: [{type: body.contains, value: "Graylog documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://graylog.org/"], confidence: high}
+    examples:
+      positive: [{title: Graylog, body: "graylog"}]
+      negative: [{body: "Graylog documentation"}]
+
+  - id: core-0066-jaeger
+    name: Jaeger UI
+    category: observability
+    vendor: Jaeger
+    priority: 80
+    tags: [jaeger, tracing, observability]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: jaeger
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: Jaeger UI
+              weight: 55
+              evidence: Jaeger UI title
+            - type: body.contains
+              value: "jaeger"
+              weight: 45
+              evidence: Jaeger frontend marker
+    negative: [{type: body.contains, value: "Jaeger documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://www.jaegertracing.io/"], confidence: high}
+    examples:
+      positive: [{title: Jaeger UI, body: "jaeger"}]
+      negative: [{body: "Jaeger documentation"}]
+
+  - id: core-0067-zipkin
+    name: Zipkin
+    category: observability
+    vendor: OpenZipkin
+    priority: 75
+    tags: [zipkin, tracing, observability]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: zipkin
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: Zipkin
+              weight: 55
+              evidence: Zipkin title
+            - type: body.contains
+              value: "zipkin"
+              weight: 45
+              evidence: Zipkin frontend marker
+    negative: [{type: body.contains, value: "Zipkin documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://zipkin.io/"], confidence: high}
+    examples:
+      positive: [{title: Zipkin, body: "zipkin"}]
+      negative: [{body: "Zipkin documentation"}]
+
+  - id: core-0068-victoriametrics
+    name: VictoriaMetrics
+    category: observability
+    vendor: VictoriaMetrics
+    priority: 80
+    tags: [victoriametrics, metrics, observability]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: victoriametrics
+          request: {method: GET, path: /}
+          matchers:
+            - type: body.contains
+              value: "VictoriaMetrics"
+              weight: 55
+              evidence: VictoriaMetrics body marker
+            - type: header.contains
+              key: Server
+              value: "VictoriaMetrics"
+              weight: 45
+              evidence: VictoriaMetrics Server header
+    negative: [{type: body.contains, value: "VictoriaMetrics documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://victoriametrics.com/"], confidence: high}
+    examples:
+      positive: [{headers: {Server: "VictoriaMetrics"}, body: "VictoriaMetrics"}]
+      negative: [{body: "VictoriaMetrics documentation"}]
+
+  - id: core-0069-thanos
+    name: Thanos
+    category: observability
+    vendor: Thanos
+    priority: 75
+    tags: [thanos, prometheus, observability]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: thanos
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: Thanos
+              weight: 55
+              evidence: Thanos UI title
+            - type: body.contains
+              value: "thanos"
+              weight: 45
+              evidence: Thanos frontend marker
+    negative: [{type: body.contains, value: "Thanos documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://thanos.io/"], confidence: high}
+    examples:
+      positive: [{title: Thanos, body: "thanos"}]
+      negative: [{body: "Thanos documentation"}]
+
+  - id: core-0070-apache-superset
+    name: Apache Superset
+    category: observability
+    vendor: Apache
+    priority: 80
+    tags: [superset, bi, analytics]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: apache-superset
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: Superset
+              weight: 55
+              evidence: Superset title
+            - type: body.contains
+              value: "superset"
+              weight: 45
+              evidence: Superset frontend marker
+    negative: [{type: body.contains, value: "Apache Superset documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://superset.apache.org/"], confidence: high}
+    examples:
+      positive: [{title: Superset, body: "superset"}]
+      negative: [{body: "Apache Superset documentation"}]
+
+  - id: core-0071-metabase
+    name: Metabase
+    category: observability
+    vendor: Metabase
+    priority: 80
+    tags: [metabase, bi, analytics]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: metabase
+          request: {method: GET, path: /}
+          matchers:
+            - type: body.contains
+              value: "_metabase"
+              weight: 55
+              evidence: Metabase frontend asset marker
+            - type: title.contains
+              value: Metabase
+              weight: 45
+              evidence: Metabase title
+    negative: [{type: body.contains, value: "Metabase documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://www.metabase.com/"], confidence: high}
+    examples:
+      positive: [{title: Metabase, body: "_metabase"}]
+      negative: [{body: "Metabase documentation"}]
+
+  - id: core-0072-redash
+    name: Redash
+    category: observability
+    vendor: Redash
+    priority: 75
+    tags: [redash, bi, analytics]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: redash
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: Redash
+              weight: 55
+              evidence: Redash title
+            - type: body.contains
+              value: "redash"
+              weight: 45
+              evidence: Redash frontend marker
+    negative: [{type: body.contains, value: "Redash documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://redash.io/"], confidence: high}
+    examples:
+      positive: [{title: Redash, body: "redash"}]
+      negative: [{body: "Redash documentation"}]
+
+  - id: core-0073-hasura
+    name: Hasura Console
+    category: api-gateway
+    vendor: Hasura
+    priority: 80
+    tags: [hasura, graphql, api]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: hasura
+          request: {method: GET, path: /console}
+          matchers:
+            - type: title.contains
+              value: Hasura
+              weight: 55
+              evidence: Hasura Console title
+            - type: body.contains
+              value: "hasura"
+              weight: 45
+              evidence: Hasura frontend marker
+    negative: [{type: body.contains, value: "Hasura documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://hasura.io/"], confidence: high}
+    examples:
+      positive: [{path: /console, title: Hasura, body: "hasura"}]
+      negative: [{body: "Hasura documentation"}]
+
+  - id: core-0074-apollo-config
+    name: Apollo Config Service
+    category: middleware
+    vendor: Ctrip
+    priority: 80
+    tags: [apollo, config, middleware]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: apollo-config
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: Apollo
+              weight: 50
+              evidence: Apollo title
+            - type: body.contains
+              value: "apollo"
+              weight: 40
+              evidence: Apollo body marker
+    negative: [{type: body.contains, value: "Apollo documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://github.com/apolloconfig/apollo"], confidence: high}
+    examples:
+      positive: [{title: Apollo, body: "apollo"}]
+      negative: [{body: "Apollo documentation"}]
+
+  - id: core-0075-emqx-dashboard
+    name: EMQX Dashboard
+    category: middleware
+    vendor: EMQ
+    priority: 80
+    tags: [emqx, mqtt, middleware]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: emqx-dashboard
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: EMQX
+              weight: 55
+              evidence: EMQX Dashboard title
+            - type: body.contains
+              value: "emqx"
+              weight: 45
+              evidence: EMQX frontend marker
+    negative: [{type: body.contains, value: "EMQX documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://www.emqx.io/"], confidence: high}
+    examples:
+      positive: [{title: EMQX, body: "emqx"}]
+      negative: [{body: "EMQX documentation"}]
+
+  - id: core-0076-thingsboard
+    name: ThingsBoard
+    category: iot-device
+    vendor: ThingsBoard
+    priority: 80
+    tags: [thingsboard, iot, platform]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: thingsboard
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: ThingsBoard
+              weight: 55
+              evidence: ThingsBoard title
+            - type: body.contains
+              value: "thingsboard"
+              weight: 45
+              evidence: ThingsBoard frontend marker
+    negative: [{type: body.contains, value: "ThingsBoard documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://thingsboard.io/"], confidence: high}
+    examples:
+      positive: [{title: ThingsBoard, body: "thingsboard"}]
+      negative: [{body: "ThingsBoard documentation"}]
+
+  - id: core-0077-mlflow
+    name: MLflow
+    category: ai-service
+    vendor: MLflow
+    priority: 85
+    tags: [ai, mlflow, mlops]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: mlflow
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: MLflow
+              weight: 55
+              evidence: MLflow title
+            - type: body.contains
+              value: "mlflow"
+              weight: 45
+              evidence: MLflow frontend marker
+    negative: [{type: body.contains, value: "MLflow documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://mlflow.org/"], confidence: high}
+    examples:
+      positive: [{title: MLflow, body: "mlflow"}]
+      negative: [{body: "MLflow documentation"}]
+
+  - id: core-0078-ray-dashboard
+    name: Ray Dashboard
+    category: ai-service
+    vendor: Anyscale
+    priority: 80
+    tags: [ai, ray, dashboard]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: ray-dashboard
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: Ray Dashboard
+              weight: 55
+              evidence: Ray Dashboard title
+            - type: body.contains
+              value: "ray-dashboard"
+              weight: 45
+              evidence: Ray Dashboard frontend marker
+    negative: [{type: body.contains, value: "Ray documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://docs.ray.io/"], confidence: high}
+    examples:
+      positive: [{title: Ray Dashboard, body: "ray-dashboard"}]
+      negative: [{body: "Ray documentation"}]
+
+  - id: core-0079-comfyui
+    name: ComfyUI
+    category: ai-service
+    vendor: ComfyUI
+    priority: 85
+    tags: [ai, image-generation, comfyui]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: comfyui
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: ComfyUI
+              weight: 55
+              evidence: ComfyUI title
+            - type: body.contains
+              value: "ComfyUI"
+              weight: 45
+              evidence: ComfyUI body marker
+    negative: [{type: body.contains, value: "ComfyUI documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://github.com/comfyanonymous/ComfyUI"], confidence: high}
+    examples:
+      positive: [{title: ComfyUI, body: "ComfyUI"}]
+      negative: [{body: "ComfyUI documentation"}]
+
+  - id: core-0080-langfuse
+    name: Langfuse
+    category: ai-service
+    vendor: Langfuse
+    priority: 80
+    tags: [ai, llmops, observability]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: langfuse
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: Langfuse
+              weight: 55
+              evidence: Langfuse title
+            - type: body.contains
+              value: "langfuse"
+              weight: 45
+              evidence: Langfuse frontend marker
+    negative: [{type: body.contains, value: "Langfuse documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://langfuse.com/"], confidence: high}
+    examples:
+      positive: [{title: Langfuse, body: "langfuse"}]
+      negative: [{body: "Langfuse documentation"}]
+
+  - id: core-0081-anythingllm
+    name: AnythingLLM
+    category: ai-service
+    vendor: Mintplex Labs
+    priority: 80
+    tags: [ai, llm, rag]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: anythingllm
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: AnythingLLM
+              weight: 55
+              evidence: AnythingLLM title
+            - type: body.contains
+              value: "anythingllm"
+              weight: 45
+              evidence: AnythingLLM frontend marker
+    negative: [{type: body.contains, value: "AnythingLLM documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://github.com/Mintplex-Labs/anything-llm"], confidence: high}
+    examples:
+      positive: [{title: AnythingLLM, body: "anythingllm"}]
+      negative: [{body: "AnythingLLM documentation"}]
+
+  - id: core-0082-flowise
+    name: Flowise
+    category: ai-service
+    vendor: FlowiseAI
+    priority: 80
+    tags: [ai, llmops, flowise]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: flowise
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: Flowise
+              weight: 55
+              evidence: Flowise title
+            - type: body.contains
+              value: "flowise"
+              weight: 45
+              evidence: Flowise frontend marker
+    negative: [{type: body.contains, value: "Flowise documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://github.com/FlowiseAI/Flowise"], confidence: high}
+    examples:
+      positive: [{title: Flowise, body: "flowise"}]
+      negative: [{body: "Flowise documentation"}]
+
+  - id: core-0083-qdrant-dashboard
+    name: Qdrant Dashboard
+    category: database
+    vendor: Qdrant
+    priority: 75
+    tags: [vector-database, qdrant, ai]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: qdrant-dashboard
+          request: {method: GET, path: /dashboard}
+          matchers:
+            - type: title.contains
+              value: Qdrant
+              weight: 55
+              evidence: Qdrant dashboard title
+            - type: body.contains
+              value: "qdrant"
+              weight: 45
+              evidence: Qdrant frontend marker
+    negative: [{type: body.contains, value: "Qdrant documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://qdrant.tech/"], confidence: high}
+    examples:
+      positive: [{path: /dashboard, title: Qdrant, body: "qdrant"}]
+      negative: [{body: "Qdrant documentation"}]
+
+  - id: core-0084-milvus
+    name: Milvus
+    category: database
+    vendor: Zilliz
+    priority: 75
+    tags: [vector-database, milvus, ai]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: milvus
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: Milvus
+              weight: 55
+              evidence: Milvus title
+            - type: body.contains
+              value: "milvus"
+              weight: 45
+              evidence: Milvus body marker
+    negative: [{type: body.contains, value: "Milvus documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://milvus.io/"], confidence: high}
+    examples:
+      positive: [{title: Milvus, body: "milvus"}]
+      negative: [{body: "Milvus documentation"}]
+
+  - id: core-0085-weaviate
+    name: Weaviate
+    category: database
+    vendor: Weaviate
+    priority: 75
+    tags: [vector-database, weaviate, ai]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: weaviate
+          request: {method: GET, path: /v1/meta}
+          matchers:
+            - type: json.key.exists
+              value: version
+              weight: 45
+              evidence: Weaviate meta version key
+            - type: body.contains
+              value: "weaviate"
+              weight: 45
+              evidence: Weaviate meta response marker
+    negative: [{type: body.contains, value: "Weaviate documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://weaviate.io/developers/weaviate/api/rest"], confidence: medium}
+    examples:
+      positive: [{path: /v1/meta, body: '{"hostname":"weaviate","version":"1.25.0"}'}]
+      negative: [{body: "Weaviate documentation"}]
+
+  - id: core-0086-opensearch-dashboards
+    name: OpenSearch Dashboards
+    category: observability
+    vendor: OpenSearch
+    priority: 80
+    tags: [opensearch, dashboards, observability]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: opensearch-dashboards
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: OpenSearch Dashboards
+              weight: 55
+              evidence: OpenSearch Dashboards title
+            - type: body.contains
+              value: "opensearchDashboards"
+              weight: 45
+              evidence: OpenSearch Dashboards bootstrap marker
+    negative: [{type: body.contains, value: "OpenSearch documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://opensearch.org/docs/latest/dashboards/"], confidence: high}
+    examples:
+      positive: [{title: OpenSearch Dashboards, body: "opensearchDashboards"}]
+      negative: [{body: "OpenSearch documentation"}]
+
+  - id: core-0087-haproxy-stats
+    name: HAProxy Stats
+    category: api-gateway
+    vendor: HAProxy
+    priority: 75
+    tags: [haproxy, load-balancer, stats]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: haproxy-stats
+          request: {method: GET, path: "/haproxy?stats"}
+          matchers:
+            - type: title.contains
+              value: HAProxy Statistics
+              weight: 55
+              evidence: HAProxy stats title
+            - type: body.contains
+              value: "Statistics Report for HAProxy"
+              weight: 45
+              evidence: HAProxy stats report marker
+    negative: [{type: body.contains, value: "HAProxy documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://www.haproxy.org/"], confidence: high}
+    examples:
+      positive: [{path: "/haproxy?stats", title: HAProxy Statistics, body: "Statistics Report for HAProxy"}]
+      negative: [{body: "HAProxy documentation"}]
+
+  - id: core-0088-nginx-proxy-manager
+    name: Nginx Proxy Manager
+    category: api-gateway
+    vendor: Nginx Proxy Manager
+    priority: 75
+    tags: [nginx, proxy, gateway]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: nginx-proxy-manager
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: Nginx Proxy Manager
+              weight: 55
+              evidence: Nginx Proxy Manager title
+            - type: body.contains
+              value: "nginx-proxy-manager"
+              weight: 45
+              evidence: Nginx Proxy Manager frontend marker
+    negative: [{type: body.contains, value: "Nginx Proxy Manager documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://nginxproxymanager.com/"], confidence: high}
+    examples:
+      positive: [{title: Nginx Proxy Manager, body: "nginx-proxy-manager"}]
+      negative: [{body: "Nginx Proxy Manager documentation"}]
+
+  - id: core-0089-pgadmin
+    name: pgAdmin
+    category: database
+    vendor: pgAdmin
+    priority: 75
+    tags: [postgresql, pgadmin, database]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: pgadmin
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: pgAdmin
+              weight: 55
+              evidence: pgAdmin title
+            - type: body.contains
+              value: "pgadmin"
+              weight: 45
+              evidence: pgAdmin frontend marker
+    negative: [{type: body.contains, value: "pgAdmin documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://www.pgadmin.org/"], confidence: high}
+    examples:
+      positive: [{title: pgAdmin, body: "pgadmin"}]
+      negative: [{body: "pgAdmin documentation"}]
+
+  - id: core-0090-adminer
+    name: Adminer
+    category: database
+    vendor: Adminer
+    priority: 75
+    tags: [database, adminer, db-admin]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: adminer
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: Adminer
+              weight: 55
+              evidence: Adminer title
+            - type: body.contains
+              value: "https://www.adminer.org/"
+              weight: 45
+              evidence: Adminer footer link marker
+    negative: [{type: body.contains, value: "Adminer documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://www.adminer.org/"], confidence: high}
+    examples:
+      positive: [{title: Adminer, body: "https://www.adminer.org/"}]
+      negative: [{body: "Adminer documentation"}]
