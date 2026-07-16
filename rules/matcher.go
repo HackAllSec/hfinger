@@ -16,7 +16,7 @@ func MatchRules(responses []Response, ruleSet []Rule) []MatchResult {
 }
 
 func MatchRule(responses []Response, rule Rule) MatchResult {
-	return matchCompiledRule(prepareResponses(responses), compileRule(rule))
+	return matchCompiledRule(prepareResponseSet(responses), compileRule(rule))
 }
 
 func normalizedProbes(rule Rule) []Probe {

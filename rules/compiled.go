@@ -78,6 +78,12 @@ type preparedResponse struct {
 	jsonData   interface{}
 }
 
+type preparedResponses struct {
+	items     []*preparedResponse
+	byProbeID map[string][]*preparedResponse
+	byPath    map[string][]*preparedResponse
+}
+
 type preparedHeaderIndex struct {
 	keys            []string
 	lowerKeys       []string
@@ -329,7 +335,15 @@ func writeCacheInt64(cacheHash *maphash.Hash, value int64) {
 }
 
 func prepareResponses(responses []Response) []*preparedResponse {
-	prepared := make([]*preparedResponse, 0, len(responses))
+	return prepareResponseSet(responses).items
+}
+
+func prepareResponseSet(responses []Response) preparedResponses {
+	prepared := preparedResponses{
+		items:     make([]*preparedResponse, 0, len(responses)),
+		byProbeID: make(map[string][]*preparedResponse),
+		byPath:    make(map[string][]*preparedResponse),
+	}
 	for _, response := range responses {
 		body := string(response.Body)
 		tlsDNS := strings.Join(response.TLS.DNSNames, ",")
@@ -338,7 +352,7 @@ func prepareResponses(responses []Response) []*preparedResponse {
 			hash := int32(murmur3.SeedSum32(0, response.Favicon))
 			faviconHash = strconv.FormatInt(int64(hash), 10)
 		}
-		prepared = append(prepared, &preparedResponse{
+		item := &preparedResponse{
 			response: response,
 
 			body:      body,
@@ -365,7 +379,14 @@ func prepareResponses(responses []Response) []*preparedResponse {
 			lowerTLSALPN:    strings.ToLower(response.TLS.ALPN),
 
 			faviconHash: faviconHash,
-		})
+		}
+		prepared.items = append(prepared.items, item)
+		if response.ProbeID != "" {
+			prepared.byProbeID[response.ProbeID] = append(prepared.byProbeID[response.ProbeID], item)
+		}
+		if response.Path != "" {
+			prepared.byPath[response.Path] = append(prepared.byPath[response.Path], item)
+		}
 	}
 	return prepared
 }
@@ -395,7 +416,7 @@ func buildPreparedHeaderIndex(headers http.Header) preparedHeaderIndex {
 }
 
 func matchCompiledRules(responses []Response, compiled []compiledRule) []MatchResult {
-	prepared := prepareResponses(responses)
+	prepared := prepareResponseSet(responses)
 	results := make([]MatchResult, 0)
 	for _, rule := range compiled {
 		result := matchCompiledRule(prepared, rule)
@@ -406,14 +427,14 @@ func matchCompiledRules(responses []Response, compiled []compiledRule) []MatchRe
 	return results
 }
 
-func matchCompiledRule(responses []*preparedResponse, rule compiledRule) MatchResult {
+func matchCompiledRule(responses preparedResponses, rule compiledRule) MatchResult {
 	result := MatchResult{Rule: rule.rule}
-	if len(responses) == 0 {
+	if len(responses.items) == 0 {
 		return result
 	}
 
 	for _, negative := range rule.negative {
-		if evidence, ok := matchAnyPreparedResponse(responses, negative); ok {
+		if evidence, ok := matchAnyPreparedResponse(responses.items, negative); ok {
 			result.Excluded = true
 			result.ExcludeBy = append(result.ExcludeBy, evidence)
 			return result
@@ -442,7 +463,7 @@ func matchCompiledRule(responses []*preparedResponse, rule compiledRule) MatchRe
 			evidence.Weight = matcher.weight
 			result.Evidence = append(result.Evidence, evidence)
 			if result.Response.URL == "" {
-				result.Response = findPreparedEvidenceResponse(responses, evidence.ResponseURL)
+				result.Response = findPreparedEvidenceResponse(responses.items, evidence.ResponseURL)
 			}
 		}
 	}
@@ -459,23 +480,43 @@ func matchCompiledRule(responses []*preparedResponse, rule compiledRule) MatchRe
 	result.Score = totalScore
 	result.Confidence = confidence(totalScore, rule.totalPossible, rule.threshold, rule.strategy)
 	if result.Matched {
-		result.Version = extractCompiledVersion(responses, rule)
+		result.Version = extractCompiledVersion(responses.items, rule)
 	}
 	return result
 }
 
-func filterPreparedResponsesForProbe(responses []*preparedResponse, probe Probe) []*preparedResponse {
+func filterPreparedResponsesForProbe(responses preparedResponses, probe Probe) []*preparedResponse {
 	path := probe.Request.Path
 	if path == "" {
-		return responses
+		return responses.items
 	}
-	filtered := make([]*preparedResponse, 0, len(responses))
-	for _, response := range responses {
-		if response.response.ProbeID == probe.ID || response.response.Path == path {
-			filtered = append(filtered, response)
+	pathCandidates := responses.byPath[path]
+	if probe.ID == "" {
+		return pathCandidates
+	}
+	probeCandidates := responses.byProbeID[probe.ID]
+	if len(probeCandidates) == 0 {
+		return pathCandidates
+	}
+	if len(pathCandidates) == 0 {
+		return probeCandidates
+	}
+
+	candidates := make([]*preparedResponse, 0, len(probeCandidates)+len(pathCandidates))
+	seen := make(map[*preparedResponse]struct{}, len(probeCandidates)+len(pathCandidates))
+	candidates = appendPreparedCandidates(candidates, seen, probeCandidates)
+	return appendPreparedCandidates(candidates, seen, pathCandidates)
+}
+
+func appendPreparedCandidates(dst []*preparedResponse, seen map[*preparedResponse]struct{}, src []*preparedResponse) []*preparedResponse {
+	for _, response := range src {
+		if _, ok := seen[response]; ok {
+			continue
 		}
+		seen[response] = struct{}{}
+		dst = append(dst, response)
 	}
-	return filtered
+	return dst
 }
 
 func matchAnyPreparedResponse(responses []*preparedResponse, matcher compiledMatcher) (Evidence, bool) {

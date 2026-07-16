@@ -16,7 +16,7 @@ HFinger 的目标不是替代漏洞扫描器，而是成为安全测试链路中
 
 与传统关键词匹配工具相比，HFinger 更强调：
 
-- 核心规则内置，部署后无需携带运行时规则文件
+- 核心规则内置，部署后无需额外携带规则文件
 - 外置 YAML 规则，方便社区贡献和企业私有规则维护
 - Header、Body、Cookie、Favicon、JSON/API、TLS、Server banner 等多证据融合
 - 输出证据和置信度，便于复核和自动化编排
@@ -37,7 +37,7 @@ HFinger 的设计重点是把服务端指纹识别做成可治理、可复核、
 
 - 服务端技术栈识别
 - 主动模式和被动 MITM 模式
-- 内置核心规则，无需依赖外部 `finger.json`
+- 内置核心规则，开箱即用
 - 外置 YAML 规则加载
 - Header、Body、Title、Cookie、Status、Redirect、Favicon 等多来源匹配
 - Regex、路径探测、脚本资源、HTML Meta、JSON/API、TLS 证书和 Server banner 特征匹配
@@ -320,23 +320,22 @@ jq -r '.[] | select(.category == "middleware") | .url' hfinger.json > middleware
 
 ## 规则管理
 
-HFinger 内置核心规则，不再依赖运行时 JSON 指纹文件。用户和社区规则使用 YAML 编写。
+HFinger 内置核心规则，用户和社区规则使用 YAML 编写。
 
 ### 规则治理与内置规则源
 
-所有内置规则源统一放在 `rulesets/core/*.yaml`，发布时随二进制内置，不需要用户携带旧版 `finger.json`。
+所有内置规则源统一放在 `rulesets/core/*.yaml`，发布时随二进制内置。
 
-内置规则按质量层级和组件类别拆分：
+内置规则按来源层级和组件类别拆分：
 
-- `legacy-migrated.yaml`：已迁移的存量规则，保留覆盖面，后续逐步治理质量。
-- `curated-*.yaml`：持续治理的高价值服务端规则，按 `curated-devops.yaml`、`curated-api-gateway.yaml`、`curated-ai-service.yaml` 等类别拆分。
+- `curated-*.yaml`：持续治理的高价值服务端规则。
+- `migrated-*.yaml`：已标准化为统一 YAML schema 的存量规则，按组件类别拆分维护。
 
 这种拆分只影响维护方式，不影响运行时性能；程序启动后会统一加载并编译为内存中的运行时规则结构。
 
 治理原则：
 
 - 内置规则统一使用 YAML 语义模型：`id/name/category/vendor/tags/match/negative/metadata/examples`
-- 存量迁移规则保留可用识别能力，后续逐步补充负向 matcher 和样本
 - 新增核心规则必须提供明确 evidence、分类、引用和正负样本
 - 社区贡献优先提交 YAML 规则，内置规则由维护者审核后随版本发布
 - 规则质量以 `rules lint` 和 `rules test` 为准，不以规则数量作为主要指标

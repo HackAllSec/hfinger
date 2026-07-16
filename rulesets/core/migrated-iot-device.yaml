@@ -1,0 +1,1757 @@
+rules:
+    - id: builtin-0121
+      name: H3C Router
+      category: iot-device
+      tags:
+        - migrated
+        - iot-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: /wnm/ssl/web/frame/login.html
+                  weight: 100
+                  evidence: Migrated response body evidence for H3C Router
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0145
+      name: 群晖 NAS
+      category: iot-device
+      tags:
+        - migrated
+        - iot-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: Synology
+                  weight: 100
+                  evidence: Migrated response body evidence for 群晖 NAS
+                - type: body.contains
+                  value: webman/
+                  weight: 100
+                  evidence: Migrated response body evidence for 群晖 NAS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0243
+      name: Dahua Storm (IP Camera)
+      category: iot-device
+      tags:
+        - migrated
+        - iot-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "2019488876"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for Dahua Storm (IP Camera)
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0244
+      name: Huawei – ADSL/Router
+      category: iot-device
+      tags:
+        - migrated
+        - iot-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "-1395400951"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for Huawei – ADSL/Router
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0261
+      name: UBNT Router UI
+      category: iot-device
+      tags:
+        - migrated
+        - iot-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "-1677255344"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for UBNT Router UI
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0297
+      name: AXIS (network cameras)
+      category: iot-device
+      tags:
+        - migrated
+        - iot-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "-1616143106"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for AXIS (network cameras)
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0305
+      name: INSTAR IP Cameras
+      category: iot-device
+      tags:
+        - migrated
+        - iot-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "-1169314298"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for INSTAR IP Cameras
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0319
+      name: Dahua Storm (IP Camera)
+      category: iot-device
+      tags:
+        - migrated
+        - iot-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "833190513"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for Dahua Storm (IP Camera)
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0331
+      name: MOBOTIX Camera
+      category: iot-device
+      tags:
+        - migrated
+        - iot-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "661332347"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for MOBOTIX Camera
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0333
+      name: Vigor Router
+      category: iot-device
+      tags:
+        - migrated
+        - iot-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "104189364"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for Vigor Router
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0338
+      name: Dlink Router
+      category: iot-device
+      tags:
+        - migrated
+        - iot-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "1037387972"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for Dlink Router
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0349
+      name: truVision NVR (interlogix)
+      category: iot-device
+      tags:
+        - migrated
+        - iot-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "1782271534"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for truVision NVR (interlogix)
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0365
+      name: ALIBI NVR
+      category: iot-device
+      tags:
+        - migrated
+        - iot-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "1876585825"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for ALIBI NVR
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0370
+      name: Cisco Router
+      category: iot-device
+      tags:
+        - migrated
+        - iot-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "-299287097"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for Cisco Router
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0372
+      name: HeroSpeed Digital Technology Co. (NVR/IPC/XVR)
+      category: iot-device
+      tags:
+        - migrated
+        - iot-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "-873627015"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for HeroSpeed Digital Technology Co. (NVR/IPC/XVR)
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0411
+      name: Eltex (Router)
+      category: iot-device
+      tags:
+        - migrated
+        - iot-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "1877797890"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for Eltex (Router)
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0418
+      name: CradlePoint Technology (Router)
+      category: iot-device
+      tags:
+        - migrated
+        - iot-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "1466912879"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for CradlePoint Technology (Router)
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0423
+      name: D-Link (router/network)
+      category: iot-device
+      tags:
+        - migrated
+        - iot-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "1703788174"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for D-Link (router/network)
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0428
+      name: Ossia (Provision SR) | Webcam/IP Camera
+      category: iot-device
+      tags:
+        - migrated
+        - iot-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "-374235895"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for Ossia (Provision SR) | Webcam/IP Camera
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0429
+      name: D-Link (router/network)
+      category: iot-device
+      tags:
+        - migrated
+        - iot-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "517158172"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for D-Link (router/network)
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0445
+      name: Avtech IP Surveillance (Camera)
+      category: iot-device
+      tags:
+        - migrated
+        - iot-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "-194439630"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for Avtech IP Surveillance (Camera)
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0458
+      name: QNAP NAS Virtualization Station
+      category: iot-device
+      tags:
+        - migrated
+        - iot-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "-1041180225"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for QNAP NAS Virtualization Station
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0461
+      name: Trendnet IP camera
+      category: iot-device
+      tags:
+        - migrated
+        - iot-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "512590457"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for Trendnet IP camera
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0471
+      name: NETGEAR ReadyNAS
+      category: iot-device
+      tags:
+        - migrated
+        - iot-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "-137295400"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for NETGEAR ReadyNAS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0483
+      name: JAWS Web Server (IP Camera)
+      category: iot-device
+      tags:
+        - migrated
+        - iot-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "90066852"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for JAWS Web Server (IP Camera)
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0484
+      name: JAWS Web Server (IP Camera)
+      category: iot-device
+      tags:
+        - migrated
+        - iot-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "768231242"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for JAWS Web Server (IP Camera)
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0494
+      name: D-Link (router/network)
+      category: iot-device
+      tags:
+        - migrated
+        - iot-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "1038500535"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for D-Link (router/network)
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0495
+      name: D-Link (camera)
+      category: iot-device
+      tags:
+        - migrated
+        - iot-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "-355305208"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for D-Link (camera)
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0504
+      name: Vivotek (Camera)
+      category: iot-device
+      tags:
+        - migrated
+        - iot-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "-1654229048"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for Vivotek (Camera)
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0509
+      name: NOS Router
+      category: iot-device
+      tags:
+        - migrated
+        - iot-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "-831826827"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for NOS Router
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0526
+      name: Seagate Technology (NAS)
+      category: iot-device
+      tags:
+        - migrated
+        - iot-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "240136437"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for Seagate Technology (NAS)
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0542
+      name: Digium (Switchvox)
+      category: iot-device
+      tags:
+        - migrated
+        - iot-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "2068154487"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for Digium (Switchvox)
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0549
+      name: openmediavault (NAS)
+      category: iot-device
+      tags:
+        - migrated
+        - iot-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "-693082538"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for openmediavault (NAS)
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0555
+      name: D-Link (camera)
+      category: iot-device
+      tags:
+        - migrated
+        - iot-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "-1897829998"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for D-Link (camera)
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0592
+      name: INSTAR Full-HD IP-Camera
+      category: iot-device
+      tags:
+        - migrated
+        - iot-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "-1748763891"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for INSTAR Full-HD IP-Camera
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0611
+      name: iomega NAS
+      category: iot-device
+      tags:
+        - migrated
+        - iot-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "-689902428"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for iomega NAS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0612
+      name: iomega NAS
+      category: iot-device
+      tags:
+        - migrated
+        - iot-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "-600508822"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for iomega NAS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0613
+      name: iomega NAS
+      category: iot-device
+      tags:
+        - migrated
+        - iot-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "656868270"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for iomega NAS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0614
+      name: iomega NAS
+      category: iot-device
+      tags:
+        - migrated
+        - iot-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "-2056503929"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for iomega NAS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0615
+      name: iomega NAS
+      category: iot-device
+      tags:
+        - migrated
+        - iot-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "-1656695885"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for iomega NAS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0616
+      name: iomega NAS
+      category: iot-device
+      tags:
+        - migrated
+        - iot-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "331870709"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for iomega NAS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0617
+      name: iomega NAS
+      category: iot-device
+      tags:
+        - migrated
+        - iot-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "1241049726"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for iomega NAS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0618
+      name: iomega NAS
+      category: iot-device
+      tags:
+        - migrated
+        - iot-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "998138196"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for iomega NAS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0619
+      name: iomega NAS
+      category: iot-device
+      tags:
+        - migrated
+        - iot-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "322531336"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for iomega NAS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0620
+      name: iomega NAS
+      category: iot-device
+      tags:
+        - migrated
+        - iot-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "-401934945"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for iomega NAS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0621
+      name: iomega NAS
+      category: iot-device
+      tags:
+        - migrated
+        - iot-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "-613216179"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for iomega NAS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0623
+      name: Gargoyle Router Management Utility
+      category: iot-device
+      tags:
+        - migrated
+        - iot-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "1862132268"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for Gargoyle Router Management Utility
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0638
+      name: truVision (NVR)
+      category: iot-device
+      tags:
+        - migrated
+        - iot-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "-1093172228"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for truVision (NVR)
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0653
+      name: Bosch Security Systems (Camera)
+      category: iot-device
+      tags:
+        - migrated
+        - iot-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "-1702769256"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for Bosch Security Systems (Camera)
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0655
+      name: motionEye (camera)
+      category: iot-device
+      tags:
+        - migrated
+        - iot-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "-923693877"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for motionEye (camera)
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0683
+      name: Hikvision IP Camera
+      category: iot-device
+      tags:
+        - migrated
+        - iot-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "999357577"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for Hikvision IP Camera
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0684
+      name: IP Camera
+      category: iot-device
+      tags:
+        - migrated
+        - iot-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "492290497"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for IP Camera
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0695
+      name: 群晖 NAS
+      category: iot-device
+      tags:
+        - migrated
+        - iot-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: DiskStation
+                  weight: 100
+                  evidence: Migrated response body evidence for 群晖 NAS
+                - type: body.contains
+                  value: webman/modules
+                  weight: 100
+                  evidence: Migrated response body evidence for 群晖 NAS
+                - type: body.contains
+                  value: NAS
+                  weight: 100
+                  evidence: Migrated response body evidence for 群晖 NAS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0723
+      name: 蜂网企业流控云路由器
+      category: iot-device
+      tags:
+        - migrated
+        - iot-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: ifw8
+                  weight: 100
+                  evidence: Migrated response body evidence for 蜂网企业流控云路由器
+                - type: body.contains
+                  value: 企业级流控云路由器
+                  weight: 100
+                  evidence: Migrated response body evidence for 蜂网企业流控云路由器
+                - type: body.contains
+                  value: login
+                  weight: 100
+                  evidence: Migrated response body evidence for 蜂网企业流控云路由器
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0732
+      name: Hikvision-Cameras-and-Surveillance
+      category: iot-device
+      tags:
+        - migrated
+        - iot-device
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: header.contains
+                  value: realm="hikvision
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for Hikvision-Cameras-and-Surveillance
+                - type: header.contains
+                  value: app-webs/
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for Hikvision-Cameras-and-Surveillance
+                - type: header.contains
+                  value: dnvrs-webs
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for Hikvision-Cameras-and-Surveillance
+                - type: header.contains
+                  value: dvrdvs-webs
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for Hikvision-Cameras-and-Surveillance
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0733
+      name: Hikvision-Cameras-and-Surveillance
+      category: iot-device
+      tags:
+        - migrated
+        - iot-device
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: /hikgis/
+                  weight: 100
+                  evidence: Migrated response body evidence for Hikvision-Cameras-and-Surveillance
+                - type: body.contains
+                  value: /ui/css/ui.css?version=" + new date
+                  weight: 100
+                  evidence: Migrated response body evidence for Hikvision-Cameras-and-Surveillance
+                - type: body.contains
+                  value: ng-bind="olan.anonymous" ng-click="login
+                  weight: 100
+                  evidence: Migrated response body evidence for Hikvision-Cameras-and-Surveillance
+                - type: body.contains
+                  value: clsid:f030f48f-cd67-45d1-b622-a5d88a7bcfe9" id="hcnetvideo
+                  weight: 100
+                  evidence: Migrated response body evidence for Hikvision-Cameras-and-Surveillance
+                - type: body.contains
+                  value: clsid:7b43048f-da7a-458f-af35-d825bdbb6816
+                  weight: 100
+                  evidence: Migrated response body evidence for Hikvision-Cameras-and-Surveillance
+                - type: body.contains
+                  value: var syslanguage= navigator.browserlanguage.tolowercase(
+                  weight: 100
+                  evidence: Migrated response body evidence for Hikvision-Cameras-and-Surveillance
+                - type: body.contains
+                  value: var szlanguage = syslanguage.substring
+                  weight: 100
+                  evidence: Migrated response body evidence for Hikvision-Cameras-and-Surveillance
+                - type: body.contains
+                  value: /codebase/netvideoocx.cab
+                  weight: 100
+                  evidence: Migrated response body evidence for Hikvision-Cameras-and-Surveillance
+                - type: body.contains
+                  value: id="divanonymous"
+                  weight: 100
+                  evidence: Migrated response body evidence for Hikvision-Cameras-and-Surveillance
+                - type: body.contains
+                  value: <form action="/goform/formcobralogin
+                  weight: 100
+                  evidence: Migrated response body evidence for Hikvision-Cameras-and-Surveillance
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0739
+      name: H3C-ER3200 路由器
+      category: iot-device
+      tags:
+        - migrated
+        - iot-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: ER3200
+                  weight: 100
+                  evidence: Migrated response body evidence for H3C-ER3200 路由器
+                - type: body.contains
+                  value: home.asp
+                  weight: 100
+                  evidence: Migrated response body evidence for H3C-ER3200 路由器
+                - type: body.contains
+                  value: h3c.com
+                  weight: 100
+                  evidence: Migrated response body evidence for H3C-ER3200 路由器
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0801
+      name: WIFISKY-7层流控路由器
+      category: iot-device
+      tags:
+        - migrated
+        - iot-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: WIFISKY
+                  weight: 100
+                  evidence: Migrated response body evidence for WIFISKY-7层流控路由器
+                - type: body.contains
+                  value: adminusr
+                  weight: 100
+                  evidence: Migrated response body evidence for WIFISKY-7层流控路由器
+                - type: body.contains
+                  value: 深圳市领空技术
+                  weight: 100
+                  evidence: Migrated response body evidence for WIFISKY-7层流控路由器
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0807
+      name: 锐捷 NBR 路由器
+      category: iot-device
+      tags:
+        - migrated
+        - iot-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "738520282"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for 锐捷 NBR 路由器
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0898
+      name: Nnetgear 路由器
+      category: iot-device
+      tags:
+        - migrated
+        - iot-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: header.contains
+                  value: NETGEAR
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for Nnetgear 路由器
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0902
+      name: NUUO 摄像头
+      category: iot-device
+      tags:
+        - migrated
+        - iot-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: title.contains
+                  value: Network Video Recorder Login
+                  weight: 100
+                  evidence: Migrated HTML title evidence for NUUO 摄像头
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0918
+      name: 飞鱼星路由器/行为管理
+      category: iot-device
+      tags:
+        - migrated
+        - iot-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: content="0.2;
+                  weight: 100
+                  evidence: Migrated response body evidence for 飞鱼星路由器/行为管理
+                - type: body.contains
+                  value: /home/login.html
+                  weight: 100
+                  evidence: Migrated response body evidence for 飞鱼星路由器/行为管理
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1044
+      name: RouterOS
+      category: iot-device
+      tags:
+        - migrated
+        - iot-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: RouterOS
+                  weight: 100
+                  evidence: Migrated response body evidence for RouterOS
+                - type: body.contains
+                  value: http://wiki.mikrotik.com
+                  weight: 100
+                  evidence: Migrated response body evidence for RouterOS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1045
+      name: RouterOS
+      category: iot-device
+      tags:
+        - migrated
+        - iot-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: RouterOS
+                  weight: 100
+                  evidence: Migrated response body evidence for RouterOS
+                - type: body.contains
+                  value: http://wiki.mikrotik.com
+                  weight: 100
+                  evidence: Migrated response body evidence for RouterOS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1056
+      name: 蜂网互联-互联企业级路由器
+      category: iot-device
+      tags:
+        - migrated
+        - iot-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: 企业级流控云路由器
+                  weight: 100
+                  evidence: Migrated response body evidence for 蜂网互联-互联企业级路由器
+                - type: body.contains
+                  value: href="http://www.ifw8.cn"
+                  weight: 100
+                  evidence: Migrated response body evidence for 蜂网互联-互联企业级路由器
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1062
+      name: Redmi 路由器
+      category: iot-device
+      tags:
+        - migrated
+        - iot-device
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: title.contains
+                  value: 小米路由器
+                  weight: 100
+                  evidence: Migrated HTML title evidence for Redmi 路由器
+                - type: title.contains
+                  value: Redmi路由器
+                  weight: 100
+                  evidence: Migrated HTML title evidence for Redmi 路由器
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1063
+      name: Tenda 路由器
+      category: iot-device
+      tags:
+        - migrated
+        - iot-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: title.contains
+                  value: Tenda
+                  weight: 100
+                  evidence: Migrated HTML title evidence for Tenda 路由器
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1064
+      name: Sapido-路由器
+      category: iot-device
+      tags:
+        - migrated
+        - iot-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: <script>MML("change password");</script>
+                  weight: 100
+                  evidence: Migrated response body evidence for Sapido-路由器
+                - type: body.contains
+                  value: '><script>MML(''Traditional Chinese'''
+                  weight: 100
+                  evidence: Migrated response body evidence for Sapido-路由器
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1065
+      name: DrayTek Vigor 路由器
+      category: iot-device
+      tags:
+        - migrated
+        - iot-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: Vigor 2960
+                  weight: 100
+                  evidence: Migrated response body evidence for DrayTek Vigor 路由器
+                - type: body.contains
+                  value: "2229695"
+                  weight: 100
+                  evidence: Migrated response body evidence for DrayTek Vigor 路由器
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1328
+      name: ACME-PLC-Wireless-Router
+      category: iot-device
+      tags:
+        - migrated
+        - iot-device
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: plc systems, inc.
+                  weight: 100
+                  evidence: Migrated response body evidence for ACME-PLC-Wireless-Router
+                - type: body.contains
+                  value: lang_firmwarelogin
+                  weight: 100
+                  evidence: Migrated response body evidence for ACME-PLC-Wireless-Router
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1330
+      name: ACTi-Cameras-and-Surveillance
+      category: iot-device
+      tags:
+        - migrated
+        - iot-device
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: acti corporation all rights reserved
+                  weight: 100
+                  evidence: Migrated response body evidence for ACTi-Cameras-and-Surveillance
+                - type: body.contains
+                  value: url=/cgi-bin/videoconfiguration.cgi
+                  weight: 100
+                  evidence: Migrated response body evidence for ACTi-Cameras-and-Surveillance
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1358
+      name: ASUS-Router
+      category: iot-device
+      tags:
+        - migrated
+        - iot-device
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: header.contains
+                  value: asus wl-
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for ASUS-Router
+                - type: header.contains
+                  value: asus rt-
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for ASUS-Router
+                - type: header.contains
+                  value: asus app
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for ASUS-Router
+                - type: header.contains
+                  value: asuswrt
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for ASUS-Router
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-1403
+      name: ACTi-NVR
+      category: iot-device
+      tags:
+        - migrated
+        - iot-device
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: var szproductbrand = 'acti'
+                  weight: 100
+                  evidence: Migrated response body evidence for ACTi-NVR
+                - type: body.contains
+                  value: var szproducttype = 'nvr'
+                  weight: 100
+                  evidence: Migrated response body evidence for ACTi-NVR
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1417
+      name: adslr-Router
+      category: iot-device
+      tags:
+        - migrated
+        - iot-device
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: href="css/r1login.css"
+                  weight: 100
+                  evidence: Migrated response body evidence for adslr-Router
+                - type: body.contains
+                  value: src="chinesehl.js"
+                  weight: 100
+                  evidence: Migrated response body evidence for adslr-Router
+                - type: body.contains
+                  value: /img/r1/favicon.ico
+                  weight: 100
+                  evidence: Migrated response body evidence for adslr-Router
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1426
+      name: AirCam-Cameras-and-Surveillance
+      category: iot-device
+      tags:
+        - migrated
+        - iot-device
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: header.contains
+                  value: 'realm="aircam '
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for AirCam-Cameras-and-Surveillance
+                - type: header.contains
+                  value: realm="airlive bu-
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for AirCam-Cameras-and-Surveillance
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-1443
+      name: Aipstar-Cameras-and-Surveillance
+      category: iot-device
+      tags:
+        - migrated
+        - iot-device
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: window.location.href = "login.html";
+                  weight: 100
+                  evidence: Migrated response body evidence for Aipstar-Cameras-and-Surveillance
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1456
+      name: Alcatel_Lucent-Omniswitch
+      category: iot-device
+      tags:
+        - migrated
+        - iot-device
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: header.contains
+                  value: /web/content/login.html
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for Alcatel_Lucent-Omniswitch
+                - type: header.contains
+                  value: agranat-emweb
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for Alcatel_Lucent-Omniswitch
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-1457
+      name: Alcatel_Lucent-Omniswitch
+      category: iot-device
+      tags:
+        - migrated
+        - iot-device
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: document.write(errmsg==""?"&nbsp;"
+                  weight: 100
+                  evidence: Migrated response body evidence for Alcatel_Lucent-Omniswitch
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1610
+      name: Wisenet NVR
+      category: iot-device
+      tags:
+        - migrated
+        - iot-device
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: header.contains
+                  value: realm="Wisenet NVR"
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for Wisenet NVR
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-1616
+      name: Panasonic远程摄像机
+      category: iot-device
+      tags:
+        - migrated
+        - iot-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: header.contains
+                  value: 'Server: ver'
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for Panasonic远程摄像机
+                - type: header.contains
+                  value: rev
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for Panasonic远程摄像机
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+

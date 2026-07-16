@@ -1,0 +1,5325 @@
+rules:
+    - id: builtin-0060
+      name: TWCMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: href="/twcms/theme/default/css/global.css
+                  weight: 100
+                  evidence: Migrated response body evidence for TWCMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0068
+      name: PbootCMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: header.contains
+                  value: PbootSystem
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for PbootCMS
+                - type: header.contains
+                  value: PbootCMS
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for PbootCMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0069
+      name: PbootCMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: col-12 col-sm-6 col-lg-3 wow zoomIn
+                  weight: 100
+                  evidence: Migrated response body evidence for PbootCMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0077
+      name: Dreamer CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "-748565678"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for Dreamer CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0135
+      name: Typecho
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: typecho
+                  weight: 100
+                  evidence: Migrated response body evidence for Typecho
+                - type: body.contains
+                  value: /usr/themes/
+                  weight: 100
+                  evidence: Migrated response body evidence for Typecho
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0419
+      name: Drupal
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "-167656799"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for Drupal
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0444
+      name: Ghost (CMS)
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "-1015932800"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for Ghost (CMS)
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0467
+      name: Joomla
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "1627330242"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for Joomla
+                - type: favicon.hash
+                  value: "1747282642"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for Joomla
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0488
+      name: Joomla
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "-1950415971"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for Joomla
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0529
+      name: Joomla
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "366524387"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for Joomla
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0633
+      name: Wordpress Under Construction Icon
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "191654058"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for Wordpress Under Construction Icon
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0637
+      name: Drupal
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "1174841451"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for Drupal
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0660
+      name: Ghost (CMS)
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "-1231681737"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for Ghost (CMS)
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0677
+      name: DNN (CMS)
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "-1465479343"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for DNN (CMS)
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0705
+      name: 骑士 74CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: header.contains
+                  value: QSCMS
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for 骑士 74CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0706
+      name: 骑士 74CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: content="骑士cms
+                  weight: 100
+                  evidence: Migrated response body evidence for 骑士 74CMS
+                - type: body.contains
+                  value: content="74cms.com
+                  weight: 100
+                  evidence: Migrated response body evidence for 骑士 74CMS
+                - type: body.contains
+                  value: /templates/default/css/common.css
+                  weight: 100
+                  evidence: Migrated response body evidence for 骑士 74CMS
+                - type: body.contains
+                  value: powered by <a href="http://www.74cms.com/"
+                  weight: 100
+                  evidence: Migrated response body evidence for 骑士 74CMS
+                - type: body.contains
+                  value: qscms.root
+                  weight: 100
+                  evidence: Migrated response body evidence for 骑士 74CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0768
+      name: YzmCMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: YzmCMS
+                  weight: 100
+                  evidence: Migrated response body evidence for YzmCMS
+                - type: body.contains
+                  value: yzm-common.css
+                  weight: 100
+                  evidence: Migrated response body evidence for YzmCMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0770
+      name: Jspxcms
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: '- Powered by Jspxcms'
+                  weight: 100
+                  evidence: Migrated response body evidence for Jspxcms
+                - type: body.contains
+                  value: template/
+                  weight: 100
+                  evidence: Migrated response body evidence for Jspxcms
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0771
+      name: WordPress
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: wp-admin
+                  weight: 100
+                  evidence: Migrated response body evidence for WordPress
+                - type: body.contains
+                  value: wp-content/
+                  weight: 100
+                  evidence: Migrated response body evidence for WordPress
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0772
+      name: WordPress
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: wp-
+                  weight: 100
+                  evidence: Migrated response body evidence for WordPress
+                - type: body.contains
+                  value: wp-content/themes/
+                  weight: 100
+                  evidence: Migrated response body evidence for WordPress
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0791
+      name: JEECMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: /r/cms/www
+                  weight: 100
+                  evidence: Migrated response body evidence for JEECMS
+                - type: body.contains
+                  value: shortcut icon
+                  weight: 100
+                  evidence: Migrated response body evidence for JEECMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0798
+      name: SDCMS神盾内容管理系统
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: sdcms
+                  weight: 100
+                  evidence: Migrated response body evidence for SDCMS神盾内容管理系统
+                - type: body.contains
+                  value: login
+                  weight: 100
+                  evidence: Migrated response body evidence for SDCMS神盾内容管理系统
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0863
+      name: Drupal
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: header.contains
+                  value: Drupal
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for Drupal
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0876
+      name: CmsEasy
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: content="CmsEasy
+                  weight: 100
+                  evidence: Migrated response body evidence for CmsEasy
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0877
+      name: EmpireCMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: title.contains
+                  value: Powered by EmpireCMS
+                  weight: 100
+                  evidence: Migrated HTML title evidence for EmpireCMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0881
+      name: ESPCMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: title.contains
+                  value: Powered by ESPCMS
+                  weight: 100
+                  evidence: Migrated HTML title evidence for ESPCMS
+                - type: title.contains
+                  value: powered by espcms
+                  weight: 100
+                  evidence: Migrated HTML title evidence for ESPCMS
+                - type: title.contains
+                  value: /templates/default/style/tempates_div.css
+                  weight: 100
+                  evidence: Migrated HTML title evidence for ESPCMS
+                - type: title.contains
+                  value: infolist_fff
+                  weight: 100
+                  evidence: Migrated HTML title evidence for ESPCMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0882
+      name: KesionCMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: ks_inc/common.js
+                  weight: 100
+                  evidence: Migrated response body evidence for KesionCMS
+                - type: body.contains
+                  value: KesionCMS
+                  weight: 100
+                  evidence: Migrated response body evidence for KesionCMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0885
+      name: CMSTop
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: css/cmstop-common.css
+                  weight: 100
+                  evidence: Migrated response body evidence for CMSTop
+                - type: body.contains
+                  value: js/cmstop-common.js
+                  weight: 100
+                  evidence: Migrated response body evidence for CMSTop
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0901
+      name: FineCMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: content="FineCMS
+                  weight: 100
+                  evidence: Migrated response body evidence for FineCMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0924
+      name: ITC-CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: /mt_res_v3/js/common/common.js
+                  weight: 100
+                  evidence: Migrated response body evidence for ITC-CMS
+                - type: body.contains
+                  value: <title>CMS
+                  weight: 100
+                  evidence: Migrated response body evidence for ITC-CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0927
+      name: 铭飞 MCMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: ms.js
+                  weight: 100
+                  evidence: Migrated response body evidence for 铭飞 MCMS
+                - type: body.contains
+                  value: ms.http.js
+                  weight: 100
+                  evidence: Migrated response body evidence for 铭飞 MCMS
+                - type: body.contains
+                  value: plugins
+                  weight: 100
+                  evidence: Migrated response body evidence for 铭飞 MCMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0992
+      name: 海纳CMS-HituxCMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: Powered By HituxCMS
+                  weight: 100
+                  evidence: Migrated response body evidence for 海纳CMS-HituxCMS
+                - type: body.contains
+                  value: ServiceCenter.js
+                  weight: 100
+                  evidence: Migrated response body evidence for 海纳CMS-HituxCMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1024
+      name: DedeCMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: Power by DedeCms
+                  weight: 100
+                  evidence: Migrated response body evidence for DedeCMS
+                - type: body.contains
+                  value: /templets/default/style/dedecms.css
+                  weight: 100
+                  evidence: Migrated response body evidence for DedeCMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1026
+      name: Typecho
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: /usr/themes/
+                  weight: 100
+                  evidence: Migrated response body evidence for Typecho
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1039
+      name: XYCMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: popper-class="xycms-im"
+                  weight: 100
+                  evidence: Migrated response body evidence for XYCMS
+                - type: body.contains
+                  value: /static/plugin/XYCms/im.css
+                  weight: 100
+                  evidence: Migrated response body evidence for XYCMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1040
+      name: XYCMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: content="xycms"
+                  weight: 100
+                  evidence: Migrated response body evidence for XYCMS
+                - type: body.contains
+                  value: /js/xy_cms.swf
+                  weight: 100
+                  evidence: Migrated response body evidence for XYCMS
+                - type: body.contains
+                  value: upLoadFile
+                  weight: 100
+                  evidence: Migrated response body evidence for XYCMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1047
+      name: 通天星CMSV6
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: /808gps/js/
+                  weight: 100
+                  evidence: Migrated response body evidence for 通天星CMSV6
+                - type: body.contains
+                  value: /css/v6/
+                  weight: 100
+                  evidence: Migrated response body evidence for 通天星CMSV6
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1058
+      name: 狮子鱼CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: /seller.php?s=/Public/login
+                  weight: 100
+                  evidence: Migrated response body evidence for 狮子鱼CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1075
+      name: PB-CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: Powered by <a href="https://www.puboot.com"
+                  weight: 100
+                  evidence: Migrated response body evidence for PB-CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1095
+      name: 08CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: content="08cms
+                  weight: 100
+                  evidence: Migrated response body evidence for 08CMS
+                - type: body.contains
+                  value: typeof(_08cms
+                  weight: 100
+                  evidence: Migrated response body evidence for 08CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1096
+      name: 8cms
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: http://www.itf4.cn
+                  weight: 100
+                  evidence: Migrated response body evidence for 8cms
+                - type: body.contains
+                  value: liangjing.org
+                  weight: 100
+                  evidence: Migrated response body evidence for 8cms
+                - type: body.contains
+                  value: /tpl/templets
+                  weight: 100
+                  evidence: Migrated response body evidence for 8cms
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1097
+      name: php168CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: var system = 'cms
+                  weight: 100
+                  evidence: Migrated response body evidence for php168CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1098
+      name: TUTUCMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: content="TUTUCMS
+                  weight: 100
+                  evidence: Migrated response body evidence for TUTUCMS
+                - type: body.contains
+                  value: Powered by TUTUCMS
+                  weight: 100
+                  evidence: Migrated response body evidence for TUTUCMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1099
+      name: 八哥CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: content="BageCMS
+                  weight: 100
+                  evidence: Migrated response body evidence for 八哥CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1100
+      name: IMGCms
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: content="IMGCMS
+                  weight: 100
+                  evidence: Migrated response body evidence for IMGCms
+                - type: body.contains
+                  value: Powered by IMGCMS
+                  weight: 100
+                  evidence: Migrated response body evidence for IMGCms
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1101
+      name: jieqi cms
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: content="jieqi cms
+                  weight: 100
+                  evidence: Migrated response body evidence for jieqi cms
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1103
+      name: OpenCMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: content="OpenCms
+                  weight: 100
+                  evidence: Migrated response body evidence for OpenCMS
+                - type: body.contains
+                  value: Powered by OpenCms
+                  weight: 100
+                  evidence: Migrated response body evidence for OpenCMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1104
+      name: PhpCMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: http://www.phpcms.cn
+                  weight: 100
+                  evidence: Migrated response body evidence for PhpCMS
+                - type: body.contains
+                  value: content="phpcms
+                  weight: 100
+                  evidence: Migrated response body evidence for PhpCMS
+                - type: body.contains
+                  value: powered by phpcms
+                  weight: 100
+                  evidence: Migrated response body evidence for PhpCMS
+                - type: body.contains
+                  value: data/configs.js
+                  weight: 100
+                  evidence: Migrated response body evidence for PhpCMS
+                - type: body.contains
+                  value: /index.php?m=content&c=index&a=lists
+                  weight: 100
+                  evidence: Migrated response body evidence for PhpCMS
+                - type: body.contains
+                  value: /index.php?m=content&amp;c=index&amp;a=lists
+                  weight: 100
+                  evidence: Migrated response body evidence for PhpCMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1105
+      name: Netious-CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: netious.com
+                  weight: 100
+                  evidence: Migrated response body evidence for Netious-CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1106
+      name: Pligg-CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: jQuery.jTwitter("pligg", function (userdata) {
+                  weight: 100
+                  evidence: Migrated response body evidence for Pligg-CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1107
+      name: BaiShiJia-CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: title.contains
+                  value: 佰仕佳cms集群管理系统
+                  weight: 100
+                  evidence: Migrated HTML title evidence for BaiShiJia-CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1108
+      name: BaiShiJia-CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: /resource/images/cms.ico
+                  weight: 100
+                  evidence: Migrated response body evidence for BaiShiJia-CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1111
+      name: BeeS-CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: template/default/images/slides.min.jquery.js
+                  weight: 100
+                  evidence: Migrated response body evidence for BeeS-CMS
+                - type: body.contains
+                  value: /default/images/xslider.js
+                  weight: 100
+                  evidence: Migrated response body evidence for BeeS-CMS
+                - type: body.contains
+                  value: /default/images/search_btn.gif
+                  weight: 100
+                  evidence: Migrated response body evidence for BeeS-CMS
+                - type: body.contains
+                  value: mx_form/mx_form.php
+                  weight: 100
+                  evidence: Migrated response body evidence for BeeS-CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1112
+      name: Crow-Force-portal-CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: 中企动力提供技术支持
+                  weight: 100
+                  evidence: Migrated response body evidence for Crow-Force-portal-CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1113
+      name: CSCMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: /js/cscms.js
+                  weight: 100
+                  evidence: Migrated response body evidence for CSCMS
+                - type: body.contains
+                  value: tag_adfo dis_wap
+                  weight: 100
+                  evidence: Migrated response body evidence for CSCMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1114
+      name: Dayrui-CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: dayrui/statics
+                  weight: 100
+                  evidence: Migrated response body evidence for Dayrui-CMS
+                - type: body.contains
+                  value: /statics/admin/global/plugins/font-awesome/css/font-awesome.min.css
+                  weight: 100
+                  evidence: Migrated response body evidence for Dayrui-CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1115
+      name: Dayrui-CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: dr_ci_session
+                  weight: 100
+                  evidence: Migrated response body evidence for Dayrui-CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1118
+      name: Subdreamer-CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: Subdreamer CMS
+                  weight: 100
+                  evidence: Migrated response body evidence for Subdreamer-CMS
+                - type: body.contains
+                  value: Subdreamer Admin Panel
+                  weight: 100
+                  evidence: Migrated response body evidence for Subdreamer-CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1119
+      name: Ektron-CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: /java/ektron.js
+                  weight: 100
+                  evidence: Migrated response body evidence for Ektron-CMS
+                - type: body.contains
+                  value: /java/ektronJs.ashx?id=
+                  weight: 100
+                  evidence: Migrated response body evidence for Ektron-CMS
+                - type: body.contains
+                  value: /java/plugins/modal/ektron.modal.js
+                  weight: 100
+                  evidence: Migrated response body evidence for Ektron-CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1120
+      name: Exponent-CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: /themes/baycresttheme/jquery.min.js
+                  weight: 100
+                  evidence: Migrated response body evidence for Exponent-CMS
+                - type: body.contains
+                  value: /themes/baycresttheme/js/_0.js
+                  weight: 100
+                  evidence: Migrated response body evidence for Exponent-CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1121
+      name: Hanwei-CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: showsubpage.jsp
+                  weight: 100
+                  evidence: Migrated response body evidence for Hanwei-CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1122
+      name: GETSIMPLE-CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: content="getsimple
+                  weight: 100
+                  evidence: Migrated response body evidence for GETSIMPLE-CMS
+                - type: body.contains
+                  value: Powered by  GetSimple
+                  weight: 100
+                  evidence: Migrated response body evidence for GETSIMPLE-CMS
+                - type: body.contains
+                  value: href="http://get-simple.info/"
+                  weight: 100
+                  evidence: Migrated response body evidence for GETSIMPLE-CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1123
+      name: ICALL-CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: var img_obj = document.getelementbyid('showing');
+                  weight: 100
+                  evidence: Migrated response body evidence for ICALL-CMS
+                - type: body.contains
+                  value: var img_obj = document.getelementbyid("showing");
+                  weight: 100
+                  evidence: Migrated response body evidence for ICALL-CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1124
+      name: ICALL-CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: title.contains
+                  value: icall后台管理中心
+                  weight: 100
+                  evidence: Migrated HTML title evidence for ICALL-CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1125
+      name: ImpressPages-CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: content="ImpressPages CMS"
+                  weight: 100
+                  evidence: Migrated response body evidence for ImpressPages-CMS
+                - type: body.contains
+                  value: /ip_themes/
+                  weight: 100
+                  evidence: Migrated response body evidence for ImpressPages-CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1126
+      name: Informatics-CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: content="Informatics
+                  weight: 100
+                  evidence: Migrated response body evidence for Informatics-CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1127
+      name: Kentico-CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: /CMSPages/GetResource.ashx
+                  weight: 100
+                  evidence: Migrated response body evidence for Kentico-CMS
+                - type: body.contains
+                  value: /Kentico.Resource/
+                  weight: 100
+                  evidence: Migrated response body evidence for Kentico-CMS
+                - type: body.contains
+                  value: CMSPreferredCulture
+                  weight: 100
+                  evidence: Migrated response body evidence for Kentico-CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1128
+      name: Laysns-CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: alt="LAYSNS"
+                  weight: 100
+                  evidence: Migrated response body evidence for Laysns-CMS
+                - type: body.contains
+                  value: /cate/
+                  weight: 100
+                  evidence: Migrated response body evidence for Laysns-CMS
+                - type: body.contains
+                  value: alt="laysns"
+                  weight: 100
+                  evidence: Migrated response body evidence for Laysns-CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1129
+      name: Mambo-CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: content="mambo
+                  weight: 100
+                  evidence: Migrated response body evidence for Mambo-CMS
+                - type: body.contains
+                  value: <div id="mambo
+                  weight: 100
+                  evidence: Migrated response body evidence for Mambo-CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1130
+      name: NITC-CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: nitc web marketing service
+                  weight: 100
+                  evidence: Migrated response body evidence for NITC-CMS
+                - type: body.contains
+                  value: /images/nitc1.png
+                  weight: 100
+                  evidence: Migrated response body evidence for NITC-CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1131
+      name: Nucleus-CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: content="Nucleus CMS
+                  weight: 100
+                  evidence: Migrated response body evidence for Nucleus-CMS
+                - type: body.contains
+                  value: function MM_swapImgRestore()
+                  weight: 100
+                  evidence: Migrated response body evidence for Nucleus-CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1132
+      name: Nucleus-CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: header.contains
+                  value: Nucleus CMS
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for Nucleus-CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-1133
+      name: PowerCreator-CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: Default.aspx?TP=
+                  weight: 100
+                  evidence: Migrated response body evidence for PowerCreator-CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1134
+      name: phpecms
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: www.pcfinal.cn
+                  weight: 100
+                  evidence: Migrated response body evidence for phpecms
+                - type: body.contains
+                  value: /plus/ui/
+                  weight: 100
+                  evidence: Migrated response body evidence for phpecms
+                - type: body.contains
+                  value: /channel.
+                  weight: 100
+                  evidence: Migrated response body evidence for phpecms
+                - type: body.contains
+                  value: ?channel.
+                  weight: 100
+                  evidence: Migrated response body evidence for phpecms
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1135
+      name: zychr-CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: powered by zychr.com
+                  weight: 100
+                  evidence: Migrated response body evidence for zychr-CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1136
+      name: zychr-CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: title.contains
+                  value: powered by zychr.com
+                  weight: 100
+                  evidence: Migrated HTML title evidence for zychr-CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1137
+      name: Shunde-CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: for="ctl00_cph_l_login_username">crm帐号
+                  weight: 100
+                  evidence: Migrated response body evidence for Shunde-CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1138
+      name: Yxcms
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: /css/yxcms.css
+                  weight: 100
+                  evidence: Migrated response body evidence for Yxcms
+                - type: body.contains
+                  value: content="Yxcms
+                  weight: 100
+                  evidence: Migrated response body evidence for Yxcms
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1140
+      name: ZCMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: _zcms_
+                  weight: 100
+                  evidence: Migrated response body evidence for ZCMS
+                - type: body.contains
+                  value: zcms_skin
+                  weight: 100
+                  evidence: Migrated response body evidence for ZCMS
+                - type: body.contains
+                  value: 泽元网站内容管理系统
+                  weight: 100
+                  evidence: Migrated response body evidence for ZCMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1141
+      name: S-CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: content="S-CMS"
+                  weight: 100
+                  evidence: Migrated response body evidence for S-CMS
+                - type: body.contains
+                  value: /css/scms.css
+                  weight: 100
+                  evidence: Migrated response body evidence for S-CMS
+                - type: body.contains
+                  value: type=newsinfo&S_id=
+                  weight: 100
+                  evidence: Migrated response body evidence for S-CMS
+                - type: body.contains
+                  value: /?type=
+                  weight: 100
+                  evidence: Migrated response body evidence for S-CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1142
+      name: Cabloy-CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: content="Cabloy-CMS"
+                  weight: 100
+                  evidence: Migrated response body evidence for Cabloy-CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1143
+      name: Smart-CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: name="formdoc" action="/hz/sys/login/logined.jsp
+                  weight: 100
+                  evidence: Migrated response body evidence for Smart-CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1144
+      name: Subrion-CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: content="Subrion CMS
+                  weight: 100
+                  evidence: Migrated response body evidence for Subrion-CMS
+                - type: body.contains
+                  value: ia_lightbox
+                  weight: 100
+                  evidence: Migrated response body evidence for Subrion-CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1145
+      name: Subrion-CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: header.contains
+                  value: Subrion CMS
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for Subrion-CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-1146
+      name: tiki-Wiki-CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: jquerytiki = new object
+                  weight: 100
+                  evidence: Migrated response body evidence for tiki-Wiki-CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1147
+      name: WQ-CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: style/wangqi/style.css
+                  weight: 100
+                  evidence: Migrated response body evidence for WQ-CMS
+                - type: body.contains
+                  value: powered by <a href="http://www.wqcms.com
+                  weight: 100
+                  evidence: Migrated response body evidence for WQ-CMS
+                - type: body.contains
+                  value: inc/wqcms.js
+                  weight: 100
+                  evidence: Migrated response body evidence for WQ-CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1158
+      name: SEMCMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: powered by <a href="http://www.sem-cms.com"
+                  weight: 100
+                  evidence: Migrated response body evidence for SEMCMS
+                - type: body.contains
+                  value: <b semcms php 2.9</b>
+                  weight: 100
+                  evidence: Migrated response body evidence for SEMCMS
+                - type: body.contains
+                  value: semcms php 3.9
+                  weight: 100
+                  evidence: Migrated response body evidence for SEMCMS
+                - type: body.contains
+                  value: sc_mid_c_left_c sc_mid_left_bt
+                  weight: 100
+                  evidence: Migrated response body evidence for SEMCMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1159
+      name: semcms外贸网站(多语言版)
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: header.contains
+                  value: semcms外贸网站(多语言版)
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for semcms外贸网站(多语言版)
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-1160
+      name: semcms外贸网站(多语言版)
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: title.contains
+                  value: semcms外贸网站(多语言版)
+                  weight: 100
+                  evidence: Migrated HTML title evidence for semcms外贸网站(多语言版)
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1161
+      name: YidaCMS免费开源网站管理系统
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: yidacms.css
+                  weight: 100
+                  evidence: Migrated response body evidence for YidaCMS免费开源网站管理系统
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1162
+      name: 小苹果CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: maccms:voddaycount
+                  weight: 100
+                  evidence: Migrated response body evidence for 小苹果CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1163
+      name: VTS-CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: errmag
+                  weight: 100
+                  evidence: Migrated response body evidence for VTS-CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1164
+      name: whfst-CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: 武汉富思特
+                  weight: 100
+                  evidence: Migrated response body evidence for whfst-CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1166
+      name: Yiqi-CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: content="yiqicms
+                  weight: 100
+                  evidence: Migrated response body evidence for Yiqi-CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1167
+      name: zhuofansoft-CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: session.infocss.infocssurl
+                  weight: 100
+                  evidence: Migrated response body evidence for zhuofansoft-CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1168
+      name: Fidion-CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: <!-- fCMS-Template head.tpl begins
+                  weight: 100
+                  evidence: Migrated response body evidence for Fidion-CMS
+                - type: body.contains
+                  value: /_fWS/jsoninplainout/javascript/fcmsLib_Init/load/init.js
+                  weight: 100
+                  evidence: Migrated response body evidence for Fidion-CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1169
+      name: Fidion-CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: header.contains
+                  value: X-Fcms-Cache
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for Fidion-CMS
+                - type: header.contains
+                  value: fCMS
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for Fidion-CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-1170
+      name: FCMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: content="Ryan Haudenschilt
+                  weight: 100
+                  evidence: Migrated response body evidence for FCMS
+                - type: body.contains
+                  value: window.location.href='?lang='+this.options[this.selectedIndex].value
+                  weight: 100
+                  evidence: Migrated response body evidence for FCMS
+                - type: body.contains
+                  value: Family Connections
+                  weight: 100
+                  evidence: Migrated response body evidence for FCMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1171
+      name: Tiki-wiki CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: jqueryTiki = new Object
+                  weight: 100
+                  evidence: Migrated response body evidence for Tiki-wiki CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1172
+      name: Ananyoo-CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: content="http://www.ananyoo.com
+                  weight: 100
+                  evidence: Migrated response body evidence for Ananyoo-CMS
+                - type: body.contains
+                  value: 'Powered by: Amiro CMS'
+                  weight: 100
+                  evidence: Migrated response body evidence for Ananyoo-CMS
+                - type: body.contains
+                  value: -= Amiro.CMS (c) =-
+                  weight: 100
+                  evidence: Migrated response body evidence for Ananyoo-CMS
+                - type: body.contains
+                  value: Copyright 2003-2008, Ananyoo CMS, a Anblik.com Project
+                  weight: 100
+                  evidence: Migrated response body evidence for Ananyoo-CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1173
+      name: Artiphp-CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: <!--  fin ArtiMenu horizontal -->
+                  weight: 100
+                  evidence: Migrated response body evidence for Artiphp-CMS
+                - type: body.contains
+                  value: <!-- copyright Artiphp, merci de respecter notre travail en laissant notre signature -->
+                  weight: 100
+                  evidence: Migrated response body evidence for Artiphp-CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1174
+      name: Auto-CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: content="AutoCMS
+                  weight: 100
+                  evidence: Migrated response body evidence for Auto-CMS
+                - type: body.contains
+                  value: Powered by Auto CMS
+                  weight: 100
+                  evidence: Migrated response body evidence for Auto-CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1175
+      name: Contrexx-CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: content="Contrexx
+                  weight: 100
+                  evidence: Migrated response body evidence for Contrexx-CMS
+                - type: body.contains
+                  value: Powered by Contrexx
+                  weight: 100
+                  evidence: Migrated response body evidence for Contrexx-CMS
+                - type: body.contains
+                  value: core_modules/frontendEditing/css/style.css
+                  weight: 100
+                  evidence: Migrated response body evidence for Contrexx-CMS
+                - type: body.contains
+                  value: powered by Contrexx
+                  weight: 100
+                  evidence: Migrated response body evidence for Contrexx-CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1176
+      name: BrowserCMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: header.contains
+                  value: _bzh_web_app_session
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for BrowserCMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-1177
+      name: BrowserCMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: content="BrowserCMS
+                  weight: 100
+                  evidence: Migrated response body evidence for BrowserCMS
+                - type: body.contains
+                  value: Powered by BrowserCMS
+                  weight: 100
+                  evidence: Migrated response body evidence for BrowserCMS
+                - type: body.contains
+                  value: powered by browsercms
+                  weight: 100
+                  evidence: Migrated response body evidence for BrowserCMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1178
+      name: Contentteller-CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: content="Esselbach Contentteller CMS
+                  weight: 100
+                  evidence: Migrated response body evidence for Contentteller-CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1179
+      name: Macs-CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: <title>Mac"s CMS - Admin Login</title>
+                  weight: 100
+                  evidence: Migrated response body evidence for Macs-CMS
+                - type: body.contains
+                  value: <a href="http://macs-framework.sourceforge.net/"
+                  weight: 100
+                  evidence: Migrated response body evidence for Macs-CMS
+                - type: body.contains
+                  value: '<!-- START: This block contains all code that the framework generates -->'
+                  weight: 100
+                  evidence: Migrated response body evidence for Macs-CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1180
+      name: Edito-CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: content="edito
+                  weight: 100
+                  evidence: Migrated response body evidence for Edito-CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1181
+      name: CreateLive-Cms
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: header.contains
+                  value: AspooKill=kill=
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for CreateLive-Cms
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-1182
+      name: CreateLive-Cms
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: <!--By CreateLiveCms
+                  weight: 100
+                  evidence: Migrated response body evidence for CreateLive-Cms
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1183
+      name: CushyCMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: header.contains
+                  value: _cushy_session
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for CushyCMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-1184
+      name: CushyCMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: Powered by CushyCMS
+                  weight: 100
+                  evidence: Migrated response body evidence for CushyCMS
+                - type: body.contains
+                  value: Powered by <a href="http://www.cushycms.com">CushyCMS</a>
+                  weight: 100
+                  evidence: Migrated response body evidence for CushyCMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1185
+      name: Custom-CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: content="CustomCMS Gaming
+                  weight: 100
+                  evidence: Migrated response body evidence for Custom-CMS
+                - type: body.contains
+                  value: '- Powered by CCMS</title>'
+                  weight: 100
+                  evidence: Migrated response body evidence for Custom-CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1186
+      name: Ecomat-CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: content="ECOMAT CMS
+                  weight: 100
+                  evidence: Migrated response body evidence for Ecomat-CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1187
+      name: EazyCMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: by <a href="http://www.eazycms.com"
+                  weight: 100
+                  evidence: Migrated response body evidence for EazyCMS
+                - type: body.contains
+                  value: target="eazycms">eazyCMS</a>
+                  weight: 100
+                  evidence: Migrated response body evidence for EazyCMS
+                - type: body.contains
+                  value: <a class="actionlink" href="http://www.eazyCMS.com
+                  weight: 100
+                  evidence: Migrated response body evidence for EazyCMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1188
+      name: EasyConsole-CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: Powered by EasyConsole CMS
+                  weight: 100
+                  evidence: Migrated response body evidence for EasyConsole-CMS
+                - type: body.contains
+                  value: by <a href="http://www.easyconsole.com
+                  weight: 100
+                  evidence: Migrated response body evidence for EasyConsole-CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1189
+      name: DotCMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: /dotAsset/
+                  weight: 100
+                  evidence: Migrated response body evidence for DotCMS
+                - type: body.contains
+                  value: /index.dot
+                  weight: 100
+                  evidence: Migrated response body evidence for DotCMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1190
+      name: DBHcms
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: powered by DBHcms
+                  weight: 100
+                  evidence: Migrated response body evidence for DBHcms
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1191
+      name: Elxis-CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: content="Elxis
+                  weight: 100
+                  evidence: Migrated response body evidence for Elxis-CMS
+                - type: body.contains
+                  value: Powered by <a href="http://www.elxis.org"
+                  weight: 100
+                  evidence: Migrated response body evidence for Elxis-CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1192
+      name: Fastpublish-CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: content="fastpublish
+                  weight: 100
+                  evidence: Migrated response body evidence for Fastpublish-CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1193
+      name: Hycus-CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: content="Hycus
+                  weight: 100
+                  evidence: Migrated response body evidence for Hycus-CMS
+                - type: body.contains
+                  value: Powered By <a href="http://www.hycus.com
+                  weight: 100
+                  evidence: Migrated response body evidence for Hycus-CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1194
+      name: Hotaru-CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: content="Hotaru
+                  weight: 100
+                  evidence: Migrated response body evidence for Hotaru-CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1195
+      name: HoloCMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: Powered by HoloCMS
+                  weight: 100
+                  evidence: Migrated response body evidence for HoloCMS
+                - type: body.contains
+                  value: <div id="remember-me-notification" class="bottom-bubble" style="display:none;">
+                  weight: 100
+                  evidence: Migrated response body evidence for HoloCMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1196
+      name: iGaming-CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: Powered by <a href="http://www.igamingcms.com
+                  weight: 100
+                  evidence: Migrated response body evidence for iGaming-CMS
+                - type: body.contains
+                  value: <!-- iGaming CMS is free software, please do not remove the copyright message. -->
+                  weight: 100
+                  evidence: Migrated response body evidence for iGaming-CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1197
+      name: Intraxxion-CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: content="Intraxxion
+                  weight: 100
+                  evidence: Migrated response body evidence for Intraxxion-CMS
+                - type: body.contains
+                  value: <!-- site built by Intraxxion
+                  weight: 100
+                  evidence: Migrated response body evidence for Intraxxion-CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1198
+      name: Kandidat-CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: content="Kandidat-CMS
+                  weight: 100
+                  evidence: Migrated response body evidence for Kandidat-CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1199
+      name: PHPEIP-CMS内容管理系统
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: PHPEIP-CMS内容管理系统
+                  weight: 100
+                  evidence: Migrated response body evidence for PHPEIP-CMS内容管理系统
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1200
+      name: PHP_Enter_CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: PHP_Enter_CMS
+                  weight: 100
+                  evidence: Migrated response body evidence for PHP_Enter_CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1201
+      name: WebsiteBaker-CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: header.contains
+                  value: wb_session_id
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for WebsiteBaker-CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-1202
+      name: 3KITS-CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: href="http://www.3kits.com"
+                  weight: 100
+                  evidence: Migrated response body evidence for 3KITS-CMS
+                - type: body.contains
+                  value: 3kits</a>
+                  weight: 100
+                  evidence: Migrated response body evidence for 3KITS-CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1203
+      name: Tele-Data-CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: <input name="txthomepassword" type="password"  size="22" id="txthomepassword" maxlength="200" />
+                  weight: 100
+                  evidence: Migrated response body evidence for Tele-Data-CMS
+                - type: body.contains
+                  value: 'align=center class="tdi-errormessage" style="height: 25px"><script type="text/javascript">showerror();</script></td>'
+                  weight: 100
+                  evidence: Migrated response body evidence for Tele-Data-CMS
+                - type: body.contains
+                  value: <!--To reduce the gap between banner and content the below if condition is added-->
+                  weight: 100
+                  evidence: Migrated response body evidence for Tele-Data-CMS
+                - type: body.contains
+                  value: <iframe onload="postload(0);" scrolling="no" style="position:absolute;top:0;left:0;height:0;width:0;" id="fraLH" name="fraLH" src="default.aspx" frameborder="0" marginheight="0" marginwidth="0"></iframe>
+                  weight: 100
+                  evidence: Migrated response body evidence for Tele-Data-CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1204
+      name: XHP-CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: title.contains
+                  value: XHP installation
+                  weight: 100
+                  evidence: Migrated HTML title evidence for XHP-CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1205
+      name: Saurus-CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: content="Saurus CMS
+                  weight: 100
+                  evidence: Migrated response body evidence for Saurus-CMS
+                - type: body.contains
+                  value: by <a href="http://www.saurus.info
+                  weight: 100
+                  evidence: Migrated response body evidence for Saurus-CMS
+                - type: body.contains
+                  value: href="/extensions/saurus4/images/favicon.ico"
+                  weight: 100
+                  evidence: Migrated response body evidence for Saurus-CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1206
+      name: Mura-CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: action="index.cfm?fuseaction=cLogin.main
+                  weight: 100
+                  evidence: Migrated response body evidence for Mura-CMS
+                - type: body.contains
+                  value: Powered by <a href="http://www.getmura.com/">Mura CMS</a>
+                  weight: 100
+                  evidence: Migrated response body evidence for Mura-CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1207
+      name: SQL-CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: <link href="CSS/styles/default.css
+                  weight: 100
+                  evidence: Migrated response body evidence for SQL-CMS
+                - type: body.contains
+                  value: id="ddlLanguage" onchange="location.href="admin.aspx?lang=
+                  weight: 100
+                  evidence: Migrated response body evidence for SQL-CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1208
+      name: 1024-CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: content="1024 CMS
+                  weight: 100
+                  evidence: Migrated response body evidence for 1024-CMS
+                - type: body.contains
+                  value: <div id="otatfpowered"><a href="http://www.1024cms.com
+                  weight: 100
+                  evidence: Migrated response body evidence for 1024-CMS
+                - type: body.contains
+                  value: by 1024 CMS
+                  weight: 100
+                  evidence: Migrated response body evidence for 1024-CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1209
+      name: Diferior-CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: '&#8212; Powered by Diferior</title>'
+                  weight: 100
+                  evidence: Migrated response body evidence for Diferior-CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1210
+      name: Textpattern-CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: by <a href="http://textpattern.com
+                  weight: 100
+                  evidence: Migrated response body evidence for Textpattern-CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1211
+      name: Barts-CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: <meta name="author" content="Bart Verstricht" />
+                  weight: 100
+                  evidence: Migrated response body evidence for Barts-CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1212
+      name: Symphony-CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: content="Symphony CMS
+                  weight: 100
+                  evidence: Migrated response body evidence for Symphony-CMS
+                - type: body.contains
+                  value: by <a href="http://www.symphony21.com
+                  weight: 100
+                  evidence: Migrated response body evidence for Symphony-CMS
+                - type: body.contains
+                  value: by <a href="http://symphony21.com
+                  weight: 100
+                  evidence: Migrated response body evidence for Symphony-CMS
+                - type: body.contains
+                  value: by <a href="http://symphony-cms.com
+                  weight: 100
+                  evidence: Migrated response body evidence for Symphony-CMS
+                - type: body.contains
+                  value: by <a href="http://www.symphony-cms.com
+                  weight: 100
+                  evidence: Migrated response body evidence for Symphony-CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1213
+      name: Orbis-CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: content="Orbis CMS
+                  weight: 100
+                  evidence: Migrated response body evidence for Orbis-CMS
+                - type: body.contains
+                  value: Powered by Orbis CMS
+                  weight: 100
+                  evidence: Migrated response body evidence for Orbis-CMS
+                - type: body.contains
+                  value: <!-- Give feedback if user enters incorrect password (GET value "e=2) or logged out (GET value "e=3") -->
+                  weight: 100
+                  evidence: Migrated response body evidence for Orbis-CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1214
+      name: LINK-CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: <a href="http://www.link-softsolutions.com/SoftLink-Content-Management-System---CMS_20_1
+                  weight: 100
+                  evidence: Migrated response body evidence for LINK-CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1215
+      name: Pluck-CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: powered by <a href="http://www.pluck-cms.org">pluck</a>
+                  weight: 100
+                  evidence: Migrated response body evidence for Pluck-CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1216
+      name: Allinta-CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: <td align="right" class="footerText">Powered by allinta CMS</td>
+                  weight: 100
+                  evidence: Migrated response body evidence for Allinta-CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1217
+      name: synType-CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: content="synType CMS
+                  weight: 100
+                  evidence: Migrated response body evidence for synType-CMS
+                - type: body.contains
+                  value: powered by synType CMS
+                  weight: 100
+                  evidence: Migrated response body evidence for synType-CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1218
+      name: Rumba-CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: content="Rumba Easy
+                  weight: 100
+                  evidence: Migrated response body evidence for Rumba-CMS
+                - type: body.contains
+                  value: content="Rumba Wiki
+                  weight: 100
+                  evidence: Migrated response body evidence for Rumba-CMS
+                - type: body.contains
+                  value: content="http://rumba.net.ru"
+                  weight: 100
+                  evidence: Migrated response body evidence for Rumba-CMS
+                - type: body.contains
+                  value: Powered by Rumba CMS
+                  weight: 100
+                  evidence: Migrated response body evidence for Rumba-CMS
+                - type: body.contains
+                  value: href="http://rumba.net.ru
+                  weight: 100
+                  evidence: Migrated response body evidence for Rumba-CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1219
+      name: Amiro-CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: 'target=_blank>Powered by: Amiro CMS'
+                  weight: 100
+                  evidence: Migrated response body evidence for Amiro-CMS
+                - type: body.contains
+                  value: ' target=_blank><FONT size=1><B>Powered by: Amiro CMS'
+                  weight: 100
+                  evidence: Migrated response body evidence for Amiro-CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1220
+      name: Ionize-CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: content="HandMade
+                  weight: 100
+                  evidence: Migrated response body evidence for Ionize-CMS
+                - type: body.contains
+                  value: <div id="loginWindow" class=" clearfix">
+                  weight: 100
+                  evidence: Migrated response body evidence for Ionize-CMS
+                - type: body.contains
+                  value: <p class="article-date">07.09.2010</p>
+                  weight: 100
+                  evidence: Migrated response body evidence for Ionize-CMS
+                - type: body.contains
+                  value: '<p class="note">view : <b>default/article</b></p>'
+                  weight: 100
+                  evidence: Migrated response body evidence for Ionize-CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1221
+      name: JAMM-CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: CONTENT="JAMM MEDIA
+                  weight: 100
+                  evidence: Migrated response body evidence for JAMM-CMS
+                - type: body.contains
+                  value: <!--- Content Management System JAMM CMS OWEN
+                  weight: 100
+                  evidence: Migrated response body evidence for JAMM-CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1222
+      name: Pragyan-CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: powered by <a href="http://sourceforge.net/projects/pragyan">Pragyan CMS</a>
+                  weight: 100
+                  evidence: Migrated response body evidence for Pragyan-CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1223
+      name: Atomic-CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: Powered by AtomicCms <a href="http://atomiccms.com/" target="_blank">content management
+                  weight: 100
+                  evidence: Migrated response body evidence for Atomic-CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1224
+      name: Acidcat-CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: class="ac_admin_main"
+                  weight: 100
+                  evidence: Migrated response body evidence for Acidcat-CMS
+                - type: body.contains
+                  value: admin/css/admin_import.css
+                  weight: 100
+                  evidence: Migrated response body evidence for Acidcat-CMS
+                - type: body.contains
+                  value: Acidcat CMS Error
+                  weight: 100
+                  evidence: Migrated response body evidence for Acidcat-CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1226
+      name: Constructr-CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: onclick="window.open(this.href);return false;">phaziz interface design
+                  weight: 100
+                  evidence: Migrated response body evidence for Constructr-CMS
+                - type: body.contains
+                  value: Constructr CMS
+                  weight: 100
+                  evidence: Migrated response body evidence for Constructr-CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1227
+      name: DiY-CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: DIY-CMS</a>
+                  weight: 100
+                  evidence: Migrated response body evidence for DiY-CMS
+                - type: body.contains
+                  value: admin_skin/default/images//admin_login.png
+                  weight: 100
+                  evidence: Migrated response body evidence for DiY-CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1228
+      name: Zimplit-CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: <!-- YOU ARE ONLY ALLOWED TO HIDE, DELETE OR MODIFY "POWERED BY ZIMPLIT CMS" LINK, IF THE DOMAIN HAS BEEN REGISTERED WITH A COMMERCIAL LICENSE AT WWW.ZIMPLIT.ORG -->
+                  weight: 100
+                  evidence: Migrated response body evidence for Zimplit-CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1229
+      name: AB-WEB-CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: onclick="maximize();" class="hdp_z01_z03_l
+                  weight: 100
+                  evidence: Migrated response body evidence for AB-WEB-CMS
+                - type: body.contains
+                  value: onclick="imprfct();" class="main_link
+                  weight: 100
+                  evidence: Migrated response body evidence for AB-WEB-CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1230
+      name: Micro-CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: '" method="post"onsubmit="'
+                  weight: 100
+                  evidence: Migrated response body evidence for Micro-CMS
+                - type: body.contains
+                  value: <a href="http://microcms.kset.org/">Micro CMS</a>
+                  weight: 100
+                  evidence: Migrated response body evidence for Micro-CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1231
+      name: NukeViet-CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: '<div id="run_cronjobs" style="visibility: hidden; display: none;">'
+                  weight: 100
+                  evidence: Migrated response body evidence for NukeViet-CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1232
+      name: Log1-CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: content="log1_cms
+                  weight: 100
+                  evidence: Migrated response body evidence for Log1-CMS
+                - type: body.contains
+                  value: engine/styles/login.css.php
+                  weight: 100
+                  evidence: Migrated response body evidence for Log1-CMS
+                - type: body.contains
+                  value: alt="log1 CMS logo
+                  weight: 100
+                  evidence: Migrated response body evidence for Log1-CMS
+                - type: body.contains
+                  value: Log1 CMS</a>
+                  weight: 100
+                  evidence: Migrated response body evidence for Log1-CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1233
+      name: dir2web-CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: default/styles/d2w_object_page.css
+                  weight: 100
+                  evidence: Migrated response body evidence for dir2web-CMS
+                - type: body.contains
+                  value: <div class="d2w-back_link"
+                  weight: 100
+                  evidence: Migrated response body evidence for dir2web-CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1234
+      name: ReFlex-CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: Resources/js/pngfix.js
+                  weight: 100
+                  evidence: Migrated response body evidence for ReFlex-CMS
+                - type: body.contains
+                  value: alt="ReFlex Administration
+                  weight: 100
+                  evidence: Migrated response body evidence for ReFlex-CMS
+                - type: body.contains
+                  value: document.getElementById("ctl00_cphMain_rfvUserName
+                  weight: 100
+                  evidence: Migrated response body evidence for ReFlex-CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1235
+      name: SpirePRO-CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: <meta name="Spire-Last-Modified" content="
+                  weight: 100
+                  evidence: Migrated response body evidence for SpirePRO-CMS
+                - type: body.contains
+                  value: <script xmlns:a="http://www.1stomni.com/spire/aml" type="text/javascript"
+                  weight: 100
+                  evidence: Migrated response body evidence for SpirePRO-CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1236
+      name: Video-CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: by <a style="color:#aaaaaa" href="http://www.codemight.com" target="_blank">Video CMS</a>
+                  weight: 100
+                  evidence: Migrated response body evidence for Video-CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1237
+      name: 远略内容管理系统YL-CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: title.contains
+                  value: 远略内容管理系统 YL-CMS
+                  weight: 100
+                  evidence: Migrated HTML title evidence for 远略内容管理系统YL-CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1238
+      name: FLBLC-CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: title.contains
+                  value: FLBLC-CMS
+                  weight: 100
+                  evidence: Migrated HTML title evidence for FLBLC-CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1239
+      name: sytown-CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: title.contains
+                  value: 尚医健康cms管理系统
+                  weight: 100
+                  evidence: Migrated HTML title evidence for sytown-CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1240
+      name: lepton-cms
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: content="LEPTON-CMS
+                  weight: 100
+                  evidence: Migrated response body evidence for lepton-cms
+                - type: body.contains
+                  value: Powered by LEPTON CMS
+                  weight: 100
+                  evidence: Migrated response body evidence for lepton-cms
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1241
+      name: cm3-cms
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: content="cm3 content manager
+                  weight: 100
+                  evidence: Migrated response body evidence for cm3-cms
+                - type: body.contains
+                  value: top.cm2_home.location.href
+                  weight: 100
+                  evidence: Migrated response body evidence for cm3-cms
+                - type: body.contains
+                  value: name="cm2_top" id="cm2_top"
+                  weight: 100
+                  evidence: Migrated response body evidence for cm3-cms
+                - type: body.contains
+                  value: name="cm25_main"
+                  weight: 100
+                  evidence: Migrated response body evidence for cm3-cms
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1242
+      name: cm3-cms
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: header.contains
+                  value: cm3session
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for cm3-cms
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-1243
+      name: TPshop-cms
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: header.contains
+                  value: TPshop-cms
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for TPshop-cms
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-1244
+      name: adxstudio-cms
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: /PoweredByADX.gif
+                  weight: 100
+                  evidence: Migrated response body evidence for adxstudio-cms
+                - type: body.contains
+                  value: alt="Powered by Adxstudio"
+                  weight: 100
+                  evidence: Migrated response body evidence for adxstudio-cms
+                - type: body.contains
+                  value: /poweredbyadx.png
+                  weight: 100
+                  evidence: Migrated response body evidence for adxstudio-cms
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1245
+      name: 闪灵Flash网站系统F-cms
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: title.contains
+                  value: 闪灵Flash网站系统F-cms
+                  weight: 100
+                  evidence: Migrated HTML title evidence for 闪灵Flash网站系统F-cms
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1246
+      name: GV32-cms
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: title.contains
+                  value: GV32-cms
+                  weight: 100
+                  evidence: Migrated HTML title evidence for GV32-cms
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1249
+      name: VCMS-维网科技
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: http://www.vwell.cn
+                  weight: 100
+                  evidence: Migrated response body evidence for VCMS-维网科技
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1302
+      name: django CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: header.contains
+                  value: django-cms
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for django CMS
+                - type: header.contains
+                  value: django_language
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for django CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-1303
+      name: django CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "1821679946"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for django CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-1304
+      name: django CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: content="django CMS
+                  weight: 100
+                  evidence: Migrated response body evidence for django CMS
+                - type: body.contains
+                  value: content="Django CMS
+                  weight: 100
+                  evidence: Migrated response body evidence for django CMS
+                - type: body.contains
+                  value: /djangocms_admin
+                  weight: 100
+                  evidence: Migrated response body evidence for django CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1307
+      name: ABO.CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: header.contains
+                  value: ABO.CMS
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for ABO.CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-1308
+      name: ABO.CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: 'padding: 10 0 4 0;'
+                  weight: 100
+                  evidence: Migrated response body evidence for ABO.CMS
+                - type: body.contains
+                  value: '<div style="padding: 10 0 10 52">'
+                  weight: 100
+                  evidence: Migrated response body evidence for ABO.CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1310
+      name: ANECMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: content="Erwin Aligam
+                  weight: 100
+                  evidence: Migrated response body evidence for ANECMS
+                - type: body.contains
+                  value: content="erwin aligam
+                  weight: 100
+                  evidence: Migrated response body evidence for ANECMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1311
+      name: Appcms
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: Powerd by AppCMS
+                  weight: 100
+                  evidence: Migrated response body evidence for Appcms
+                - type: body.contains
+                  value: powerd by appcms
+                  weight: 100
+                  evidence: Migrated response body evidence for Appcms
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1312
+      name: HotelCMS(bookingeCMS)
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: HotelCMS
+                  weight: 100
+                  evidence: Migrated response body evidence for HotelCMS(bookingeCMS)
+                - type: body.contains
+                  value: bookingeCMS
+                  weight: 100
+                  evidence: Migrated response body evidence for HotelCMS(bookingeCMS)
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1313
+      name: didicms企业网站管理系统
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: didicms企业网站管理系统
+                  weight: 100
+                  evidence: Migrated response body evidence for didicms企业网站管理系统
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1314
+      name: ZmCMS通用性企业网站建设管理系统
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: ZmCMS通用性企业网站建设管理系统
+                  weight: 100
+                  evidence: Migrated response body evidence for ZmCMS通用性企业网站建设管理系统
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1315
+      name: iNethinkCMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: iNethinkCMS
+                  weight: 100
+                  evidence: Migrated response body evidence for iNethinkCMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1316
+      name: quoracms
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: quoracms
+                  weight: 100
+                  evidence: Migrated response body evidence for quoracms
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1317
+      name: XYHCMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: header.contains
+                  value: XYHCMS
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for XYHCMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-1318
+      name: XYHCMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: /index.php?s=/List/
+                  weight: 100
+                  evidence: Migrated response body evidence for XYHCMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1319
+      name: 云优CMS(YUNUCMS)
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: /css/yunu.css
+                  weight: 100
+                  evidence: Migrated response body evidence for 云优CMS(YUNUCMS)
+                - type: body.contains
+                  value: /index/js/yunu.js
+                  weight: 100
+                  evidence: Migrated response body evidence for 云优CMS(YUNUCMS)
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1353
+      name: BeeS_CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: /default/images/search_btn.gif
+                  weight: 100
+                  evidence: Migrated response body evidence for BeeS_CMS
+                - type: body.contains
+                  value: /default/images/xslider.js
+                  weight: 100
+                  evidence: Migrated response body evidence for BeeS_CMS
+                - type: body.contains
+                  value: mx_form/mx_form.php
+                  weight: 100
+                  evidence: Migrated response body evidence for BeeS_CMS
+                - type: body.contains
+                  value: template/default/images/slides.min.jquery.js
+                  weight: 100
+                  evidence: Migrated response body evidence for BeeS_CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1411
+      name: Decap CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: /decap-cms
+                  weight: 100
+                  evidence: Migrated response body evidence for Decap CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1414
+      name: PHPMyWind CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: content="PHPMyWind CMS
+                  weight: 100
+                  evidence: Migrated response body evidence for PHPMyWind CMS
+                - type: body.contains
+                  value: .php?cid=
+                  weight: 100
+                  evidence: Migrated response body evidence for PHPMyWind CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1533
+      name: ASPCMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: header.contains
+                  value: ASPSESSIONIDQSQSSSRS
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for ASPCMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-1534
+      name: ASPCMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: /inc/AspCms_AdvJs.asp
+                  weight: 100
+                  evidence: Migrated response body evidence for ASPCMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1535
+      name: CNVP-JCMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: publish by jcms2010
+                  weight: 100
+                  evidence: Migrated response body evidence for CNVP-JCMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1536
+      name: ContrexxCMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: powered by contrexx
+                  weight: 100
+                  evidence: Migrated response body evidence for ContrexxCMS
+                - type: body.contains
+                  value: content="contrexx
+                  weight: 100
+                  evidence: Migrated response body evidence for ContrexxCMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1537
+      name: DocCMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: power by doccms
+                  weight: 100
+                  evidence: Migrated response body evidence for DocCMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1538
+      name: elite_CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: copyright &copy; 2003 - 2017 <a href="http://www.elite-is.com/cmhome.asp
+                  weight: 100
+                  evidence: Migrated response body evidence for elite_CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1539
+      name: WebsiteBakerCMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: header.contains
+                  value: wb_session_id
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for WebsiteBakerCMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-1540
+      name: ValleyCMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: href="viewcmscac.do
+                  weight: 100
+                  evidence: Migrated response body evidence for ValleyCMS
+                - type: body.contains
+                  value: href="/viewcmscac.do
+                  weight: 100
+                  evidence: Migrated response body evidence for ValleyCMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1541
+      name: WUZHICMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: powered by wuzhicms
+                  weight: 100
+                  evidence: Migrated response body evidence for WUZHICMS
+                - type: body.contains
+                  value: content="wuzhicms
+                  weight: 100
+                  evidence: Migrated response body evidence for WUZHICMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1542
+      name: DianCMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: diancms_sitename
+                  weight: 100
+                  evidence: Migrated response body evidence for DianCMS
+                - type: body.contains
+                  value: diancms_用户登陆引用
+                  weight: 100
+                  evidence: Migrated response body evidence for DianCMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1543
+      name: DianCMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: header.contains
+                  value: DianCMS
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for DianCMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-1544
+      name: goldlibCMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: speakintertscarch.aspx
+                  weight: 100
+                  evidence: Migrated response body evidence for goldlibCMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1545
+      name: Hingesoft-HZCMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: produced by
+                  weight: 100
+                  evidence: Migrated response body evidence for Hingesoft-HZCMS
+                - type: body.contains
+                  value: 网站群内容管理系统
+                  weight: 100
+                  evidence: Migrated response body evidence for Hingesoft-HZCMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1546
+      name: TCCMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: index.php?ac=link_more
+                  weight: 100
+                  evidence: Migrated response body evidence for TCCMS
+                - type: body.contains
+                  value: index.php?ac=news_list
+                  weight: 100
+                  evidence: Migrated response body evidence for TCCMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1547
+      name: IDEACMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: powered by ideacms
+                  weight: 100
+                  evidence: Migrated response body evidence for IDEACMS
+                - type: body.contains
+                  value: ejnav{ideacms:cursort
+                  weight: 100
+                  evidence: Migrated response body evidence for IDEACMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1548
+      name: Ruijie-RCMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: jhtml
+                  weight: 100
+                  evidence: Migrated response body evidence for Ruijie-RCMS
+                - type: body.contains
+                  value: /r/cms/www/
+                  weight: 100
+                  evidence: Migrated response body evidence for Ruijie-RCMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1549
+      name: kingCMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: content="kingcms
+                  weight: 100
+                  evidence: Migrated response body evidence for kingCMS
+                - type: body.contains
+                  value: powered by kingcms
+                  weight: 100
+                  evidence: Migrated response body evidence for kingCMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1550
+      name: KoobooCMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: header.contains
+                  value: X-Kooboocms-
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for KoobooCMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-1551
+      name: taoCMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: template/taocms
+                  weight: 100
+                  evidence: Migrated response body evidence for taoCMS
+                - type: body.contains
+                  value: src="/taocms/code/calendar.js"
+                  weight: 100
+                  evidence: Migrated response body evidence for taoCMS
+                - type: body.contains
+                  value: '>taoCMS<'
+                  weight: 100
+                  evidence: Migrated response body evidence for taoCMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1552
+      name: tao-long-YunGouCMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: /yungou/css/comm.css
+                  weight: 100
+                  evidence: Migrated response body evidence for tao-long-YunGouCMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1553
+      name: TomatoCMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: tomato.core.widget.loader.baseurl = 'http://
+                  weight: 100
+                  evidence: Migrated response body evidence for TomatoCMS
+                - type: body.contains
+                  value: <h1>TomatoCMS Install Wizard</h1>
+                  weight: 100
+                  evidence: Migrated response body evidence for TomatoCMS
+                - type: body.contains
+                  value: <a href="http://www.tomatocms.com" title="powered by tomatocms" target="_blank">
+                  weight: 100
+                  evidence: Migrated response body evidence for TomatoCMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1554
+      name: TomatoCMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: header.contains
+                  value: TomatoCMS
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for TomatoCMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-1555
+      name: fidion CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: header.contains
+                  value: fidion CMS
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for fidion CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-1556
+      name: UQCMS(UQ云商)
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: header.contains
+                  value: UQCMS
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for UQCMS(UQ云商)
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-1557
+      name: UQCMS(UQ云商)
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: /public/css/common_uqcms.css
+                  weight: 100
+                  evidence: Migrated response body evidence for UQCMS(UQ云商)
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1558
+      name: XUNRUICMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: alt="xunruicms"
+                  weight: 100
+                  evidence: Migrated response body evidence for XUNRUICMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1559
+      name: ZZZCMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: href="/?brandlist/zzzcms
+                  weight: 100
+                  evidence: Migrated response body evidence for ZZZCMS
+                - type: body.contains
+                  value: .banner .in_business ul li dd
+                  weight: 100
+                  evidence: Migrated response body evidence for ZZZCMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1560
+      name: EZCMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: Powered by EZCMS
+                  weight: 100
+                  evidence: Migrated response body evidence for EZCMS
+                - type: body.contains
+                  value: EZCMS Content Management System
+                  weight: 100
+                  evidence: Migrated response body evidence for EZCMS
+                - type: body.contains
+                  value: background="images/headerbg.png"><div align="right"><img src="images/headerright.png" border="0"></div></td>
+                  weight: 100
+                  evidence: Migrated response body evidence for EZCMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1561
+      name: SyndeoCMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: <!-- Please don"t remove my credits! I worked hard to create this theme and distribute it freely. Thanks! -->
+                  weight: 100
+                  evidence: Migrated response body evidence for SyndeoCMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1562
+      name: ZikulaCMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: header.contains
+                  value: ZikulaCMS
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for ZikulaCMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-1563
+      name: WebYep CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: header.contains
+                  value: WebYep CMS
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for WebYep CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-1564
+      name: 捷点JCMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: Publish By JCms2010
+                  weight: 100
+                  evidence: Migrated response body evidence for 捷点JCMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1565
+      name: Acidcat_CMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: Start Acidcat CMS footer information
+                  weight: 100
+                  evidence: Migrated response body evidence for Acidcat_CMS
+                - type: body.contains
+                  value: Powered by Acidcat CMS
+                  weight: 100
+                  evidence: Migrated response body evidence for Acidcat_CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1566
+      name: BoyowCMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: publish by BoyowCMS
+                  weight: 100
+                  evidence: Migrated response body evidence for BoyowCMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1569
+      name: PigCms
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: header.contains
+                  value: PigCms.com
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for PigCms
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-1570
+      name: O2OCMS
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: /index.php/clasify/showone/gtitle/
+                  weight: 100
+                  evidence: Migrated response body evidence for O2OCMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1571
+      name: niucms
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: content="NIUCMS
+                  weight: 100
+                  evidence: Migrated response body evidence for niucms
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1572
+      name: baocms
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: content="BAOCMS
+                  weight: 100
+                  evidence: Migrated response body evidence for baocms
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1573
+      name: JTBC(CMS)
+      category: cms
+      tags:
+        - migrated
+        - cms
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: /js/jtbc.js
+                  weight: 100
+                  evidence: Migrated response body evidence for JTBC(CMS)
+                - type: body.contains
+                  value: content="JTBC
+                  weight: 100
+                  evidence: Migrated response body evidence for JTBC(CMS)
+                - type: body.contains
+                  value: JTBC,CMS
+                  weight: 100
+                  evidence: Migrated response body evidence for JTBC(CMS)
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+

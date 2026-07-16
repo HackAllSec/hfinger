@@ -1,0 +1,2425 @@
+rules:
+    - id: builtin-0001
+      name: 致远OA
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: /seeyon/common/
+                  weight: 100
+                  evidence: Migrated response body evidence for 致远OA
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0002
+      name: 致远A6+协同管理软件
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: /seeyon/common/images/A6/
+                  weight: 100
+                  evidence: Migrated response body evidence for 致远A6+协同管理软件
+                - type: body.contains
+                  value: /autoinstall/A6
+                  weight: 100
+                  evidence: Migrated response body evidence for 致远A6+协同管理软件
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0003
+      name: 致远A8+协同管理软件
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: /seeyon/common/images/A8/
+                  weight: 100
+                  evidence: Migrated response body evidence for 致远A8+协同管理软件
+                - type: body.contains
+                  value: /autoinstall/A8
+                  weight: 100
+                  evidence: Migrated response body evidence for 致远A8+协同管理软件
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0004
+      name: 致远OA M1 Server
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: title.contains
+                  value: M1-Server
+                  weight: 100
+                  evidence: Migrated HTML title evidence for 致远OA M1 Server
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0005
+      name: 致远OA M3 Server
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: title.contains
+                  value: M3 Server
+                  weight: 100
+                  evidence: Migrated HTML title evidence for 致远OA M3 Server
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0006
+      name: 致远互联-协同数据分析云
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "410106848"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for 致远互联-协同数据分析云
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0007
+      name: 致远互联-DEE
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: /styles/dee/js/login/login.js
+                  weight: 100
+                  evidence: Migrated response body evidence for 致远互联-DEE
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0008
+      name: 致远互联-FE
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: hdn_valid_flag
+                  weight: 100
+                  evidence: Migrated response body evidence for 致远互联-FE
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0009
+      name: 泛微 OA
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "1578525679"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for 泛微 OA
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0010
+      name: 泛微 OA (e-cology)
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: /ecology
+                  weight: 100
+                  evidence: Migrated response body evidence for 泛微 OA (e-cology)
+                - type: body.contains
+                  value: /weaver/
+                  weight: 100
+                  evidence: Migrated response body evidence for 泛微 OA (e-cology)
+                - type: body.contains
+                  value: /wui/
+                  weight: 100
+                  evidence: Migrated response body evidence for 泛微 OA (e-cology)
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0011
+      name: 泛微云桥 e-Bridge
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: wx.weaver
+                  weight: 100
+                  evidence: Migrated response body evidence for 泛微云桥 e-Bridge
+                - type: body.contains
+                  value: e-Bridge
+                  weight: 100
+                  evidence: Migrated response body evidence for 泛微云桥 e-Bridge
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0012
+      name: 泛微-EOffice 10
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: /eoffice10/client/
+                  weight: 100
+                  evidence: Migrated response body evidence for 泛微-EOffice 10
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0013
+      name: 泛微-EMobile
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "2062026853"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for 泛微-EMobile
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0014
+      name: 泛微-EMobile
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: window.apiPrifix = "/emp"
+                  weight: 100
+                  evidence: Migrated response body evidence for 泛微-EMobile
+                - type: body.contains
+                  value: '>EM-404</div>'
+                  weight: 100
+                  evidence: Migrated response body evidence for 泛微-EMobile
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0015
+      name: 政务外网OA系统
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: /ServiceAction/com.eweaver.document
+                  weight: 100
+                  evidence: Migrated response body evidence for 政务外网OA系统
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0043
+      name: 九思 OA 协同办公系统
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: /jsoa/login.jsp
+                  weight: 100
+                  evidence: Migrated response body evidence for 九思 OA 协同办公系统
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0048
+      name: 顶讯科技-易宝OA系统
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: title.contains
+                  value: 欢迎登录易宝OA系统
+                  weight: 100
+                  evidence: Migrated HTML title evidence for 顶讯科技-易宝OA系统
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0050
+      name: 红帆-ioffice OA
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: title.contains
+                  value: iOffice.net
+                  weight: 100
+                  evidence: Migrated HTML title evidence for 红帆-ioffice OA
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0066
+      name: 泛微 OA (e-cology)
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: header.contains
+                  value: ecology_JSessionid
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for 泛微 OA (e-cology)
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0074
+      name: 微宏 OA
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: wh/servlet/MainServer
+                  weight: 100
+                  evidence: Migrated response body evidence for 微宏 OA
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0081
+      name: 用友BIP 数据应用服务
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "1183274548"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for 用友BIP 数据应用服务
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0082
+      name: 用友致远oa
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: /seeyon/USER-DATA/IMAGES/LOGIN/login.gif
+                  weight: 100
+                  evidence: Migrated response body evidence for 用友致远oa
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0083
+      name: 用友致远oa
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: /yyoa/
+                  weight: 100
+                  evidence: Migrated response body evidence for 用友致远oa
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0084
+      name: 用友软件
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: UFIDA Software CO.LTD all rights reserved
+                  weight: 100
+                  evidence: Migrated response body evidence for 用友软件
+                - type: body.contains
+                  value: logo/images/ufida_ehr_disable.png
+                  weight: 100
+                  evidence: Migrated response body evidence for 用友软件
+                - type: body.contains
+                  value: logo/images/ufida_ehr.png
+                  weight: 100
+                  evidence: Migrated response body evidence for 用友软件
+                - type: body.contains
+                  value: logo/images/ufida_ebs_disable.png
+                  weight: 100
+                  evidence: Migrated response body evidence for 用友软件
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0085
+      name: 用友NC
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: logo/images/ufida_nc.png
+                  weight: 100
+                  evidence: Migrated response body evidence for 用友NC
+                - type: body.contains
+                  value: 用友NC
+                  weight: 100
+                  evidence: Migrated response body evidence for 用友NC
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0086
+      name: 用友NC
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: uclient.yonyou.com
+                  weight: 100
+                  evidence: Migrated response body evidence for 用友NC
+                - type: body.contains
+                  value: UClient
+                  weight: 100
+                  evidence: Migrated response body evidence for 用友NC
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0087
+      name: 用友NC
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: /web/icc/js/chat-msg.js
+                  weight: 100
+                  evidence: Migrated response body evidence for 用友NC
+                - type: body.contains
+                  value: /js/ext/resources/css/xtheme-blue.css
+                  weight: 100
+                  evidence: Migrated response body evidence for 用友NC
+                - type: body.contains
+                  value: href="logo/images/ufida.ico">
+                  weight: 100
+                  evidence: Migrated response body evidence for 用友NC
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0088
+      name: 用友 NC Cloud
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: platform/pub/welcome.do
+                  weight: 100
+                  evidence: Migrated response body evidence for 用友 NC Cloud
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0089
+      name: 用友GRP-U8 新政府会计制度专版
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "-299520369"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for 用友GRP-U8 新政府会计制度专版
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0090
+      name: 用友-畅捷通OEM
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: GNRemote.dll
+                  weight: 100
+                  evidence: Migrated response body evidence for 用友-畅捷通OEM
+                - type: body.contains
+                  value: Web_sc/login.gn
+                  weight: 100
+                  evidence: Migrated response body evidence for 用友-畅捷通OEM
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0091
+      name: 用友-时空KSOA
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: /images_index/productKSOA.jpg
+                  weight: 100
+                  evidence: Migrated response body evidence for 用友-时空KSOA
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0092
+      name: 用友商战实践平台
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: Login_Owner
+                  weight: 100
+                  evidence: Migrated response body evidence for 用友商战实践平台
+                - type: body.contains
+                  value: Login_Main_BG
+                  weight: 100
+                  evidence: Migrated response body evidence for 用友商战实践平台
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0093
+      name: 用友erp-nc
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: /nc/servlet/nc.ui.iufo.login.Index
+                  weight: 100
+                  evidence: Migrated response body evidence for 用友erp-nc
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0094
+      name: 用友U8
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: getFirstU8Accid
+                  weight: 100
+                  evidence: Migrated response body evidence for 用友U8
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0095
+      name: 用友ufida
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: /System/Login/Login.asp?AppID=
+                  weight: 100
+                  evidence: Migrated response body evidence for 用友ufida
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0096
+      name: 用友 E-HR
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: header.contains
+                  value: 用友 E-HR
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for 用友 E-HR
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0097
+      name: 用友TurboCRM
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: header.contains
+                  value: 用友TurboCRM
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for 用友TurboCRM
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0098
+      name: 用友GRP-U8(财务系统)
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: header.contains
+                  value: 用友GRP-U8(财务系统)
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for 用友GRP-U8(财务系统)
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0099
+      name: 用友优普U8系统
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: header.contains
+                  value: 用友优普U8系统
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for 用友优普U8系统
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0100
+      name: 用友优普U8系统
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: title.contains
+                  value: 用友优普U8系统
+                  weight: 100
+                  evidence: Migrated HTML title evidence for 用友优普U8系统
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0101
+      name: 用友-商战实践平台
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: title.contains
+                  value: 用友 商战实践平台
+                  weight: 100
+                  evidence: Migrated HTML title evidence for 用友-商战实践平台
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0102
+      name: 用友-商战实践平台
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: header.contains
+                  value: 用友 商战实践平台
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for 用友-商战实践平台
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0103
+      name: 用友-FE协同办公平台
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: title.contains
+                  value: 用友 FE协同办公平台
+                  weight: 100
+                  evidence: Migrated HTML title evidence for 用友-FE协同办公平台
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0104
+      name: 用友-FE协同办公平台
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: header.contains
+                  value: 用友 FE协同办公平台
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for 用友-FE协同办公平台
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0106
+      name: 用友-UFIDA-NC
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: nc.sfbase.applet.NCApplet.class
+                  weight: 100
+                  evidence: Migrated response body evidence for 用友-UFIDA-NC
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0107
+      name: 用友GRP-U8
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "3995446927"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for 用友GRP-U8
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0108
+      name: 用友A6
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: title.contains
+                  value: 用友A6
+                  weight: 100
+                  evidence: Migrated HTML title evidence for 用友A6
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0109
+      name: 用友GRP-RMIS系统
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: title.contains
+                  value: 用友GRP-RMIS系统
+                  weight: 100
+                  evidence: Migrated HTML title evidence for 用友GRP-RMIS系统
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0117
+      name: 重庆佰鼎-佰鼎OA
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: default.aspx
+                  weight: 100
+                  evidence: Migrated response body evidence for 重庆佰鼎-佰鼎OA
+                - type: body.contains
+                  value: Style/Style.css
+                  weight: 100
+                  evidence: Migrated response body evidence for 重庆佰鼎-佰鼎OA
+                - type: body.contains
+                  value: Skin2017
+                  weight: 100
+                  evidence: Migrated response body evidence for 重庆佰鼎-佰鼎OA
+                - type: body.contains
+                  value: TxtUserPwd
+                  weight: 100
+                  evidence: Migrated response body evidence for 重庆佰鼎-佰鼎OA
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0123
+      name: 通达OA
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: /images/tongda.ico
+                  weight: 100
+                  evidence: Migrated response body evidence for 通达OA
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0124
+      name: 通达OA
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: Office Anywhere
+                  weight: 100
+                  evidence: Migrated response body evidence for 通达OA
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0125
+      name: 通达OA
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: 通达OA
+                  weight: 100
+                  evidence: Migrated response body evidence for 通达OA
+                - type: body.contains
+                  value: login
+                  weight: 100
+                  evidence: Migrated response body evidence for 通达OA
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0139
+      name: 蓝凌 OA
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: sys/ui/extend/theme/default/style/icon.css
+                  weight: 100
+                  evidence: Migrated response body evidence for 蓝凌 OA
+                - type: body.contains
+                  value: sys/ui/extend/theme/default/style/profile.css
+                  weight: 100
+                  evidence: Migrated response body evidence for 蓝凌 OA
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0140
+      name: 蓝凌 OA
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: 蓝凌软件
+                  weight: 100
+                  evidence: Migrated response body evidence for 蓝凌 OA
+                - type: body.contains
+                  value: App_Themes/Login
+                  weight: 100
+                  evidence: Migrated response body evidence for 蓝凌 OA
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0146
+      name: 金蝶云星空
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: HTML5/content/themes/kdcss.min.css
+                  weight: 100
+                  evidence: Migrated response body evidence for 金蝶云星空
+                - type: body.contains
+                  value: /ClientBin/Kingdee.BOS.XPF.App.xap
+                  weight: 100
+                  evidence: Migrated response body evidence for 金蝶云星空
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0147
+      name: 金蝶云星空 移动应用管理平台
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: header.contains
+                  value: 金蝶云星空 移动应用管理平台
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for 金蝶云星空 移动应用管理平台
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0148
+      name: 金蝶 EAS
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: eassso
+                  weight: 100
+                  evidence: Migrated response body evidence for 金蝶 EAS
+                - type: body.contains
+                  value: portalClientHelper.jsp
+                  weight: 100
+                  evidence: Migrated response body evidence for 金蝶 EAS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0149
+      name: 金蝶 EAS
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: EAS系统登录
+                  weight: 100
+                  evidence: Migrated response body evidence for 金蝶 EAS
+                - type: body.contains
+                  value: easSessionId
+                  weight: 100
+                  evidence: Migrated response body evidence for 金蝶 EAS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0150
+      name: 金蝶Apusic应用服务器
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: 欢迎使用Apusic应用服务器
+                  weight: 100
+                  evidence: Migrated response body evidence for 金蝶Apusic应用服务器
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0152
+      name: 金蝶政务GSiS
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: /kdgs/script/kdgs.js
+                  weight: 100
+                  evidence: Migrated response body evidence for 金蝶政务GSiS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0153
+      name: 金蝶K/3 Cloud
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: header.contains
+                  value: 金蝶K/3 Cloud
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for 金蝶K/3 Cloud
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0154
+      name: 金蝶K/3 Cloud
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: title.contains
+                  value: 金蝶K/3 Cloud
+                  weight: 100
+                  evidence: Migrated HTML title evidence for 金蝶K/3 Cloud
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0155
+      name: 金蝶OA
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: EAS系统登录
+                  weight: 100
+                  evidence: Migrated response body evidence for 金蝶OA
+                - type: body.contains
+                  value: 金蝶国际软件集团有限公司
+                  weight: 100
+                  evidence: Migrated response body evidence for 金蝶OA
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0156
+      name: 金蝶OA
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: title.contains
+                  value: 金蝶OA
+                  weight: 100
+                  evidence: Migrated HTML title evidence for 金蝶OA
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0157
+      name: 金蝶协作办公系统
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: title.contains
+                  value: 金蝶协作办公系统
+                  weight: 100
+                  evidence: Migrated HTML title evidence for 金蝶协作办公系统
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0223
+      name: Material Dashboard
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "1913538826"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for Material Dashboard
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0226
+      name: netdata dashboard
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "-182423204"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for netdata dashboard
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0232
+      name: netdata dashboard
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "1585145626"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for netdata dashboard
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0245
+      name: Sophos Cyberoam (appliance)
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "1601194732"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for Sophos Cyberoam (appliance)
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0258
+      name: Cyberoam
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "1462981117"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for Cyberoam
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0343
+      name: Cisco Meraki Dashboard
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "804949239"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for Cisco Meraki Dashboard
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0414
+      name: BoaServer
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "1169183049"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for BoaServer
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0420
+      name: Blackboard
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "-1593651747"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for Blackboard
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0522
+      name: ADB Broadband S.p.A. (Network)
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "-587741716"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for ADB Broadband S.p.A. (Network)
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0696
+      name: 协达OA
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "-1850889691"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for 协达OA
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0710
+      name: IBOS酷办公OA系统
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: IBOS
+                  weight: 100
+                  evidence: Migrated response body evidence for IBOS酷办公OA系统
+                - type: body.contains
+                  value: login-panel
+                  weight: 100
+                  evidence: Migrated response body evidence for IBOS酷办公OA系统
+                - type: body.contains
+                  value: loginsubmit
+                  weight: 100
+                  evidence: Migrated response body evidence for IBOS酷办公OA系统
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0754
+      name: 协众OA
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "-1466673461"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for 协众OA
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0758
+      name: 协众OA
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: scripts/cnoa.extra.js
+                  weight: 100
+                  evidence: Migrated response body evidence for 协众OA
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0773
+      name: 金合OA
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: Jhsoft.Web.login
+                  weight: 100
+                  evidence: Migrated response body evidence for 金合OA
+                - type: body.contains
+                  value: PassWord.aspx
+                  weight: 100
+                  evidence: Migrated response body evidence for 金合OA
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0778
+      name: 蓝凌EIS智慧协同平台
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: /scripts/jquery.landray.common.js
+                  weight: 100
+                  evidence: Migrated response body evidence for 蓝凌EIS智慧协同平台
+                - type: body.contains
+                  value: 蓝凌软件
+                  weight: 100
+                  evidence: Migrated response body evidence for 蓝凌EIS智慧协同平台
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0786
+      name: 中腾OA
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: systemAction
+                  weight: 100
+                  evidence: Migrated response body evidence for 中腾OA
+                - type: body.contains
+                  value: zt_webframe
+                  weight: 100
+                  evidence: Migrated response body evidence for 中腾OA
+                - type: body.contains
+                  value: login
+                  weight: 100
+                  evidence: Migrated response body evidence for 中腾OA
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0790
+      name: 华天动力OA
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: OAapp/WebObjects/OAapp.woa
+                  weight: 100
+                  evidence: Migrated response body evidence for 华天动力OA
+                - type: body.contains
+                  value: window.location
+                  weight: 100
+                  evidence: Migrated response body evidence for 华天动力OA
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0816
+      name: PHPOA 协同办公软件
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: login.php
+                  weight: 100
+                  evidence: Migrated response body evidence for PHPOA 协同办公软件
+                - type: body.contains
+                  value: 提示信息
+                  weight: 100
+                  evidence: Migrated response body evidence for PHPOA 协同办公软件
+                - type: body.contains
+                  value: showMsg
+                  weight: 100
+                  evidence: Migrated response body evidence for PHPOA 协同办公软件
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0817
+      name: 明致 OA
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "1591287747"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for 明致 OA
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0819
+      name: 万户 OA
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: defaultroot
+                  weight: 100
+                  evidence: Migrated response body evidence for 万户 OA
+                - type: body.contains
+                  value: Logon!logon.action
+                  weight: 100
+                  evidence: Migrated response body evidence for 万户 OA
+                - type: body.contains
+                  value: domainAccount
+                  weight: 100
+                  evidence: Migrated response body evidence for 万户 OA
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0909
+      name: e-cology 运维管理平台
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "-384583337"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for e-cology 运维管理平台
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0913
+      name: 信呼 OA
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "1652488516"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for 信呼 OA
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0922
+      name: 78 OA
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: /resource/javascript/system/runtime.min.js
+                  weight: 100
+                  evidence: Migrated response body evidence for 78 OA
+                - type: body.contains
+                  value: password
+                  weight: 100
+                  evidence: Migrated response body evidence for 78 OA
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0938
+      name: 青年软件OA
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: /Content/qrlib/ligerUI/skins/
+                  weight: 100
+                  evidence: Migrated response body evidence for 青年软件OA
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0968
+      name: 迪浪云OA
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "-179985729"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for 迪浪云OA
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0980
+      name: 东华医疗协同办公系统
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: extcomponent/security/login.jsp
+                  weight: 100
+                  evidence: Migrated response body evidence for 东华医疗协同办公系统
+                - type: body.contains
+                  value: login_dhc
+                  weight: 100
+                  evidence: Migrated response body evidence for 东华医疗协同办公系统
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1003
+      name: 慧点科技 OA 协同办公系统
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: /dojo/smartdot/css/dojo_smartdot.css
+                  weight: 100
+                  evidence: Migrated response body evidence for 慧点科技 OA 协同办公系统
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1050
+      name: 聚水潭SaaS协同平台
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: Hxj_Web_UI_Script_jquery_json-2_4_js
+                  weight: 100
+                  evidence: Migrated response body evidence for 聚水潭SaaS协同平台
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1051
+      name: 联达动力协同办公管理平台
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: /LKSys_WindowControlScript.js
+                  weight: 100
+                  evidence: Migrated response body evidence for 联达动力协同办公管理平台
+                - type: body.contains
+                  value: LKSYS_PubMaxWin()
+                  weight: 100
+                  evidence: Migrated response body evidence for 联达动力协同办公管理平台
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1052
+      name: PMedia Platform OA
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: PMedia Platform
+                  weight: 100
+                  evidence: Migrated response body evidence for PMedia Platform OA
+                - type: body.contains
+                  value: images/login/badgezh_cn.png
+                  weight: 100
+                  evidence: Migrated response body evidence for PMedia Platform OA
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1059
+      name: 启莱OA
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: js/jQselect.js
+                  weight: 100
+                  evidence: Migrated response body evidence for 启莱OA
+                - type: body.contains
+                  value: CreateCheckCode.aspx?id
+                  weight: 100
+                  evidence: Migrated response body evidence for 启莱OA
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1067
+      name: 极限OA网络智能办公系统
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "1967132225"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for 极限OA网络智能办公系统
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-1068
+      name: 金和 OA
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: 金和网络
+                  weight: 100
+                  evidence: Migrated response body evidence for 金和 OA
+                - type: body.contains
+                  value: Jinher Software
+                  weight: 100
+                  evidence: Migrated response body evidence for 金和 OA
+                - type: body.contains
+                  value: jinher network
+                  weight: 100
+                  evidence: Migrated response body evidence for 金和 OA
+                - type: body.contains
+                  value: c6/jhsoft.web.login
+                  weight: 100
+                  evidence: Migrated response body evidence for 金和 OA
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1069
+      name: 金和OA
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: title.contains
+                  value: 金和OA
+                  weight: 100
+                  evidence: Migrated HTML title evidence for 金和OA
+                - type: title.contains
+                  value: 金和协同管理平台
+                  weight: 100
+                  evidence: Migrated HTML title evidence for 金和OA
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1070
+      name: JC6金和协同管理平台
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: header.contains
+                  value: JC6金和协同管理平台
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for JC6金和协同管理平台
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-1071
+      name: JC6金和协同管理平台
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: title.contains
+                  value: JC6金和协同管理平台
+                  weight: 100
+                  evidence: Migrated HTML title evidence for JC6金和协同管理平台
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1072
+      name: 金和协同管理平台
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: title.contains
+                  value: c6/jhsoft.web.login
+                  weight: 100
+                  evidence: Migrated HTML title evidence for 金和协同管理平台
+                - type: title.contains
+                  value: closewindownoask
+                  weight: 100
+                  evidence: Migrated HTML title evidence for 金和协同管理平台
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1074
+      name: 致翔 OA
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: obj.src = "CreateCheckCode.aspx?id" + strMath;
+                  weight: 100
+                  evidence: Migrated response body evidence for 致翔 OA
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1077
+      name: 红帆-ioffice OA
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: /iOffice/prg/welcome/welcomeShow.aspx?mode=login
+                  weight: 100
+                  evidence: Migrated response body evidence for 红帆-ioffice OA
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1078
+      name: 红帆-ioffice OA
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: title.contains
+                  value: iOffice.net
+                  weight: 100
+                  evidence: Migrated HTML title evidence for 红帆-ioffice OA
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1079
+      name: iOffice(红帆oa)
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: header.contains
+                  value: iOffice
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for iOffice(红帆oa)
+                - type: header.contains
+                  value: /ioffice
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for iOffice(红帆oa)
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-1080
+      name: iOffice(红帆oa)
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: title.contains
+                  value: iOffice(红帆oa)
+                  weight: 100
+                  evidence: Migrated HTML title evidence for iOffice(红帆oa)
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1225
+      name: JagoanStore-CMS
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: Toko Online</a> by <a href="http://www.jagoanstore.com
+                  weight: 100
+                  evidence: Migrated response body evidence for JagoanStore-CMS
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1266
+      name: 78OA
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: /resource/javascript/system/runtime.min.js
+                  weight: 100
+                  evidence: Migrated response body evidence for 78OA
+                - type: body.contains
+                  value: license.78oa.com
+                  weight: 100
+                  evidence: Migrated response body evidence for 78OA
+                - type: body.contains
+                  value: src="/module/index.php
+                  weight: 100
+                  evidence: Migrated response body evidence for 78OA
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1451
+      name: Akiva-WebBoard
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: powered by WebBoard
+                  weight: 100
+                  evidence: Migrated response body evidence for Akiva-WebBoard
+                - type: body.contains
+                  value: webboard=
+                  weight: 100
+                  evidence: Migrated response body evidence for Akiva-WebBoard
+                - type: body.contains
+                  value: /WebBoard/
+                  weight: 100
+                  evidence: Migrated response body evidence for Akiva-WebBoard
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1615
+      name: BoaServer
+      category: oa
+      tags:
+        - migrated
+        - oa
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: header.contains
+                  value: Boa/
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for BoaServer
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+

@@ -1,0 +1,61 @@
+rules:
+    - id: builtin-0421
+      name: Jupyter Notebook
+      category: ai-service
+      tags:
+        - migrated
+        - ai-service
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "-895963602"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for Jupyter Notebook
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0584
+      name: JupyterHub
+      category: ai-service
+      tags:
+        - migrated
+        - ai-service
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "1248917303"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for JupyterHub
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-1620
+      name: Gradio
+      category: ai-service
+      tags:
+        - migrated
+        - ai-service
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: gradio-app
+                  weight: 100
+                  evidence: Migrated response body evidence for Gradio
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+

@@ -1,0 +1,277 @@
+rules:
+    - id: builtin-0026
+      name: Kibana
+      category: observability
+      tags:
+        - migrated
+        - observability
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: title.contains
+                  value: Kibana
+                  weight: 100
+                  evidence: Migrated HTML title evidence for Kibana
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0398
+      name: Prometheus Time Series Collection and Processing Server
+      category: observability
+      tags:
+        - migrated
+        - observability
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "-1399433489"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for Prometheus Time Series Collection and Processing Server
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0496
+      name: Kibana
+      category: observability
+      tags:
+        - migrated
+        - observability
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "-267431135"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for Kibana
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0497
+      name: Kibana
+      category: observability
+      tags:
+        - migrated
+        - observability
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "-759754862"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for Kibana
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0498
+      name: Kibana
+      category: observability
+      tags:
+        - migrated
+        - observability
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "-1200737715"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for Kibana
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0499
+      name: Kibana
+      category: observability
+      tags:
+        - migrated
+        - observability
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "75230260"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for Kibana
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0500
+      name: Kibana
+      category: observability
+      tags:
+        - migrated
+        - observability
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "1668183286"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for Kibana
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0708
+      name: Grafana
+      category: observability
+      tags:
+        - migrated
+        - observability
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: Grafana
+                  weight: 100
+                  evidence: Migrated response body evidence for Grafana
+                - type: body.contains
+                  value: login
+                  weight: 100
+                  evidence: Migrated response body evidence for Grafana
+                - type: body.contains
+                  value: grafana-app
+                  weight: 100
+                  evidence: Migrated response body evidence for Grafana
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0865
+      name: Prometheus Server
+      category: observability
+      tags:
+        - migrated
+        - observability
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: title.contains
+                  value: Prometheus Time Series Collection and Processing Server
+                  weight: 100
+                  evidence: Migrated HTML title evidence for Prometheus Server
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0892
+      name: Grafana
+      category: observability
+      tags:
+        - migrated
+        - observability
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: <title>Grafana</title>
+                  weight: 100
+                  evidence: Migrated response body evidence for Grafana
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1480
+      name: ALERTMANAGER
+      category: observability
+      tags:
+        - migrated
+        - observability
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: defaultcreator
+                  weight: 100
+                  evidence: Migrated response body evidence for ALERTMANAGER
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1521
+      name: Apache-Flink
+      category: observability
+      tags:
+        - migrated
+        - observability
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: <flink-root></flink-root>
+                  weight: 100
+                  evidence: Migrated response body evidence for Apache-Flink
+                - type: body.contains
+                  value: <img alt="apache flink dashboard"
+                  weight: 100
+                  evidence: Migrated response body evidence for Apache-Flink
+                - type: body.contains
+                  value: src="images/flink-logo.png
+                  weight: 100
+                  evidence: Migrated response body evidence for Apache-Flink
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1529
+      name: Apache-Spark
+      category: observability
+      tags:
+        - migrated
+        - observability
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: src="/static/spark-logo(.*\.png"
+                  weight: 100
+                  evidence: Migrated response body evidence for Apache-Spark
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+

@@ -1,0 +1,565 @@
+rules:
+    - id: builtin-0052
+      name: Spring env
+      category: framework
+      tags:
+        - migrated
+        - framework
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: servletContextInitParams
+                  weight: 100
+                  evidence: Migrated response body evidence for Spring env
+                - type: body.contains
+                  value: logback
+                  weight: 100
+                  evidence: Migrated response body evidence for Spring env
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0057
+      name: Weblogic
+      category: framework
+      tags:
+        - migrated
+        - framework
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: Error 404--Not Found
+                  weight: 100
+                  evidence: Migrated response body evidence for Weblogic
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0058
+      name: Weblogic
+      category: framework
+      tags:
+        - migrated
+        - framework
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: Error 403--
+                  weight: 100
+                  evidence: Migrated response body evidence for Weblogic
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0059
+      name: Weblogic
+      category: framework
+      tags:
+        - migrated
+        - framework
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: /console/framework/skins/wlsconsole/images/login_WebLogic_branding.png
+                  weight: 100
+                  evidence: Migrated response body evidence for Weblogic
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0061
+      name: Weblogic
+      category: framework
+      tags:
+        - migrated
+        - framework
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: Welcome to Weblogic Application Server
+                  weight: 100
+                  evidence: Migrated response body evidence for Weblogic
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0062
+      name: Weblogic
+      category: framework
+      tags:
+        - migrated
+        - framework
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: <i>Hypertext Transfer Protocol -- HTTP/1.1</i>
+                  weight: 100
+                  evidence: Migrated response body evidence for Weblogic
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0075
+      name: Apache-Shiro
+      category: framework
+      tags:
+        - migrated
+        - framework
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: header.contains
+                  value: rememberMe=
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for Apache-Shiro
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0076
+      name: Dreamer CMS-Shiro
+      category: framework
+      tags:
+        - migrated
+        - framework
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: header.contains
+                  value: dreamer-
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for Dreamer CMS-Shiro
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0118
+      name: Swagger UI
+      category: framework
+      tags:
+        - migrated
+        - framework
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: Swagger UI
+                  weight: 100
+                  evidence: Migrated response body evidence for Swagger UI
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0160
+      name: Jboss
+      category: framework
+      tags:
+        - migrated
+        - framework
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: jboss.css
+                  weight: 100
+                  evidence: Migrated response body evidence for Jboss
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0187
+      name: Tomcat默认页面
+      category: framework
+      tags:
+        - migrated
+        - framework
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: /manager/status
+                  weight: 100
+                  evidence: Migrated response body evidence for Tomcat默认页面
+                - type: body.contains
+                  value: /manager/html
+                  weight: 100
+                  evidence: Migrated response body evidence for Tomcat默认页面
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0189
+      name: Spring Boot
+      category: framework
+      tags:
+        - migrated
+        - framework
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "116323821"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for Spring Boot
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0254
+      name: Apache Tomcat
+      category: framework
+      tags:
+        - migrated
+        - framework
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "-297069493"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for Apache Tomcat
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0255
+      name: Apache Tomcat
+      category: framework
+      tags:
+        - migrated
+        - framework
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: <h3>Apache Tomcat
+                  weight: 100
+                  evidence: Migrated response body evidence for Apache Tomcat
+                - type: body.contains
+                  value: <h1>HTTP Status 404 –
+                  weight: 100
+                  evidence: Migrated response body evidence for Apache Tomcat
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0256
+      name: Apache Tomcat
+      category: framework
+      tags:
+        - migrated
+        - framework
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: header.contains
+                  value: Apache-Coyote
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for Apache Tomcat
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0342
+      name: Wildfly
+      category: framework
+      tags:
+        - migrated
+        - framework
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "-1666561833"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for Wildfly
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0431
+      name: JBoss Application Server 7
+      category: framework
+      tags:
+        - migrated
+        - framework
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "937999361"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for JBoss Application Server 7
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0439
+      name: Jboss
+      category: framework
+      tags:
+        - migrated
+        - framework
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "-656811182"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for Jboss
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0818
+      name: JBoss EAP
+      category: framework
+      tags:
+        - migrated
+        - framework
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: title>EAP
+                  weight: 100
+                  evidence: Migrated response body evidence for JBoss EAP
+                - type: body.contains
+                  value: eap.css
+                  weight: 100
+                  evidence: Migrated response body evidence for JBoss EAP
+                - type: body.contains
+                  value: JBoss
+                  weight: 100
+                  evidence: Migrated response body evidence for JBoss EAP
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0890
+      name: Spring Eureka
+      category: framework
+      tags:
+        - migrated
+        - framework
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: <title>Eureka</title>
+                  weight: 100
+                  evidence: Migrated response body evidence for Spring Eureka
+                - type: body.contains
+                  value: eureka
+                  weight: 100
+                  evidence: Migrated response body evidence for Spring Eureka
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1030
+      name: Spring Boot Admin
+      category: framework
+      tags:
+        - migrated
+        - framework
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: assets/img/icon-spring-boot-admin.svg
+                  weight: 100
+                  evidence: Migrated response body evidence for Spring Boot Admin
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1031
+      name: Spring Boot Admin
+      category: framework
+      tags:
+        - migrated
+        - framework
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "-1136755742"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for Spring Boot Admin
+                - type: favicon.hash
+                  value: "746379308"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for Spring Boot Admin
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-1032
+      name: Spring Framework
+      category: framework
+      tags:
+        - migrated
+        - framework
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: j_spring_cas_security_check
+                  weight: 100
+                  evidence: Migrated response body evidence for Spring Framework
+                - type: body.contains
+                  value: Whitelabel Error Page
+                  weight: 100
+                  evidence: Migrated response body evidence for Spring Framework
+                - type: body.contains
+                  value: org.springframework.web.
+                  weight: 100
+                  evidence: Migrated response body evidence for Spring Framework
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1049
+      name: Swagger UI
+      category: framework
+      tags:
+        - migrated
+        - framework
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: /swagger-ui.css
+                  weight: 100
+                  evidence: Migrated response body evidence for Swagger UI
+                - type: body.contains
+                  value: swagger-ui-bundle.js
+                  weight: 100
+                  evidence: Migrated response body evidence for Swagger UI
+                - type: body.contains
+                  value: swagger-ui-standalone-preset.js
+                  weight: 100
+                  evidence: Migrated response body evidence for Swagger UI
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1603
+      name: ASP.NET
+      category: framework
+      tags:
+        - migrated
+        - framework
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: header.contains
+                  value: ASP.NET
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for ASP.NET
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-1604
+      name: Java
+      category: framework
+      tags:
+        - migrated
+        - framework
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: header.contains
+                  value: Java
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for Java
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+

@@ -1,0 +1,1205 @@
+rules:
+    - id: builtin-0063
+      name: Sangfor SSL VPN
+      category: security-device
+      tags:
+        - migrated
+        - security-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: /por/login_psw.csp
+                  weight: 100
+                  evidence: Migrated response body evidence for Sangfor SSL VPN
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0064
+      name: Sangfor SSL VPN
+      category: security-device
+      tags:
+        - migrated
+        - security-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: loginPageSP/loginPrivacy.js
+                  weight: 100
+                  evidence: Migrated response body evidence for Sangfor SSL VPN
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0067
+      name: 天融信VPN设备
+      category: security-device
+      tags:
+        - migrated
+        - security-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: header.contains
+                  value: topsecsvportalname
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for 天融信VPN设备
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0070
+      name: 启明某VPN设备
+      category: security-device
+      tags:
+        - migrated
+        - security-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: cover_admin.css
+                  weight: 100
+                  evidence: Migrated response body evidence for 启明某VPN设备
+                - type: body.contains
+                  value: SSLVPN LOGIN
+                  weight: 100
+                  evidence: Migrated response body evidence for 启明某VPN设备
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0071
+      name: 天玥运维安全网关
+      category: security-device
+      tags:
+        - migrated
+        - security-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: css/fw/full.css
+                  weight: 100
+                  evidence: Migrated response body evidence for 天玥运维安全网关
+                - type: body.contains
+                  value: js/p/login.js
+                  weight: 100
+                  evidence: Migrated response body evidence for 天玥运维安全网关
+                - type: body.contains
+                  value: login
+                  weight: 100
+                  evidence: Migrated response body evidence for 天玥运维安全网关
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0116
+      name: WiseGrid慧敏应用交付网关
+      category: security-device
+      tags:
+        - migrated
+        - security-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "910523681"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for WiseGrid慧敏应用交付网关
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0122
+      name: Cisco SSLVPN
+      category: security-device
+      tags:
+        - migrated
+        - security-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: /+CSCOE+/logon.html
+                  weight: 100
+                  evidence: Migrated response body evidence for Cisco SSLVPN
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0128
+      name: 深信服一体化网关 MIG
+      category: security-device
+      tags:
+        - migrated
+        - security-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: cgi-bin/login.cgi
+                  weight: 100
+                  evidence: Migrated response body evidence for 深信服一体化网关 MIG
+                - type: body.contains
+                  value: /html/wz_tooltip.js
+                  weight: 100
+                  evidence: Migrated response body evidence for 深信服一体化网关 MIG
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0131
+      name: 网御 vpn
+      category: security-device
+      tags:
+        - migrated
+        - security-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: /vpn/common/js/leadsec.js
+                  weight: 100
+                  evidence: Migrated response body evidence for 网御 vpn
+                - type: body.contains
+                  value: /vpn/user/common/custom/auth_home.css
+                  weight: 100
+                  evidence: Migrated response body evidence for 网御 vpn
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0132
+      name: Leadsec-SSL-VPN
+      category: security-device
+      tags:
+        - migrated
+        - security-device
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: 欢迎使用leadsec网御ssl vpn
+                  weight: 100
+                  evidence: Migrated response body evidence for Leadsec-SSL-VPN
+                - type: body.contains
+                  value: /ssl/down/usbkey.exe
+                  weight: 100
+                  evidence: Migrated response body evidence for Leadsec-SSL-VPN
+                - type: body.contains
+                  value: content="ssl,vpn,sslvpn
+                  weight: 100
+                  evidence: Migrated response body evidence for Leadsec-SSL-VPN
+                - type: body.contains
+                  value: /ssl/down/images_pc/
+                  weight: 100
+                  evidence: Migrated response body evidence for Leadsec-SSL-VPN
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0133
+      name: Leadsec-SSL-VPN
+      category: security-device
+      tags:
+        - migrated
+        - security-device
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: header.contains
+                  value: XDaemon
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for Leadsec-SSL-VPN
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0211
+      name: Exostar – Managed Access Gateway
+      category: security-device
+      tags:
+        - migrated
+        - security-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "420473080"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for Exostar – Managed Access Gateway
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0248
+      name: TilginAB (HomeGateway)
+      category: security-device
+      tags:
+        - migrated
+        - security-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "-1346447358"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for TilginAB (HomeGateway)
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0253
+      name: Sophos User Portal/VPN Portal
+      category: security-device
+      tags:
+        - migrated
+        - security-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "1045696447"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for Sophos User Portal/VPN Portal
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0257
+      name: OpenVPN
+      category: security-device
+      tags:
+        - migrated
+        - security-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "396533629"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for OpenVPN
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0272
+      name: ZTE Corporation (Gateway/Appliance)
+      category: security-device
+      tags:
+        - migrated
+        - security-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "459900502"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for ZTE Corporation (Gateway/Appliance)
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0276
+      name: Technicolor Gateway
+      category: security-device
+      tags:
+        - migrated
+        - security-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "1835479497"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for Technicolor Gateway
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0311
+      name: Residential Gateway
+      category: security-device
+      tags:
+        - migrated
+        - security-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "-1933493443"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for Residential Gateway
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0373
+      name: Nomadix Access Gateway
+      category: security-device
+      tags:
+        - migrated
+        - security-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "2071993228"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for Nomadix Access Gateway
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0567
+      name: Synology VPN Plus
+      category: security-device
+      tags:
+        - migrated
+        - security-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "1235070469"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for Synology VPN Plus
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0593
+      name: GPON Home Gateway
+      category: security-device
+      tags:
+        - migrated
+        - security-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "251106693"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for GPON Home Gateway
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0605
+      name: Surfilter SSL VPN Portal
+      category: security-device
+      tags:
+        - migrated
+        - security-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "-590892202"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for Surfilter SSL VPN Portal
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0690
+      name: JumpServer 堡垒机
+      category: security-device
+      tags:
+        - migrated
+        - security-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "-1162630024"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for JumpServer 堡垒机
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0691
+      name: JumpServer 堡垒机
+      category: security-device
+      tags:
+        - migrated
+        - security-device
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: /jumpserver.css
+                  weight: 100
+                  evidence: Migrated response body evidence for JumpServer 堡垒机
+                - type: body.contains
+                  value: Jumpserver.org Organization
+                  weight: 100
+                  evidence: Migrated response body evidence for JumpServer 堡垒机
+                - type: body.contains
+                  value: /core/auth/password/forgot/
+                  weight: 100
+                  evidence: Migrated response body evidence for JumpServer 堡垒机
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0722
+      name: 锐捷 SSLVPN
+      category: security-device
+      tags:
+        - migrated
+        - security-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: SSLVPN
+                  weight: 100
+                  evidence: Migrated response body evidence for 锐捷 SSLVPN
+                - type: body.contains
+                  value: rjweb
+                  weight: 100
+                  evidence: Migrated response body evidence for 锐捷 SSLVPN
+                - type: body.contains
+                  value: login
+                  weight: 100
+                  evidence: Migrated response body evidence for 锐捷 SSLVPN
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0724
+      name: 网御 安全网关
+      category: security-device
+      tags:
+        - migrated
+        - security-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: 安全系统
+                  weight: 100
+                  evidence: Migrated response body evidence for 网御 安全网关
+                - type: body.contains
+                  value: 网御星云
+                  weight: 100
+                  evidence: Migrated response body evidence for 网御 安全网关
+                - type: body.contains
+                  value: login
+                  weight: 100
+                  evidence: Migrated response body evidence for 网御 安全网关
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0725
+      name: Citrix Access Gateway
+      category: security-device
+      tags:
+        - migrated
+        - security-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: Citrix Access Gateway
+                  weight: 100
+                  evidence: Migrated response body evidence for Citrix Access Gateway
+                - type: body.contains
+                  value: login
+                  weight: 100
+                  evidence: Migrated response body evidence for Citrix Access Gateway
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0740
+      name: 安恒云堡垒机
+      category: security-device
+      tags:
+        - migrated
+        - security-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: DBAPPSecurity
+                  weight: 100
+                  evidence: Migrated response body evidence for 安恒云堡垒机
+                - type: body.contains
+                  value: 安恒云堡垒机
+                  weight: 100
+                  evidence: Migrated response body evidence for 安恒云堡垒机
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0741
+      name: 安恒明御安全网关
+      category: security-device
+      tags:
+        - migrated
+        - security-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: title.contains
+                  value: 明御安全网关
+                  weight: 100
+                  evidence: Migrated HTML title evidence for 安恒明御安全网关
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0799
+      name: 锐捷 SSLVPN
+      category: security-device
+      tags:
+        - migrated
+        - security-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: SSLVPN
+                  weight: 100
+                  evidence: Migrated response body evidence for 锐捷 SSLVPN
+                - type: body.contains
+                  value: rjsslvpn_encookie
+                  weight: 100
+                  evidence: Migrated response body evidence for 锐捷 SSLVPN
+                - type: body.contains
+                  value: login
+                  weight: 100
+                  evidence: Migrated response body evidence for 锐捷 SSLVPN
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0814
+      name: 海康威视联网网关
+      category: security-device
+      tags:
+        - migrated
+        - security-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: 独立运行(无平台)
+                  weight: 100
+                  evidence: Migrated response body evidence for 海康威视联网网关
+                - type: body.contains
+                  value: login_form
+                  weight: 100
+                  evidence: Migrated response body evidence for 海康威视联网网关
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0822
+      name: 天融信VPN
+      category: security-device
+      tags:
+        - migrated
+        - security-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: header.contains
+                  value: topsecsvportalstyle
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for 天融信VPN
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0842
+      name: Teleport 堡垒机
+      category: security-device
+      tags:
+        - migrated
+        - security-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: TELEPORT
+                  weight: 100
+                  evidence: Migrated response body evidence for Teleport 堡垒机
+                - type: body.contains
+                  value: teleport.js
+                  weight: 100
+                  evidence: Migrated response body evidence for Teleport 堡垒机
+                - type: body.contains
+                  value: login-account
+                  weight: 100
+                  evidence: Migrated response body evidence for Teleport 堡垒机
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0871
+      name: 迪普VPN
+      category: security-device
+      tags:
+        - migrated
+        - security-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: dptech_ssl
+                  weight: 100
+                  evidence: Migrated response body evidence for 迪普VPN
+                - type: body.contains
+                  value: sslvpn
+                  weight: 100
+                  evidence: Migrated response body evidence for 迪普VPN
+                - type: body.contains
+                  value: loginAPI.js
+                  weight: 100
+                  evidence: Migrated response body evidence for 迪普VPN
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0888
+      name: 电信网关配置管理系统
+      category: security-device
+      tags:
+        - migrated
+        - security-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: <TITLE>系统登录
+                  weight: 100
+                  evidence: Migrated response body evidence for 电信网关配置管理系统
+                - type: body.contains
+                  value: login.php
+                  weight: 100
+                  evidence: Migrated response body evidence for 电信网关配置管理系统
+                - type: body.contains
+                  value: img/login_bg3.png
+                  weight: 100
+                  evidence: Migrated response body evidence for 电信网关配置管理系统
+                - type: body.contains
+                  value: 360.cn
+                  weight: 100
+                  evidence: Migrated response body evidence for 电信网关配置管理系统
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0891
+      name: 迪普 SSLVPN
+      category: security-device
+      tags:
+        - migrated
+        - security-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: DPSSLVPN
+                  weight: 100
+                  evidence: Migrated response body evidence for 迪普 SSLVPN
+                - type: body.contains
+                  value: SSL VPN Service
+                  weight: 100
+                  evidence: Migrated response body evidence for 迪普 SSLVPN
+                - type: body.contains
+                  value: login
+                  weight: 100
+                  evidence: Migrated response body evidence for 迪普 SSLVPN
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0893
+      name: 百卓byzoro-安全网关
+      category: security-device
+      tags:
+        - migrated
+        - security-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: 北京百卓
+                  weight: 100
+                  evidence: Migrated response body evidence for 百卓byzoro-安全网关
+                - type: body.contains
+                  value: PatrolFlow
+                  weight: 100
+                  evidence: Migrated response body evidence for 百卓byzoro-安全网关
+                - type: body.contains
+                  value: login.php
+                  weight: 100
+                  evidence: Migrated response body evidence for 百卓byzoro-安全网关
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0934
+      name: 齐治堡垒机
+      category: security-device
+      tags:
+        - migrated
+        - security-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: fp_download
+                  weight: 100
+                  evidence: Migrated response body evidence for 齐治堡垒机
+                - type: body.contains
+                  value: login.php
+                  weight: 100
+                  evidence: Migrated response body evidence for 齐治堡垒机
+                - type: body.contains
+                  value: logo-icon-ico72.png
+                  weight: 100
+                  evidence: Migrated response body evidence for 齐治堡垒机
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0936
+      name: 安恒数据大脑API网关
+      category: security-device
+      tags:
+        - migrated
+        - security-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: mssp-fe
+                  weight: 100
+                  evidence: Migrated response body evidence for 安恒数据大脑API网关
+                - type: body.contains
+                  value: /static/imgs/logo.png
+                  weight: 100
+                  evidence: Migrated response body evidence for 安恒数据大脑API网关
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0942
+      name: 百卓 Smart 多业务安全网关
+      category: security-device
+      tags:
+        - migrated
+        - security-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: writeCustomBgImg.jsp
+                  weight: 100
+                  evidence: Migrated response body evidence for 百卓 Smart 多业务安全网关
+                - type: body.contains
+                  value: baseajax
+                  weight: 100
+                  evidence: Migrated response body evidence for 百卓 Smart 多业务安全网关
+                - type: body.contains
+                  value: LoginLogo
+                  weight: 100
+                  evidence: Migrated response body evidence for 百卓 Smart 多业务安全网关
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0943
+      name: 中远麒麟堡垒机
+      category: security-device
+      tags:
+        - migrated
+        - security-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: admin.php
+                  weight: 100
+                  evidence: Migrated response body evidence for 中远麒麟堡垒机
+                - type: body.contains
+                  value: controller=admin_index&action=login
+                  weight: 100
+                  evidence: Migrated response body evidence for 中远麒麟堡垒机
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0946
+      name: 网康科技·互联网控制网关
+      category: security-device
+      tags:
+        - migrated
+        - security-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: title.contains
+                  value: 网康科技·互联网控制网关
+                  weight: 100
+                  evidence: Migrated HTML title evidence for 网康科技·互联网控制网关
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1004
+      name: Teleport 堡垒机
+      category: security-device
+      tags:
+        - migrated
+        - security-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: teleport.js
+                  weight: 100
+                  evidence: Migrated response body evidence for Teleport 堡垒机
+                - type: body.contains
+                  value: login-type-oath
+                  weight: 100
+                  evidence: Migrated response body evidence for Teleport 堡垒机
+                - type: body.contains
+                  value: bind-oath
+                  weight: 100
+                  evidence: Migrated response body evidence for Teleport 堡垒机
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1012
+      name: 锐捷 SSL VPN
+      category: security-device
+      tags:
+        - migrated
+        - security-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "-1525950034"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for 锐捷 SSL VPN
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-1020
+      name: 迈普多业务融合网关
+      category: security-device
+      tags:
+        - migrated
+        - security-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "-1234665500"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for 迈普多业务融合网关
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-1027
+      name: Array-VPN
+      category: security-device
+      tags:
+        - migrated
+        - security-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: /prx/000/http/localhost/
+                  weight: 100
+                  evidence: Migrated response body evidence for Array-VPN
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1028
+      name: Array-VPN
+      category: security-device
+      tags:
+        - migrated
+        - security-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "-1006818220"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for Array-VPN
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-1054
+      name: 黑盾运维安全网关
+      category: security-device
+      tags:
+        - migrated
+        - security-device
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: FPDev_WL.ocx
+                  weight: 100
+                  evidence: Migrated response body evidence for 黑盾运维安全网关
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1089
+      name: 齐治科技-堡垒机
+      category: security-device
+      tags:
+        - migrated
+        - security-device
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: /xfpverifyExec.jsp
+                  weight: 100
+                  evidence: Migrated response body evidence for 齐治科技-堡垒机
+                - type: body.contains
+                  value: function DLLRegistered(strID)
+                  weight: 100
+                  evidence: Migrated response body evidence for 齐治科技-堡垒机
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1340
+      name: ADT-SJW74-VPN
+      category: security-device
+      tags:
+        - migrated
+        - security-device
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: src="./system/usbkey.js"
+                  weight: 100
+                  evidence: Migrated response body evidence for ADT-SJW74-VPN
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1341
+      name: ADT-SJW74-VPN
+      category: security-device
+      tags:
+        - migrated
+        - security-device
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: sjw74
+                  weight: 100
+                  evidence: Migrated response body evidence for ADT-SJW74-VPN
+                - type: body.contains
+                  value: src="./system/usbkey.js"
+                  weight: 100
+                  evidence: Migrated response body evidence for ADT-SJW74-VPN
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1454
+      name: Alcatel_Lucent-Enterprise-gateway
+      category: security-device
+      tags:
+        - migrated
+        - security-device
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: 欢迎登陆alcatel-lucent企业网关<p></p>请输入用户名和密码，3次出错将被锁定<p>
+                  weight: 100
+                  evidence: Migrated response body evidence for Alcatel_Lucent-Enterprise-gateway
+                - type: body.contains
+                  value: alcatel-lucent
+                  weight: 100
+                  evidence: Migrated response body evidence for Alcatel_Lucent-Enterprise-gateway
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+

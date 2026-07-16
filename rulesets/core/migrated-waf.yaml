@@ -1,0 +1,977 @@
+rules:
+    - id: builtin-0126
+      name: 深信服 waf
+      category: waf
+      tags:
+        - migrated
+        - waf
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: rsa.js
+                  weight: 100
+                  evidence: Migrated response body evidence for 深信服 waf
+                - type: body.contains
+                  value: commonFunction.js
+                  weight: 100
+                  evidence: Migrated response body evidence for 深信服 waf
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0127
+      name: 深信服防火墙数据中心
+      category: waf
+      tags:
+        - migrated
+        - waf
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: Redirect to...
+                  weight: 100
+                  evidence: Migrated response body evidence for 深信服防火墙数据中心
+                - type: body.contains
+                  value: /LogInOut.php
+                  weight: 100
+                  evidence: Migrated response body evidence for 深信服防火墙数据中心
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0129
+      name: 天融信防火墙
+      category: waf
+      tags:
+        - migrated
+        - waf
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: TOPSEC
+                  weight: 100
+                  evidence: Migrated response body evidence for 天融信防火墙
+                - type: body.contains
+                  value: image/aaa.png
+                  weight: 100
+                  evidence: Migrated response body evidence for 天融信防火墙
+                - type: body.contains
+                  value: username
+                  weight: 100
+                  evidence: Migrated response body evidence for 天融信防火墙
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0134
+      name: Leadsec-WAF
+      category: waf
+      tags:
+        - migrated
+        - waf
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: <div id="divlogin">
+                  weight: 100
+                  evidence: Migrated response body evidence for Leadsec-WAF
+                - type: body.contains
+                  value: 网御waf
+                  weight: 100
+                  evidence: Migrated response body evidence for Leadsec-WAF
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0138
+      name: 启明星辰天清汉马USG防火墙
+      category: waf
+      tags:
+        - migrated
+        - waf
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: /cgi-bin/webui?op=get_product_model
+                  weight: 100
+                  evidence: Migrated response body evidence for 启明星辰天清汉马USG防火墙
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0159
+      name: 启明星辰天清汉马USG防火墙
+      category: waf
+      tags:
+        - migrated
+        - waf
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: 天清汉马USG
+                  weight: 100
+                  evidence: Migrated response body evidence for 启明星辰天清汉马USG防火墙
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0390
+      name: Barracuda
+      category: waf
+      tags:
+        - migrated
+        - waf
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "1436966696"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for Barracuda
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0687
+      name: 深信服下一代防火墙管理系统
+      category: waf
+      tags:
+        - migrated
+        - waf
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "123821839"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for 深信服下一代防火墙管理系统
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0697
+      name: 山石网科 防火墙
+      category: waf
+      tags:
+        - migrated
+        - waf
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: Hillstone
+                  weight: 100
+                  evidence: Migrated response body evidence for 山石网科 防火墙
+                - type: body.contains
+                  value: licenseAggrement
+                  weight: 100
+                  evidence: Migrated response body evidence for 山石网科 防火墙
+                - type: body.contains
+                  value: GLOBAL_CONFIG.js
+                  weight: 100
+                  evidence: Migrated response body evidence for 山石网科 防火墙
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0698
+      name: 360天堤新一代智慧防火墙
+      category: waf
+      tags:
+        - migrated
+        - waf
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: 360天堤
+                  weight: 100
+                  evidence: Migrated response body evidence for 360天堤新一代智慧防火墙
+                - type: body.contains
+                  value: "360"
+                  weight: 100
+                  evidence: Migrated response body evidence for 360天堤新一代智慧防火墙
+                - type: body.contains
+                  value: 360防火墙
+                  weight: 100
+                  evidence: Migrated response body evidence for 360天堤新一代智慧防火墙
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0699
+      name: 360网神防火墙系统
+      category: waf
+      tags:
+        - migrated
+        - waf
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: resources/image/logo_header.png
+                  weight: 100
+                  evidence: Migrated response body evidence for 360网神防火墙系统
+                - type: body.contains
+                  value: "360"
+                  weight: 100
+                  evidence: Migrated response body evidence for 360网神防火墙系统
+                - type: body.contains
+                  value: 网神防火墙系统
+                  weight: 100
+                  evidence: Migrated response body evidence for 360网神防火墙系统
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0700
+      name: 网神SecGate 3600防火墙
+      category: waf
+      tags:
+        - migrated
+        - waf
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: 网神SecGate
+                  weight: 100
+                  evidence: Migrated response body evidence for 网神SecGate 3600防火墙
+                - type: body.contains
+                  value: 3600防火墙
+                  weight: 100
+                  evidence: Migrated response body evidence for 网神SecGate 3600防火墙
+                - type: body.contains
+                  value: css/lsec/login.css
+                  weight: 100
+                  evidence: Migrated response body evidence for 网神SecGate 3600防火墙
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0701
+      name: 蓝盾防火墙
+      category: waf
+      tags:
+        - migrated
+        - waf
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: 蓝盾
+                  weight: 100
+                  evidence: Migrated response body evidence for 蓝盾防火墙
+                - type: body.contains
+                  value: Bluedon
+                  weight: 100
+                  evidence: Migrated response body evidence for 蓝盾防火墙
+                - type: body.contains
+                  value: default/js/act/login.js
+                  weight: 100
+                  evidence: Migrated response body evidence for 蓝盾防火墙
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0750
+      name: 网康科技网关/防火墙
+      category: waf
+      tags:
+        - migrated
+        - waf
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "5471989"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for 网康科技网关/防火墙
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0785
+      name: 网神下一代极速防火墙
+      category: waf
+      tags:
+        - migrated
+        - waf
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: 网神信息技术
+                  weight: 100
+                  evidence: Migrated response body evidence for 网神下一代极速防火墙
+                - type: body.contains
+                  value: login
+                  weight: 100
+                  evidence: Migrated response body evidence for 网神下一代极速防火墙
+                - type: body.contains
+                  value: 防火墙
+                  weight: 100
+                  evidence: Migrated response body evidence for 网神下一代极速防火墙
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0841
+      name: AceNet 驰崴防火墙
+      category: waf
+      tags:
+        - migrated
+        - waf
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: Technology
+                  weight: 100
+                  evidence: Migrated response body evidence for AceNet 驰崴防火墙
+                - type: body.contains
+                  value: login_commit.php
+                  weight: 100
+                  evidence: Migrated response body evidence for AceNet 驰崴防火墙
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0848
+      name: WAF
+      category: waf
+      tags:
+        - migrated
+        - waf
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: header.contains
+                  value: WAF/
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for WAF
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0849
+      name: 移动云 WAF
+      category: waf
+      tags:
+        - migrated
+        - waf
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: header.contains
+                  value: CloudWAF
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for 移动云 WAF
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0884
+      name: 皓峰防火墙
+      category: waf
+      tags:
+        - migrated
+        - waf
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: title.contains
+                  value: 皓峰防火墙系统登录
+                  weight: 100
+                  evidence: Migrated HTML title evidence for 皓峰防火墙
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0930
+      name: 锐捷防火墙
+      category: waf
+      tags:
+        - migrated
+        - waf
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: 下一代防火墙
+                  weight: 100
+                  evidence: Migrated response body evidence for 锐捷防火墙
+                - type: body.contains
+                  value: 锐捷网络
+                  weight: 100
+                  evidence: Migrated response body evidence for 锐捷防火墙
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1574
+      name: AnHuiWAF
+      category: waf
+      tags:
+        - migrated
+        - waf
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: header.contains
+                  value: 'protected-by: anhui web firewall'
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for AnHuiWAF
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-1575
+      name: AnZuWAF
+      category: waf
+      tags:
+        - migrated
+        - waf
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: header.contains
+                  value: AnZuWAF
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for AnZuWAF
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-1576
+      name: FortiWeb WAF
+      category: waf
+      tags:
+        - migrated
+        - waf
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: header.contains
+                  value: FORTIWAFSID=
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for FortiWeb WAF
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-1577
+      name: Barracuda-WAF
+      category: waf
+      tags:
+        - migrated
+        - waf
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: header.contains
+                  value: bni__barracuda_lb_cookie=
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for Barracuda-WAF
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-1578
+      name: Barracuda-Waf
+      category: waf
+      tags:
+        - migrated
+        - waf
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: '<div style="border: 3px solid #4991C5; font:1.5em; font-family:tahoma,calibri,arial; font-weight:bold; color:#0A4369; padding:5px; margin:10px; text-align:center"> The requested service is temporarily unavailable. It is either overloaded or under maintenance. Please try later.</div><!--01234567890123456789'
+                  weight: 100
+                  evidence: Migrated response body evidence for Barracuda-Waf
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1580
+      name: Fortinet-WAF
+      category: waf
+      tags:
+        - migrated
+        - waf
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: header.contains
+                  value: fortiwafsid=
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for Fortinet-WAF
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-1581
+      name: hechen-WAF
+      category: waf
+      tags:
+        - migrated
+        - waf
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: src="./js/jquery.validate.js
+                  weight: 100
+                  evidence: Migrated response body evidence for hechen-WAF
+                - type: body.contains
+                  value: class="inputsize2
+                  weight: 100
+                  evidence: Migrated response body evidence for hechen-WAF
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1582
+      name: IndusGuard-WAF
+      category: waf
+      tags:
+        - migrated
+        - waf
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: wafportal/wafportal.nocache.js
+                  weight: 100
+                  evidence: Migrated response body evidence for IndusGuard-WAF
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1583
+      name: NSFOCUS-WAF
+      category: waf
+      tags:
+        - migrated
+        - waf
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: /images/logo/nsfocus.png
+                  weight: 100
+                  evidence: Migrated response body evidence for NSFOCUS-WAF
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1584
+      name: NSFOCUS-WAF
+      category: waf
+      tags:
+        - migrated
+        - waf
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: header.contains
+                  value: nsfocus vmwaf
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for NSFOCUS-WAF
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-1585
+      name: Safe3WAF
+      category: waf
+      tags:
+        - migrated
+        - waf
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: header.contains
+                  value: safe3waf
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for Safe3WAF
+                - type: header.contains
+                  value: Safe3WAF
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for Safe3WAF
+                - type: header.contains
+                  value: safe3 web firewall
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for Safe3WAF
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-1586
+      name: Topsec-TTopWAF
+      category: waf
+      tags:
+        - migrated
+        - waf
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: /style/images/rand.php?update=1
+                  weight: 100
+                  evidence: Migrated response body evidence for Topsec-TTopWAF
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1587
+      name: WebRay-WAF
+      category: waf
+      tags:
+        - migrated
+        - waf
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: header.contains
+                  value: rayengine
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for WebRay-WAF
+                - type: header.contains
+                  value: 'drivedby: raysrv'
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for WebRay-WAF
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-1588
+      name: Websecurity-WAF
+      category: waf
+      tags:
+        - migrated
+        - waf
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: header.contains
+                  value: 'websecurity: waf 1.0'
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for Websecurity-WAF
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-1589
+      name: Yxlink-WAF
+      category: waf
+      tags:
+        - migrated
+        - waf
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: header.contains
+                  value: YxlinkWAF
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for Yxlink-WAF
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-1590
+      name: KS-WAF(知道创宇)
+      category: waf
+      tags:
+        - migrated
+        - waf
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: KS-WAF
+                  weight: 100
+                  evidence: Migrated response body evidence for KS-WAF(知道创宇)
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1591
+      name: Safedog
+      category: waf
+      tags:
+        - migrated
+        - waf
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: header.contains
+                  value: WAF/2.0
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for Safedog
+                - type: header.contains
+                  value: waf/2.0
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for Safedog
+                - type: header.contains
+                  value: safedog-flow-item=
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for Safedog
+                - type: header.contains
+                  value: safedog
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for Safedog
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-1592
+      name: Safedog
+      category: waf
+      tags:
+        - migrated
+        - waf
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: safedog-flow-item=
+                  weight: 100
+                  evidence: Migrated response body evidence for Safedog
+                - type: body.contains
+                  value: <a href="http://security.safedog.cn/index.html"><input type="button" name="feedback"
+                  weight: 100
+                  evidence: Migrated response body evidence for Safedog
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1593
+      name: Websecurity_WAF
+      category: waf
+      tags:
+        - migrated
+        - waf
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: header.contains
+                  value: Websecurity:WAF 1.0
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for Websecurity_WAF
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-1594
+      name: 网神SecWAF应用防火墙
+      category: waf
+      tags:
+        - migrated
+        - waf
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: header.contains
+                  value: 网神SecWAF应用防火墙
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for 网神SecWAF应用防火墙
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-1595
+      name: HUAWEI Secospace WAF
+      category: waf
+      tags:
+        - migrated
+        - waf
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: header.contains
+                  value: HUAWEI Secospace WAF
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for HUAWEI Secospace WAF
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-1596
+      name: Newdefend WAF
+      category: waf
+      tags:
+        - migrated
+        - waf
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: header.contains
+                  value: Newdefend WAF
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for Newdefend WAF
+                - type: header.contains
+                  value: newdefend
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for Newdefend WAF
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-1597
+      name: 深信服WAF
+      category: waf
+      tags:
+        - migrated
+        - waf
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: commonFunction.js
+                  weight: 100
+                  evidence: Migrated response body evidence for 深信服WAF
+                - type: body.contains
+                  value: /LogInOut.php
+                  weight: 100
+                  evidence: Migrated response body evidence for 深信服WAF
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+

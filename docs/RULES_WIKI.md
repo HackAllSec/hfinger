@@ -431,9 +431,9 @@ Evidence:
 
 ## 12. 常见问题
 
-### 是否还能使用旧 finger.json？
+### 是否支持 JSON 规则文件？
 
-不能。新版本内置规则源统一位于 `rulesets/core/*.yaml`，发布时会内置到二进制；外置规则同样使用 YAML。
+不支持。HFinger 规则统一使用 YAML，内置规则源位于 `rulesets/core/*.yaml`，外置规则同样使用 YAML。
 
 ### 外置规则会覆盖内置规则吗？
 

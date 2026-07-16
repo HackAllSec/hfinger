@@ -1,0 +1,101 @@
+rules:
+    - id: builtin-0073
+      name: Influxdb
+      category: database
+      tags:
+        - migrated
+        - database
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: header.contains
+                  value: X-Influxdb
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for Influxdb
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0294
+      name: phpMyAdmin
+      category: database
+      tags:
+        - migrated
+        - database
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "-1010568750"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for phpMyAdmin
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0354
+      name: phpMyAdmin
+      category: database
+      tags:
+        - migrated
+        - database
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "-476231906"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for phpMyAdmin
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-1116
+      name: Apache Druid
+      category: database
+      tags:
+        - migrated
+        - database
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: content="Apache Druid console"
+                  weight: 100
+                  evidence: Migrated response body evidence for Apache Druid
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1117
+      name: ApacheDruid
+      category: database
+      tags:
+        - migrated
+        - database
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: title.contains
+                  value: Apache Druid
+                  weight: 100
+                  evidence: Migrated HTML title evidence for ApacheDruid
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+

@@ -16,7 +16,7 @@ HFinger is not intended to replace vulnerability scanners. It is designed to be 
 
 Compared with simple keyword-based fingerprinting, HFinger focuses on:
 
-- Built-in core rules without shipping a runtime rule file
+- Built-in core rules without shipping extra rule files
 - External YAML rules for community and private rule maintenance
 - Multi-source evidence across headers, body, cookies, favicon, JSON/API, TLS, and Server banners
 - Evidence and confidence output for review and automation
@@ -37,7 +37,7 @@ HFinger is designed to make server-side fingerprinting governable, reviewable, a
 
 - Server-side technology fingerprinting
 - Active scanning and passive MITM mode
-- Built-in core rules without runtime `finger.json` dependency
+- Built-in core rules that work out of the box
 - External YAML rule loading
 - Header, body, title, cookie, status, redirect, and favicon matching
 - Regex, path probe, script source, HTML meta, JSON/API, TLS certificate, and Server banner matching
@@ -320,23 +320,22 @@ jq -r '.[] | select(.category == "middleware") | .url' hfinger.json > middleware
 
 ## Rule Management
 
-HFinger uses built-in core rules and no longer depends on a runtime JSON fingerprint file. User and community rules are written in YAML.
+HFinger uses built-in core rules. User and community rules are written in YAML.
 
 ### Rule Governance and Built-in Rule Sources
 
-All built-in rule sources now live under `rulesets/core/*.yaml` and are embedded into release binaries, so users no longer need the old runtime `finger.json`.
+All built-in rule sources live under `rulesets/core/*.yaml` and are embedded into release binaries.
 
-Built-in rules are split by quality tier and component category:
+Built-in rules are split by source tier and component category:
 
-- `legacy-migrated.yaml`: migrated existing rules that preserve broad coverage and will be improved over time.
-- `curated-*.yaml`: continuously curated high-value server-side rules, split by category such as `curated-devops.yaml`, `curated-api-gateway.yaml`, and `curated-ai-service.yaml`.
+- `curated-*.yaml`: continuously curated high-value server-side rules.
+- `migrated-*.yaml`: existing rules standardized into the unified YAML schema and split by component category.
 
 This split only affects maintenance. At runtime, HFinger loads all built-in YAML files and compiles them into in-memory matching structures.
 
 Governance principles:
 
 - Built-in rules use the unified YAML semantic model: `id/name/category/vendor/tags/match/negative/metadata/examples`
-- Migrated existing rules preserve useful recognition coverage and should be improved with negative matchers and fixtures over time
 - New core rules must include clear evidence text, category, references, and positive/negative examples
 - Community contributions should use YAML; maintainers decide whether reviewed rules are promoted into built-in releases
 - Rule quality should be measured by `rules lint` and `rules test`, not by rule count alone

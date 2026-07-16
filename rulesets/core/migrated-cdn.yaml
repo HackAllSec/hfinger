@@ -1,0 +1,745 @@
+rules:
+    - id: builtin-0919
+      name: 化视私云CDN直播加速服务器
+      category: cdn
+      tags:
+        - migrated
+        - cdn
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: img/dl.gif
+                  weight: 100
+                  evidence: Migrated response body evidence for 化视私云CDN直播加速服务器
+                - type: body.contains
+                  value: 华视美达
+                  weight: 100
+                  evidence: Migrated response body evidence for 化视私云CDN直播加速服务器
+                - type: body.contains
+                  value: login.php
+                  weight: 100
+                  evidence: Migrated response body evidence for 化视私云CDN直播加速服务器
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1165
+      name: 360-CDN
+      category: cdn
+      tags:
+        - migrated
+        - cdn
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: src="http://js.passport.qihucdn.com/"
+                  weight: 100
+                  evidence: Migrated response body evidence for 360-CDN
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1449
+      name: Akamai-CDN
+      category: cdn
+      tags:
+        - migrated
+        - cdn
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: header.contains
+                  value: AkamaiGHost
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for Akamai-CDN
+                - type: header.contains
+                  value: X-Akamai-Transformed
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for Akamai-CDN
+                - type: header.contains
+                  value: Akamai-Ip
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for Akamai-CDN
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-1450
+      name: Cloudflare
+      category: cdn
+      tags:
+        - migrated
+        - cdn
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: header.contains
+                  value: Cf-Cache-Status
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for Cloudflare
+                - type: header.contains
+                  value: Cf-Ray
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for Cloudflare
+                - type: header.contains
+                  value: cloudflare
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for Cloudflare
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-1484
+      name: 阿里云-CDN
+      category: cdn
+      tags:
+        - migrated
+        - cdn
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: cdn.aliyuncs.com
+                  weight: 100
+                  evidence: Migrated response body evidence for 阿里云-CDN
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1485
+      name: 阿里云-CDN
+      category: cdn
+      tags:
+        - migrated
+        - cdn
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: header.contains
+                  value: cdn.aliyuncs.com
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for 阿里云-CDN
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-1495
+      name: Bluetrum-CDN
+      category: cdn
+      tags:
+        - migrated
+        - cdn
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: header.contains
+                  value: Powered-By-Chinacache
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for Bluetrum-CDN
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-1496
+      name: Dnion-CDN
+      category: cdn
+      tags:
+        - migrated
+        - cdn
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: header.contains
+                  value: fastcdn.com
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for Dnion-CDN
+                - type: header.contains
+                  value: dnion
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for Dnion-CDN
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-1497
+      name: EdgePrism-CDN
+      category: cdn
+      tags:
+        - migrated
+        - cdn
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: header.contains
+                  value: EdgePrism
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for EdgePrism-CDN
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-1498
+      name: Fastly-CDN
+      category: cdn
+      tags:
+        - migrated
+        - cdn
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: fastcdn.org
+                  weight: 100
+                  evidence: Migrated response body evidence for Fastly-CDN
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1499
+      name: Microsoft-Ajax-CDN
+      category: cdn
+      tags:
+        - migrated
+        - cdn
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: ajax.aspnetcdn.com/ajax
+                  weight: 100
+                  evidence: Migrated response body evidence for Microsoft-Ajax-CDN
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1500
+      name: Microsoft-Ajax-CDN
+      category: cdn
+      tags:
+        - migrated
+        - cdn
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: header.contains
+                  value: ajax.aspnetcdn.com/ajax
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for Microsoft-Ajax-CDN
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-1501
+      name: RackCorp-CDN
+      category: cdn
+      tags:
+        - migrated
+        - cdn
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: header.contains
+                  value: rackcorpcdn
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for RackCorp-CDN
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-1502
+      name: Sina-CDN
+      category: cdn
+      tags:
+        - migrated
+        - cdn
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: header.contains
+                  value: X-Via-Cdn
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for Sina-CDN
+                - type: header.contains
+                  value: Sina-
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for Sina-CDN
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-1503
+      name: Baidu-CDN
+      category: cdn
+      tags:
+        - migrated
+        - cdn
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: apps.bdimg.com
+                  weight: 100
+                  evidence: Migrated response body evidence for Baidu-CDN
+                - type: body.contains
+                  value: libs.baidu.com
+                  weight: 100
+                  evidence: Migrated response body evidence for Baidu-CDN
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1504
+      name: Tencent-CDN
+      category: cdn
+      tags:
+        - migrated
+        - cdn
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: header.contains
+                  value: NWSs
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for Tencent-CDN
+                - type: header.contains
+                  value: X-Tencent-Cd
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for Tencent-CDN
+                - type: header.contains
+                  value: X-Nws-Log-Uuid
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for Tencent-CDN
+                - type: header.contains
+                  value: Eo-Log-Uuid
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for Tencent-CDN
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-1505
+      name: jQuery-official-website-CDN
+      category: cdn
+      tags:
+        - migrated
+        - cdn
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: code.jquery.com
+                  weight: 100
+                  evidence: Migrated response body evidence for jQuery-official-website-CDN
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1506
+      name: 七牛云-七牛CDN
+      category: cdn
+      tags:
+        - migrated
+        - cdn
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: glb.clouddn.com
+                  weight: 100
+                  evidence: Migrated response body evidence for 七牛云-七牛CDN
+                - type: body.contains
+                  value: glb.qiniucdn.com
+                  weight: 100
+                  evidence: Migrated response body evidence for 七牛云-七牛CDN
+                - type: body.contains
+                  value: cdn.staticfile.org
+                  weight: 100
+                  evidence: Migrated response body evidence for 七牛云-七牛CDN
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1507
+      name: Bootstrap-CDN
+      category: cdn
+      tags:
+        - migrated
+        - cdn
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: cdn.bootcss.com
+                  weight: 100
+                  evidence: Migrated response body evidence for Bootstrap-CDN
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1508
+      name: UCloud-CDN
+      category: cdn
+      tags:
+        - migrated
+        - cdn
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: header.contains
+                  value: ucloud
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for UCloud-CDN
+                - type: header.contains
+                  value: UCloud CDN
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for UCloud-CDN
+                - type: header.contains
+                  value: X-UCloud-
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for UCloud-CDN
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-1509
+      name: Verizon-CDN
+      category: cdn
+      tags:
+        - migrated
+        - cdn
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: header.contains
+                  value: ecs (
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for Verizon-CDN
+                - type: header.contains
+                  value: ecd (
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for Verizon-CDN
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-1510
+      name: Reyzar-CDN
+      category: cdn
+      tags:
+        - migrated
+        - cdn
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: header.contains
+                  value: Reyzar-CDN
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for Reyzar-CDN
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-1511
+      name: GoCDN
+      category: cdn
+      tags:
+        - migrated
+        - cdn
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: header.contains
+                  value: gocdn
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for GoCDN
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-1512
+      name: MaxCDN
+      category: cdn
+      tags:
+        - migrated
+        - cdn
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: header.contains
+                  value: NetDNA
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for MaxCDN
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-1513
+      name: PowerCDN
+      category: cdn
+      tags:
+        - migrated
+        - cdn
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: header.contains
+                  value: PowerCDN
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for PowerCDN
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-1514
+      name: keycdn-engine
+      category: cdn
+      tags:
+        - migrated
+        - cdn
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: header.contains
+                  value: keycdn-engine
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for keycdn-engine
+                - type: header.contains
+                  value: TBO-CDN
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for keycdn-engine
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-1515
+      name: CDN-Cache-Server
+      category: cdn
+      tags:
+        - migrated
+        - cdn
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: header.contains
+                  value: Cdn Cache Server
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for CDN-Cache-Server
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-1516
+      name: WS CDN Server
+      category: cdn
+      tags:
+        - migrated
+        - cdn
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: header.contains
+                  value: WS CDN Server
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for WS CDN Server
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-1517
+      name: CDN77
+      category: cdn
+      tags:
+        - migrated
+        - cdn
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: header.contains
+                  value: X-77
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for CDN77
+                - type: header.contains
+                  value: CDN77
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for CDN77
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-1598
+      name: Incapsula-CDN
+      category: cdn
+      tags:
+        - migrated
+        - cdn
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: header.contains
+                  value: Incapsula
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for Incapsula-CDN
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-1601
+      name: 网宿-CDN
+      category: cdn
+      tags:
+        - migrated
+        - cdn
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: header.contains
+                  value: WS CDN Server
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for 网宿-CDN
+                - type: header.contains
+                  value: WS-web-server
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for 网宿-CDN
+                - type: header.contains
+                  value: X-Ws-Request-Id
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for 网宿-CDN
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-1602
+      name: Kingsoft CDN
+      category: cdn
+      tags:
+        - migrated
+        - cdn
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: header.contains
+                  value: Kingsoft CDN
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for Kingsoft CDN
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-1608
+      name: 加速乐
+      category: cdn
+      tags:
+        - migrated
+        - cdn
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: header.contains
+                  value: __jsluid_s=
+                  weight: 100
+                  evidence: Migrated HTTP header evidence for 加速乐
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+

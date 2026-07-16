@@ -149,6 +149,73 @@ func TestMatchRuleAnyConfidenceIncludesMissingProbeWeight(t *testing.T) {
 	}
 }
 
+func TestMatchRuleUsesPreparedResponseProbeIndex(t *testing.T) {
+	responses := []Response{
+		{
+			ProbeID: "homepage",
+			URL:     "https://example.com/",
+			Path:    "/",
+			Body:    []byte("home signal"),
+		},
+		{
+			URL:  "https://example.com/admin",
+			Path: "/admin",
+			Body: []byte("admin signal"),
+		},
+		{
+			ProbeID: "admin",
+			URL:     "https://example.com/admin-by-id",
+			Path:    "/other-admin-path",
+			Body:    []byte("admin-id signal"),
+		},
+	}
+	rule := Rule{
+		ID:       "multi-probe-index",
+		Name:     "Multi Probe Index",
+		Category: "test",
+		Match: MatchBlock{
+			Strategy: StrategyAll,
+			Probes: []Probe{
+				{
+					ID: "homepage",
+					Request: Request{
+						Path: "/",
+					},
+					Matchers: []Matcher{
+						{Type: "body.contains", Value: "home signal", Weight: 50},
+					},
+				},
+				{
+					ID: "admin",
+					Request: Request{
+						Path: "/admin",
+					},
+					Matchers: []Matcher{
+						{Type: "body.contains", Value: "admin signal", Weight: 50},
+					},
+				},
+				{
+					ID: "admin",
+					Request: Request{
+						Path: "/other-admin-path",
+					},
+					Matchers: []Matcher{
+						{Type: "body.contains", Value: "admin-id signal", Weight: 50},
+					},
+				},
+			},
+		},
+	}
+
+	result := MatchRule(responses, rule)
+	if !result.Matched {
+		t.Fatalf("MatchRule() expected match through probe/path indexes")
+	}
+	if len(result.Evidence) != 3 {
+		t.Fatalf("evidence length = %d, want 3", len(result.Evidence))
+	}
+}
+
 func TestMatchRuleExtractsVersion(t *testing.T) {
 	response := Response{
 		URL: "https://jenkins.example",

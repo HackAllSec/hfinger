@@ -85,6 +85,19 @@ func BenchmarkMatchCompiledRuntimeJSON(b *testing.B) {
 	}
 }
 
+func BenchmarkMatchCompiledRuntimeProbes(b *testing.B) {
+	compiled := compileRules(benchmarkProbeRuleSet(100, 8))
+	responses := benchmarkProbeResponses(8)
+
+	b.ReportAllocs()
+	for i := 0; i < b.N; i++ {
+		results := matchCompiledRules(responses, compiled)
+		if len(results) == 0 {
+			b.Fatal("expected at least one match")
+		}
+	}
+}
+
 func benchmarkJSONRuleSet(count int) []Rule {
 	ruleSet := make([]Rule, count)
 	for i := range ruleSet {
@@ -109,6 +122,48 @@ func benchmarkJSONResponse() Response {
 		URL:  "https://example.com/api",
 		Body: []byte(`{"error":{"code":"UNAUTHORIZED"},"request_id":"abc","data":{"items":[1,2,3]}}`),
 	}
+}
+
+func benchmarkProbeRuleSet(ruleCount int, probeCount int) []Rule {
+	ruleSet := make([]Rule, ruleCount)
+	for i := range ruleSet {
+		probes := make([]Probe, 0, probeCount)
+		for probeIndex := 0; probeIndex < probeCount; probeIndex++ {
+			probes = append(probes, Probe{
+				ID: fmt.Sprintf("probe-%02d", probeIndex),
+				Request: Request{
+					Path: fmt.Sprintf("/probe-%02d", probeIndex),
+				},
+				Matchers: []Matcher{{
+					Type:  "body.contains",
+					Value: fmt.Sprintf("probe-%02d-signal-%03d", probeIndex, i),
+				}},
+			})
+		}
+		ruleSet[i] = Rule{
+			ID:       fmt.Sprintf("bench-probes-%03d", i),
+			Name:     fmt.Sprintf("Bench Probes %03d", i),
+			Category: "benchmark",
+			Match: MatchBlock{
+				Strategy: StrategyAny,
+				Probes:   probes,
+			},
+		}
+	}
+	return ruleSet
+}
+
+func benchmarkProbeResponses(count int) []Response {
+	responses := make([]Response, 0, count)
+	for i := 0; i < count; i++ {
+		responses = append(responses, Response{
+			ProbeID: fmt.Sprintf("probe-%02d", i),
+			URL:     fmt.Sprintf("https://example.com/probe-%02d", i),
+			Path:    fmt.Sprintf("/probe-%02d", i),
+			Body:    []byte(fmt.Sprintf("probe-%02d-signal-000", i)),
+		})
+	}
+	return responses
 }
 
 func benchmarkRuleSet(count int, matcherType string) []Rule {

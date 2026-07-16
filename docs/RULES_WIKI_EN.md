@@ -431,9 +431,9 @@ Chinese prompt:
 
 ## 12. FAQ
 
-### Can I still use the old finger.json?
+### Does HFinger support JSON rule files?
 
-No. Built-in rule sources now live under `rulesets/core/*.yaml` and are embedded into release binaries. External rules also use YAML.
+No. HFinger rules use YAML consistently. Built-in rule sources live under `rulesets/core/*.yaml`, and external rules also use YAML.
 
 ### Can external rules override built-in rules?
 

@@ -1,0 +1,209 @@
+rules:
+    - id: builtin-0018
+      name: Nexus Repository Manager
+      category: devops
+      tags:
+        - migrated
+        - devops
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: title.contains
+                  value: Nexus Repository Manager
+                  weight: 100
+                  evidence: Migrated HTML title evidence for Nexus Repository Manager
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0161
+      name: Gitlab
+      category: devops
+      tags:
+        - migrated
+        - devops
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: assets/gitlab_logo
+                  weight: 100
+                  evidence: Migrated response body evidence for Gitlab
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-0190
+      name: Jenkins
+      category: devops
+      tags:
+        - migrated
+        - devops
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "81586312"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for Jenkins
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0277
+      name: Gitlab
+      category: devops
+      tags:
+        - migrated
+        - devops
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "1278323681"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for Gitlab
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0374
+      name: Gitlab
+      category: devops
+      tags:
+        - migrated
+        - devops
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "516963061"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for Gitlab
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0557
+      name: SonarQube
+      category: devops
+      tags:
+        - migrated
+        - devops
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "1485257654"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for SonarQube
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0640
+      name: Sonatype Nexus Repository Manager
+      category: devops
+      tags:
+        - migrated
+        - devops
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "-1546574541"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for Sonatype Nexus Repository Manager
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-0969
+      name: Nexus Repository Manager
+      category: devops
+      tags:
+        - migrated
+        - devops
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: favicon.hash
+                  value: "1323738809"
+                  weight: 100
+                  evidence: Migrated favicon hash evidence for Nexus Repository Manager
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: medium
+
+    - id: builtin-1000
+      name: xxl-job
+      category: devops
+      tags:
+        - migrated
+        - devops
+      match:
+        strategy: all
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: /static/adminlte/dist/css/AdminLTE.min.css
+                  weight: 100
+                  evidence: Migrated response body evidence for xxl-job
+                - type: body.contains
+                  value: bower_components/PACE/pace.min.js
+                  weight: 100
+                  evidence: Migrated response body evidence for xxl-job
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
+    - id: builtin-1518
+      name: Apache-Airflow
+      category: devops
+      tags:
+        - migrated
+        - devops
+      match:
+        strategy: any
+        probes:
+            - id: default
+              matchers:
+                - type: body.contains
+                  value: src="/static/pin_100.png"
+                  weight: 100
+                  evidence: Migrated response body evidence for Apache-Airflow
+                - type: body.contains
+                  value: <span>airflow</span>
+                  weight: 100
+                  evidence: Migrated response body evidence for Apache-Airflow
+      metadata:
+        references:
+            - builtin:migrated-legacy-rule
+        confidence: low
+
