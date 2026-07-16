@@ -1,0 +1,109 @@
+rules/honeypot.go
+  s_2ae8a327a5bd41::t_f8b4e6448fb52e 6-7
+  s_2ae8a327a5bd41::t_a7b3bc0a7c1801 1-5,8-73
+output/jsonloutput.go
+  s_2ae8a327a5bd41::t_2887fe4b78553e 1-24
+rules/types.go
+  s_2ae8a327a5bd41::t_ba77e322b72079 106,108,112-131
+docs/RULES_WIKI_EN.md
+  s_2ae8a327a5bd41::t_3f67c50f6c54be 185,190-192,196-198,208-217
+  s_2ae8a327a5bd41::t_a432c54487d2e0 404-460,507
+rules/compiled.go
+  s_2ae8a327a5bd41::t_551567f08600b7 421,507
+  s_2ae8a327a5bd41::t_7791dd63852cfd 727-733,738-743,766-778,781-782,785-787,800-832
+  s_2ae8a327a5bd41::t_d3a16519ba9794 200,716-717
+  s_2ae8a327a5bd41::t_275aa209672b95 779-780,783-784,788-799
+  s_2ae8a327a5bd41::t_31526150d94739 4-6,8,78-95,190-192,502-505,509-510,512,538-554
+output/output.go
+  s_2ae8a327a5bd41::t_64caa7a5f09c6e 4,6,10-12,16-29,33,37-57,61,65
+rules/probes.go
+  s_2ae8a327a5bd41::t_9c85208575c397 59-60
+  s_2ae8a327a5bd41::t_457df815db374e 3-6,25,36,39-58
+  s_2ae8a327a5bd41::t_fbc544c6a2a438 37-38
+models/finger.go
+  s_2ae8a327a5bd41::t_a25b673cb44fa2 195-199
+  s_2ae8a327a5bd41::t_6865e64e36f82f 4-6,8,14,16,31,34,48,131,133,165-168,175,182,266-267,269-300,302-320,323-327,329-391
+  s_2ae8a327a5bd41::t_94241f85d9c103 7
+  s_2ae8a327a5bd41::t_c2c8e0f2158252 321-322,328
+cmd/args.go
+  s_2ae8a327a5bd41::t_efb5c5eefe9ad0 532-533
+  s_2ae8a327a5bd41::t_6920813b661caf 61,130,137-139,178,204,222-265
+  s_2ae8a327a5bd41::t_4ae45b4f1e2f98 44
+  s_2ae8a327a5bd41::t_58549b2e0e2c59 266
+rules/validate.go
+  s_2ae8a327a5bd41::t_99ef27149ad42a 9
+  s_2ae8a327a5bd41::t_81470735d9276d 4-5
+  s_2ae8a327a5bd41::t_b2b89c870e7629 6-8
+  s_2ae8a327a5bd41::t_d68fefbd9636c6 10-13
+  s_2ae8a327a5bd41::t_400119ec79cede 14-39
+schemas/rule.schema.json
+  s_2ae8a327a5bd41::t_2d51a93bdb7965 181-183,186-190,194,197-206
+docs/RULES_WIKI.md
+  s_2ae8a327a5bd41::t_5ad005bfa3e452 185,190-192,196-198,208-217
+  s_2ae8a327a5bd41::t_b63e5a0a9162d6 404-460,507
+README.md
+  s_2ae8a327a5bd41::t_322cbfe86a8c04 34,54,87,524,526-529,532-537,539-549
+  s_2ae8a327a5bd41::t_bd738cef0b7ee1 538,550
+  s_2ae8a327a5bd41::t_a955ed254bce8c 137,504,525,530-531
+  s_2ae8a327a5bd41::t_81f4ccd9b7a470 11,21,43-45,47,55-75
+.github/workflows/ci.yml
+  s_2ae8a327a5bd41::t_199d802cf27046 40-45
+models/mitm.go
+  s_2ae8a327a5bd41::t_54cffd9afe1cb6 502
+  s_2ae8a327a5bd41::t_960072895ceff3 503-505,507
+  s_2ae8a327a5bd41::t_87047fc673d750 498-501
+rules/matcher_test.go
+  s_2ae8a327a5bd41::t_4210abc3b621e9 4-5,335-341,357-409
+README_EN.md
+  s_2ae8a327a5bd41::t_2f18d5fc0061a3 538,550
+  s_2ae8a327a5bd41::t_26e82147eb938c 11,21,43-45,47,55-75
+  s_2ae8a327a5bd41::t_37d06ae07617bb 137,504,525,530-531
+  s_2ae8a327a5bd41::t_4635b6254f71f4 34,54,87,524,526-529,532-537,539-549
+rules/quality.go
+  s_2ae8a327a5bd41::t_e5392ce4647633 230-232,234-236,242-243,275,294-300
+  s_2ae8a327a5bd41::t_e01be60beaafef 301-302
+utils/http.go
+  s_2ae8a327a5bd41::t_bc4c028410921c 467-483
+.gitignore
+  s_2ae8a327a5bd41::t_0d11b5456ef8f8 1
+rulesets/core/curated-honeypot.yaml
+  s_2ae8a327a5bd41::t_a354f001fa56e0 1-168
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "e7f58bdeebe72eaeade6258d13746a505666c019",
+  "prompts": {},
+  "humans": {
+    "h_f98c03ffc4f22a": {
+      "author": "NHPT <1749115565@qq.com>"
+    }
+  },
+  "sessions": {
+    "s_2ae8a327a5bd41": {
+      "agent_id": {
+        "tool": "trae",
+        "id": "6a57251eed8a61d69d2c8e0d",
+        "model": "gpt-5.5__dev"
+      },
+      "human_author": null
+    }
+  },
+  "attestation_metadata": {},
+  "remote_transcripts": {
+    "s_2ae8a327a5bd41": {
+      "tool": "trae",
+      "conversation_id": "6a57251eed8a61d69d2c8e0d",
+      "session_id": "6a57251eed8a61d69d2c8e0d",
+      "status": "remote_only",
+      "message": "Remote transcript resolution is not implemented yet for TRAE prompts."
+    },
+    "s_2ae8a327a5bd41::t_a67f8759bac27b": {
+      "tool": "trae",
+      "conversation_id": "6a57251eed8a61d69d2c8e0d",
+      "session_id": "6a57251eed8a61d69d2c8e0d",
+      "status": "remote_only",
+      "message": "Remote transcript resolution is not implemented yet for TRAE prompts."
+    }
+  }
+}
