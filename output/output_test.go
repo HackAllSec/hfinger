@@ -63,7 +63,7 @@ func TestAddAndGetResults_BitsUT(t *testing.T) {
 	if len(got) != 2 {
 		t.Fatalf("GetResults() length = %d, want 2", len(got))
 	}
-	if got[0] != first || got[1] != second {
-		t.Fatalf("GetResults() = %#v, want [%#v %#v]", got, first, second)
+	if got[0].URL != first.URL || got[0].CMS != first.CMS || got[1].URL != second.URL || got[1].CMS != second.CMS {
+		t.Fatalf("GetResults() = %#v, want first=%#v second=%#v", got, first, second)
 	}
 }

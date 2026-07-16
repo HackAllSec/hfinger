@@ -32,40 +32,6 @@ func calculateHash(data []byte) string {
 	return hex.EncodeToString(sha.Sum(nil))
 }
 
-func getRemoteFileHash() string {
-	resp, err := Get(config.FingerUrl, nil)
-	if err != nil {
-		return ""
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != 200 {
-		return ""
-	}
-
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return ""
-	}
-
-	return calculateHash(body)
-}
-
-func getLocalFileHash() string {
-	file, err := os.Open(config.Fingerfullpath)
-	if err != nil {
-		return ""
-	}
-	defer file.Close()
-
-	body, err := io.ReadAll(file)
-	if err != nil {
-		return ""
-	}
-
-	return calculateHash(body)
-}
-
 func getLatestRelease() (*GitHubReleaseResponse, error) {
 	resp, err := Get(config.ReleaseUrl, nil)
 	if err != nil {
@@ -212,54 +178,10 @@ func CheckForUpdates() {
 	if latestVersion != config.Version {
 		logger.Warn("Your current hfinger %s is outdated. Latest is %s. You can use the --upgrade option to upgrade.", config.Version, latestVersion)
 	}
-	remotehash := getRemoteFileHash()
-	localhash := getLocalFileHash()
-	if remotehash != "" && localhash != "" {
-		if remotehash != localhash {
-			logger.Warn("There is a new update to the hfinger fingerprint database, you can use the --update option to update it.")
-		}
-	}
 }
 
 func Update() {
-	backupPath := config.Fingerfullpath + ".bak"
-
-	err := os.MkdirAll(config.Datapath, os.ModePerm)
-	if err != nil {
-		return
-	}
-
-	// 备份旧文件
-	if _, err := os.Stat(config.Fingerfullpath); err == nil {
-		_ = os.Rename(config.Fingerfullpath, backupPath)
-	}
-
-	// 下载新文件
-	err = downloadFile(config.FingerUrl, config.Fingerfullpath)
-	if err != nil {
-		logger.Error("Error downloading file: %v", err)
-		_ = os.Remove(config.Fingerfullpath)
-		if _, err := os.Stat(backupPath); err == nil {
-			_ = os.Rename(backupPath, config.Fingerfullpath)
-			logger.Success("Rollback to previous version.")
-		}
-		return
-	}
-
-	// 哈希验证
-	remoteHash := getRemoteFileHash()
-	localHash := getLocalFileHash()
-	if remoteHash != "" && localHash != "" && remoteHash != localHash {
-		logger.Error("Hash mismatch. Update failed.")
-		_ = os.Remove(config.Fingerfullpath)
-		if _, err := os.Stat(backupPath); err == nil {
-			_ = os.Rename(backupPath, config.Fingerfullpath)
-			logger.Success("Rollback to previous version.")
-		}
-		return
-	}
-
-	logger.Success("Update successful.")
+	logger.Warn("Built-in fingerprint rules are shipped with the hfinger binary now. Use --upgrade to update built-in rules, or --rules to load external YAML rules.")
 }
 
 func Upgrade() {
