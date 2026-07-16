@@ -22,6 +22,17 @@ Compared with simple keyword-based fingerprinting, HFinger focuses on:
 - Evidence and confidence output for review and automation
 - Both active scanning and passive proxy fingerprinting
 
+## Differentiators
+
+HFinger is designed to make server-side fingerprinting governable, reviewable, and easy to integrate:
+
+- Unified rule sources: all built-in rules live under `rulesets/core/*.yaml` and are embedded into release binaries; external rules use the same YAML semantic model.
+- Evidence-backed results: output includes product name, category, version, confidence, and evidence instead of only a product label.
+- Active and passive coverage: HFinger supports both batch active scanning and passive HTTP/HTTPS proxy fingerprinting.
+- GM/TLCP support: active mode supports standard TLS and TLCP with auto/gm/std modes; passive MITM can adaptively route standard TLS and TLCP handshakes on the same listener.
+- Rule quality governance: `rules lint/test/stats` and positive/negative fixtures help reduce false positives and false negatives over time.
+- Toolchain integration: httpx JSONL input plus JSON/JSONL/XLSX output make it easy to connect HFinger with ASM, Burp Suite, mitmproxy, nuclei, SIEM, and internal security workflows.
+
 ## Features
 
 - Server-side technology fingerprinting
@@ -51,7 +62,7 @@ Compared with simple keyword-based fingerprinting, HFinger focuses on:
 ├── models/              Active scanning and passive proxy fingerprinting
 ├── output/              JSON, XML, and XLSX output
 ├── rules/               Built-in rules, YAML loading, validation, and matching engine
-├── rulesets/            Curated YAML rule sources embedded into release binaries
+├── rulesets/            Built-in YAML rule sources embedded into release binaries
 ├── utils/               HTTP, certificates, upgrade, and shared utilities
 ├── README.md            Chinese documentation
 └── README_EN.md         English documentation
@@ -313,7 +324,14 @@ HFinger uses built-in core rules and no longer depends on a runtime JSON fingerp
 
 ### Rule Governance and Built-in Rule Sources
 
-All built-in rule sources now live under `rulesets/core/*.yaml` and are embedded into release binaries, so users no longer need the old runtime `finger.json`. `legacy-migrated.yaml` contains migrated existing rules, while `server-high-value.yaml` contains continuously curated high-value server-side rules.
+All built-in rule sources now live under `rulesets/core/*.yaml` and are embedded into release binaries, so users no longer need the old runtime `finger.json`.
+
+Built-in rules are split by quality tier and component category:
+
+- `legacy-migrated.yaml`: migrated existing rules that preserve broad coverage and will be improved over time.
+- `curated-*.yaml`: continuously curated high-value server-side rules, split by category such as `curated-devops.yaml`, `curated-api-gateway.yaml`, and `curated-ai-service.yaml`.
+
+This split only affects maintenance. At runtime, HFinger loads all built-in YAML files and compiles them into in-memory matching structures.
 
 Governance principles:
 

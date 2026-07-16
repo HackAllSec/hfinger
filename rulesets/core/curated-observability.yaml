@@ -1,0 +1,610 @@
+rules:
+  - id: core-0020-grafana
+    name: Grafana
+    category: observability
+    vendor: Grafana Labs
+    priority: 90
+    tags: [grafana, observability, dashboard]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: grafana
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: Grafana
+              weight: 45
+              evidence: Grafana title
+            - type: body.contains
+              value: "grafana-app"
+              weight: 55
+              evidence: Grafana app root marker
+    negative:
+      - type: body.contains
+        value: "Grafana documentation"
+        reason: Exclude documentation pages
+    metadata:
+      references: ["https://grafana.com/"]
+      confidence: high
+    examples:
+      positive:
+        - title: Grafana
+          body: '<grafana-app></grafana-app>'
+      negative:
+        - body: "Grafana documentation"
+
+
+  - id: core-0021-prometheus
+    name: Prometheus
+    category: observability
+    vendor: Prometheus
+    priority: 85
+    tags: [prometheus, metrics, observability]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: prometheus
+          request: {method: GET, path: /graph}
+          matchers:
+            - type: title.contains
+              value: Prometheus Time Series Collection and Processing Server
+              weight: 60
+              evidence: Prometheus graph page title
+            - type: body.contains
+              value: "prometheus"
+              weight: 30
+              evidence: Prometheus frontend marker
+    negative:
+      - type: body.contains
+        value: "Prometheus documentation"
+        reason: Exclude documentation pages
+    metadata:
+      references: ["https://prometheus.io/"]
+      confidence: high
+    examples:
+      positive:
+        - path: /graph
+          title: Prometheus Time Series Collection and Processing Server
+          body: "prometheus"
+      negative:
+        - body: "Prometheus documentation"
+
+
+  - id: core-0022-alertmanager
+    name: Alertmanager
+    category: observability
+    vendor: Prometheus
+    priority: 80
+    tags: [alertmanager, prometheus, observability]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: alertmanager
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: Alertmanager
+              weight: 55
+              evidence: Alertmanager title
+            - type: body.contains
+              value: "alertmanager"
+              weight: 35
+              evidence: Alertmanager frontend marker
+    negative:
+      - type: body.contains
+        value: "Alertmanager documentation"
+        reason: Exclude documentation pages
+    metadata:
+      references: ["https://prometheus.io/docs/alerting/latest/alertmanager/"]
+      confidence: high
+    examples:
+      positive:
+        - title: Alertmanager
+          body: "alertmanager"
+      negative:
+        - body: "Alertmanager documentation"
+
+
+  - id: core-0023-kibana
+    name: Kibana
+    category: observability
+    vendor: Elastic
+    priority: 85
+    tags: [kibana, elasticsearch, observability]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: kibana
+          request: {method: GET, path: /}
+          matchers:
+            - type: header.contains
+              key: Kbn-Name
+              weight: 50
+              evidence: Kibana response header
+            - type: body.contains
+              value: "kbn-injected-metadata"
+              weight: 50
+              evidence: Kibana injected metadata marker
+    negative:
+      - type: body.contains
+        value: "Kibana documentation"
+        reason: Exclude documentation pages
+    metadata:
+      references: ["https://www.elastic.co/kibana"]
+      confidence: high
+    examples:
+      positive:
+        - headers: {Kbn-Name: "kibana"}
+          body: "kbn-injected-metadata"
+      negative:
+        - body: "Kibana documentation"
+
+
+  - id: core-0027-apache-flink
+    name: Apache Flink
+    category: observability
+    vendor: Apache
+    priority: 80
+    tags: [flink, big-data, dashboard]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: apache-flink
+          request: {method: GET, path: /}
+          matchers:
+            - type: body.contains
+              value: "<flink-root></flink-root>"
+              weight: 60
+              evidence: Flink dashboard root element
+            - type: body.contains
+              value: "apache flink dashboard"
+              weight: 40
+              evidence: Flink dashboard image alt text
+    negative:
+      - type: body.contains
+        value: "Apache Flink documentation"
+        reason: Exclude documentation pages
+    metadata:
+      references: ["https://flink.apache.org/"]
+      confidence: high
+    examples:
+      positive:
+        - body: '<flink-root></flink-root><img alt="apache flink dashboard">'
+      negative:
+        - body: "Apache Flink documentation"
+
+
+  - id: core-0028-apache-spark
+    name: Apache Spark
+    category: observability
+    vendor: Apache
+    priority: 80
+    tags: [spark, big-data, dashboard]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: apache-spark
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: Spark
+              weight: 40
+              evidence: Spark UI title
+            - type: body.contains
+              value: "/static/spark-logo"
+              weight: 50
+              evidence: Spark logo asset
+    negative:
+      - type: body.contains
+        value: "Apache Spark documentation"
+        reason: Exclude documentation pages
+    metadata:
+      references: ["https://spark.apache.org/"]
+      confidence: high
+    examples:
+      positive:
+        - title: Spark Jobs
+          body: '<img src="/static/spark-logo.png">'
+      negative:
+        - body: "Apache Spark documentation"
+
+
+  - id: core-0062-zabbix
+    name: Zabbix
+    category: observability
+    vendor: Zabbix
+    priority: 80
+    tags: [zabbix, monitoring, observability]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: zabbix
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: Zabbix
+              weight: 55
+              evidence: Zabbix title
+            - type: body.contains
+              value: "zabbix"
+              weight: 45
+              evidence: Zabbix frontend marker
+    negative: [{type: body.contains, value: "Zabbix documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://www.zabbix.com/"], confidence: high}
+    examples:
+      positive: [{title: Zabbix, body: "zabbix"}]
+      negative: [{body: "Zabbix documentation"}]
+
+
+  - id: core-0063-nagios
+    name: Nagios
+    category: observability
+    vendor: Nagios
+    priority: 75
+    tags: [nagios, monitoring, observability]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: nagios
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: Nagios
+              weight: 55
+              evidence: Nagios title
+            - type: body.contains
+              value: "nagios"
+              weight: 45
+              evidence: Nagios body marker
+    negative: [{type: body.contains, value: "Nagios documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://www.nagios.org/"], confidence: high}
+    examples:
+      positive: [{title: Nagios, body: "nagios"}]
+      negative: [{body: "Nagios documentation"}]
+
+
+  - id: core-0064-netdata
+    name: Netdata
+    category: observability
+    vendor: Netdata
+    priority: 80
+    tags: [netdata, monitoring, observability]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: netdata
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: Netdata
+              weight: 55
+              evidence: Netdata dashboard title
+            - type: body.contains
+              value: "netdata"
+              weight: 45
+              evidence: Netdata frontend marker
+    negative: [{type: body.contains, value: "Netdata documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://www.netdata.cloud/"], confidence: high}
+    examples:
+      positive: [{title: Netdata, body: "netdata"}]
+      negative: [{body: "Netdata documentation"}]
+
+
+  - id: core-0065-graylog
+    name: Graylog
+    category: observability
+    vendor: Graylog
+    priority: 80
+    tags: [graylog, logs, observability]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: graylog
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: Graylog
+              weight: 55
+              evidence: Graylog title
+            - type: body.contains
+              value: "graylog"
+              weight: 45
+              evidence: Graylog frontend marker
+    negative: [{type: body.contains, value: "Graylog documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://graylog.org/"], confidence: high}
+    examples:
+      positive: [{title: Graylog, body: "graylog"}]
+      negative: [{body: "Graylog documentation"}]
+
+
+  - id: core-0066-jaeger
+    name: Jaeger UI
+    category: observability
+    vendor: Jaeger
+    priority: 80
+    tags: [jaeger, tracing, observability]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: jaeger
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: Jaeger UI
+              weight: 55
+              evidence: Jaeger UI title
+            - type: body.contains
+              value: "jaeger"
+              weight: 45
+              evidence: Jaeger frontend marker
+    negative: [{type: body.contains, value: "Jaeger documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://www.jaegertracing.io/"], confidence: high}
+    examples:
+      positive: [{title: Jaeger UI, body: "jaeger"}]
+      negative: [{body: "Jaeger documentation"}]
+
+
+  - id: core-0067-zipkin
+    name: Zipkin
+    category: observability
+    vendor: OpenZipkin
+    priority: 75
+    tags: [zipkin, tracing, observability]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: zipkin
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: Zipkin
+              weight: 55
+              evidence: Zipkin title
+            - type: body.contains
+              value: "zipkin"
+              weight: 45
+              evidence: Zipkin frontend marker
+    negative: [{type: body.contains, value: "Zipkin documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://zipkin.io/"], confidence: high}
+    examples:
+      positive: [{title: Zipkin, body: "zipkin"}]
+      negative: [{body: "Zipkin documentation"}]
+
+
+  - id: core-0068-victoriametrics
+    name: VictoriaMetrics
+    category: observability
+    vendor: VictoriaMetrics
+    priority: 80
+    tags: [victoriametrics, metrics, observability]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: victoriametrics
+          request: {method: GET, path: /}
+          matchers:
+            - type: body.contains
+              value: "VictoriaMetrics"
+              weight: 55
+              evidence: VictoriaMetrics body marker
+            - type: header.contains
+              key: Server
+              value: "VictoriaMetrics"
+              weight: 45
+              evidence: VictoriaMetrics Server header
+    negative: [{type: body.contains, value: "VictoriaMetrics documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://victoriametrics.com/"], confidence: high}
+    examples:
+      positive: [{headers: {Server: "VictoriaMetrics"}, body: "VictoriaMetrics"}]
+      negative: [{body: "VictoriaMetrics documentation"}]
+
+
+  - id: core-0069-thanos
+    name: Thanos
+    category: observability
+    vendor: Thanos
+    priority: 75
+    tags: [thanos, prometheus, observability]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: thanos
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: Thanos
+              weight: 55
+              evidence: Thanos UI title
+            - type: body.contains
+              value: "thanos"
+              weight: 45
+              evidence: Thanos frontend marker
+    negative: [{type: body.contains, value: "Thanos documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://thanos.io/"], confidence: high}
+    examples:
+      positive: [{title: Thanos, body: "thanos"}]
+      negative: [{body: "Thanos documentation"}]
+
+
+  - id: core-0070-apache-superset
+    name: Apache Superset
+    category: observability
+    vendor: Apache
+    priority: 80
+    tags: [superset, bi, analytics]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: apache-superset
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: Superset
+              weight: 55
+              evidence: Superset title
+            - type: body.contains
+              value: "superset"
+              weight: 45
+              evidence: Superset frontend marker
+    negative: [{type: body.contains, value: "Apache Superset documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://superset.apache.org/"], confidence: high}
+    examples:
+      positive: [{title: Superset, body: "superset"}]
+      negative: [{body: "Apache Superset documentation"}]
+
+
+  - id: core-0071-metabase
+    name: Metabase
+    category: observability
+    vendor: Metabase
+    priority: 80
+    tags: [metabase, bi, analytics]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: metabase
+          request: {method: GET, path: /}
+          matchers:
+            - type: body.contains
+              value: "_metabase"
+              weight: 55
+              evidence: Metabase frontend asset marker
+            - type: title.contains
+              value: Metabase
+              weight: 45
+              evidence: Metabase title
+    negative: [{type: body.contains, value: "Metabase documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://www.metabase.com/"], confidence: high}
+    examples:
+      positive: [{title: Metabase, body: "_metabase"}]
+      negative: [{body: "Metabase documentation"}]
+
+
+  - id: core-0072-redash
+    name: Redash
+    category: observability
+    vendor: Redash
+    priority: 75
+    tags: [redash, bi, analytics]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: redash
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: Redash
+              weight: 55
+              evidence: Redash title
+            - type: body.contains
+              value: "redash"
+              weight: 45
+              evidence: Redash frontend marker
+    negative: [{type: body.contains, value: "Redash documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://redash.io/"], confidence: high}
+    examples:
+      positive: [{title: Redash, body: "redash"}]
+      negative: [{body: "Redash documentation"}]
+
+
+  - id: core-0086-opensearch-dashboards
+    name: OpenSearch Dashboards
+    category: observability
+    vendor: OpenSearch
+    priority: 80
+    tags: [opensearch, dashboards, observability]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: opensearch-dashboards
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: OpenSearch Dashboards
+              weight: 55
+              evidence: OpenSearch Dashboards title
+            - type: body.contains
+              value: "opensearchDashboards"
+              weight: 45
+              evidence: OpenSearch Dashboards bootstrap marker
+    negative: [{type: body.contains, value: "OpenSearch documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://opensearch.org/docs/latest/dashboards/"], confidence: high}
+    examples:
+      positive: [{title: OpenSearch Dashboards, body: "opensearchDashboards"}]
+      negative: [{body: "OpenSearch documentation"}]
+
+
+  - id: core-0095-hadoop-yarn
+    name: Hadoop YARN ResourceManager
+    category: observability
+    vendor: Apache
+    priority: 80
+    tags: [hadoop, yarn, big-data]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: hadoop-yarn
+          request: {method: GET, path: /cluster}
+          matchers:
+            - type: title.contains
+              value: "All Applications"
+              weight: 45
+              evidence: YARN ResourceManager page title
+            - type: body.contains
+              value: "yarn.dt.plugins.js"
+              weight: 55
+              evidence: YARN DataTables plugin asset
+    negative: [{type: body.contains, value: "Hadoop YARN documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://hadoop.apache.org/docs/current/hadoop-yarn/hadoop-yarn-site/ResourceManager.html"], confidence: high}
+    examples:
+      positive: [{path: /cluster, title: "All Applications", body: "yarn.dt.plugins.js"}]
+      negative: [{body: "Hadoop YARN documentation"}]
+
+
+  - id: core-0105-sentry
+    name: Sentry
+    category: observability
+    vendor: Sentry
+    priority: 80
+    tags: [sentry, error-tracking, observability]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: sentry
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: Sentry
+              weight: 55
+              evidence: Sentry title
+            - type: body.contains
+              value: "sentry"
+              weight: 45
+              evidence: Sentry frontend marker
+    negative: [{type: body.contains, value: "Sentry documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://sentry.io/"], confidence: high}
+    examples:
+      positive: [{title: Sentry, body: "sentry"}]
+      negative: [{body: "Sentry documentation"}]
+
+

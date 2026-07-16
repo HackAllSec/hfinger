@@ -1,0 +1,189 @@
+rules:
+  - id: core-0001-kubernetes-dashboard
+    name: Kubernetes Dashboard
+    category: cloud-native
+    vendor: Kubernetes
+    priority: 90
+    tags: [kubernetes, dashboard, cloud-native]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: kubernetes-dashboard
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: Kubernetes Dashboard
+              weight: 60
+              evidence: Kubernetes Dashboard page title
+            - type: body.contains
+              value: "kubernetes-dashboard"
+              weight: 40
+              evidence: Kubernetes Dashboard frontend asset marker
+    negative:
+      - type: body.contains
+        value: "This dashboard shows Kubernetes examples"
+        reason: Exclude documentation pages
+    metadata:
+      references: ["https://github.com/kubernetes/dashboard"]
+      confidence: high
+    examples:
+      positive:
+        - name: dashboard
+          title: Kubernetes Dashboard
+          body: '<script src="kubernetes-dashboard.js"></script>'
+      negative:
+        - name: docs
+          title: Kubernetes Dashboard Docs
+          body: "This dashboard shows Kubernetes examples"
+
+
+  - id: core-0009-consul
+    name: Consul
+    category: cloud-native
+    vendor: HashiCorp
+    priority: 80
+    tags: [consul, service-discovery, cloud-native]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: consul
+          request: {method: GET, path: /ui/}
+          matchers:
+            - type: title.contains
+              value: Consul
+              weight: 50
+              evidence: Consul UI title
+            - type: body.contains
+              value: "consul-ui"
+              weight: 50
+              evidence: Consul UI frontend marker
+    negative:
+      - type: body.contains
+        value: "Consul documentation"
+        reason: Exclude documentation pages
+    metadata:
+      references: ["https://developer.hashicorp.com/consul"]
+      confidence: high
+    examples:
+      positive:
+        - path: /ui/
+          title: Consul
+          body: '<div id="consul-ui"></div>'
+      negative:
+        - body: "Consul documentation"
+
+
+  - id: core-0052-rancher
+    name: Rancher
+    category: cloud-native
+    vendor: SUSE
+    priority: 85
+    tags: [rancher, kubernetes, cloud-native]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: rancher
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: Rancher
+              weight: 55
+              evidence: Rancher page title
+            - type: body.contains
+              value: "rancher"
+              weight: 45
+              evidence: Rancher frontend marker
+    negative: [{type: body.contains, value: "Rancher documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://www.rancher.com/"], confidence: high}
+    examples:
+      positive: [{title: Rancher, body: "rancher"}]
+      negative: [{body: "Rancher documentation"}]
+
+
+  - id: core-0053-longhorn
+    name: Longhorn
+    category: cloud-native
+    vendor: SUSE
+    priority: 80
+    tags: [longhorn, kubernetes, storage]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: longhorn
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: Longhorn
+              weight: 55
+              evidence: Longhorn UI title
+            - type: body.contains
+              value: "longhorn"
+              weight: 45
+              evidence: Longhorn frontend marker
+    negative: [{type: body.contains, value: "Longhorn documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://longhorn.io/"], confidence: high}
+    examples:
+      positive: [{title: Longhorn, body: "longhorn"}]
+      negative: [{body: "Longhorn documentation"}]
+
+
+  - id: core-0054-kubesphere
+    name: KubeSphere
+    category: cloud-native
+    vendor: KubeSphere
+    priority: 85
+    tags: [kubesphere, kubernetes, cloud-native]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: kubesphere
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: KubeSphere
+              weight: 55
+              evidence: KubeSphere title
+            - type: body.contains
+              value: "kubesphere"
+              weight: 45
+              evidence: KubeSphere frontend marker
+    negative: [{type: body.contains, value: "KubeSphere documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://kubesphere.io/"], confidence: high}
+    examples:
+      positive: [{title: KubeSphere, body: "kubesphere"}]
+      negative: [{body: "KubeSphere documentation"}]
+
+
+  - id: core-0055-openshift-console
+    name: OpenShift Console
+    category: cloud-native
+    vendor: Red Hat
+    priority: 85
+    tags: [openshift, kubernetes, cloud-native]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: openshift-console
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: OpenShift
+              weight: 50
+              evidence: OpenShift console title
+            - type: body.contains
+              value: "openshift-console"
+              weight: 50
+              evidence: OpenShift console marker
+    negative: [{type: body.contains, value: "OpenShift documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://www.redhat.com/en/technologies/cloud-computing/openshift"], confidence: high}
+    examples:
+      positive: [{title: OpenShift Console, body: "openshift-console"}]
+      negative: [{body: "OpenShift documentation"}]
+
+

@@ -1,0 +1,468 @@
+rules:
+  - id: core-0044-gradio
+    name: Gradio
+    category: ai-service
+    vendor: Gradio
+    priority: 85
+    tags: [ai, gradio, ml]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: gradio
+          request: {method: GET, path: /}
+          matchers:
+            - type: body.contains
+              value: "gradio-app"
+              weight: 55
+              evidence: Gradio app root marker
+            - type: body.contains
+              value: "__gradio_mode__"
+              weight: 45
+              evidence: Gradio runtime mode marker
+    negative:
+      - type: body.contains
+        value: "Gradio documentation"
+        reason: Exclude documentation pages
+    metadata:
+      references: ["https://www.gradio.app/"]
+      confidence: high
+    examples:
+      positive:
+        - body: '<gradio-app></gradio-app><script>window.__gradio_mode__="app"</script>'
+      negative:
+        - body: "Gradio documentation"
+
+
+  - id: core-0046-streamlit
+    name: Streamlit
+    category: ai-service
+    vendor: Streamlit
+    priority: 80
+    tags: [ai, streamlit, data-app]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: streamlit
+          request: {method: GET, path: /}
+          matchers:
+            - type: body.contains
+              value: "streamlit"
+              weight: 45
+              evidence: Streamlit body marker
+            - type: body.contains
+              value: "stApp"
+              weight: 45
+              evidence: Streamlit app root marker
+    negative:
+      - type: body.contains
+        value: "Streamlit documentation"
+        reason: Exclude documentation pages
+    metadata:
+      references: ["https://streamlit.io/"]
+      confidence: high
+    examples:
+      positive:
+        - body: '<div class="stApp">streamlit</div>'
+      negative:
+        - body: "Streamlit documentation"
+
+
+  - id: core-0047-jupyter-lab
+    name: JupyterLab
+    category: ai-service
+    vendor: Jupyter
+    priority: 80
+    tags: [ai, notebook, jupyter]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: jupyter-lab
+          request: {method: GET, path: /lab}
+          matchers:
+            - type: title.contains
+              value: JupyterLab
+              weight: 55
+              evidence: JupyterLab title
+            - type: body.contains
+              value: "jupyter-config-data"
+              weight: 45
+              evidence: JupyterLab config data marker
+    negative:
+      - type: body.contains
+        value: "JupyterLab documentation"
+        reason: Exclude documentation pages
+    metadata:
+      references: ["https://jupyterlab.readthedocs.io/"]
+      confidence: high
+    examples:
+      positive:
+        - path: /lab
+          title: JupyterLab
+          body: '<script id="jupyter-config-data"></script>'
+      negative:
+        - body: "JupyterLab documentation"
+
+
+  - id: core-0048-ollama-api
+    name: Ollama API
+    category: ai-service
+    vendor: Ollama
+    priority: 85
+    tags: [ai, llm, ollama]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: ollama-api
+          request: {method: GET, path: /api/tags}
+          matchers:
+            - type: json.key.exists
+              value: models
+              weight: 60
+              evidence: Ollama models key
+            - type: body.contains
+              value: "model"
+              weight: 30
+              evidence: Ollama model list field
+    negative:
+      - type: body.contains
+        value: "Ollama documentation"
+        reason: Exclude documentation pages
+    metadata:
+      references: ["https://github.com/ollama/ollama/blob/main/docs/api.md"]
+      confidence: medium
+    examples:
+      positive:
+        - path: /api/tags
+          body: '{"models":[{"name":"llama3","model":"llama3"}]}'
+      negative:
+        - body: "Ollama documentation"
+
+
+  - id: core-0049-open-webui
+    name: Open WebUI
+    category: ai-service
+    vendor: Open WebUI
+    priority: 80
+    tags: [ai, llm, open-webui]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: open-webui
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: Open WebUI
+              weight: 60
+              evidence: Open WebUI title
+            - type: body.contains
+              value: "open-webui"
+              weight: 40
+              evidence: Open WebUI frontend marker
+    negative:
+      - type: body.contains
+        value: "Open WebUI documentation"
+        reason: Exclude documentation pages
+    metadata:
+      references: ["https://github.com/open-webui/open-webui"]
+      confidence: high
+    examples:
+      positive:
+        - title: Open WebUI
+          body: "open-webui"
+      negative:
+        - body: "Open WebUI documentation"
+
+
+  - id: core-0050-dify
+    name: Dify
+    category: ai-service
+    vendor: Dify
+    priority: 80
+    tags: [ai, llmops, dify]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: dify
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: Dify
+              weight: 50
+              evidence: Dify title
+            - type: body.contains
+              value: "dify"
+              weight: 40
+              evidence: Dify frontend marker
+    negative:
+      - type: body.contains
+        value: "Dify documentation"
+        reason: Exclude documentation pages
+    metadata:
+      references: ["https://github.com/langgenius/dify"]
+      confidence: high
+    examples:
+      positive:
+        - title: Dify
+          body: "dify"
+      negative:
+        - body: "Dify documentation"
+
+
+  - id: core-0077-mlflow
+    name: MLflow
+    category: ai-service
+    vendor: MLflow
+    priority: 85
+    tags: [ai, mlflow, mlops]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: mlflow
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: MLflow
+              weight: 55
+              evidence: MLflow title
+            - type: body.contains
+              value: "mlflow"
+              weight: 45
+              evidence: MLflow frontend marker
+    negative: [{type: body.contains, value: "MLflow documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://mlflow.org/"], confidence: high}
+    examples:
+      positive: [{title: MLflow, body: "mlflow"}]
+      negative: [{body: "MLflow documentation"}]
+
+
+  - id: core-0078-ray-dashboard
+    name: Ray Dashboard
+    category: ai-service
+    vendor: Anyscale
+    priority: 80
+    tags: [ai, ray, dashboard]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: ray-dashboard
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: Ray Dashboard
+              weight: 55
+              evidence: Ray Dashboard title
+            - type: body.contains
+              value: "ray-dashboard"
+              weight: 45
+              evidence: Ray Dashboard frontend marker
+    negative: [{type: body.contains, value: "Ray documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://docs.ray.io/"], confidence: high}
+    examples:
+      positive: [{title: Ray Dashboard, body: "ray-dashboard"}]
+      negative: [{body: "Ray documentation"}]
+
+
+  - id: core-0079-comfyui
+    name: ComfyUI
+    category: ai-service
+    vendor: ComfyUI
+    priority: 85
+    tags: [ai, image-generation, comfyui]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: comfyui
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: ComfyUI
+              weight: 55
+              evidence: ComfyUI title
+            - type: body.contains
+              value: "ComfyUI"
+              weight: 45
+              evidence: ComfyUI body marker
+    negative: [{type: body.contains, value: "ComfyUI documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://github.com/comfyanonymous/ComfyUI"], confidence: high}
+    examples:
+      positive: [{title: ComfyUI, body: "ComfyUI"}]
+      negative: [{body: "ComfyUI documentation"}]
+
+
+  - id: core-0080-langfuse
+    name: Langfuse
+    category: ai-service
+    vendor: Langfuse
+    priority: 80
+    tags: [ai, llmops, observability]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: langfuse
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: Langfuse
+              weight: 55
+              evidence: Langfuse title
+            - type: body.contains
+              value: "langfuse"
+              weight: 45
+              evidence: Langfuse frontend marker
+    negative: [{type: body.contains, value: "Langfuse documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://langfuse.com/"], confidence: high}
+    examples:
+      positive: [{title: Langfuse, body: "langfuse"}]
+      negative: [{body: "Langfuse documentation"}]
+
+
+  - id: core-0081-anythingllm
+    name: AnythingLLM
+    category: ai-service
+    vendor: Mintplex Labs
+    priority: 80
+    tags: [ai, llm, rag]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: anythingllm
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: AnythingLLM
+              weight: 55
+              evidence: AnythingLLM title
+            - type: body.contains
+              value: "anythingllm"
+              weight: 45
+              evidence: AnythingLLM frontend marker
+    negative: [{type: body.contains, value: "AnythingLLM documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://github.com/Mintplex-Labs/anything-llm"], confidence: high}
+    examples:
+      positive: [{title: AnythingLLM, body: "anythingllm"}]
+      negative: [{body: "AnythingLLM documentation"}]
+
+
+  - id: core-0082-flowise
+    name: Flowise
+    category: ai-service
+    vendor: FlowiseAI
+    priority: 80
+    tags: [ai, llmops, flowise]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: flowise
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: Flowise
+              weight: 55
+              evidence: Flowise title
+            - type: body.contains
+              value: "flowise"
+              weight: 45
+              evidence: Flowise frontend marker
+    negative: [{type: body.contains, value: "Flowise documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://github.com/FlowiseAI/Flowise"], confidence: high}
+    examples:
+      positive: [{title: Flowise, body: "flowise"}]
+      negative: [{body: "Flowise documentation"}]
+
+
+  - id: core-0106-tensorboard
+    name: TensorBoard
+    category: ai-service
+    vendor: TensorFlow
+    priority: 80
+    tags: [ai, tensorflow, tensorboard]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: tensorboard
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: TensorBoard
+              weight: 55
+              evidence: TensorBoard title
+            - type: body.contains
+              value: "tf-tensorboard"
+              weight: 45
+              evidence: TensorBoard frontend marker
+    negative: [{type: body.contains, value: "TensorBoard documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://www.tensorflow.org/tensorboard"], confidence: high}
+    examples:
+      positive: [{title: TensorBoard, body: "tf-tensorboard"}]
+      negative: [{body: "TensorBoard documentation"}]
+
+
+  - id: core-0107-triton-inference-server
+    name: NVIDIA Triton Inference Server
+    category: ai-service
+    vendor: NVIDIA
+    priority: 80
+    tags: [ai, inference, triton]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: triton-inference-server
+          request: {method: GET, path: /v2}
+          matchers:
+            - type: json.key.exists
+              value: extensions
+              weight: 45
+              evidence: Triton v2 API extensions key
+            - type: body.contains
+              value: "model_repository"
+              weight: 45
+              evidence: Triton model repository extension
+    negative: [{type: body.contains, value: "Triton documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://github.com/triton-inference-server/server"], confidence: medium}
+    examples:
+      positive: [{path: /v2, body: '{"extensions":["model_repository","sequence"]}'}]
+      negative: [{body: "Triton documentation"}]
+
+
+  - id: core-0108-jupyterhub
+    name: JupyterHub
+    category: ai-service
+    vendor: Jupyter
+    priority: 80
+    tags: [ai, notebook, jupyterhub]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: jupyterhub
+          request: {method: GET, path: /hub/login}
+          matchers:
+            - type: title.contains
+              value: JupyterHub
+              weight: 55
+              evidence: JupyterHub login title
+            - type: body.contains
+              value: "jupyterhub"
+              weight: 45
+              evidence: JupyterHub body marker
+    negative: [{type: body.contains, value: "JupyterHub documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://jupyterhub.readthedocs.io/"], confidence: high}
+    examples:
+      positive: [{path: /hub/login, title: JupyterHub, body: "jupyterhub"}]
+      negative: [{body: "JupyterHub documentation"}]
+
+

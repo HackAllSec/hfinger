@@ -1,0 +1,512 @@
+rules:
+  - id: core-0011-keycloak
+    name: Keycloak
+    category: middleware
+    vendor: Keycloak
+    priority: 85
+    tags: [keycloak, iam, oidc]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: keycloak
+          request: {method: GET, path: /}
+          matchers:
+            - type: body.contains
+              value: "keycloak"
+              weight: 45
+              evidence: Keycloak body marker
+            - type: cookie.contains
+              value: "KEYCLOAK"
+              weight: 45
+              evidence: Keycloak cookie marker
+    negative:
+      - type: body.contains
+        value: "Keycloak documentation"
+        reason: Exclude documentation pages
+    metadata:
+      references: ["https://www.keycloak.org/"]
+      confidence: high
+    examples:
+      positive:
+        - headers: {Set-Cookie: "KEYCLOAK_SESSION=abc"}
+          body: "keycloak"
+      negative:
+        - body: "Keycloak documentation"
+
+
+  - id: core-0016-nacos
+    name: Nacos
+    category: middleware
+    vendor: Alibaba
+    priority: 90
+    tags: [nacos, service-discovery, config]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: nacos
+          request: {method: GET, path: /nacos/}
+          matchers:
+            - type: body.contains
+              value: "console-ui/public"
+              weight: 50
+              evidence: Nacos console asset path
+            - type: body.contains
+              value: "nacos"
+              weight: 40
+              evidence: Nacos console marker
+    negative:
+      - type: body.contains
+        value: "Nacos documentation"
+        reason: Exclude documentation pages
+    metadata:
+      references: ["https://nacos.io/"]
+      confidence: high
+    examples:
+      positive:
+        - path: /nacos/
+          body: "console-ui/public/js/merge.js nacos"
+      negative:
+        - body: "Nacos documentation"
+
+
+  - id: core-0017-dubbo-admin
+    name: Dubbo Admin
+    category: middleware
+    vendor: Apache
+    priority: 80
+    tags: [dubbo, admin, middleware]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: dubbo-admin
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: Dubbo Admin
+              weight: 60
+              evidence: Dubbo Admin page title
+            - type: body.contains
+              value: "dubbo-admin"
+              weight: 40
+              evidence: Dubbo Admin frontend marker
+    negative:
+      - type: body.contains
+        value: "Dubbo Admin documentation"
+        reason: Exclude documentation pages
+    metadata:
+      references: ["https://github.com/apache/dubbo-admin"]
+      confidence: high
+    examples:
+      positive:
+        - title: Dubbo Admin
+          body: "dubbo-admin"
+      negative:
+        - body: "Dubbo Admin documentation"
+
+
+  - id: core-0019-sentinel-dashboard
+    name: Sentinel Dashboard
+    category: middleware
+    vendor: Alibaba
+    priority: 80
+    tags: [sentinel, dashboard, middleware]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: sentinel-dashboard
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: Sentinel Dashboard
+              weight: 60
+              evidence: Sentinel Dashboard title
+            - type: body.contains
+              value: "sentinel-dashboard"
+              weight: 40
+              evidence: Sentinel Dashboard frontend marker
+    negative:
+      - type: body.contains
+        value: "Sentinel documentation"
+        reason: Exclude documentation pages
+    metadata:
+      references: ["https://github.com/alibaba/Sentinel"]
+      confidence: high
+    examples:
+      positive:
+        - title: Sentinel Dashboard
+          body: "sentinel-dashboard"
+      negative:
+        - body: "Sentinel documentation"
+
+
+  - id: core-0030-rabbitmq-management
+    name: RabbitMQ Management
+    category: middleware
+    vendor: VMware
+    priority: 80
+    tags: [rabbitmq, message-queue, middleware]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: rabbitmq
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: RabbitMQ Management
+              weight: 60
+              evidence: RabbitMQ Management title
+            - type: body.contains
+              value: "RabbitMQ"
+              weight: 30
+              evidence: RabbitMQ body marker
+    negative:
+      - type: body.contains
+        value: "RabbitMQ documentation"
+        reason: Exclude documentation pages
+    metadata:
+      references: ["https://www.rabbitmq.com/docs/management"]
+      confidence: high
+    examples:
+      positive:
+        - title: RabbitMQ Management
+          body: "RabbitMQ"
+      negative:
+        - body: "RabbitMQ documentation"
+
+
+  - id: core-0031-rocketmq-console
+    name: RocketMQ Console
+    category: middleware
+    vendor: Apache
+    priority: 80
+    tags: [rocketmq, message-queue, middleware]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: rocketmq
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: RocketMQ
+              weight: 50
+              evidence: RocketMQ console title
+            - type: body.contains
+              value: "rocketmq-console"
+              weight: 50
+              evidence: RocketMQ console marker
+    negative:
+      - type: body.contains
+        value: "RocketMQ documentation"
+        reason: Exclude documentation pages
+    metadata:
+      references: ["https://rocketmq.apache.org/"]
+      confidence: high
+    examples:
+      positive:
+        - title: RocketMQ
+          body: "rocketmq-console"
+      negative:
+        - body: "RocketMQ documentation"
+
+
+  - id: core-0032-kafka-ui
+    name: Kafka UI
+    category: middleware
+    vendor: Provectus
+    priority: 75
+    tags: [kafka, message-queue, ui]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: kafka-ui
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: Kafka UI
+              weight: 55
+              evidence: Kafka UI title
+            - type: body.contains
+              value: "kafka-ui"
+              weight: 45
+              evidence: Kafka UI app marker
+    negative:
+      - type: body.contains
+        value: "Kafka UI documentation"
+        reason: Exclude documentation pages
+    metadata:
+      references: ["https://github.com/provectus/kafka-ui"]
+      confidence: high
+    examples:
+      positive:
+        - title: Kafka UI
+          body: "kafka-ui"
+      negative:
+        - body: "Kafka UI documentation"
+
+
+  - id: core-0040-druid-monitor
+    name: Alibaba Druid Monitor
+    category: middleware
+    vendor: Alibaba
+    priority: 80
+    tags: [druid, java, monitor]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: druid-monitor
+          request: {method: GET, path: /druid/index.html}
+          matchers:
+            - type: title.contains
+              value: Druid Stat Index
+              weight: 60
+              evidence: Druid monitor title
+            - type: body.contains
+              value: "Druid Stat"
+              weight: 40
+              evidence: Druid monitor body marker
+    negative:
+      - type: body.contains
+        value: "Druid documentation"
+        reason: Exclude documentation pages
+    metadata:
+      references: ["https://github.com/alibaba/druid"]
+      confidence: high
+    examples:
+      positive:
+        - path: /druid/index.html
+          title: Druid Stat Index
+          body: "Druid Stat"
+      negative:
+        - body: "Druid documentation"
+
+
+  - id: core-0041-tomcat-manager
+    name: Apache Tomcat Manager
+    category: middleware
+    vendor: Apache
+    priority: 80
+    tags: [tomcat, java, middleware]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: tomcat-manager
+          request: {method: GET, path: /manager/html}
+          matchers:
+            - type: title.contains
+              value: Tomcat Web Application Manager
+              weight: 60
+              evidence: Tomcat Manager title
+            - type: header.contains
+              key: WWW-Authenticate
+              value: "Tomcat Manager Application"
+              weight: 50
+              evidence: Tomcat Manager authentication realm
+    negative:
+      - type: body.contains
+        value: "Tomcat Manager documentation"
+        reason: Exclude documentation pages
+    metadata:
+      references: ["https://tomcat.apache.org/"]
+      confidence: high
+    examples:
+      positive:
+        - path: /manager/html
+          title: Tomcat Web Application Manager
+          headers: {WWW-Authenticate: 'Basic realm="Tomcat Manager Application"'}
+      negative:
+        - body: "Tomcat Manager documentation"
+
+
+  - id: core-0042-weblogic-console
+    name: WebLogic Console
+    category: middleware
+    vendor: Oracle
+    priority: 80
+    tags: [weblogic, java, middleware]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: weblogic-console
+          request: {method: GET, path: /console/}
+          matchers:
+            - type: body.contains
+              value: "WebLogic Server Administration Console"
+              weight: 60
+              evidence: WebLogic console body marker
+            - type: body.contains
+              value: "login_WebLogic_branding.png"
+              weight: 40
+              evidence: WebLogic branding asset
+    negative:
+      - type: body.contains
+        value: "WebLogic documentation"
+        reason: Exclude documentation pages
+    metadata:
+      references: ["https://www.oracle.com/middleware/technologies/weblogic.html"]
+      confidence: high
+    examples:
+      positive:
+        - path: /console/
+          body: "WebLogic Server Administration Console login_WebLogic_branding.png"
+      negative:
+        - body: "WebLogic documentation"
+
+
+  - id: core-0043-wildfly
+    name: WildFly
+    category: middleware
+    vendor: Red Hat
+    priority: 75
+    tags: [wildfly, jboss, java]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: wildfly
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: WildFly
+              weight: 50
+              evidence: WildFly title
+            - type: body.contains
+              value: "wildfly.css"
+              weight: 40
+              evidence: WildFly CSS asset
+    negative:
+      - type: body.contains
+        value: "WildFly documentation"
+        reason: Exclude documentation pages
+    metadata:
+      references: ["https://www.wildfly.org/"]
+      confidence: high
+    examples:
+      positive:
+        - title: WildFly
+          body: "wildfly.css"
+      negative:
+        - body: "WildFly documentation"
+
+
+  - id: core-0074-apollo-config
+    name: Apollo Config Service
+    category: middleware
+    vendor: Ctrip
+    priority: 80
+    tags: [apollo, config, middleware]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: apollo-config
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: Apollo
+              weight: 50
+              evidence: Apollo title
+            - type: body.contains
+              value: "apollo"
+              weight: 40
+              evidence: Apollo body marker
+    negative: [{type: body.contains, value: "Apollo documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://github.com/apolloconfig/apollo"], confidence: high}
+    examples:
+      positive: [{title: Apollo, body: "apollo"}]
+      negative: [{body: "Apollo documentation"}]
+
+
+  - id: core-0075-emqx-dashboard
+    name: EMQX Dashboard
+    category: middleware
+    vendor: EMQ
+    priority: 80
+    tags: [emqx, mqtt, middleware]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: emqx-dashboard
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: EMQX
+              weight: 55
+              evidence: EMQX Dashboard title
+            - type: body.contains
+              value: "emqx"
+              weight: 45
+              evidence: EMQX frontend marker
+    negative: [{type: body.contains, value: "EMQX documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://www.emqx.io/"], confidence: high}
+    examples:
+      positive: [{title: EMQX, body: "emqx"}]
+      negative: [{body: "EMQX documentation"}]
+
+
+  - id: core-0091-apache-guacamole
+    name: Apache Guacamole
+    category: middleware
+    vendor: Apache
+    priority: 85
+    tags: [guacamole, remote-access, middleware]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: apache-guacamole
+          request: {method: GET, path: /}
+          matchers:
+            - type: body.contains
+              value: "images/guacamole-logo"
+              weight: 55
+              evidence: Guacamole logo asset
+            - type: body.contains
+              value: "scripts/guac-ui.js"
+              weight: 45
+              evidence: Guacamole UI script
+    negative: [{type: body.contains, value: "Apache Guacamole documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://guacamole.apache.org/"], confidence: high}
+    examples:
+      positive: [{body: "images/guacamole-logo scripts/guac-ui.js"}]
+      negative: [{body: "Apache Guacamole documentation"}]
+
+
+  - id: core-0093-apache-nifi
+    name: Apache NiFi
+    category: middleware
+    vendor: Apache
+    priority: 85
+    tags: [nifi, dataflow, middleware]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: apache-nifi
+          request: {method: GET, path: /nifi/}
+          matchers:
+            - type: title.contains
+              value: NiFi
+              weight: 45
+              evidence: NiFi title
+            - type: body.contains
+              value: "nf-canvas"
+              weight: 55
+              evidence: NiFi canvas frontend marker
+    negative: [{type: body.contains, value: "Apache NiFi documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://nifi.apache.org/"], confidence: high}
+    examples:
+      positive: [{path: /nifi/, title: NiFi, body: "nf-canvas"}]
+      negative: [{body: "Apache NiFi documentation"}]
+
+

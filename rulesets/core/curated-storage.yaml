@@ -1,0 +1,65 @@
+rules:
+  - id: core-0008-minio-console
+    name: MinIO Console
+    category: storage
+    vendor: MinIO
+    priority: 85
+    tags: [minio, object-storage, console]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: minio-console
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: MinIO Console
+              weight: 55
+              evidence: MinIO Console page title
+            - type: body.contains
+              value: "MinIO Console"
+              weight: 45
+              evidence: MinIO Console body marker
+    negative:
+      - type: body.contains
+        value: "MinIO Console documentation"
+        reason: Exclude documentation pages
+    metadata:
+      references: ["https://min.io/docs/minio/linux/administration/minio-console.html"]
+      confidence: high
+    examples:
+      positive:
+        - title: MinIO Console
+          body: "MinIO Console"
+      negative:
+        - body: "MinIO Console documentation"
+
+
+  - id: core-0096-hadoop-hdfs-namenode
+    name: Hadoop HDFS NameNode
+    category: storage
+    vendor: Apache
+    priority: 80
+    tags: [hadoop, hdfs, storage]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: hdfs-namenode
+          request: {method: GET, path: /dfshealth.html}
+          matchers:
+            - type: title.contains
+              value: "NameNode"
+              weight: 50
+              evidence: HDFS NameNode page title
+            - type: body.contains
+              value: "Hadoop"
+              weight: 40
+              evidence: Hadoop body marker
+    negative: [{type: body.contains, value: "HDFS documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://hadoop.apache.org/"], confidence: high}
+    examples:
+      positive: [{path: /dfshealth.html, title: NameNode, body: "Hadoop"}]
+      negative: [{body: "HDFS documentation"}]
+
+

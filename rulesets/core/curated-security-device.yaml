@@ -1,0 +1,122 @@
+rules:
+  - id: core-0010-vault
+    name: HashiCorp Vault
+    category: security-device
+    vendor: HashiCorp
+    priority: 80
+    tags: [vault, secrets, security]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: vault
+          request: {method: GET, path: /ui/}
+          matchers:
+            - type: title.contains
+              value: Vault
+              weight: 45
+              evidence: Vault UI title
+            - type: body.contains
+              value: "vault-ui"
+              weight: 55
+              evidence: Vault UI frontend marker
+    negative:
+      - type: body.contains
+        value: "Vault documentation"
+        reason: Exclude documentation pages
+    metadata:
+      references: ["https://developer.hashicorp.com/vault"]
+      confidence: high
+    examples:
+      positive:
+        - path: /ui/
+          title: Vault
+          body: '<div id="vault-ui"></div>'
+      negative:
+        - body: "Vault documentation"
+
+
+  - id: core-0094-apache-ranger
+    name: Apache Ranger
+    category: security-device
+    vendor: Apache
+    priority: 80
+    tags: [ranger, authorization, security]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: apache-ranger
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: Ranger
+              weight: 50
+              evidence: Apache Ranger title
+            - type: body.contains
+              value: "ranger-admin"
+              weight: 50
+              evidence: Ranger admin frontend marker
+    negative: [{type: body.contains, value: "Apache Ranger documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://ranger.apache.org/"], confidence: high}
+    examples:
+      positive: [{title: Ranger, body: "ranger-admin"}]
+      negative: [{body: "Apache Ranger documentation"}]
+
+
+  - id: core-0103-wazuh-dashboard
+    name: Wazuh Dashboard
+    category: security-device
+    vendor: Wazuh
+    priority: 85
+    tags: [wazuh, siem, security]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: wazuh-dashboard
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: Wazuh
+              weight: 55
+              evidence: Wazuh title
+            - type: body.contains
+              value: "wazuh"
+              weight: 45
+              evidence: Wazuh frontend marker
+    negative: [{type: body.contains, value: "Wazuh documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://wazuh.com/"], confidence: high}
+    examples:
+      positive: [{title: Wazuh, body: "wazuh"}]
+      negative: [{body: "Wazuh documentation"}]
+
+
+  - id: core-0104-greenbone-security-assistant
+    name: Greenbone Security Assistant
+    category: security-device
+    vendor: Greenbone
+    priority: 85
+    tags: [greenbone, openvas, vulnerability-management]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: greenbone-security-assistant
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: Greenbone Security Assistant
+              weight: 60
+              evidence: Greenbone Security Assistant title
+            - type: body.contains
+              value: "greenbone"
+              weight: 40
+              evidence: Greenbone frontend marker
+    negative: [{type: body.contains, value: "Greenbone documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://www.greenbone.net/"], confidence: high}
+    examples:
+      positive: [{title: Greenbone Security Assistant, body: "greenbone"}]
+      negative: [{body: "Greenbone documentation"}]
+
+

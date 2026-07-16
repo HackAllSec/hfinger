@@ -1,0 +1,57 @@
+rules:
+  - id: core-0076-thingsboard
+    name: ThingsBoard
+    category: iot-device
+    vendor: ThingsBoard
+    priority: 80
+    tags: [thingsboard, iot, platform]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: thingsboard
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: ThingsBoard
+              weight: 55
+              evidence: ThingsBoard title
+            - type: body.contains
+              value: "thingsboard"
+              weight: 45
+              evidence: ThingsBoard frontend marker
+    negative: [{type: body.contains, value: "ThingsBoard documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://thingsboard.io/"], confidence: high}
+    examples:
+      positive: [{title: ThingsBoard, body: "thingsboard"}]
+      negative: [{body: "ThingsBoard documentation"}]
+
+
+  - id: core-0102-openwrt-luci
+    name: OpenWrt LuCI
+    category: iot-device
+    vendor: OpenWrt
+    priority: 80
+    tags: [openwrt, luci, router]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: openwrt-luci
+          request: {method: GET, path: /cgi-bin/luci/}
+          matchers:
+            - type: title.contains
+              value: OpenWrt
+              weight: 50
+              evidence: OpenWrt LuCI title
+            - type: body.contains
+              value: "LuCI"
+              weight: 40
+              evidence: LuCI body marker
+    negative: [{type: body.contains, value: "OpenWrt documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://openwrt.org/docs/guide-user/luci/start"], confidence: high}
+    examples:
+      positive: [{path: /cgi-bin/luci/, title: OpenWrt, body: "LuCI"}]
+      negative: [{body: "OpenWrt documentation"}]
+
+

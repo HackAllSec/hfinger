@@ -1,0 +1,150 @@
+rules:
+  - id: core-0036-spring-boot-actuator
+    name: Spring Boot Actuator
+    category: framework
+    vendor: VMware
+    priority: 90
+    tags: [spring, actuator, java]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: spring-actuator
+          request: {method: GET, path: /actuator}
+          matchers:
+            - type: json.key.exists
+              value: _links
+              weight: 50
+              evidence: Spring Boot Actuator links object
+            - type: body.contains
+              value: "/actuator/health"
+              weight: 40
+              evidence: Actuator health endpoint link
+    negative:
+      - type: body.contains
+        value: "Spring Boot Actuator documentation"
+        reason: Exclude documentation pages
+    metadata:
+      references: ["https://docs.spring.io/spring-boot/reference/actuator/index.html"]
+      confidence: high
+    examples:
+      positive:
+        - path: /actuator
+          body: '{"_links":{"health":{"href":"http://example/actuator/health"}}}'
+      negative:
+        - body: "Spring Boot Actuator documentation"
+
+
+  - id: core-0038-swagger-ui
+    name: Swagger UI
+    category: framework
+    vendor: SmartBear
+    priority: 80
+    tags: [swagger, openapi, api-docs]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: swagger-ui
+          request: {method: GET, path: /swagger-ui/}
+          matchers:
+            - type: body.contains
+              value: "swagger-ui-bundle.js"
+              weight: 50
+              evidence: Swagger UI bundle asset
+            - type: body.contains
+              value: "Swagger UI"
+              weight: 40
+              evidence: Swagger UI page marker
+    negative:
+      - type: body.contains
+        value: "Swagger UI documentation"
+        reason: Exclude documentation pages
+    metadata:
+      references: ["https://swagger.io/tools/swagger-ui/"]
+      confidence: high
+    examples:
+      positive:
+        - path: /swagger-ui/
+          body: "Swagger UI swagger-ui-bundle.js"
+      negative:
+        - body: "Swagger UI documentation"
+
+
+  - id: core-0039-openapi-json
+    name: OpenAPI JSON
+    category: framework
+    vendor: OpenAPI Initiative
+    priority: 80
+    tags: [openapi, api-docs, framework]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: openapi-json
+          request: {method: GET, path: /v3/api-docs}
+          matchers:
+            - type: json.key.exists
+              value: openapi
+              weight: 60
+              evidence: OpenAPI version key
+            - type: json.key.exists
+              value: paths
+              weight: 30
+              evidence: OpenAPI paths key
+    negative:
+      - type: body.contains
+        value: "OpenAPI documentation"
+        reason: Exclude documentation pages
+    metadata:
+      references: ["https://www.openapis.org/"]
+      confidence: high
+    examples:
+      positive:
+        - path: /v3/api-docs
+          body: '{"openapi":"3.0.1","paths":{"/api":{}}}'
+      negative:
+        - body: "OpenAPI documentation"
+
+
+  - id: core-0045-fastapi-docs
+    name: FastAPI Docs
+    category: framework
+    vendor: FastAPI
+    priority: 80
+    tags: [fastapi, openapi, api-docs]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: fastapi-docs
+          request: {method: GET, path: /docs}
+          matchers:
+            - type: title.contains
+              value: FastAPI
+              weight: 45
+              evidence: FastAPI docs title
+            - type: body.contains
+              value: "swagger-ui-bundle.js"
+              weight: 35
+              evidence: FastAPI Swagger UI asset
+            - type: body.contains
+              value: "openapi.json"
+              weight: 30
+              evidence: FastAPI OpenAPI endpoint reference
+    negative:
+      - type: body.contains
+        value: "FastAPI documentation"
+        reason: Exclude documentation pages
+    metadata:
+      references: ["https://fastapi.tiangolo.com/"]
+      confidence: medium
+    examples:
+      positive:
+        - path: /docs
+          title: FastAPI
+          body: "swagger-ui-bundle.js openapi.json"
+      negative:
+        - body: "FastAPI documentation"
+
+

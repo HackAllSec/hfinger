@@ -1,0 +1,641 @@
+rules:
+  - id: core-0002-argo-cd
+    name: Argo CD
+    category: devops
+    vendor: Argo Project
+    priority: 90
+    tags: [argocd, gitops, kubernetes]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: argo-cd
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: Argo CD
+              weight: 50
+              evidence: Argo CD page title
+            - type: body.contains
+              value: "argo-cd"
+              weight: 50
+              evidence: Argo CD frontend marker
+    negative:
+      - type: body.contains
+        value: "Argo CD documentation"
+        reason: Exclude documentation pages
+    metadata:
+      references: ["https://argo-cd.readthedocs.io/"]
+      confidence: high
+    examples:
+      positive:
+        - title: Argo CD
+          body: '<div id="argo-cd"></div>'
+      negative:
+        - body: "Argo CD documentation"
+
+
+  - id: core-0003-harbor
+    name: Harbor
+    category: devops
+    vendor: Harbor
+    priority: 90
+    tags: [harbor, registry, container]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: harbor
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: Harbor
+              weight: 45
+              evidence: Harbor page title
+            - type: body.contains
+              value: "harbor.app"
+              weight: 55
+              evidence: Harbor Angular app marker
+    negative:
+      - type: body.contains
+        value: "Harbor documentation"
+        reason: Exclude documentation pages
+    metadata:
+      references: ["https://goharbor.io/"]
+      confidence: high
+    examples:
+      positive:
+        - title: Harbor
+          body: '<harbor-app></harbor-app><script src="harbor.app.js"></script>'
+      negative:
+        - body: "Harbor documentation"
+
+
+  - id: core-0004-jenkins
+    name: Jenkins
+    category: devops
+    vendor: Jenkins
+    priority: 90
+    tags: [jenkins, ci, devops]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: jenkins
+          request: {method: GET, path: /}
+          matchers:
+            - type: header.contains
+              key: X-Jenkins
+              weight: 60
+              evidence: X-Jenkins response header
+            - type: body.contains
+              value: "jenkins.model.Jenkins"
+              weight: 40
+              evidence: Jenkins frontend initialization marker
+    negative:
+      - type: body.contains
+        value: "Jenkins user handbook"
+        reason: Exclude documentation pages
+    extract:
+      - name: version
+        type: header
+        key: X-Jenkins
+        regex: '([0-9]+(?:\.[0-9]+)+)'
+        group: 1
+        message: Jenkins version from X-Jenkins header
+    metadata:
+      references: ["https://www.jenkins.io/"]
+      confidence: high
+    examples:
+      positive:
+        - headers: {X-Jenkins: "2.440.1"}
+          body: "window.app = jenkins.model.Jenkins"
+      negative:
+        - body: "Jenkins user handbook"
+
+
+  - id: core-0005-gitlab
+    name: GitLab
+    category: devops
+    vendor: GitLab
+    priority: 90
+    tags: [gitlab, scm, devops]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: gitlab
+          request: {method: GET, path: /}
+          matchers:
+            - type: body.contains
+              value: "assets/gitlab_logo"
+              weight: 50
+              evidence: GitLab logo asset marker
+            - type: body.contains
+              value: "gon.gitlab_url"
+              weight: 50
+              evidence: GitLab runtime config marker
+    negative:
+      - type: body.contains
+        value: "GitLab documentation"
+        reason: Exclude documentation pages
+    metadata:
+      references: ["https://about.gitlab.com/"]
+      confidence: high
+    examples:
+      positive:
+        - body: 'assets/gitlab_logo gon.gitlab_url="https://gitlab.example"'
+      negative:
+        - body: "GitLab documentation"
+
+
+  - id: core-0006-sonarqube
+    name: SonarQube
+    category: devops
+    vendor: SonarSource
+    priority: 85
+    tags: [sonarqube, code-quality, devops]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: sonarqube
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: SonarQube
+              weight: 45
+              evidence: SonarQube page title
+            - type: body.contains
+              value: "sonarqube"
+              weight: 40
+              evidence: SonarQube frontend marker
+            - type: header.contains
+              key: X-SonarQube-Version
+              weight: 40
+              evidence: SonarQube version header
+    negative:
+      - type: body.contains
+        value: "SonarQube documentation"
+        reason: Exclude documentation pages
+    extract:
+      - name: version
+        type: header
+        key: X-SonarQube-Version
+        regex: '([0-9]+(?:\.[0-9]+)+)'
+        group: 1
+        message: SonarQube version from response header
+    metadata:
+      references: ["https://www.sonarsource.com/products/sonarqube/"]
+      confidence: high
+    examples:
+      positive:
+        - title: SonarQube
+          headers: {X-SonarQube-Version: "10.4"}
+          body: "sonarqube"
+      negative:
+        - body: "SonarQube documentation"
+
+
+  - id: core-0007-nexus-repository
+    name: Nexus Repository Manager
+    category: devops
+    vendor: Sonatype
+    priority: 85
+    tags: [nexus, repository, devops]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: nexus
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: Nexus Repository Manager
+              weight: 60
+              evidence: Nexus Repository Manager title
+            - type: body.contains
+              value: "Sonatype Nexus"
+              weight: 40
+              evidence: Sonatype Nexus body marker
+    negative:
+      - type: body.contains
+        value: "Nexus Repository Manager documentation"
+        reason: Exclude documentation pages
+    metadata:
+      references: ["https://www.sonatype.com/products/sonatype-nexus-repository"]
+      confidence: high
+    examples:
+      positive:
+        - title: Nexus Repository Manager
+          body: "Sonatype Nexus"
+      negative:
+        - body: "Nexus Repository Manager documentation"
+
+
+  - id: core-0029-apache-airflow
+    name: Apache Airflow
+    category: devops
+    vendor: Apache
+    priority: 80
+    tags: [airflow, workflow, devops]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: apache-airflow
+          request: {method: GET, path: /}
+          matchers:
+            - type: body.contains
+              value: "<span>airflow</span>"
+              weight: 50
+              evidence: Airflow UI marker
+            - type: body.contains
+              value: "/static/pin_100.png"
+              weight: 40
+              evidence: Airflow static asset
+    negative:
+      - type: body.contains
+        value: "Apache Airflow documentation"
+        reason: Exclude documentation pages
+    metadata:
+      references: ["https://airflow.apache.org/"]
+      confidence: high
+    examples:
+      positive:
+        - body: '<span>airflow</span><img src="/static/pin_100.png">'
+      negative:
+        - body: "Apache Airflow documentation"
+
+
+  - id: core-0037-spring-boot-admin
+    name: Spring Boot Admin
+    category: devops
+    vendor: Codecentric
+    priority: 80
+    tags: [spring, admin, java]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: spring-boot-admin
+          request: {method: GET, path: /}
+          matchers:
+            - type: body.contains
+              value: "assets/img/icon-spring-boot-admin.svg"
+              weight: 60
+              evidence: Spring Boot Admin icon asset
+            - type: title.contains
+              value: Spring Boot Admin
+              weight: 40
+              evidence: Spring Boot Admin title
+    negative:
+      - type: body.contains
+        value: "Spring Boot Admin documentation"
+        reason: Exclude documentation pages
+    metadata:
+      references: ["https://github.com/codecentric/spring-boot-admin"]
+      confidence: high
+    examples:
+      positive:
+        - title: Spring Boot Admin
+          body: "assets/img/icon-spring-boot-admin.svg"
+      negative:
+        - body: "Spring Boot Admin documentation"
+
+
+  - id: core-0051-portainer
+    name: Portainer
+    category: devops
+    vendor: Portainer
+    priority: 85
+    tags: [portainer, docker, container]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: portainer
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: Portainer
+              weight: 55
+              evidence: Portainer page title
+            - type: body.contains
+              value: "portainer"
+              weight: 45
+              evidence: Portainer frontend marker
+    negative: [{type: body.contains, value: "Portainer documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://www.portainer.io/"], confidence: high}
+    examples:
+      positive: [{title: Portainer, body: "portainer"}]
+      negative: [{body: "Portainer documentation"}]
+
+
+  - id: core-0056-gitea
+    name: Gitea
+    category: devops
+    vendor: Gitea
+    priority: 80
+    tags: [gitea, git, scm]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: gitea
+          request: {method: GET, path: /}
+          matchers:
+            - type: body.contains
+              value: "content=\"Gitea"
+              weight: 55
+              evidence: Gitea meta generator
+            - type: cookie.contains
+              value: "i_like_gitea"
+              weight: 45
+              evidence: Gitea session cookie
+    negative: [{type: body.contains, value: "Gitea documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://about.gitea.com/"], confidence: high}
+    examples:
+      positive: [{headers: {Set-Cookie: "i_like_gitea=abc"}, body: 'content="Gitea - Git with a cup of tea"'}]
+      negative: [{body: "Gitea documentation"}]
+
+
+  - id: core-0057-gogs
+    name: Gogs
+    category: devops
+    vendor: Gogs
+    priority: 75
+    tags: [gogs, git, scm]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: gogs
+          request: {method: GET, path: /}
+          matchers:
+            - type: body.contains
+              value: "content=\"Gogs"
+              weight: 55
+              evidence: Gogs meta generator
+            - type: cookie.contains
+              value: "i_like_gogs"
+              weight: 45
+              evidence: Gogs session cookie
+    negative: [{type: body.contains, value: "Gogs documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://gogs.io/"], confidence: high}
+    examples:
+      positive: [{headers: {Set-Cookie: "i_like_gogs=abc"}, body: 'content="Gogs"'}]
+      negative: [{body: "Gogs documentation"}]
+
+
+  - id: core-0058-drone-ci
+    name: Drone CI
+    category: devops
+    vendor: Drone
+    priority: 75
+    tags: [drone, ci, devops]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: drone-ci
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: Drone
+              weight: 50
+              evidence: Drone CI title
+            - type: body.contains
+              value: "drone-ui"
+              weight: 50
+              evidence: Drone UI marker
+    negative: [{type: body.contains, value: "Drone documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://www.drone.io/"], confidence: high}
+    examples:
+      positive: [{title: Drone, body: "drone-ui"}]
+      negative: [{body: "Drone documentation"}]
+
+
+  - id: core-0059-teamcity
+    name: TeamCity
+    category: devops
+    vendor: JetBrains
+    priority: 80
+    tags: [teamcity, ci, devops]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: teamcity
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: TeamCity
+              weight: 50
+              evidence: TeamCity title
+            - type: cookie.contains
+              value: "TCSESSIONID"
+              weight: 50
+              evidence: TeamCity session cookie
+    negative: [{type: body.contains, value: "TeamCity documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://www.jetbrains.com/teamcity/"], confidence: high}
+    examples:
+      positive: [{title: TeamCity, headers: {Set-Cookie: "TCSESSIONID=abc"}}]
+      negative: [{body: "TeamCity documentation"}]
+
+
+  - id: core-0060-rundeck
+    name: Rundeck
+    category: devops
+    vendor: Rundeck
+    priority: 75
+    tags: [rundeck, automation, devops]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: rundeck
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: Rundeck
+              weight: 55
+              evidence: Rundeck title
+            - type: cookie.contains
+              value: "rundeck"
+              weight: 45
+              evidence: Rundeck cookie marker
+    negative: [{type: body.contains, value: "Rundeck documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://www.rundeck.com/open-source"], confidence: high}
+    examples:
+      positive: [{title: Rundeck, headers: {Set-Cookie: "rundeck=abc"}}]
+      negative: [{body: "Rundeck documentation"}]
+
+
+  - id: core-0061-awx
+    name: AWX
+    category: devops
+    vendor: Ansible
+    priority: 80
+    tags: [awx, ansible, automation]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: awx
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: AWX Login
+              weight: 55
+              evidence: AWX title
+            - type: body.contains
+              value: "awx-logo"
+              weight: 45
+              evidence: AWX frontend marker
+    negative: [{type: body.contains, value: "AWX documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://github.com/ansible/awx"], confidence: high}
+    examples:
+      positive: [{title: AWX Login, body: "awx-logo"}]
+      negative: [{body: "AWX documentation"}]
+
+
+  - id: core-0097-artifactory
+    name: JFrog Artifactory
+    category: devops
+    vendor: JFrog
+    priority: 85
+    tags: [artifactory, repository, devops]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: artifactory
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: Artifactory
+              weight: 55
+              evidence: Artifactory title
+            - type: body.contains
+              value: "jfrog"
+              weight: 45
+              evidence: JFrog frontend marker
+    negative: [{type: body.contains, value: "Artifactory documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://jfrog.com/artifactory/"], confidence: high}
+    examples:
+      positive: [{title: Artifactory, body: "jfrog"}]
+      negative: [{body: "Artifactory documentation"}]
+
+
+  - id: core-0100-proxmox-ve
+    name: Proxmox VE
+    category: devops
+    vendor: Proxmox
+    priority: 85
+    tags: [proxmox, virtualization, management]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: proxmox-ve
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: Proxmox
+              weight: 50
+              evidence: Proxmox title
+            - type: body.contains
+              value: "PVE.window.LoginWindow"
+              weight: 50
+              evidence: Proxmox VE login window marker
+    negative: [{type: body.contains, value: "Proxmox documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://www.proxmox.com/en/proxmox-virtual-environment"], confidence: high}
+    examples:
+      positive: [{title: Proxmox, body: "PVE.window.LoginWindow"}]
+      negative: [{body: "Proxmox documentation"}]
+
+
+  - id: core-0101-cockpit
+    name: Cockpit
+    category: devops
+    vendor: Cockpit Project
+    priority: 75
+    tags: [cockpit, linux, management]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: cockpit
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: Cockpit
+              weight: 55
+              evidence: Cockpit title
+            - type: body.contains
+              value: "cockpit/static"
+              weight: 45
+              evidence: Cockpit static asset marker
+    negative: [{type: body.contains, value: "Cockpit documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://cockpit-project.org/"], confidence: high}
+    examples:
+      positive: [{title: Cockpit, body: "cockpit/static"}]
+      negative: [{body: "Cockpit documentation"}]
+
+
+  - id: core-0109-prefect-server
+    name: Prefect Server
+    category: devops
+    vendor: Prefect
+    priority: 75
+    tags: [prefect, workflow, orchestration]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: prefect-server
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: Prefect
+              weight: 55
+              evidence: Prefect title
+            - type: body.contains
+              value: "prefect"
+              weight: 45
+              evidence: Prefect frontend marker
+    negative: [{type: body.contains, value: "Prefect documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://www.prefect.io/"], confidence: high}
+    examples:
+      positive: [{title: Prefect, body: "prefect"}]
+      negative: [{body: "Prefect documentation"}]
+
+
+  - id: core-0110-temporal-web
+    name: Temporal Web
+    category: devops
+    vendor: Temporal
+    priority: 75
+    tags: [temporal, workflow, orchestration]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: temporal-web
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: Temporal
+              weight: 55
+              evidence: Temporal Web title
+            - type: body.contains
+              value: "temporal"
+              weight: 45
+              evidence: Temporal frontend marker
+    negative: [{type: body.contains, value: "Temporal documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://temporal.io/"], confidence: high}
+    examples:
+      positive: [{title: Temporal, body: "temporal"}]
+      negative: [{body: "Temporal documentation"}]
+

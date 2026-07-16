@@ -1,0 +1,345 @@
+rules:
+  - id: core-0012-apache-apisix
+    name: Apache APISIX
+    category: api-gateway
+    vendor: Apache
+    priority: 90
+    tags: [apisix, api-gateway, gateway]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: apisix
+          request: {method: GET, path: /}
+          matchers:
+            - type: header.contains
+              key: Server
+              value: APISIX
+              weight: 60
+              evidence: APISIX Server header
+            - type: body.contains
+              value: "Apache APISIX"
+              weight: 40
+              evidence: Apache APISIX body marker
+    negative:
+      - type: body.contains
+        value: "Apache APISIX documentation"
+        reason: Exclude documentation pages
+    extract:
+      - name: version
+        type: header
+        key: Server
+        regex: 'APISIX/?([0-9]+(?:\.[0-9]+)+)'
+        group: 1
+        message: APISIX version from Server header
+    metadata:
+      references: ["https://apisix.apache.org/"]
+      confidence: high
+    examples:
+      positive:
+        - headers: {Server: "APISIX/3.9"}
+          body: "Apache APISIX"
+      negative:
+        - body: "Apache APISIX documentation"
+
+
+  - id: core-0013-kong-gateway
+    name: Kong Gateway
+    category: api-gateway
+    vendor: Kong
+    priority: 90
+    tags: [kong, api-gateway, gateway]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: kong
+          request: {method: GET, path: /}
+          matchers:
+            - type: header.contains
+              key: Server
+              value: kong
+              weight: 60
+              evidence: Kong Server header
+            - type: header.contains
+              key: Via
+              value: kong
+              weight: 40
+              evidence: Kong Via header
+    negative:
+      - type: body.contains
+        value: "Kong documentation"
+        reason: Exclude documentation pages
+    extract:
+      - name: version
+        type: header
+        key: Server
+        regex: 'kong/?([0-9]+(?:\.[0-9]+)+)'
+        group: 1
+        message: Kong version from Server header
+    metadata:
+      references: ["https://konghq.com/products/kong-gateway"]
+      confidence: high
+    examples:
+      positive:
+        - headers: {Server: "kong/3.6", Via: "kong/3.6"}
+      negative:
+        - body: "Kong documentation"
+
+
+  - id: core-0014-traefik
+    name: Traefik
+    category: api-gateway
+    vendor: Traefik Labs
+    priority: 85
+    tags: [traefik, reverse-proxy, gateway]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: traefik
+          request: {method: GET, path: /dashboard/}
+          matchers:
+            - type: title.contains
+              value: Traefik
+              weight: 50
+              evidence: Traefik dashboard title
+            - type: body.contains
+              value: "traefik"
+              weight: 40
+              evidence: Traefik frontend marker
+    negative:
+      - type: body.contains
+        value: "Traefik documentation"
+        reason: Exclude documentation pages
+    metadata:
+      references: ["https://traefik.io/traefik/"]
+      confidence: high
+    examples:
+      positive:
+        - path: /dashboard/
+          title: Traefik
+          body: "traefik"
+      negative:
+        - body: "Traefik documentation"
+
+
+  - id: core-0015-envoy
+    name: Envoy Proxy
+    category: api-gateway
+    vendor: Envoy
+    priority: 85
+    tags: [envoy, proxy, gateway]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: envoy
+          request: {method: GET, path: /}
+          matchers:
+            - type: header.contains
+              key: Server
+              value: envoy
+              weight: 70
+              evidence: Envoy Server header
+            - type: header.contains
+              key: X-Envoy-Upstream-Service-Time
+              weight: 40
+              evidence: Envoy upstream timing header
+    negative:
+      - type: body.contains
+        value: "Envoy documentation"
+        reason: Exclude documentation pages
+    extract:
+      - name: version
+        type: header
+        key: Server
+        regex: 'envoy/?([0-9]+(?:\.[0-9]+)+)'
+        group: 1
+        message: Envoy version from Server header
+    metadata:
+      references: ["https://www.envoyproxy.io/"]
+      confidence: high
+    examples:
+      positive:
+        - headers: {Server: "envoy", X-Envoy-Upstream-Service-Time: "12"}
+      negative:
+        - body: "Envoy documentation"
+
+
+  - id: core-0018-spring-cloud-gateway
+    name: Spring Cloud Gateway
+    category: api-gateway
+    vendor: VMware
+    priority: 80
+    tags: [spring, gateway, java]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: spring-cloud-gateway
+          request: {method: GET, path: /actuator/gateway/routes}
+          matchers:
+            - type: json.key.exists
+              value: route_id
+              weight: 50
+              evidence: Spring Cloud Gateway route_id key
+            - type: body.contains
+              value: "predicates"
+              weight: 30
+              evidence: Gateway route predicates in actuator response
+    negative:
+      - type: body.contains
+        value: "Spring Cloud Gateway documentation"
+        reason: Exclude documentation pages
+    metadata:
+      references: ["https://spring.io/projects/spring-cloud-gateway"]
+      confidence: medium
+    examples:
+      positive:
+        - path: /actuator/gateway/routes
+          body: '[{"route_id":"demo","predicates":["Path=/api/**"]}]'
+      negative:
+        - body: "Spring Cloud Gateway documentation"
+
+
+  - id: core-0073-hasura
+    name: Hasura Console
+    category: api-gateway
+    vendor: Hasura
+    priority: 80
+    tags: [hasura, graphql, api]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: hasura
+          request: {method: GET, path: /console}
+          matchers:
+            - type: title.contains
+              value: Hasura
+              weight: 55
+              evidence: Hasura Console title
+            - type: body.contains
+              value: "hasura"
+              weight: 45
+              evidence: Hasura frontend marker
+    negative: [{type: body.contains, value: "Hasura documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://hasura.io/"], confidence: high}
+    examples:
+      positive: [{path: /console, title: Hasura, body: "hasura"}]
+      negative: [{body: "Hasura documentation"}]
+
+
+  - id: core-0087-haproxy-stats
+    name: HAProxy Stats
+    category: api-gateway
+    vendor: HAProxy
+    priority: 75
+    tags: [haproxy, load-balancer, stats]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: haproxy-stats
+          request: {method: GET, path: "/haproxy?stats"}
+          matchers:
+            - type: title.contains
+              value: HAProxy Statistics
+              weight: 55
+              evidence: HAProxy stats title
+            - type: body.contains
+              value: "Statistics Report for HAProxy"
+              weight: 45
+              evidence: HAProxy stats report marker
+    negative: [{type: body.contains, value: "HAProxy documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://www.haproxy.org/"], confidence: high}
+    examples:
+      positive: [{path: "/haproxy?stats", title: HAProxy Statistics, body: "Statistics Report for HAProxy"}]
+      negative: [{body: "HAProxy documentation"}]
+
+
+  - id: core-0088-nginx-proxy-manager
+    name: Nginx Proxy Manager
+    category: api-gateway
+    vendor: Nginx Proxy Manager
+    priority: 75
+    tags: [nginx, proxy, gateway]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: nginx-proxy-manager
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: Nginx Proxy Manager
+              weight: 55
+              evidence: Nginx Proxy Manager title
+            - type: body.contains
+              value: "nginx-proxy-manager"
+              weight: 45
+              evidence: Nginx Proxy Manager frontend marker
+    negative: [{type: body.contains, value: "Nginx Proxy Manager documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://nginxproxymanager.com/"], confidence: high}
+    examples:
+      positive: [{title: Nginx Proxy Manager, body: "nginx-proxy-manager"}]
+      negative: [{body: "Nginx Proxy Manager documentation"}]
+
+
+  - id: core-0098-tyk-dashboard
+    name: Tyk Dashboard
+    category: api-gateway
+    vendor: Tyk
+    priority: 80
+    tags: [tyk, api-gateway, dashboard]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: tyk-dashboard
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: Tyk Dashboard
+              weight: 55
+              evidence: Tyk Dashboard title
+            - type: body.contains
+              value: "tyk-dashboard"
+              weight: 45
+              evidence: Tyk frontend marker
+    negative: [{type: body.contains, value: "Tyk documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://tyk.io/"], confidence: high}
+    examples:
+      positive: [{title: Tyk Dashboard, body: "tyk-dashboard"}]
+      negative: [{body: "Tyk documentation"}]
+
+
+  - id: core-0099-krakend
+    name: KrakenD
+    category: api-gateway
+    vendor: KrakenD
+    priority: 75
+    tags: [krakend, api-gateway, gateway]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: krakend
+          request: {method: GET, path: /__health}
+          matchers:
+            - type: body.contains
+              value: "krakend"
+              weight: 55
+              evidence: KrakenD health response marker
+            - type: header.contains
+              key: X-Krakend
+              weight: 45
+              evidence: KrakenD response header
+    negative: [{type: body.contains, value: "KrakenD documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://www.krakend.io/"], confidence: medium}
+    examples:
+      positive: [{path: /__health, headers: {X-Krakend: "Version 2"}, body: "krakend"}]
+      negative: [{body: "KrakenD documentation"}]
+
+

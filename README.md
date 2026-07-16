@@ -22,6 +22,17 @@ HFinger 的目标不是替代漏洞扫描器，而是成为安全测试链路中
 - 输出证据和置信度，便于复核和自动化编排
 - 主动识别与被动代理识别同时覆盖
 
+## 差异化能力
+
+HFinger 的设计重点是把服务端指纹识别做成可治理、可复核、可集成的基础能力：
+
+- 规则源统一：内置规则全部位于 `rulesets/core/*.yaml`，发布时内置到二进制；外置规则也使用同一 YAML 语义模型。
+- 证据化输出：结果不仅给出产品名，还包含 category、version、confidence 和 evidence，方便人工复核与平台编排。
+- 主动与被动结合：既支持批量主动识别，也支持作为 HTTP/HTTPS 代理被动沉淀访问过程中的服务端组件。
+- 国密场景覆盖：主动侧支持标准 TLS 与 TLCP auto/gm/std 模式，被动 MITM 可在同一监听端口自适应标准 TLS / TLCP 握手。
+- 规则质量治理：提供 `rules lint/test/stats`，支持正负样本回放，便于持续压低误报和漏报。
+- 工具链集成：支持 httpx JSONL 输入、JSON/JSONL/XLSX 输出，可接入 ASM、Burp Suite、mitmproxy、nuclei、SIEM 等安全流程。
+
 ## 主要能力
 
 - 服务端技术栈识别
@@ -51,7 +62,7 @@ HFinger 的目标不是替代漏洞扫描器，而是成为安全测试链路中
 ├── models/              主动扫描与被动代理识别逻辑
 ├── output/              JSON、XML、XLSX 输出
 ├── rules/               内置规则、YAML 加载、规则校验与匹配引擎
-├── rulesets/            高质量 YAML 规则源，发布时内置到二进制
+├── rulesets/            内置 YAML 规则源，发布时内置到二进制
 ├── utils/               HTTP、证书、升级等通用能力
 ├── README.md            中文说明文档
 └── README_EN.md         英文说明文档
@@ -313,7 +324,14 @@ HFinger 内置核心规则，不再依赖运行时 JSON 指纹文件。用户和
 
 ### 规则治理与内置规则源
 
-所有内置规则源统一放在 `rulesets/core/*.yaml`，发布时随二进制内置，不需要用户携带旧版 `finger.json`。其中 `legacy-migrated.yaml` 存放已迁移的存量规则，`server-high-value.yaml` 存放持续治理的高价值服务端规则。
+所有内置规则源统一放在 `rulesets/core/*.yaml`，发布时随二进制内置，不需要用户携带旧版 `finger.json`。
+
+内置规则按质量层级和组件类别拆分：
+
+- `legacy-migrated.yaml`：已迁移的存量规则，保留覆盖面，后续逐步治理质量。
+- `curated-*.yaml`：持续治理的高价值服务端规则，按 `curated-devops.yaml`、`curated-api-gateway.yaml`、`curated-ai-service.yaml` 等类别拆分。
+
+这种拆分只影响维护方式，不影响运行时性能；程序启动后会统一加载并编译为内存中的运行时规则结构。
 
 治理原则：
 

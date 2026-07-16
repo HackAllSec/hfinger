@@ -1,0 +1,389 @@
+rules:
+  - id: core-0024-elasticsearch
+    name: Elasticsearch
+    category: database
+    vendor: Elastic
+    priority: 85
+    tags: [elasticsearch, search, database]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: elasticsearch
+          request: {method: GET, path: /}
+          matchers:
+            - type: json.key.exists
+              value: cluster_name
+              weight: 45
+              evidence: Elasticsearch cluster_name key
+            - type: json.key.exists
+              value: tagline
+              weight: 45
+              evidence: Elasticsearch tagline key
+            - type: body.contains
+              value: "You Know, for Search"
+              weight: 30
+              evidence: Elasticsearch tagline
+    negative:
+      - type: body.contains
+        value: "Elasticsearch documentation"
+        reason: Exclude documentation pages
+    metadata:
+      references: ["https://www.elastic.co/elasticsearch"]
+      confidence: high
+    examples:
+      positive:
+        - body: '{"cluster_name":"elastic","tagline":"You Know, for Search"}'
+      negative:
+        - body: "Elasticsearch documentation"
+
+
+  - id: core-0025-clickhouse-http
+    name: ClickHouse HTTP
+    category: database
+    vendor: ClickHouse
+    priority: 80
+    tags: [clickhouse, database, http]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: clickhouse
+          request: {method: GET, path: /ping}
+          matchers:
+            - type: body.regex
+              value: '(?m)^Ok\.$'
+              weight: 50
+              evidence: ClickHouse /ping response
+            - type: header.contains
+              key: X-ClickHouse-Server-Display-Name
+              weight: 50
+              evidence: ClickHouse server display header
+    negative:
+      - type: body.contains
+        value: "ClickHouse documentation"
+        reason: Exclude documentation pages
+    metadata:
+      references: ["https://clickhouse.com/docs/interfaces/http"]
+      confidence: medium
+    examples:
+      positive:
+        - path: /ping
+          headers: {X-ClickHouse-Server-Display-Name: "clickhouse"}
+          body: "Ok."
+      negative:
+        - body: "ClickHouse documentation"
+
+
+  - id: core-0026-apache-druid
+    name: Apache Druid
+    category: database
+    vendor: Apache
+    priority: 80
+    tags: [druid, analytics, database]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: apache-druid
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: Apache Druid
+              weight: 55
+              evidence: Apache Druid console title
+            - type: body.contains
+              value: "druid-console"
+              weight: 45
+              evidence: Druid console frontend marker
+    negative:
+      - type: body.contains
+        value: "Apache Druid documentation"
+        reason: Exclude documentation pages
+    metadata:
+      references: ["https://druid.apache.org/"]
+      confidence: high
+    examples:
+      positive:
+        - title: Apache Druid
+          body: "druid-console"
+      negative:
+        - body: "Apache Druid documentation"
+
+
+  - id: core-0033-redisinsight
+    name: RedisInsight
+    category: database
+    vendor: Redis
+    priority: 75
+    tags: [redis, redisinsight, database]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: redisinsight
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: RedisInsight
+              weight: 60
+              evidence: RedisInsight title
+            - type: body.contains
+              value: "redisinsight"
+              weight: 40
+              evidence: RedisInsight frontend marker
+    negative:
+      - type: body.contains
+        value: "RedisInsight documentation"
+        reason: Exclude documentation pages
+    metadata:
+      references: ["https://redis.io/insight/"]
+      confidence: high
+    examples:
+      positive:
+        - title: RedisInsight
+          body: "redisinsight"
+      negative:
+        - body: "RedisInsight documentation"
+
+
+  - id: core-0034-mongo-express
+    name: mongo-express
+    category: database
+    vendor: mongo-express
+    priority: 75
+    tags: [mongodb, mongo-express, database]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: mongo-express
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: mongo-express
+              weight: 60
+              evidence: mongo-express title
+            - type: body.contains
+              value: "mongo-express"
+              weight: 40
+              evidence: mongo-express body marker
+    negative:
+      - type: body.contains
+        value: "mongo-express documentation"
+        reason: Exclude documentation pages
+    metadata:
+      references: ["https://github.com/mongo-express/mongo-express"]
+      confidence: high
+    examples:
+      positive:
+        - title: mongo-express
+          body: "mongo-express"
+      negative:
+        - body: "mongo-express documentation"
+
+
+  - id: core-0035-phpmyadmin
+    name: phpMyAdmin
+    category: database
+    vendor: phpMyAdmin
+    priority: 75
+    tags: [mysql, phpmyadmin, database]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: phpmyadmin
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: phpMyAdmin
+              weight: 55
+              evidence: phpMyAdmin title
+            - type: cookie.contains
+              value: "phpMyAdmin"
+              weight: 45
+              evidence: phpMyAdmin session cookie
+    negative:
+      - type: body.contains
+        value: "phpMyAdmin documentation"
+        reason: Exclude documentation pages
+    metadata:
+      references: ["https://www.phpmyadmin.net/"]
+      confidence: high
+    examples:
+      positive:
+        - title: phpMyAdmin
+          headers: {Set-Cookie: "phpMyAdmin=abc"}
+      negative:
+        - body: "phpMyAdmin documentation"
+
+
+  - id: core-0083-qdrant-dashboard
+    name: Qdrant Dashboard
+    category: database
+    vendor: Qdrant
+    priority: 75
+    tags: [vector-database, qdrant, ai]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: qdrant-dashboard
+          request: {method: GET, path: /dashboard}
+          matchers:
+            - type: title.contains
+              value: Qdrant
+              weight: 55
+              evidence: Qdrant dashboard title
+            - type: body.contains
+              value: "qdrant"
+              weight: 45
+              evidence: Qdrant frontend marker
+    negative: [{type: body.contains, value: "Qdrant documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://qdrant.tech/"], confidence: high}
+    examples:
+      positive: [{path: /dashboard, title: Qdrant, body: "qdrant"}]
+      negative: [{body: "Qdrant documentation"}]
+
+
+  - id: core-0084-milvus
+    name: Milvus
+    category: database
+    vendor: Zilliz
+    priority: 75
+    tags: [vector-database, milvus, ai]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: milvus
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: Milvus
+              weight: 55
+              evidence: Milvus title
+            - type: body.contains
+              value: "milvus"
+              weight: 45
+              evidence: Milvus body marker
+    negative: [{type: body.contains, value: "Milvus documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://milvus.io/"], confidence: high}
+    examples:
+      positive: [{title: Milvus, body: "milvus"}]
+      negative: [{body: "Milvus documentation"}]
+
+
+  - id: core-0085-weaviate
+    name: Weaviate
+    category: database
+    vendor: Weaviate
+    priority: 75
+    tags: [vector-database, weaviate, ai]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: weaviate
+          request: {method: GET, path: /v1/meta}
+          matchers:
+            - type: json.key.exists
+              value: version
+              weight: 45
+              evidence: Weaviate meta version key
+            - type: body.contains
+              value: "weaviate"
+              weight: 45
+              evidence: Weaviate meta response marker
+    negative: [{type: body.contains, value: "Weaviate documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://weaviate.io/developers/weaviate/api/rest"], confidence: medium}
+    examples:
+      positive: [{path: /v1/meta, body: '{"hostname":"weaviate","version":"1.25.0"}'}]
+      negative: [{body: "Weaviate documentation"}]
+
+
+  - id: core-0089-pgadmin
+    name: pgAdmin
+    category: database
+    vendor: pgAdmin
+    priority: 75
+    tags: [postgresql, pgadmin, database]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: pgadmin
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: pgAdmin
+              weight: 55
+              evidence: pgAdmin title
+            - type: body.contains
+              value: "pgadmin"
+              weight: 45
+              evidence: pgAdmin frontend marker
+    negative: [{type: body.contains, value: "pgAdmin documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://www.pgadmin.org/"], confidence: high}
+    examples:
+      positive: [{title: pgAdmin, body: "pgadmin"}]
+      negative: [{body: "pgAdmin documentation"}]
+
+
+  - id: core-0090-adminer
+    name: Adminer
+    category: database
+    vendor: Adminer
+    priority: 75
+    tags: [database, adminer, db-admin]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: adminer
+          request: {method: GET, path: /}
+          matchers:
+            - type: title.contains
+              value: Adminer
+              weight: 55
+              evidence: Adminer title
+            - type: body.contains
+              value: "https://www.adminer.org/"
+              weight: 45
+              evidence: Adminer footer link marker
+    negative: [{type: body.contains, value: "Adminer documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://www.adminer.org/"], confidence: high}
+    examples:
+      positive: [{title: Adminer, body: "https://www.adminer.org/"}]
+      negative: [{body: "Adminer documentation"}]
+
+
+  - id: core-0092-apache-solr
+    name: Apache Solr
+    category: database
+    vendor: Apache
+    priority: 85
+    tags: [solr, search, database]
+    match:
+      strategy: score
+      threshold: 80
+      probes:
+        - id: apache-solr
+          request: {method: GET, path: /solr/}
+          matchers:
+            - type: title.contains
+              value: Solr Admin
+              weight: 55
+              evidence: Solr Admin title
+            - type: body.contains
+              value: "app_config.solr_path"
+              weight: 45
+              evidence: Solr admin runtime config
+    negative: [{type: body.contains, value: "Apache Solr documentation", reason: Exclude documentation pages}]
+    metadata: {references: ["https://solr.apache.org/"], confidence: high}
+    examples:
+      positive: [{path: /solr/, title: Solr Admin, body: "app_config.solr_path"}]
+      negative: [{body: "Apache Solr documentation"}]
+
+
