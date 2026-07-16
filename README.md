@@ -196,30 +196,132 @@ hfinger passive query passive.jsonl --cms Cloudflare --min-confidence 80
 
 ## 与其他工具联动
 
-HFinger 可以作为信息收集链路中的指纹识别层，与常见安全工具组合使用。
+HFinger 可以作为信息收集链路中的指纹识别层，与常见安全工具组合使用。推荐让探活、路径发现、漏洞验证工具各司其职，HFinger 负责把目标转化为可编排的服务端技术栈结果。
+
+### httpx / 自研探活 -> HFinger
 
 ```bash
-# httpx / 自研探活结果 -> HFinger 批量识别
+# 1. 子域或资产列表先交给 httpx 探活
 httpx -l domains.txt -silent > alive.txt
-hfinger -f alive.txt -j hfinger.json
 
-# HFinger 使用上游代理，联动 Burp Suite / mitmproxy / Clash 等代理链路
-hfinger -l 127.0.0.1:8888 -p http://127.0.0.1:8080 --passive-store passive.jsonl
-
-# 将 HFinger JSON 结果交给后续脚本、资产平台或漏洞验证流程
+# 2. HFinger 对存活 URL 做证据化指纹识别
 hfinger -f alive.txt -j hfinger.json
 ```
 
-典型组合方式：
+如果已有自研 ASM 或资产平台，只需要导出一行一个 URL 的文件即可：
 
-- 探活工具负责发现可访问目标，HFinger 负责识别服务端技术栈
-- Burp Suite、浏览器或移动端调试代理流量进入 HFinger，被动沉淀指纹结果
-- 自定义脚本读取 JSON/JSONL 输出，根据 `cms`、`category`、`confidence` 和 `evidence` 做后续编排
-- nuclei、xray 等验证工具可根据 HFinger 识别出的组件选择更精准的模板或插件
+```bash
+hfinger -f asm-alive-urls.txt -j hfinger.json -s hfinger.xlsx
+```
+
+### katana / ffuf -> HFinger 多路径识别
+
+当首页没有足够特征时，可以先发现更多路径，再交给 HFinger 识别：
+
+```bash
+# katana 发现路径
+katana -list alive.txt -silent -d 2 > discovered-urls.txt
+
+# ffuf 或其它目录发现工具也可以输出 URL 列表
+ffuf -w paths.txt -u https://www.example.com/FUZZ -mc all -of csv -o ffuf.csv
+
+# 将发现到的 URL 交给 HFinger 批量识别
+hfinger -f discovered-urls.txt -j hfinger-paths.json
+```
+
+### Burp Suite / mitmproxy -> HFinger 被动识别
+
+HFinger 可以放在浏览器、Burp Suite 或 mitmproxy 的代理链路中，边浏览边沉淀服务端指纹。
+
+```bash
+# HFinger 监听本地代理，并把流量继续转发到 Burp Suite
+hfinger -l 127.0.0.1:8888 -p http://127.0.0.1:8080 --passive-store passive.jsonl
+
+# 浏览器代理设置为 127.0.0.1:8888
+# Burp Suite 监听 127.0.0.1:8080
+```
+
+查询被动识别结果：
+
+```bash
+hfinger passive query passive.jsonl
+hfinger passive query passive.jsonl --category api-gateway --min-confidence 80
+hfinger passive query passive.jsonl --cms Nacos
+```
+
+### HFinger -> nuclei 精准验证
+
+HFinger 不替代漏洞扫描器。更推荐先识别组件，再按组件选择 nuclei 模板，减少无效请求和误报。
+
+```bash
+# 识别资产
+hfinger -f alive.txt -j hfinger.json
+
+# 示例：提取 Nacos 目标，再运行 Nacos 相关 nuclei 模板
+jq -r '.[] | select(.cms | test("Nacos"; "i")) | .url' hfinger.json > nacos-targets.txt
+nuclei -l nacos-targets.txt -tags nacos -o nuclei-nacos.txt
+
+# 示例：提取 Swagger / OpenAPI 目标
+jq -r '.[] | select(.cms | test("Swagger|OpenAPI"; "i")) | .url' hfinger.json > api-docs-targets.txt
+nuclei -l api-docs-targets.txt -tags exposure,swagger,openapi -o nuclei-api-docs.txt
+```
+
+### nmap / 协议扫描 -> HFinger Web 侧补充
+
+nmap 适合识别端口和协议 banner，HFinger 适合识别 HTTP/HTTPS 服务端组件。可以先用 nmap 找 Web 端口，再整理为 URL：
+
+```bash
+nmap -p 80,443,8080,8443,9000,9090 -oX nmap.xml 192.168.1.0/24
+
+# 将 nmap 结果转换为 URL 列表后交给 HFinger
+hfinger -f web-urls-from-nmap.txt -j hfinger-nmap.json
+```
+
+### JSON / JSONL -> ASM、SIEM 和自定义脚本
+
+HFinger 的 JSON 输出适合进入资产平台、SIEM 或自定义编排脚本。建议下游重点消费这些字段：
+
+- `url`：目标地址
+- `cms`：命中的产品或组件
+- `category`：组件类别
+- `confidence`：置信度
+- `evidence`：命中证据
+- `server` / `title` / `statuscode`：辅助上下文
+
+示例：
+
+```bash
+# 高置信度组件清单
+jq -r '.[] | select(.confidence >= 80) | [.url, .cms, .category, .confidence] | @tsv' hfinger.json
+
+# 按组件类型拆分任务
+jq -r '.[] | select(.category == "waf" or .category == "cdn") | .url' hfinger.json > edge-assets.txt
+jq -r '.[] | select(.category == "middleware") | .url' hfinger.json > middleware-assets.txt
+```
 
 ## 规则管理
 
 HFinger 内置核心规则，不再依赖运行时 JSON 指纹文件。用户和社区规则使用 YAML 编写。
+
+### 规则治理与旧规则迁移
+
+历史内置规则已经随二进制发布，不需要用户携带旧版 `finger.json`。后续规则治理不建议继续维护旧 JSON 格式，而应统一迁移到新的 YAML 语义模型，再在发布时编译进二进制。
+
+迁移原则：
+
+- 旧规则不保留旧格式，统一转换为 `id/name/category/vendor/tags/match/negative/metadata/examples`
+- 原有弱证据规则可以迁移，但默认标记为较低质量，后续逐步补充负向 matcher 和样本
+- 新增核心规则必须提供明确 evidence、分类、引用和正负样本
+- 社区贡献优先提交 YAML 规则，内置规则由维护者审核后随版本发布
+- 规则质量以 `rules lint` 和 `rules test` 为准，不以规则数量作为主要指标
+
+推荐的新规则分类包括：
+
+```text
+cms, oa, middleware, api-gateway, devops, cloud-native,
+observability, storage, database, security-device, cdn, waf,
+framework, ai-service, iot-device
+```
 
 校验外置规则：
 

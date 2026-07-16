@@ -196,30 +196,132 @@ hfinger passive query passive.jsonl --cms Cloudflare --min-confidence 80
 
 ## Toolchain Integration
 
-HFinger can be used as the fingerprinting layer in a broader reconnaissance and validation workflow.
+HFinger can be used as the fingerprinting layer in a broader reconnaissance and validation workflow. Liveness discovery, path discovery, and vulnerability validation should stay in their own tools, while HFinger turns targets into evidence-backed server-side technology results.
+
+### httpx / Internal Liveness Tools -> HFinger
 
 ```bash
-# httpx or another liveness tool -> HFinger batch fingerprinting
+# 1. Discover reachable URLs with httpx
 httpx -l domains.txt -silent > alive.txt
-hfinger -f alive.txt -j hfinger.json
 
-# Chain HFinger with Burp Suite / mitmproxy / Clash through an upstream proxy
-hfinger -l 127.0.0.1:8888 -p http://127.0.0.1:8080 --passive-store passive.jsonl
-
-# Feed JSON output to scripts, asset platforms, or validation pipelines
+# 2. Run evidence-backed fingerprinting with HFinger
 hfinger -f alive.txt -j hfinger.json
 ```
 
-Typical integrations:
+If an internal ASM or asset platform already exports reachable URLs, use one URL per line:
 
-- Liveness tools discover reachable targets, then HFinger identifies server-side stacks
-- Browser, Burp Suite, or mobile debugging traffic flows through HFinger for passive fingerprinting
-- Scripts consume JSON/JSONL output and branch on `cms`, `category`, `confidence`, and `evidence`
-- nuclei, xray, or other validators can use HFinger results to select more precise templates or plugins
+```bash
+hfinger -f asm-alive-urls.txt -j hfinger.json -s hfinger.xlsx
+```
+
+### katana / ffuf -> HFinger Multi-Path Fingerprinting
+
+When the homepage does not expose enough evidence, discover more paths first and then feed them to HFinger:
+
+```bash
+# Discover paths with katana
+katana -list alive.txt -silent -d 2 > discovered-urls.txt
+
+# ffuf or another content discovery tool can also produce URL lists
+ffuf -w paths.txt -u https://www.example.com/FUZZ -mc all -of csv -o ffuf.csv
+
+# Fingerprint discovered URLs
+hfinger -f discovered-urls.txt -j hfinger-paths.json
+```
+
+### Burp Suite / mitmproxy -> Passive HFinger
+
+HFinger can sit in the proxy chain with a browser, Burp Suite, or mitmproxy and passively collect server-side fingerprints.
+
+```bash
+# HFinger listens locally and forwards traffic to Burp Suite
+hfinger -l 127.0.0.1:8888 -p http://127.0.0.1:8080 --passive-store passive.jsonl
+
+# Configure the browser proxy as 127.0.0.1:8888
+# Configure Burp Suite to listen on 127.0.0.1:8080
+```
+
+Query passive results:
+
+```bash
+hfinger passive query passive.jsonl
+hfinger passive query passive.jsonl --category api-gateway --min-confidence 80
+hfinger passive query passive.jsonl --cms Nacos
+```
+
+### HFinger -> Precise nuclei Validation
+
+HFinger does not replace vulnerability scanners. A better workflow is to identify components first, then select nuclei templates based on the detected products.
+
+```bash
+# Fingerprint assets
+hfinger -f alive.txt -j hfinger.json
+
+# Example: extract Nacos targets and run Nacos-related nuclei templates
+jq -r '.[] | select(.cms | test("Nacos"; "i")) | .url' hfinger.json > nacos-targets.txt
+nuclei -l nacos-targets.txt -tags nacos -o nuclei-nacos.txt
+
+# Example: extract Swagger / OpenAPI targets
+jq -r '.[] | select(.cms | test("Swagger|OpenAPI"; "i")) | .url' hfinger.json > api-docs-targets.txt
+nuclei -l api-docs-targets.txt -tags exposure,swagger,openapi -o nuclei-api-docs.txt
+```
+
+### nmap / Protocol Scanning -> HFinger Web Context
+
+nmap is useful for ports and protocol banners. HFinger is useful for HTTP/HTTPS server-side components. Use nmap to find Web ports, then convert them to URLs:
+
+```bash
+nmap -p 80,443,8080,8443,9000,9090 -oX nmap.xml 192.168.1.0/24
+
+# Convert nmap results to URL lists, then fingerprint them
+hfinger -f web-urls-from-nmap.txt -j hfinger-nmap.json
+```
+
+### JSON / JSONL -> ASM, SIEM, and Custom Scripts
+
+HFinger JSON output is suitable for asset platforms, SIEM pipelines, and custom orchestration scripts. Downstream tools should primarily consume:
+
+- `url`: target URL
+- `cms`: matched product or component
+- `category`: component category
+- `confidence`: confidence score
+- `evidence`: matched evidence
+- `server` / `title` / `statuscode`: supporting context
+
+Examples:
+
+```bash
+# High-confidence component inventory
+jq -r '.[] | select(.confidence >= 80) | [.url, .cms, .category, .confidence] | @tsv' hfinger.json
+
+# Split tasks by component type
+jq -r '.[] | select(.category == "waf" or .category == "cdn") | .url' hfinger.json > edge-assets.txt
+jq -r '.[] | select(.category == "middleware") | .url' hfinger.json > middleware-assets.txt
+```
 
 ## Rule Management
 
 HFinger uses built-in core rules and no longer depends on a runtime JSON fingerprint file. User and community rules are written in YAML.
+
+### Rule Governance and Legacy Rule Migration
+
+Historical built-in rules are shipped with the binary, so users no longer need the old runtime `finger.json`. Future rule governance should not keep maintaining the old JSON format. Instead, legacy rules should be migrated into the new YAML semantic model and compiled into release binaries.
+
+Migration principles:
+
+- Do not keep legacy rules in the old format; migrate them to `id/name/category/vendor/tags/match/negative/metadata/examples`
+- Weak legacy evidence can be migrated, but should be marked as lower quality until negative matchers and fixtures are added
+- New core rules must include clear evidence text, category, references, and positive/negative examples
+- Community contributions should use YAML; maintainers decide whether reviewed rules are promoted into built-in releases
+- Rule quality should be measured by `rules lint` and `rules test`, not by rule count alone
+
+Recommended rule categories:
+
+```text
+cms, oa, middleware, api-gateway, devops, cloud-native,
+observability, storage, database, security-device, cdn, waf,
+framework, ai-service, iot-device
+```
 
 Validate external rules:
 
