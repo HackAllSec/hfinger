@@ -3,7 +3,6 @@ package utils
 import (
 	"bytes"
 	"crypto/tls"
-	"encoding/base64"
 	"fmt"
 	"math/rand"
 	"net"
@@ -114,7 +113,7 @@ func createHybridTransport(proxy string) *http.Transport {
 			if err == nil {
 				return conn, nil
 			}
-			if strings.Contains(err.Error(), "tls: protocol version not supported") {
+			if shouldFallbackToGMTLS(err) {
 				return connectWithGMTLS(network, addr)
 			}
 			return nil, err
@@ -135,20 +134,32 @@ func createHybridTransport(proxy string) *http.Transport {
 			return transport
 		}
 
-		user := proxyURL.User.Username()
-		password, hasPassword := proxyURL.User.Password()
-		if hasPassword {
-			encodedAuth := base64.StdEncoding.EncodeToString([]byte(user + ":" + password))
-			transport.Proxy = func(req *http.Request) (*url.URL, error) {
-				req.Header.Add("Proxy-Authorization", "Basic "+encodedAuth)
-				return proxyURL, nil
-			}
-		} else {
-			transport.Proxy = http.ProxyURL(proxyURL)
-		}
+		transport.Proxy = http.ProxyURL(proxyURL)
 	}
 
 	return transport
+}
+
+func shouldFallbackToGMTLS(err error) bool {
+	if err == nil {
+		return false
+	}
+	errText := strings.ToLower(err.Error())
+	gmTLSSignals := []string{
+		"tls: protocol version not supported",
+		"tls: handshake failure",
+		"tls: illegal parameter",
+		"tls: first record does not look like a tls handshake",
+		"remote error: tls: handshake failure",
+		"remote error: tls: protocol version not supported",
+		"unsupported protocol",
+	}
+	for _, signal := range gmTLSSignals {
+		if strings.Contains(errText, signal) {
+			return true
+		}
+	}
+	return false
 }
 
 func connectWithGMTLS(network, addr string) (net.Conn, error) {

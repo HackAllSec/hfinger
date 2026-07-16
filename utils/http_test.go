@@ -2,6 +2,7 @@ package utils
 
 import (
 	"bytes"
+	"fmt"
 	"net/http"
 	"testing"
 )
@@ -179,5 +180,63 @@ func TestSetRequestHeaders_BitsUT(t *testing.T) {
 
 	if got := reqWithHeader.Header.Get("Content-Type"); got != "application/json" {
 		t.Fatalf("Content-Type = %q, want custom content type", got)
+	}
+}
+
+func TestShouldFallbackToGMTLS(t *testing.T) {
+	tests := []struct {
+		name string
+		err  error
+		want bool
+	}{
+		{
+			name: "protocol version not supported",
+			err:  fmt.Errorf("tls: protocol version not supported"),
+			want: true,
+		},
+		{
+			name: "handshake failure",
+			err:  fmt.Errorf("remote error: tls: handshake failure"),
+			want: true,
+		},
+		{
+			name: "network error should not fallback",
+			err:  fmt.Errorf("dial tcp 127.0.0.1:443: connect: connection refused"),
+			want: false,
+		},
+		{
+			name: "nil error",
+			want: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := shouldFallbackToGMTLS(tt.err); got != tt.want {
+				t.Fatalf("shouldFallbackToGMTLS() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestCreateHybridTransportProxyCredentialsDoNotMutateRequest(t *testing.T) {
+	transport := createHybridTransport("http://user:pass@127.0.0.1:8080")
+	if transport.Proxy == nil {
+		t.Fatalf("createHybridTransport() did not configure proxy")
+	}
+
+	req, err := http.NewRequest(http.MethodGet, "https://example.com", nil)
+	if err != nil {
+		t.Fatalf("NewRequest() unexpected error: %v", err)
+	}
+	proxyURL, err := transport.Proxy(req)
+	if err != nil {
+		t.Fatalf("Proxy() unexpected error: %v", err)
+	}
+	if proxyURL == nil || proxyURL.User == nil {
+		t.Fatalf("Proxy() did not preserve proxy credentials")
+	}
+	if got := req.Header.Get("Proxy-Authorization"); got != "" {
+		t.Fatalf("Proxy() mutated request Proxy-Authorization header: %q", got)
 	}
 }

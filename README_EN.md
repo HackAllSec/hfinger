@@ -38,14 +38,6 @@ Compared with simple keyword-based fingerprinting, HFinger focuses on:
 - Proxy, random User-Agent, and multithreading support
 - Rule validation commands for custom rule maintenance
 
-## Relationship With WhatWeb / xapp
-
-WhatWeb is a mature web technology identification tool. Public materials describe 1800+ plugins, configurable aggression levels, and rich log formats. HFinger currently ships with 1621 built-in rules. The rule volume is close, while HFinger focuses more on server-side stack identification, evidence-based output, YAML rule governance, and passive proxy JSONL storage/query.
-
-xapp is closer to common web fingerprinting scenarios in the Chinese security ecosystem. HFinger keeps regular Web/CMS detection while extending the rule model toward API gateways, middleware, WAF/CDN, load balancers, TLS certificates, JSON error semantics, and other server-side signals.
-
-HFinger is MIT-licensed, while WhatWeb is GPL-2.0. This project does not directly copy WhatWeb plugins or rules. The recommended way to close coverage gaps is to rewrite HFinger YAML rules from public vendor documentation, authorized samples, and observed response evidence, then validate them with `rules lint/test`.
-
 ## Project Structure
 
 ```text
