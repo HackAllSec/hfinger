@@ -96,11 +96,66 @@ func TestActiveHTTPProbesReturnsCopy(t *testing.T) {
 		t.Fatalf("ActiveHTTPProbes() returned no probes")
 	}
 	original := probes[0].ID
+	originalPath := probes[0].Request.Path
+	originalMatcherCount := len(probes[0].Matchers)
 	probes[0].ID = "mutated-by-test"
+	probes[0].Request.Path = "/mutated-by-test"
+	if probes[0].Request.Headers != nil {
+		probes[0].Request.Headers["X-Mutated-By-Test"] = "1"
+	}
+	probes[0].Matchers = append(probes[0].Matchers, Matcher{Type: "body.contains", Value: "mutated-by-test"})
 
 	next := ActiveHTTPProbes()
 	if next[0].ID != original {
 		t.Fatalf("ActiveHTTPProbes() returned mutable plan: got %q, want %q", next[0].ID, original)
+	}
+	if next[0].Request.Path != originalPath {
+		t.Fatalf("ActiveHTTPProbes() path was mutated: got %q, want %q", next[0].Request.Path, originalPath)
+	}
+	if len(next[0].Matchers) != originalMatcherCount {
+		t.Fatalf("ActiveHTTPProbes() matchers were mutated: got %d, want %d", len(next[0].Matchers), originalMatcherCount)
+	}
+	if next[0].Request.Headers != nil {
+		if _, ok := next[0].Request.Headers["X-Mutated-By-Test"]; ok {
+			t.Fatalf("ActiveHTTPProbes() headers were mutated")
+		}
+	}
+}
+
+func TestBuildHTTPProbePlanClonesNestedFields(t *testing.T) {
+	plan := buildHTTPProbePlan([]Rule{{
+		ID:       "probe-clone",
+		Name:     "Probe Clone",
+		Category: "test",
+		Match: MatchBlock{Probes: []Probe{{
+			ID: "custom",
+			Request: Request{
+				Path:        "/custom",
+				Headers:     map[string]string{"X-Test": "1"},
+				AllowStatus: []int{200, 401},
+			},
+			Matchers: []Matcher{{
+				Type:   "body.contains",
+				Values: []string{"alpha", "beta"},
+			}},
+		}}},
+	}})
+	if len(plan) != 1 {
+		t.Fatalf("buildHTTPProbePlan() length = %d, want 1", len(plan))
+	}
+	cloned := cloneProbes(plan)
+	cloned[0].Request.Headers["X-Test"] = "mutated"
+	cloned[0].Request.AllowStatus[0] = 500
+	cloned[0].Matchers[0].Values[0] = "mutated"
+
+	if plan[0].Request.Headers["X-Test"] != "1" {
+		t.Fatalf("probe header was mutated")
+	}
+	if plan[0].Request.AllowStatus[0] != 200 {
+		t.Fatalf("probe allow status was mutated")
+	}
+	if plan[0].Matchers[0].Values[0] != "alpha" {
+		t.Fatalf("probe matcher values were mutated")
 	}
 }
 

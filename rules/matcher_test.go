@@ -223,3 +223,54 @@ func TestMatchResponseJSONAndTLS(t *testing.T) {
 		t.Fatalf("tls.alpn.contains expected match")
 	}
 }
+
+func TestMatchResponseHeaderIndexPreservesSemantics(t *testing.T) {
+	response := Response{
+		URL: "https://example.com/",
+		Header: http.Header{
+			"Server":          {"nginx"},
+			"X-Empty-Header":  {},
+			"X-Powered-By":    {"PHP/8.2"},
+			"X-Custom-Header": {"Alpha Beta"},
+		},
+	}
+
+	tests := []Matcher{
+		{Type: "header.contains", Key: "server", Value: "nginx"},
+		{Type: "header.contains", Key: "X-Empty-Header"},
+		{Type: "header.contains", Value: "X-Powered-By"},
+		{Type: "header.regex", Key: "x-custom-header", Value: `Alpha\s+Beta`},
+	}
+	for _, matcher := range tests {
+		if _, ok := MatchResponse(response, matcher); !ok {
+			t.Fatalf("%s key=%q value=%v expected match", matcher.Type, matcher.Key, matcher.Value)
+		}
+	}
+}
+
+func TestCompiledRulesForCachesByRuleContent(t *testing.T) {
+	ruleSet := []Rule{{
+		ID:       "cache-test",
+		Name:     "Cache Test",
+		Category: "test",
+		Match: MatchBlock{Matchers: []Matcher{
+			{Type: "body.contains", Value: "cache-signal"},
+		}},
+	}}
+	sameContent := append([]Rule{}, ruleSet...)
+
+	first := compiledRulesFor(ruleSet)
+	second := compiledRulesFor(sameContent)
+	if len(first) == 0 || len(second) == 0 {
+		t.Fatalf("compiledRulesFor() returned empty result")
+	}
+	if &first[0] != &second[0] {
+		t.Fatalf("compiledRulesFor() did not reuse cache for equivalent rules")
+	}
+
+	sameContent[0].Match.Matchers[0].Value = "changed-signal"
+	changed := compiledRulesFor(sameContent)
+	if got := changed[0].probes[0].matchers[0].values[0]; got != "changed-signal" {
+		t.Fatalf("compiledRulesFor() returned stale cache, matcher value = %q", got)
+	}
+}

@@ -12,7 +12,7 @@ func MatchRules(responses []Response, ruleSet []Rule) []MatchResult {
 	if compiled, ok := activeCompiledFor(ruleSet); ok {
 		return matchCompiledRules(responses, compiled)
 	}
-	return matchCompiledRules(responses, compileRules(ruleSet))
+	return matchCompiledRules(responses, compiledRulesFor(ruleSet))
 }
 
 func MatchRule(responses []Response, rule Rule) MatchResult {

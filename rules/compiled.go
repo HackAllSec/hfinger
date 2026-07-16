@@ -1,12 +1,16 @@
 package rules
 
 import (
+	"encoding/binary"
 	"encoding/json"
 	"fmt"
+	"hash/maphash"
 	"net/http"
 	"regexp"
+	"sort"
 	"strconv"
 	"strings"
+	"sync"
 
 	"github.com/twmb/murmur3"
 )
@@ -47,6 +51,8 @@ type preparedResponse struct {
 	body      string
 	lowerBody string
 
+	header preparedHeaderIndex
+
 	title      string
 	lowerTitle string
 
@@ -71,6 +77,26 @@ type preparedResponse struct {
 	jsonOK     bool
 	jsonData   interface{}
 }
+
+type preparedHeaderIndex struct {
+	keys            []string
+	lowerKeys       []string
+	lines           []string
+	lowerLines      []string
+	linesByKey      map[string][]string
+	lowerLinesByKey map[string][]string
+}
+
+var compiledRuleSetCache = struct {
+	sync.RWMutex
+	byContent map[string][]compiledRule
+}{
+	byContent: make(map[string][]compiledRule),
+}
+
+var compiledRuleSetCacheSeed = maphash.MakeSeed()
+
+const compiledRuleSetCacheLimit = 32
 
 func compileRules(ruleSet []Rule) []compiledRule {
 	compiled := make([]compiledRule, 0, len(ruleSet))
@@ -171,6 +197,137 @@ func activeCompiledFor(ruleSet []Rule) ([]compiledRule, bool) {
 	return activeCompiledRules, &ruleSet[0] == &activeRules[0]
 }
 
+func compiledRulesFor(ruleSet []Rule) []compiledRule {
+	if len(ruleSet) == 0 {
+		return nil
+	}
+	key := ruleSetCacheKey(ruleSet)
+	compiledRuleSetCache.RLock()
+	compiled, ok := compiledRuleSetCache.byContent[key]
+	compiledRuleSetCache.RUnlock()
+	if ok {
+		return compiled
+	}
+
+	compiled = compileRules(ruleSet)
+	compiledRuleSetCache.Lock()
+	if cached, ok := compiledRuleSetCache.byContent[key]; ok {
+		compiledRuleSetCache.Unlock()
+		return cached
+	}
+	if len(compiledRuleSetCache.byContent) >= compiledRuleSetCacheLimit {
+		compiledRuleSetCache.byContent = make(map[string][]compiledRule)
+	}
+	compiledRuleSetCache.byContent[key] = compiled
+	compiledRuleSetCache.Unlock()
+	return compiled
+}
+
+func ruleSetCacheKey(ruleSet []Rule) string {
+	var hash maphash.Hash
+	hash.SetSeed(compiledRuleSetCacheSeed)
+	writeCacheInt(&hash, len(ruleSet))
+	for _, rule := range ruleSet {
+		writeCachePart(&hash, rule.ID)
+		writeCachePart(&hash, rule.Name)
+		writeCachePart(&hash, rule.Category)
+		writeCachePart(&hash, rule.Match.Strategy)
+		writeCacheInt(&hash, rule.Match.Threshold)
+		for _, matcher := range rule.Negative {
+			writeMatcherCacheKey(&hash, matcher)
+		}
+		if len(rule.Match.Probes) > 0 {
+			for _, probe := range rule.Match.Probes {
+				writeProbeCacheKey(&hash, probe)
+			}
+		} else {
+			writeCachePart(&hash, "default")
+			for _, matcher := range rule.Match.Matchers {
+				writeMatcherCacheKey(&hash, matcher)
+			}
+		}
+		for _, extractor := range rule.Extract {
+			writeCachePart(&hash, extractor.Name)
+			writeCachePart(&hash, extractor.Type)
+			writeCachePart(&hash, extractor.Key)
+			writeCachePart(&hash, extractor.Regex)
+			writeCacheInt(&hash, extractor.Group)
+		}
+	}
+	return strconv.FormatUint(hash.Sum64(), 16)
+}
+
+func writeProbeCacheKey(cacheHash *maphash.Hash, probe Probe) {
+	writeCachePart(cacheHash, probe.ID)
+	writeCachePart(cacheHash, probe.Request.Method)
+	writeCachePart(cacheHash, probe.Request.Path)
+	headerKeys := make([]string, 0, len(probe.Request.Headers))
+	for key := range probe.Request.Headers {
+		headerKeys = append(headerKeys, key)
+	}
+	sort.Strings(headerKeys)
+	for _, key := range headerKeys {
+		writeCachePart(cacheHash, key)
+		writeCachePart(cacheHash, probe.Request.Headers[key])
+	}
+	for _, matcher := range probe.Matchers {
+		writeMatcherCacheKey(cacheHash, matcher)
+	}
+}
+
+func writeMatcherCacheKey(cacheHash *maphash.Hash, matcher Matcher) {
+	writeCachePart(cacheHash, matcher.Type)
+	writeCachePart(cacheHash, matcher.Key)
+	writeMatcherValueCacheKey(cacheHash, matcher.Value)
+	for _, value := range matcher.Values {
+		writeCachePart(cacheHash, value)
+	}
+	writeCacheInt(cacheHash, matcher.Weight)
+	if matcher.CaseSensitive == nil {
+		writeCachePart(cacheHash, "case:nil")
+	} else {
+		writeCachePart(cacheHash, strconv.FormatBool(*matcher.CaseSensitive))
+	}
+}
+
+func writeMatcherValueCacheKey(cacheHash *maphash.Hash, value interface{}) {
+	switch typed := value.(type) {
+	case nil:
+		writeCachePart(cacheHash, "nil")
+	case string:
+		writeCachePart(cacheHash, typed)
+	case int:
+		writeCacheInt(cacheHash, typed)
+	case int64:
+		writeCacheInt64(cacheHash, typed)
+	case float64:
+		writeCacheInt64(cacheHash, int64(typed))
+	case []interface{}:
+		writeCacheInt(cacheHash, len(typed))
+		for _, item := range typed {
+			writeMatcherValueCacheKey(cacheHash, item)
+		}
+	default:
+		writeCachePart(cacheHash, fmt.Sprint(typed))
+	}
+}
+
+func writeCachePart(cacheHash *maphash.Hash, value string) {
+	writeCacheInt(cacheHash, len(value))
+	cacheHash.WriteString(value)
+	_, _ = cacheHash.Write([]byte{0})
+}
+
+func writeCacheInt(cacheHash *maphash.Hash, value int) {
+	writeCacheInt64(cacheHash, int64(value))
+}
+
+func writeCacheInt64(cacheHash *maphash.Hash, value int64) {
+	var buffer [8]byte
+	binary.LittleEndian.PutUint64(buffer[:], uint64(value))
+	_, _ = cacheHash.Write(buffer[:])
+}
+
 func prepareResponses(responses []Response) []*preparedResponse {
 	prepared := make([]*preparedResponse, 0, len(responses))
 	for _, response := range responses {
@@ -186,6 +343,8 @@ func prepareResponses(responses []Response) []*preparedResponse {
 
 			body:      body,
 			lowerBody: strings.ToLower(body),
+
+			header: buildPreparedHeaderIndex(response.Header),
 
 			title:      response.Title,
 			lowerTitle: strings.ToLower(response.Title),
@@ -209,6 +368,30 @@ func prepareResponses(responses []Response) []*preparedResponse {
 		})
 	}
 	return prepared
+}
+
+func buildPreparedHeaderIndex(headers http.Header) preparedHeaderIndex {
+	index := preparedHeaderIndex{
+		linesByKey:      make(map[string][]string, len(headers)),
+		lowerLinesByKey: make(map[string][]string, len(headers)),
+	}
+	for key, values := range headers {
+		lowerKey := strings.ToLower(key)
+		index.keys = append(index.keys, key)
+		index.lowerKeys = append(index.lowerKeys, lowerKey)
+		if len(values) == 0 {
+			continue
+		}
+		for _, value := range values {
+			line := key + ": " + value
+			lowerLine := strings.ToLower(line)
+			index.lines = append(index.lines, line)
+			index.lowerLines = append(index.lowerLines, lowerLine)
+			index.linesByKey[lowerKey] = append(index.linesByKey[lowerKey], line)
+			index.lowerLinesByKey[lowerKey] = append(index.lowerLinesByKey[lowerKey], lowerLine)
+		}
+	}
+	return index
 }
 
 func matchCompiledRules(responses []Response, compiled []compiledRule) []MatchResult {
@@ -311,15 +494,15 @@ func matchPreparedResponse(response *preparedResponse, matcher compiledMatcher) 
 	case "body.regex":
 		return matchPreparedRegex("body", matcher, response.body, response.response.URL)
 	case "header.contains":
-		return matchPreparedHeaderContains(response.response.Header, matcher, response.response.URL)
+		return matchPreparedHeaderContains(response.header, matcher, response.response.URL)
 	case "header.regex":
-		return matchPreparedHeaderRegex(response.response.Header, matcher, response.response.URL)
+		return matchPreparedHeaderRegex(response.header, matcher, response.response.URL)
 	case "title.contains":
 		return matchPreparedText("title", matcher, response.title, response.lowerTitle, response.response.URL)
 	case "cookie.contains":
 		cookieMatcher := matcher
 		cookieMatcher.matcher.Key = "Set-Cookie"
-		return matchPreparedHeaderContains(response.response.Header, cookieMatcher, response.response.URL)
+		return matchPreparedHeaderContains(response.header, cookieMatcher, response.response.URL)
 	case "status.eq", "status.in":
 		if _, ok := matcher.statusCodes[response.response.StatusCode]; ok {
 			return evidence("status", matcher.matcher, strconv.Itoa(response.response.StatusCode), response.response.URL), true
@@ -389,38 +572,52 @@ func matchPreparedRegex(source string, matcher compiledMatcher, target string, r
 	return Evidence{}, false
 }
 
-func matchPreparedHeaderContains(headers http.Header, matcher compiledMatcher, responseURL string) (Evidence, bool) {
-	for key, headerValues := range headers {
-		if matcher.matcher.Key != "" && !strings.EqualFold(key, matcher.matcher.Key) {
-			continue
-		}
-		if matcher.matcher.Key != "" && len(matcher.values) == 0 {
-			return evidence("header", matcher.matcher, key, responseURL), true
-		}
-		for _, headerValue := range headerValues {
-			target := key + ": " + headerValue
-			if ev, ok := matchPreparedText("header", matcher, target, strings.ToLower(target), responseURL); ok {
-				return ev, true
+func matchPreparedHeaderContains(headers preparedHeaderIndex, matcher compiledMatcher, responseURL string) (Evidence, bool) {
+	if matcher.matcher.Key != "" {
+		lowerKey := strings.ToLower(matcher.matcher.Key)
+		if len(matcher.values) == 0 {
+			for i, key := range headers.keys {
+				if headers.lowerKeys[i] == lowerKey {
+					return evidence("header", matcher.matcher, key, responseURL), true
+				}
 			}
+			return Evidence{}, false
 		}
-		if matcher.matcher.Key == "" {
-			if ev, ok := matchPreparedText("header", matcher, key, strings.ToLower(key), responseURL); ok {
-				return ev, true
-			}
+		return matchPreparedTextList("header", matcher, headers.linesByKey[lowerKey], headers.lowerLinesByKey[lowerKey], responseURL)
+	}
+
+	if ev, ok := matchPreparedTextList("header", matcher, headers.lines, headers.lowerLines, responseURL); ok {
+		return ev, true
+	}
+	for i, key := range headers.keys {
+		if ev, ok := matchPreparedText("header", matcher, key, headers.lowerKeys[i], responseURL); ok {
+			return ev, true
 		}
 	}
 	return Evidence{}, false
 }
 
-func matchPreparedHeaderRegex(headers http.Header, matcher compiledMatcher, responseURL string) (Evidence, bool) {
-	for key, headerValues := range headers {
-		if matcher.matcher.Key != "" && !strings.EqualFold(key, matcher.matcher.Key) {
-			continue
+func matchPreparedTextList(source string, matcher compiledMatcher, targets []string, lowerTargets []string, responseURL string) (Evidence, bool) {
+	for i, target := range targets {
+		lowerTarget := ""
+		if i < len(lowerTargets) {
+			lowerTarget = lowerTargets[i]
 		}
-		for _, headerValue := range headerValues {
-			if ev, ok := matchPreparedRegex("header", matcher, key+": "+headerValue, responseURL); ok {
-				return ev, true
-			}
+		if ev, ok := matchPreparedText(source, matcher, target, lowerTarget, responseURL); ok {
+			return ev, true
+		}
+	}
+	return Evidence{}, false
+}
+
+func matchPreparedHeaderRegex(headers preparedHeaderIndex, matcher compiledMatcher, responseURL string) (Evidence, bool) {
+	lines := headers.lines
+	if matcher.matcher.Key != "" {
+		lines = headers.linesByKey[strings.ToLower(matcher.matcher.Key)]
+	}
+	for _, line := range lines {
+		if ev, ok := matchPreparedRegex("header", matcher, line, responseURL); ok {
+			return ev, true
 		}
 	}
 	return Evidence{}, false
