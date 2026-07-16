@@ -20,17 +20,21 @@ import (
 )
 
 var (
-	httpClient          *http.Client
-	clientCertPath      string
-	clientKeyPath       string
-	gmClientCertPath    string
-	gmClientKeyPath     string
-	tlsMode             = TLSModeAuto
-	noScriptRe          = regexp.MustCompile(`(?is)<noscript[^>]*>.*?</noscript>`)
-	metaRefreshRe       = regexp.MustCompile(`(?is)<meta\b[^>]*http-equiv\s*=\s*['"]?refresh['"]?[^>]*>`)
-	jsLocationHrefRe    = regexp.MustCompile(`>window\.location\.href\s*=\s*['"]([^'"]+)['"]\s*;?\s*</script>`)
-	jsLocationReplaceRe = regexp.MustCompile(`>window\.location\.replace\s*$\s*['"]([^'"]+)['"]\s*$\s*;?\s*</script>`)
-	userAgents          = []string{
+	httpClient           *http.Client
+	clientCertPath       string
+	clientKeyPath        string
+	gmClientCertPath     string
+	gmClientKeyPath      string
+	gmClientSignCertPath string
+	gmClientSignKeyPath  string
+	gmClientEncCertPath  string
+	gmClientEncKeyPath   string
+	tlsMode              = TLSModeAuto
+	noScriptRe           = regexp.MustCompile(`(?is)<noscript[^>]*>.*?</noscript>`)
+	metaRefreshRe        = regexp.MustCompile(`(?is)<meta\b[^>]*http-equiv\s*=\s*['"]?refresh['"]?[^>]*>`)
+	jsLocationHrefRe     = regexp.MustCompile(`>window\.location\.href\s*=\s*['"]([^'"]+)['"]\s*;?\s*</script>`)
+	jsLocationReplaceRe  = regexp.MustCompile(`>window\.location\.replace\s*$\s*['"]([^'"]+)['"]\s*$\s*;?\s*</script>`)
+	userAgents           = []string{
 		// Desktop User Agents
 		"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
 		"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:89.0) Gecko/20100101 Firefox/89.0",
@@ -87,11 +91,15 @@ func RandomUserAgent() string {
 	return userAgents[rand.Intn(len(userAgents))]
 }
 
-func ConfigureClientCertificates(certPath, keyPath, gmCertPath, gmKeyPath string) {
+func ConfigureClientCertificates(certPath, keyPath, gmCertPath, gmKeyPath, gmSignCertPath, gmSignKeyPath, gmEncCertPath, gmEncKeyPath string) {
 	clientCertPath = certPath
 	clientKeyPath = keyPath
 	gmClientCertPath = gmCertPath
 	gmClientKeyPath = gmKeyPath
+	gmClientSignCertPath = gmSignCertPath
+	gmClientSignKeyPath = gmSignKeyPath
+	gmClientEncCertPath = gmEncCertPath
+	gmClientEncKeyPath = gmEncKeyPath
 }
 
 func ConfigureTLSMode(mode string) error {
@@ -114,7 +122,8 @@ func SupportedTLCPCipherSuites() []uint16 {
 func TLSCapabilities() []string {
 	return []string{
 		"standard TLS: Go crypto/tls",
-		"GM/TLS: TLCP via GoTLCP, ECC_SM4_GCM_SM3(0xe053), ECC_SM4_CBC_SM3(0xe013), ECDHE_SM4_GCM_SM3(0xe051), ECDHE_SM4_CBC_SM3(0xe011)",
+		"GM transport: TLCP via GoTLCP, ECC_SM4_GCM_SM3(0xe053), ECC_SM4_CBC_SM3(0xe013), ECDHE_SM4_GCM_SM3(0xe051), ECDHE_SM4_CBC_SM3(0xe011)",
+		"TLCP mutual authentication: single client certificate or explicit signing/encryption client certificates",
 		"active auto mode: standard TLS first, then TLCP fallback when the standard TLS error matches protocol-level GM/TLS signals",
 		"passive MITM: TLS/TLCP record-version routing during server-side handshake",
 	}
@@ -285,6 +294,20 @@ func loadClientCertificates() ([]tls.Certificate, []tlcp.Certificate, error) {
 	if (gmClientCertPath == "") != (gmClientKeyPath == "") {
 		return nil, nil, fmt.Errorf("--gm-client-cert and --gm-client-key must be used together")
 	}
+	if (gmClientSignCertPath == "") != (gmClientSignKeyPath == "") {
+		return nil, nil, fmt.Errorf("--gm-client-sign-cert and --gm-client-sign-key must be used together")
+	}
+	if (gmClientEncCertPath == "") != (gmClientEncKeyPath == "") {
+		return nil, nil, fmt.Errorf("--gm-client-enc-cert and --gm-client-enc-key must be used together")
+	}
+	hasLegacyGMCert := gmClientCertPath != ""
+	hasExplicitGMCerts := gmClientSignCertPath != "" || gmClientEncCertPath != ""
+	if hasLegacyGMCert && hasExplicitGMCerts {
+		return nil, nil, fmt.Errorf("--gm-client-cert/--gm-client-key cannot be used together with explicit TLCP sign/encryption client certificates")
+	}
+	if hasExplicitGMCerts && (gmClientSignCertPath == "" || gmClientEncCertPath == "") {
+		return nil, nil, fmt.Errorf("explicit TLCP client authentication requires both sign and encryption certificate pairs")
+	}
 
 	var stdCerts []tls.Certificate
 	var tlcpCerts []tlcp.Certificate
@@ -306,6 +329,17 @@ func loadClientCertificates() ([]tls.Certificate, []tlcp.Certificate, error) {
 			return nil, nil, fmt.Errorf("load TLCP client certificate: %w", err)
 		}
 		tlcpCerts = append(tlcpCerts, tlcpCert)
+	}
+	if gmClientSignCertPath != "" {
+		signCert, err := tlcp.LoadX509KeyPair(gmClientSignCertPath, gmClientSignKeyPath)
+		if err != nil {
+			return nil, nil, fmt.Errorf("load TLCP sign client certificate: %w", err)
+		}
+		encCert, err := tlcp.LoadX509KeyPair(gmClientEncCertPath, gmClientEncKeyPath)
+		if err != nil {
+			return nil, nil, fmt.Errorf("load TLCP encryption client certificate: %w", err)
+		}
+		tlcpCerts = append(tlcpCerts, signCert, encCert)
 	}
 	return stdCerts, tlcpCerts, nil
 }

@@ -34,8 +34,8 @@ Compared with simple keyword-based fingerprinting, HFinger focuses on:
 - JSON, XML, and XLSX output
 - Passive mode JSONL persistence and query
 - HTTP/1.1 and HTTP/2 support
-- Active requests with standard TLS, GM/TLS fallback, and client-certificate authentication
-- Passive MITM with adaptive standard TLS / GM/TLS handshakes
+- Active requests with standard TLS, TLCP fallback, and client-certificate authentication
+- Passive MITM with adaptive standard TLS / TLCP handshakes
 - Proxy, random User-Agent, and multithreading support
 - Rule validation commands for custom rule maintenance
 
@@ -140,11 +140,11 @@ Use an upstream proxy:
 hfinger -l 127.0.0.1:8888 -p http://127.0.0.1:7777 -s result.xlsx --passive-store passive.jsonl
 ```
 
-For HTTPS passive fingerprinting, import the generated certificates under the `certs` directory into your browser or system trust store. Standard TLS clients should trust `ca.crt`, while GM/TLS clients should trust `gm_ca.crt`.
+For HTTPS passive fingerprinting, import the generated certificates under the `certs` directory into your browser or system trust store. Standard TLS clients should trust `ca.crt`, while TLCP clients should trust `gm_ca.crt`.
 
-Note: passive mode uses an adaptive TLS/GM/TLS handshake. Standard TLS clients and GM/TLS clients are handled on the same listener and automatically select the matching handshake flow.
+Note: passive mode uses an adaptive TLS/TLCP handshake. Standard TLS clients and TLCP clients are handled on the same listener and automatically select the matching handshake flow.
 
-### Mutual TLS / GM/TLS
+### Mutual TLS / TLCP
 
 If a target requires a client certificate, provide the certificate and private key:
 
@@ -152,13 +152,21 @@ If a target requires a client certificate, provide the certificate and private k
 hfinger -u https://www.example.com --client-cert client.crt --client-key client.key
 ```
 
-For GM/TLS targets, provide a GM client certificate explicitly:
+For TLCP single-certificate mutual authentication, provide a GM client certificate explicitly:
 
 ```bash
 hfinger -u https://www.example.com --gm-client-cert gm-client.crt --gm-client-key gm-client.key
 ```
 
-When only `--client-cert/--client-key` is provided, HFinger uses it for standard TLS and also attempts to load it as a TLCP client certificate. If the GM/TLS client certificate is different, use `--gm-client-cert/--gm-client-key`.
+For TLCP dual-certificate mutual authentication, provide the signing and encryption client certificates explicitly:
+
+```bash
+hfinger -u https://www.example.com \
+  --gm-client-sign-cert gm-sign.crt --gm-client-sign-key gm-sign.key \
+  --gm-client-enc-cert gm-enc.crt --gm-client-enc-key gm-enc.key
+```
+
+When only `--client-cert/--client-key` is provided, HFinger uses it for standard TLS and also attempts to load it as a TLCP single-certificate client certificate. If the GM client certificate is different, use `--gm-client-cert/--gm-client-key` or the explicit TLCP dual-certificate flags.
 
 ### Active TLS Mode
 
@@ -313,8 +321,12 @@ metadata:
     --passive-store string Write passive mode results to a JSONL file
     --client-cert string   Mutual TLS client certificate
     --client-key string    Mutual TLS client private key
-    --gm-client-cert string Mutual GM/TLS client certificate
-    --gm-client-key string  Mutual GM/TLS client private key
+    --gm-client-cert string TLCP single-certificate client certificate
+    --gm-client-key string  TLCP single-certificate client private key
+    --gm-client-sign-cert string TLCP dual-certificate signing client certificate
+    --gm-client-sign-key string  TLCP dual-certificate signing client private key
+    --gm-client-enc-cert string TLCP dual-certificate encryption client certificate
+    --gm-client-enc-key string  TLCP dual-certificate encryption client private key
     --tls-mode string      Active request TLS mode: auto, gm, std
 -j, --output-json string   Write JSON output
 -x, --output-xml string    Write XML output

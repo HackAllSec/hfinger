@@ -47,6 +47,10 @@ var RootCmd = &cobra.Command{
 		clientKey, _ := cmd.Flags().GetString("client-key")
 		gmClientCert, _ := cmd.Flags().GetString("gm-client-cert")
 		gmClientKey, _ := cmd.Flags().GetString("gm-client-key")
+		gmClientSignCert, _ := cmd.Flags().GetString("gm-client-sign-cert")
+		gmClientSignKey, _ := cmd.Flags().GetString("gm-client-sign-key")
+		gmClientEncCert, _ := cmd.Flags().GetString("gm-client-enc-cert")
+		gmClientEncKey, _ := cmd.Flags().GetString("gm-client-enc-key")
 		tlsMode, _ := cmd.Flags().GetString("tls-mode")
 		thread, _ := cmd.Flags().GetInt("thread")
 		redirect, _ := cmd.Flags().GetInt("redirect")
@@ -70,7 +74,7 @@ var RootCmd = &cobra.Command{
 			os.Exit(1)
 		}
 
-		utils.ConfigureClientCertificates(clientCert, clientKey, gmClientCert, gmClientKey)
+		utils.ConfigureClientCertificates(clientCert, clientKey, gmClientCert, gmClientKey, gmClientSignCert, gmClientSignKey, gmClientEncCert, gmClientEncKey)
 		if err := utils.ConfigureTLSMode(tlsMode); err != nil {
 			logger.Error("Error: %v", err)
 			os.Exit(1)
@@ -168,8 +172,12 @@ func init() {
 	RootCmd.Flags().StringP("proxy", "p", "", "Specify the proxy for accessing the target, supporting HTTP and SOCKS, example: http://127.0.0.1:8080")
 	RootCmd.Flags().String("client-cert", "", "TLS client certificate for mutual TLS targets")
 	RootCmd.Flags().String("client-key", "", "TLS client private key for mutual TLS targets")
-	RootCmd.Flags().String("gm-client-cert", "", "GM/TLS client certificate for mutual TLS targets")
-	RootCmd.Flags().String("gm-client-key", "", "GM/TLS client private key for mutual TLS targets")
+	RootCmd.Flags().String("gm-client-cert", "", "TLCP client certificate for single-certificate mutual authentication")
+	RootCmd.Flags().String("gm-client-key", "", "TLCP client private key for single-certificate mutual authentication")
+	RootCmd.Flags().String("gm-client-sign-cert", "", "TLCP signing client certificate for dual-certificate mutual authentication")
+	RootCmd.Flags().String("gm-client-sign-key", "", "TLCP signing client private key for dual-certificate mutual authentication")
+	RootCmd.Flags().String("gm-client-enc-cert", "", "TLCP encryption client certificate for dual-certificate mutual authentication")
+	RootCmd.Flags().String("gm-client-enc-key", "", "TLCP encryption client private key for dual-certificate mutual authentication")
 	RootCmd.Flags().String("tls-mode", "auto", "TLS mode for active requests: auto, gm, or std")
 	RootCmd.Flags().StringArray("rules", nil, "Load external YAML rule file or directory; can be specified multiple times")
 	RootCmd.Flags().String("passive-store", "", "Write passive mode fingerprint results to a JSONL file")
@@ -197,12 +205,12 @@ var passiveCmd = &cobra.Command{
 
 var tlsCmd = &cobra.Command{
 	Use:   "tls",
-	Short: "Inspect TLS and GM/TLS capabilities",
+	Short: "Inspect TLS and TLCP capabilities",
 }
 
 var tlsCapabilitiesCmd = &cobra.Command{
 	Use:   "capabilities",
-	Short: "Show built-in TLS and GM/TLS providers",
+	Short: "Show built-in TLS and TLCP providers",
 	Run: func(cmd *cobra.Command, args []string) {
 		for _, capability := range utils.TLSCapabilities() {
 			fmt.Println(capability)

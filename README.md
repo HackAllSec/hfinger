@@ -34,8 +34,8 @@ HFinger 的目标不是替代漏洞扫描器，而是成为安全测试链路中
 - 支持 JSON、XML、XLSX 输出
 - 支持被动模式 JSONL 结构化落盘与查询
 - 支持 HTTP/1.1、HTTP/2
-- 主动请求支持标准 TLS、GM/TLS 回退连接和客户端证书认证
-- 被动 MITM 支持标准 TLS / GM/TLS 自适应握手
+- 主动请求支持标准 TLS、TLCP 回退连接和客户端证书认证
+- 被动 MITM 支持标准 TLS / TLCP 自适应握手
 - 支持代理、随机 UA、多线程
 - 提供规则校验命令，方便维护自定义规则
 
@@ -140,11 +140,11 @@ hfinger -l 127.0.0.1:8888 -s result.xlsx --passive-store passive.jsonl
 hfinger -l 127.0.0.1:8888 -p http://127.0.0.1:7777 -s result.xlsx --passive-store passive.jsonl
 ```
 
-HTTPS 被动识别需要将 `certs` 目录下生成的证书导入浏览器或系统信任区。标准 TLS 客户端导入 `ca.crt`，GM/TLS 客户端导入 `gm_ca.crt`。
+HTTPS 被动识别需要将 `certs` 目录下生成的证书导入浏览器或系统信任区。标准 TLS 客户端导入 `ca.crt`，TLCP 客户端导入 `gm_ca.crt`。
 
-说明：被动模式使用自适应 TLS/GM/TLS 握手。标准 TLS 客户端和 GM/TLS 客户端会在同一监听端口下自动选择对应握手流程。
+说明：被动模式使用自适应 TLS/TLCP 握手。标准 TLS 客户端和 TLCP 客户端会在同一监听端口下自动选择对应握手流程。
 
-### 双向 TLS / GM/TLS
+### 双向 TLS / TLCP
 
 当目标服务要求客户端证书时，可以提供客户端证书和私钥：
 
@@ -152,13 +152,21 @@ HTTPS 被动识别需要将 `certs` 目录下生成的证书导入浏览器或�
 hfinger -u https://www.example.com --client-cert client.crt --client-key client.key
 ```
 
-GM/TLS 目标可以单独提供国密客户端证书：
+TLCP 单证书认证目标可以单独提供国密客户端证书：
 
 ```bash
 hfinger -u https://www.example.com --gm-client-cert gm-client.crt --gm-client-key gm-client.key
 ```
 
-如果只提供 `--client-cert/--client-key`，工具会优先将其用于标准 TLS，并尝试作为 TLCP 客户端证书加载；如果国密客户端证书与标准 TLS 证书不同，建议显式使用 `--gm-client-cert/--gm-client-key`。
+TLCP 双证书认证目标可以显式提供签名证书和加密证书：
+
+```bash
+hfinger -u https://www.example.com \
+  --gm-client-sign-cert gm-sign.crt --gm-client-sign-key gm-sign.key \
+  --gm-client-enc-cert gm-enc.crt --gm-client-enc-key gm-enc.key
+```
+
+如果只提供 `--client-cert/--client-key`，工具会优先将其用于标准 TLS，并尝试作为 TLCP 单证书客户端证书加载；如果国密客户端证书与标准 TLS 证书不同，建议显式使用 `--gm-client-cert/--gm-client-key` 或 TLCP 双证书参数。
 
 ### 主动 TLS 模式
 
@@ -313,8 +321,12 @@ metadata:
     --passive-store string 被动模式结果 JSONL 落盘路径
     --client-cert string   双向 TLS 客户端证书
     --client-key string    双向 TLS 客户端私钥
-    --gm-client-cert string 双向 GM/TLS 客户端证书
-    --gm-client-key string  双向 GM/TLS 客户端私钥
+    --gm-client-cert string TLCP 单证书客户端证书
+    --gm-client-key string  TLCP 单证书客户端私钥
+    --gm-client-sign-cert string TLCP 双证书签名客户端证书
+    --gm-client-sign-key string  TLCP 双证书签名客户端私钥
+    --gm-client-enc-cert string TLCP 双证书加密客户端证书
+    --gm-client-enc-key string  TLCP 双证书加密客户端私钥
     --tls-mode string      主动请求 TLS 模式：auto、gm、std
 -j, --output-json string   输出 JSON 文件
 -x, --output-xml string    输出 XML 文件

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net"
 	"net/http"
+	"path/filepath"
 	"strings"
 	"testing"
 
@@ -396,10 +397,10 @@ func TestActiveTLSConnectorAutoReportsBothErrorsWhenFallbackFails(t *testing.T) 
 }
 
 func TestCreateHybridTransportProxyCredentialsDoNotMutateRequest(t *testing.T) {
-	ConfigureClientCertificates("", "", "", "")
+	ConfigureClientCertificates("", "", "", "", "", "", "", "")
 	ConfigureTLSMode(TLSModeAuto)
 	t.Cleanup(func() {
-		ConfigureClientCertificates("", "", "", "")
+		ConfigureClientCertificates("", "", "", "", "", "", "", "")
 		ConfigureTLSMode(TLSModeAuto)
 	})
 	transport, err := createHybridTransport("http://user:pass@127.0.0.1:8080")
@@ -427,16 +428,69 @@ func TestCreateHybridTransportProxyCredentialsDoNotMutateRequest(t *testing.T) {
 }
 
 func TestCreateHybridTransportRequiresClientCertificatePairs(t *testing.T) {
-	ConfigureClientCertificates("client.crt", "", "", "")
+	ConfigureClientCertificates("client.crt", "", "", "", "", "", "", "")
 	t.Cleanup(func() {
-		ConfigureClientCertificates("", "", "", "")
+		ConfigureClientCertificates("", "", "", "", "", "", "", "")
 	})
 	if _, err := createHybridTransport(""); err == nil {
 		t.Fatalf("createHybridTransport() expected error for incomplete TLS client certificate pair")
 	}
 
-	ConfigureClientCertificates("", "", "gm-client.crt", "")
+	ConfigureClientCertificates("", "", "gm-client.crt", "", "", "", "", "")
 	if _, err := createHybridTransport(""); err == nil {
 		t.Fatalf("createHybridTransport() expected error for incomplete GM/TLS client certificate pair")
+	}
+
+	ConfigureClientCertificates("", "", "", "", "gm-sign.crt", "", "", "")
+	if _, err := createHybridTransport(""); err == nil {
+		t.Fatalf("createHybridTransport() expected error for incomplete TLCP sign client certificate pair")
+	}
+
+	ConfigureClientCertificates("", "", "", "", "", "", "gm-enc.crt", "")
+	if _, err := createHybridTransport(""); err == nil {
+		t.Fatalf("createHybridTransport() expected error for incomplete TLCP encryption client certificate pair")
+	}
+
+	ConfigureClientCertificates("", "", "", "", "gm-sign.crt", "gm-sign.key", "", "")
+	if _, err := createHybridTransport(""); err == nil {
+		t.Fatalf("createHybridTransport() expected error when explicit TLCP encryption certificate is missing")
+	}
+
+	ConfigureClientCertificates("", "", "gm-client.crt", "gm-client.key", "gm-sign.crt", "gm-sign.key", "gm-enc.crt", "gm-enc.key")
+	if _, err := createHybridTransport(""); err == nil {
+		t.Fatalf("createHybridTransport() expected error for ambiguous TLCP client certificate configuration")
+	}
+}
+
+func TestLoadClientCertificatesSupportsExplicitTLCPDualCertificates(t *testing.T) {
+	certDir := t.TempDir()
+	signCertPath := filepath.Join(certDir, "tlcp-sign.crt")
+	signKeyPath := filepath.Join(certDir, "tlcp-sign.key")
+	encCertPath := filepath.Join(certDir, "tlcp-enc.crt")
+	encKeyPath := filepath.Join(certDir, "tlcp-enc.key")
+	if err := generateSelfSignedGMCert(signCertPath, signKeyPath); err != nil {
+		t.Fatalf("generate sign certificate unexpected error: %v", err)
+	}
+	if err := generateSelfSignedGMCert(encCertPath, encKeyPath); err != nil {
+		t.Fatalf("generate encryption certificate unexpected error: %v", err)
+	}
+
+	ConfigureClientCertificates("", "", "", "", signCertPath, signKeyPath, encCertPath, encKeyPath)
+	t.Cleanup(func() {
+		ConfigureClientCertificates("", "", "", "", "", "", "", "")
+	})
+
+	stdCerts, tlcpCerts, err := loadClientCertificates()
+	if err != nil {
+		t.Fatalf("loadClientCertificates() unexpected error: %v", err)
+	}
+	if len(stdCerts) != 0 {
+		t.Fatalf("standard client certificate count = %d, want 0", len(stdCerts))
+	}
+	if len(tlcpCerts) != 2 {
+		t.Fatalf("TLCP client certificate count = %d, want 2", len(tlcpCerts))
+	}
+	if len(tlcpCerts[0].Certificate) == 0 || len(tlcpCerts[1].Certificate) == 0 {
+		t.Fatalf("TLCP client certificates should contain DER data")
 	}
 }

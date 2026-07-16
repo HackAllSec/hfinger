@@ -4,7 +4,7 @@
 
 - 新增检查更新参数，改善用户体验，现在不会默认检查更新了
 - 新增国密支持，主动模式和被动模式均支持智能选择标准 TLS 和 TLCP
-- 新增双向 TLS/TLCP 客户端证书参数，完善被动 MITM 的 TLS/TLCP 自适应握手
+- 新增双向 TLS/TLCP 客户端证书参数，支持 TLCP 单证书和签名/加密双证书认证
 - 新增独立 GM CA，GM/TLS 被动代理证书链不再复用标准 RSA CA
 - 新增主动请求 TLS 模式控制，默认 auto，并支持强制 gm 或 std
 - 优化主动请求 TLS 决策层，标准 TLS、TLCP 与 auto fallback 路径独立可测
