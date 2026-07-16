@@ -1,12 +1,19 @@
 package models
 
 import (
+	"crypto/md5"
+	"crypto/sha1"
+	"crypto/sha256"
+	"crypto/tls"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"io"
 	"math/rand"
 	"net/http"
+	"net/url"
 	"os"
+	"regexp"
 	"strings"
 	"sync"
 
@@ -21,9 +28,10 @@ var (
 	workerCount  int
 	maxRedirects int
 	outputLock   sync.Mutex // 全局锁保护output操作
+	scriptSrcRe  = regexp.MustCompile(`(?is)<script[^>]+src=["']([^"']+)["']`)
 )
 
-func process(url string, probeID string, headers map[string]string, responsesChannel chan<- rules.Response, mu *sync.Mutex, wg *sync.WaitGroup, errOccurred *bool, saveResponse func(int, string, string)) {
+func process(url string, probeID string, request rules.Request, responsesChannel chan<- rules.Response, mu *sync.Mutex, wg *sync.WaitGroup, errOccurred *bool, saveResponse func(int, string, string)) {
 	defer wg.Done()
 
 	currentURL := url
@@ -37,7 +45,7 @@ func process(url string, probeID string, headers map[string]string, responsesCha
 		}
 		mu.Unlock()
 
-		resp, err := utils.Get(currentURL, headers)
+		resp, err := utils.Do(request.Method, currentURL, []byte(request.Body), request.Headers)
 		if err != nil {
 			mu.Lock()
 			if !*errOccurred {
@@ -120,7 +128,9 @@ func process(url string, probeID string, headers map[string]string, responsesCha
 			Header:     resp.Header,
 			Body:       body,
 			Favicon:    faviconbody,
+			Scripts:    scriptHashes(currentURL, body),
 			TLS:        tlsInfo(resp),
+			Behavior:   behaviorInfo(resp),
 		}
 		break // 退出循环
 	}
@@ -152,23 +162,24 @@ func ProcessURL(url string) {
 		})
 	}
 
-	wg.Add(3)
-	go process(url, "default", nil, responsesChannel, &mu, &wg, &errOccurred, saveFirstResponse)
-	go process(url, "remember-me", map[string]string{"Cookie": "rememberMe=1"}, responsesChannel, &mu, &wg, &errOccurred, nil)
+	wg.Add(4)
+	go process(url, "default", rules.Request{Method: "GET"}, responsesChannel, &mu, &wg, &errOccurred, saveFirstResponse)
+	go process(url, "remember-me", rules.Request{Method: "GET", Headers: map[string]string{"Cookie": "rememberMe=1"}}, responsesChannel, &mu, &wg, &errOccurred, nil)
+	go process(url, "options", rules.Request{Method: "OPTIONS"}, responsesChannel, &mu, &wg, &errOccurred, nil)
 
 	suffix := fmt.Sprintf("/%x", rand.Int())
 	if url[len(url)-1] == '/' {
 		suffix = fmt.Sprintf("%x", rand.Int())
 	}
 	newUrl := url + suffix
-	go process(newUrl, "error-page", nil, responsesChannel, &mu, &wg, &errOccurred, nil)
+	go process(newUrl, "error-page", rules.Request{Method: "GET"}, responsesChannel, &mu, &wg, &errOccurred, nil)
 
 	baseURL, baseErr := utils.GetBaseURL(url)
 	if baseErr == nil {
 		for _, probe := range rules.ActiveHTTPProbes() {
 			probeURL := baseURL + probe.Request.Path
 			wg.Add(1)
-			go process(probeURL, probe.ID, probe.Request.Headers, responsesChannel, &mu, &wg, &errOccurred, nil)
+			go process(probeURL, probe.ID, probe.Request, responsesChannel, &mu, &wg, &errOccurred, nil)
 		}
 	}
 
@@ -181,7 +192,11 @@ func ProcessURL(url string) {
 		responses = append(responses, response)
 	}
 	var results []config.Result
-	for _, match := range rules.MatchRules(responses, rules.ActiveRules()) {
+	matches := rules.MatchRules(responses, rules.ActiveRules())
+	if honeypot := rules.AssessHoneypot(matches, responses); honeypot.Matched {
+		matches = append(matches, honeypot)
+	}
+	for _, match := range matches {
 		cms := match.Rule.Name
 		if _, loaded := matchedCMS.LoadOrStore(cms, true); loaded {
 			continue
@@ -248,12 +263,132 @@ func tlsInfo(resp *http.Response) rules.TLSInfo {
 		return rules.TLSInfo{}
 	}
 	cert := resp.TLS.PeerCertificates[0]
+	version := tlsVersionName(resp.TLS.Version)
+	cipher := tls.CipherSuiteName(resp.TLS.CipherSuite)
 	return rules.TLSInfo{
-		Subject:  cert.Subject.String(),
-		Issuer:   cert.Issuer.String(),
-		DNSNames: cert.DNSNames,
-		ALPN:     resp.TLS.NegotiatedProtocol,
+		Subject:     cert.Subject.String(),
+		Issuer:      cert.Issuer.String(),
+		DNSNames:    cert.DNSNames,
+		ALPN:        resp.TLS.NegotiatedProtocol,
+		Version:     version,
+		CipherSuite: cipher,
+		JA3S:        serverTLSHash(version, cipher, resp.TLS.NegotiatedProtocol),
 	}
+}
+
+func behaviorInfo(resp *http.Response) rules.BehaviorInfo {
+	if resp == nil {
+		return rules.BehaviorInfo{}
+	}
+	return rules.BehaviorInfo{
+		HTTPVersion: resp.Proto,
+		Compression: resp.Header.Get("Content-Encoding"),
+		Allowed:     splitHeaderList(resp.Header.Get("Allow")),
+	}
+}
+
+func splitHeaderList(value string) []string {
+	if strings.TrimSpace(value) == "" {
+		return nil
+	}
+	parts := strings.Split(value, ",")
+	values := make([]string, 0, len(parts))
+	for _, part := range parts {
+		part = strings.TrimSpace(part)
+		if part != "" {
+			values = append(values, part)
+		}
+	}
+	return values
+}
+
+func tlsVersionName(version uint16) string {
+	switch version {
+	case tls.VersionTLS10:
+		return "TLS1.0"
+	case tls.VersionTLS11:
+		return "TLS1.1"
+	case tls.VersionTLS12:
+		return "TLS1.2"
+	case tls.VersionTLS13:
+		return "TLS1.3"
+	default:
+		return fmt.Sprintf("0x%04x", version)
+	}
+}
+
+func serverTLSHash(version string, cipher string, alpn string) string {
+	// Go 标准库的 http.Response.TLS 拿不到完整 ServerHello 扩展顺序。
+	// 这里输出的是稳定的 JA3S 风格摘要，不能等同于标准 JA3S。
+	sum := md5.Sum([]byte(version + "," + cipher + "," + alpn))
+	return hex.EncodeToString(sum[:])
+}
+
+func scriptHashes(pageURL string, body []byte) []rules.ResourceHash {
+	// JS Hash 用于识别强绑定版本的前端静态资源；限制数量避免主动扫描放大流量。
+	matches := scriptSrcRe.FindAllSubmatch(body, 16)
+	hashes := make([]rules.ResourceHash, 0, len(matches))
+	for _, match := range matches {
+		if len(match) < 2 {
+			continue
+		}
+		scriptURL, ok := resolveResourceURL(pageURL, string(match[1]))
+		if !ok {
+			continue
+		}
+		data, ok := fetchHashableResource(scriptURL)
+		if !ok {
+			continue
+		}
+		md5Value, sha1Value, sha256Value := resourceHashes(data)
+		hashes = append(hashes, rules.ResourceHash{
+			URL:    scriptURL,
+			MD5:    md5Value,
+			SHA1:   sha1Value,
+			SHA256: sha256Value,
+		})
+	}
+	return hashes
+}
+
+func resolveResourceURL(pageURL string, rawResource string) (string, bool) {
+	base, err := url.Parse(pageURL)
+	if err != nil {
+		return "", false
+	}
+	ref, err := url.Parse(strings.TrimSpace(rawResource))
+	if err != nil {
+		return "", false
+	}
+	resolved := base.ResolveReference(ref)
+	if resolved.Scheme != "http" && resolved.Scheme != "https" {
+		return "", false
+	}
+	return resolved.String(), true
+}
+
+func fetchHashableResource(resourceURL string) ([]byte, bool) {
+	resp, err := utils.Get(resourceURL, nil)
+	if err != nil || resp == nil {
+		return nil, false
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
+		return nil, false
+	}
+	// JS Hash 只需要稳定内容摘要，限制读取大小避免大资源拖慢批量扫描。
+	data, err := io.ReadAll(io.LimitReader(resp.Body, 2*1024*1024+1))
+	if err != nil || len(data) > 2*1024*1024 {
+		return nil, false
+	}
+	return data, true
+}
+
+func resourceHashes(data []byte) (string, string, string) {
+	md5Sum := md5.Sum(data)
+	sha1Sum := sha1.Sum(data)
+	sha256Sum := sha256.Sum256(data)
+	return hex.EncodeToString(md5Sum[:]), hex.EncodeToString(sha1Sum[:]), hex.EncodeToString(sha256Sum[:])
 }
 
 func ProcessFile(filePath string) {

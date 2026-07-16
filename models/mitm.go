@@ -495,8 +495,16 @@ func matchfingerprint(url string, statuscode int, body []byte, header http.Heade
 		Header:     header,
 		Body:       body,
 		Favicon:    favicon,
+		Behavior: rules.BehaviorInfo{
+			Compression: header.Get("Content-Encoding"),
+			Allowed:     splitHeaderList(header.Get("Allow")),
+		},
 	}
-	for _, match := range rules.MatchRules([]rules.Response{response}, rules.ActiveRules()) {
+	matches := rules.MatchRules([]rules.Response{response}, rules.ActiveRules())
+	if honeypot := rules.AssessHoneypot(matches, []rules.Response{response}); honeypot.Matched {
+		matches = append(matches, honeypot)
+	}
+	for _, match := range matches {
 		cms = match.Rule.Name
 		key := fmt.Sprintf("%s::%s", url, cms)
 		if _, loaded := matchedCMS.LoadOrStore(key, true); !loaded {

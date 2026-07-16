@@ -464,6 +464,23 @@ func Get(url string, headers map[string]string) (*http.Response, error) {
 	return httpClient.Do(req)
 }
 
+func Do(method string, url string, body []byte, headers map[string]string) (*http.Response, error) {
+	if httpClient == nil {
+		return nil, fmt.Errorf("HTTP client not initialized.")
+	}
+	method = strings.ToUpper(strings.TrimSpace(method))
+	if method == "" {
+		method = "GET"
+	}
+	req, err := http.NewRequest(method, url, bytes.NewReader(body))
+	if err != nil {
+		return nil, err
+	}
+
+	setRequestHeaders(req, headers)
+	return httpClient.Do(req)
+}
+
 func Options(url string, headers map[string]string) (*http.Response, error) {
 	if httpClient == nil {
 		return nil, fmt.Errorf("HTTP client not initialized.")

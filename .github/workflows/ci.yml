@@ -37,6 +37,12 @@ jobs:
       - name: Validate built-in rules
         run: go run main.go rules test rulesets/core
 
+      - name: Validate LLM manifest
+        run: |
+          go run main.go llm manifest | tee /tmp/hfinger-llm-manifest.json
+          grep -q '"name": "hfinger"' /tmp/hfinger-llm-manifest.json
+          grep -q '"capabilities":' /tmp/hfinger-llm-manifest.json
+
       - name: Check rule quality baseline
         run: |
           go run main.go rules stats | tee /tmp/hfinger-rules-stats.txt

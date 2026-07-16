@@ -8,7 +8,7 @@ HFinger is a server-side fingerprinting tool for security testing. It helps iden
 
 HFinger ships with built-in core fingerprint rules and works out of the box. It also supports external YAML rules for community contributions, private products, and internal enterprise systems.
 
-The current build includes **1730** built-in fingerprint rules covering **1460** server-side products, web frameworks, CMS products, middleware, CDN/WAF providers, and related components.
+The current build includes **1735** built-in fingerprint rules covering **1465** server-side products, web frameworks, CMS products, middleware, CDN/WAF providers, honeypots, and related components.
 
 ## Positioning
 
@@ -18,7 +18,7 @@ Compared with simple keyword-based fingerprinting, HFinger focuses on:
 
 - Built-in core rules without shipping extra rule files
 - External YAML rules for community and private rule maintenance
-- Multi-source evidence across headers, body, cookies, favicon, JSON/API, TLS, and Server banners
+- Multi-source evidence across headers, cookies, HTML, JavaScript, favicon, JSON/API, TLS, HTTP behavior, and Server banners
 - Evidence and confidence output for review and automation
 - Both active scanning and passive proxy fingerprinting
 
@@ -31,7 +31,7 @@ HFinger is designed to make server-side fingerprinting governable, reviewable, a
 - Active and passive coverage: HFinger supports both batch active scanning and passive HTTP/HTTPS proxy fingerprinting.
 - GM/TLCP support: active mode supports standard TLS and TLCP with auto/gm/std modes; passive MITM can adaptively route standard TLS and TLCP handshakes on the same listener.
 - Rule quality governance: `rules lint/test/stats` and positive/negative fixtures help reduce false positives and false negatives over time.
-- Toolchain integration: httpx JSONL input plus JSON/JSONL/XLSX output make it easy to connect HFinger with ASM, Burp Suite, mitmproxy, nuclei, SIEM, and internal security workflows.
+- Toolchain integration: httpx JSONL input plus JSON/JSONL/XLSX output and an LLM manifest make it easy to connect HFinger with ASM, Burp Suite, mitmproxy, nuclei, SIEM, and external agent/Skill workflows.
 
 ## Features
 
@@ -40,15 +40,39 @@ HFinger is designed to make server-side fingerprinting governable, reviewable, a
 - Built-in core rules that work out of the box
 - External YAML rule loading
 - Header, body, title, cookie, status, redirect, and favicon matching
-- Regex, path probe, script source, HTML meta, JSON/API, TLS certificate, and Server banner matching
+- HTML meta, script source, JavaScript hash, favicon mmh3/MD5/SHA1/SHA256, JSON/API, TLS certificate/ALPN/version/cipher, HTTP behavior, and Server banner matching
+- Active probes for common paths, API endpoints, error pages, 404 pages, and OPTIONS behavior
+- WAF/CDN, framework, CMS, middleware, version extraction, and honeypot identification
 - Evidence and confidence in scan results
-- JSON, XML, and XLSX output
+- JSON, JSONL, XML, and XLSX output
 - Passive mode JSONL persistence and query
 - HTTP/1.1 and HTTP/2 support
 - Active requests with standard TLS, TLCP fallback, and client-certificate authentication
 - Passive MITM with adaptive standard TLS / TLCP handshakes
 - Proxy, random User-Agent, and multithreading support
 - Rule validation commands for custom rule maintenance
+- Machine-readable LLM/agent capability manifest for external Skill orchestration
+
+## Capability Coverage
+
+| Capability | Current support |
+| --- | --- |
+| HTTP Header fingerprints | `header.contains`, `header.regex` |
+| Cookie fingerprints | `cookie.contains` |
+| HTML body fingerprints | `body.contains`, `body.regex` |
+| HTML tags / Meta | `html.meta.contains`, `script.src.contains`, Body/Regex |
+| JavaScript reference paths | `script.src.contains`, `body.contains` |
+| JavaScript Hash | `script.hash.md5`, `script.hash.sha1`, `script.hash.sha256` |
+| Favicon fingerprints | `favicon.hash`, `favicon.hash.md5`, `favicon.hash.sha1`, `favicon.hash.sha256` |
+| Static resource paths | Active probes, `path.exists`, `script.src.contains`, Body/Regex |
+| 404 / error page fingerprints | Default error-page probe and rule-level probes |
+| TLS/HTTPS fingerprints | Certificate Subject/Issuer/DNSNames, ALPN, TLS version, cipher, JA3S-style summary |
+| HTTP protocol behavior | HTTP version, OPTIONS Allow, compression, ETag, Accept-Ranges, status code, redirect |
+| Active probes / API fingerprints | Rule `probes.request` supports method/path/header/body |
+| WAF/CDN / framework / CMS / middleware | Built-in category rules and multi-evidence scoring |
+| Version fingerprints | Regex version extraction with `extract` |
+| Combined identification | score/any/all, negative matchers, confidence, evidence |
+| Honeypot identification | Explicit honeypot rules plus conflict and abnormal-response heuristics |
 
 ## Project Structure
 
@@ -60,7 +84,7 @@ HFinger is designed to make server-side fingerprinting governable, reviewable, a
 ├── icon_hash/           Favicon hash helper
 ├── logger/              Logging
 ├── models/              Active scanning and passive proxy fingerprinting
-├── output/              JSON, XML, and XLSX output
+├── output/              JSON, JSONL, XML, and XLSX output
 ├── rules/               Built-in rules, YAML loading, validation, and matching engine
 ├── rulesets/            Built-in YAML rule sources embedded into release binaries
 ├── utils/               HTTP, certificates, upgrade, and shared utilities
@@ -110,6 +134,7 @@ http://192.168.1.10
 ```bash
 httpx -l domains.txt -json -silent > alive.jsonl
 hfinger -f alive.jsonl -j fingerprint-results.json
+hfinger -f alive.jsonl --output-jsonl fingerprint-results.jsonl
 ```
 
 ### Use Proxy
@@ -476,6 +501,7 @@ metadata:
     --gm-client-enc-key string  TLCP dual-certificate encryption client private key
     --tls-mode string      Active request TLS mode: auto, gm, std
 -j, --output-json string   Write JSON output
+    --output-jsonl string  Write JSONL output for LLM/agent/script pipelines
 -x, --output-xml string    Write XML output
 -s, --output-xlsx string   Write XLSX output
 -c, --check-update         Check tool updates
@@ -494,6 +520,33 @@ hfinger passive query [jsonl-file]
     --min-confidence int     Filter by minimum confidence
     --limit int              Limit returned records
 ```
+
+### LLM / Agent / Skill Integration
+
+HFinger does not put LLMs into the final fingerprint decision path. LLMs and agents should call HFinger as a deterministic tool: HFinger scans, matches, and returns evidence plus confidence, while LLM/Skill workflows consume structured results to handle orchestration, triage, and explanation tasks that plain CLI flags cannot fully cover.
+
+Print the machine-readable capability manifest:
+
+```text
+hfinger llm manifest
+```
+
+Run batch scanning with JSONL output for streaming LLM/agent consumption:
+
+```bash
+hfinger -f alive.jsonl --output-jsonl hfinger-results.jsonl
+```
+
+Typical LLM/Skill scenarios:
+
+- Asset triage: read `hfinger-results.jsonl`, group findings by `category`, `cms`, `version`, `confidence`, and `evidence`, then produce prioritized targets.
+- Toolchain orchestration: turn high-confidence API gateway, DevOps, admin surface, security device, or middleware findings into nuclei, ffuf, katana, or nmap inputs.
+- Rule authoring: generate YAML rule drafts from HTTP headers, cookies, body snippets, favicon, TLS certificates, and JavaScript hashes, then validate them with `rules lint/test/doctor`.
+- Rule review: check whether a rule depends on generic keywords or lacks strong evidence, negative matchers, and positive/negative examples.
+- Honeypot review: when results include `category: honeypot`, `Potential Honeypot`, or conflicting technologies, reduce intrusive probing and generate low-impact confirmation steps.
+- Report explanation: convert evidence and confidence into auditable security-report text.
+
+Skills are external agent workflows, not runtime directories required by the HFinger repository. This repository does not commit `.trae/`; users can define Skills in their own agent environment and have them call `hfinger llm manifest`, `hfinger --output-jsonl`, and `hfinger rules lint/test/doctor` for more complex penetration-testing workflows.
 
 ## Legal Use and Disclaimer
 

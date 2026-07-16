@@ -227,12 +227,20 @@ func LintRules(ruleSet []Rule) LintReport {
 		"status.eq":                 {},
 		"status.in":                 {},
 		"favicon.hash":              {},
+		"favicon.hash.md5":          {},
+		"favicon.hash.sha1":         {},
+		"favicon.hash.sha256":       {},
 		"path.exists":               {},
+		"script.hash.md5":           {},
+		"script.hash.sha1":          {},
+		"script.hash.sha256":        {},
 		"json.key.exists":           {},
 		"json.path.eq":              {},
 		"tls.cert.subject.contains": {},
 		"tls.cert.issuer.contains":  {},
 		"tls.cert.dns.contains":     {},
+		"tls.cipher.contains":       {},
+		"tls.ja3s.hash":             {},
 	}
 
 	for _, rule := range ruleSet {
@@ -264,7 +272,7 @@ func LintRules(ruleSet []Rule) LintReport {
 				report.Errors = append(report.Errors, issue(rule.ID, "error", fmt.Sprintf("unsupported matcher type: %s", matcher.Type)))
 				continue
 			}
-			if matcherType != "path.exists" && len(matcherValues(matcher)) == 0 && matcher.Key == "" {
+			if !valueOptionalMatcher(matcherType) && len(matcherValues(matcher)) == 0 && matcher.Key == "" {
 				report.Errors = append(report.Errors, issue(rule.ID, "error", fmt.Sprintf("matcher %s has no value", matcher.Type)))
 			}
 			if _, ok := strongEvidence[matcherType]; ok {
@@ -281,6 +289,15 @@ func LintRules(ruleSet []Rule) LintReport {
 		}
 	}
 	return report
+}
+
+func valueOptionalMatcher(matcherType string) bool {
+	switch matcherType {
+	case "path.exists", "response.etag.exists", "response.accept_ranges.exists":
+		return true
+	default:
+		return false
+	}
 }
 
 func (r LintReport) HasErrors() bool {

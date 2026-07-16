@@ -182,13 +182,20 @@ Common fields:
 | `header.contains` | Header name or value contains a string |
 | `header.regex` | Header matches a regex |
 | `title.contains` | Page title contains a string |
+| `title.regex` | Page title matches a regex |
 | `cookie.contains` | `Set-Cookie` contains a string |
 | `status.eq` | Status code equals a value |
 | `status.in` | Status code is in a list |
 | `favicon.hash` | Favicon mmh3 hash matches |
+| `favicon.hash.md5` | Favicon MD5 hash matches |
+| `favicon.hash.sha1` | Favicon SHA1 hash matches |
+| `favicon.hash.sha256` | Favicon SHA256 hash matches |
 | `path.exists` | Probed path returns 2xx/3xx |
 | `redirect.to` | `Location` header contains a value |
 | `script.src.contains` | Script src contains a value |
+| `script.hash.md5` | External JavaScript content MD5 hash matches |
+| `script.hash.sha1` | External JavaScript content SHA1 hash matches |
+| `script.hash.sha256` | External JavaScript content SHA256 hash matches |
 | `html.meta.contains` | Meta tag contains a value |
 | `json.key.exists` | JSON response contains a key |
 | `json.path.eq` | JSON dotted path equals a value |
@@ -198,6 +205,16 @@ Common fields:
 | `tls.cert.issuer.contains` | TLS certificate Issuer contains a value |
 | `tls.cert.dns.contains` | TLS certificate DNSNames contains a value |
 | `tls.alpn.contains` | TLS ALPN contains a value |
+| `tls.version.contains` | TLS version contains a value, such as `TLS1.3` |
+| `tls.cipher.contains` | TLS Cipher Suite contains a value |
+| `tls.ja3s.hash` | JA3S-style summary matches |
+| `http.version.contains` | HTTP protocol version contains a value, such as `HTTP/2` |
+| `http.method.allowed` | `OPTIONS` response `Allow` methods contain a value |
+| `response.compression.contains` | `Content-Encoding` contains a value |
+| `response.etag.exists` | Response has an `ETag` header |
+| `response.accept_ranges.exists` | Response has an `Accept-Ranges` header |
+
+Note: `tls.ja3s.hash` currently builds a stable summary from TLS version, Cipher Suite, and ALPN values exposed by Go's standard library. It is JA3S-style metadata, not a full standard JA3S implementation.
 
 ## 8. Negative Rules
 
@@ -384,7 +401,63 @@ negative:
     reason: Probe path does not exist
 ```
 
-## 11. AI-Assisted Rule Drafting Prompt
+### JavaScript Hash Rule Example
+
+```yaml
+id: example-js-hash
+name: Example JS App
+category: framework
+match:
+  strategy: score
+  threshold: 80
+  matchers:
+    - type: script.src.contains
+      value: /static/app.
+      weight: 30
+      evidence: Default frontend asset path is referenced
+    - type: script.hash.sha256
+      value: 2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824
+      weight: 70
+      evidence: External JavaScript content hash matched
+```
+
+### Honeypot Rule Example
+
+```yaml
+id: example-honeypot
+name: Example Honeypot
+category: honeypot
+tags: [honeypot, deception]
+match:
+  strategy: score
+  threshold: 100
+  matchers:
+    - type: title.contains
+      value: Example Honeypot
+      weight: 50
+    - type: body.contains
+      value: example-honeypot-marker
+      weight: 50
+negative:
+  - type: body.contains
+    value: Example Honeypot Documentation
+    reason: Exclude product documentation pages
+```
+
+HFinger also includes heuristic honeypot assessment. If many mutually conflicting products/categories match, or many active probe paths return 2xx, HFinger emits `Potential Honeypot` as a risk signal. Heuristic results assist manual judgment and do not replace explicit product rules.
+
+## 11. LLM / Agent Integration
+
+HFinger exposes a machine-readable capability manifest and JSONL output for LLM, agent, ASM, or SIEM pipelines:
+
+```bash
+hfinger llm manifest
+hfinger -f alive.jsonl --output-jsonl hfinger-results.jsonl
+```
+
+Project-level Skills live under `.trae/skills/` and cover rule authoring, rule review, result triage, toolchain chaining, and honeypot review. LLM/Skill workflows only assist orchestration and explanation; they do not participate in final fingerprint decisions.
+
+## 12. AI-Assisted Rule Drafting Prompt
 
 AI can help draft candidate rules, but AI output should not be submitted as-is. Recommended workflow:
 
@@ -431,7 +504,7 @@ Chinese prompt:
 【在这里粘贴 HTTP headers、status code、title、body 摘要、JSON 错误结构、TLS 证书信息、favicon hash 等】
 ```
 
-## 12. FAQ
+## 13. FAQ
 
 ### Does HFinger support JSON rule files?
 

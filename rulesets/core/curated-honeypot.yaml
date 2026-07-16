@@ -1,0 +1,168 @@
+rules:
+  - id: core-0111-hfish
+    name: HFish Honeypot
+    category: honeypot
+    vendor: HFish
+    priority: 90
+    tags: [honeypot, deception]
+    match:
+      strategy: score
+      threshold: 100
+      matchers:
+        - type: body.contains
+          value: "HFish"
+          weight: 60
+          evidence: HFish page marker
+        - type: title.contains
+          value: "HFish"
+          weight: 40
+          evidence: HFish title marker
+    negative:
+      - type: body.contains
+        value: "HFish documentation"
+        reason: Documentation page is not a deployed honeypot
+    metadata:
+      references: ["https://github.com/hacklcx/HFish"]
+      confidence: high
+    examples:
+      positive:
+        - name: hfish-login
+          title: HFish
+          body: "<html><title>HFish</title><body>HFish</body></html>"
+      negative:
+        - name: hfish-doc
+          body: "HFish documentation"
+
+  - id: core-0112-opencanary
+    name: OpenCanary
+    category: honeypot
+    vendor: Thinkst
+    priority: 85
+    tags: [honeypot, deception]
+    match:
+      strategy: score
+      threshold: 100
+      matchers:
+        - type: body.contains
+          value: "OpenCanary"
+          weight: 70
+          evidence: OpenCanary page marker
+        - type: header.contains
+          key: Server
+          value: "OpenCanary"
+          weight: 40
+          evidence: OpenCanary server header
+    negative:
+      - type: body.contains
+        value: "OpenCanary documentation"
+        reason: Documentation page is not a deployed honeypot
+    metadata:
+      references: ["https://github.com/thinkst/opencanary"]
+      confidence: high
+    examples:
+      positive:
+        - name: opencanary-page
+          headers: {Server: OpenCanary}
+          body: "OpenCanary"
+      negative:
+        - name: opencanary-doc
+          body: "OpenCanary documentation"
+
+  - id: core-0113-tpot
+    name: T-Pot Honeypot
+    category: honeypot
+    vendor: Telekom Security
+    priority: 85
+    tags: [honeypot, deception]
+    match:
+      strategy: score
+      threshold: 100
+      matchers:
+        - type: body.contains
+          value: "T-Pot"
+          weight: 60
+          evidence: T-Pot page marker
+        - type: body.contains
+          value: "honeypot"
+          weight: 40
+          evidence: Honeypot management page marker
+    negative:
+      - type: body.contains
+        value: "T-Pot documentation"
+        reason: Documentation page is not a deployed honeypot
+    metadata:
+      references: ["https://github.com/telekom-security/tpotce"]
+      confidence: high
+    examples:
+      positive:
+        - name: tpot-page
+          body: "T-Pot honeypot dashboard"
+      negative:
+        - name: tpot-doc
+          body: "T-Pot documentation"
+
+  - id: core-0114-cowrie
+    name: Cowrie Honeypot
+    category: honeypot
+    vendor: Cowrie
+    priority: 80
+    tags: [honeypot, deception, ssh]
+    match:
+      strategy: score
+      threshold: 100
+      matchers:
+        - type: body.contains
+          value: "Cowrie"
+          weight: 70
+          evidence: Cowrie web marker
+        - type: body.contains
+          value: "SSH/Telnet Honeypot"
+          weight: 40
+          evidence: Cowrie honeypot description
+    negative:
+      - type: body.contains
+        value: "Cowrie documentation"
+        reason: Documentation page is not a deployed honeypot
+    metadata:
+      references: ["https://github.com/cowrie/cowrie"]
+      confidence: medium
+    examples:
+      positive:
+        - name: cowrie-page
+          body: "Cowrie SSH/Telnet Honeypot"
+      negative:
+        - name: cowrie-doc
+          body: "Cowrie documentation"
+
+  - id: core-0115-conpot
+    name: Conpot Honeypot
+    category: honeypot
+    vendor: Conpot
+    priority: 80
+    tags: [honeypot, deception, ics]
+    match:
+      strategy: score
+      threshold: 100
+      matchers:
+        - type: body.contains
+          value: "Conpot"
+          weight: 70
+          evidence: Conpot page marker
+        - type: body.contains
+          value: "ICS honeypot"
+          weight: 40
+          evidence: Conpot ICS honeypot description
+    negative:
+      - type: body.contains
+        value: "Conpot documentation"
+        reason: Documentation page is not a deployed honeypot
+    metadata:
+      references: ["https://github.com/mushorg/conpot"]
+      confidence: medium
+    examples:
+      positive:
+        - name: conpot-page
+          body: "Conpot ICS honeypot"
+      negative:
+        - name: conpot-doc
+          body: "Conpot documentation"

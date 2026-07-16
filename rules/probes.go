@@ -1,6 +1,9 @@
 package rules
 
-import "strings"
+import (
+	"sort"
+	"strings"
+)
 
 func ActiveHTTPProbes() []Probe {
 	if activeHTTPProbePlan != nil {
@@ -19,7 +22,7 @@ func buildHTTPProbePlan(ruleSet []Rule) []Probe {
 			if path == "" || path == "/" {
 				continue
 			}
-			key := probe.ID + "\x00" + path
+			key := probePlanKey(probe)
 			if _, ok := seen[key]; ok {
 				continue
 			}
@@ -28,6 +31,31 @@ func buildHTTPProbePlan(ruleSet []Rule) []Probe {
 		}
 	}
 	return probes
+}
+
+func probePlanKey(probe Probe) string {
+	// 主动探测请求不只由路径决定；method/body/header 不同会产生不同服务端行为。
+	// 去重键必须包含完整请求语义，避免把 API 探测和普通路径探测合并掉。
+	var builder strings.Builder
+	builder.WriteString(probe.ID)
+	builder.WriteString("\x00")
+	builder.WriteString(strings.ToUpper(strings.TrimSpace(probe.Request.Method)))
+	builder.WriteString("\x00")
+	builder.WriteString(strings.TrimSpace(probe.Request.Path))
+	builder.WriteString("\x00")
+	builder.WriteString(probe.Request.Body)
+	keys := make([]string, 0, len(probe.Request.Headers))
+	for key := range probe.Request.Headers {
+		keys = append(keys, key)
+	}
+	sort.Strings(keys)
+	for _, key := range keys {
+		builder.WriteString("\x00")
+		builder.WriteString(strings.ToLower(key))
+		builder.WriteString("=")
+		builder.WriteString(probe.Request.Headers[key])
+	}
+	return builder.String()
 }
 
 func cloneProbes(probes []Probe) []Probe {

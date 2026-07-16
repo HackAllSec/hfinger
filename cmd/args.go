@@ -41,6 +41,7 @@ var RootCmd = &cobra.Command{
 		}
 	},
 	PreRun: func(cmd *cobra.Command, args []string) {
+		PrintBanner()
 		url, _ := cmd.Flags().GetString("url")
 		file, _ := cmd.Flags().GetString("file")
 		listen, _ := cmd.Flags().GetString("listen")
@@ -57,6 +58,7 @@ var RootCmd = &cobra.Command{
 		thread, _ := cmd.Flags().GetInt("thread")
 		redirect, _ := cmd.Flags().GetInt("redirect")
 		outputJSON, _ := cmd.Flags().GetString("output-json")
+		outputJSONL, _ := cmd.Flags().GetString("output-jsonl")
 		outputXML, _ := cmd.Flags().GetString("output-xml")
 		outputXLSX, _ := cmd.Flags().GetString("output-xlsx")
 		rulePaths, _ := cmd.Flags().GetStringArray("rules")
@@ -125,12 +127,15 @@ var RootCmd = &cobra.Command{
 			logger.Error("Error: The number of threads cannot be less than 1.")
 			os.Exit(1)
 		}
-		if countNonEmpty(outputJSON, outputXML, outputXLSX) > 1 {
+		if countNonEmpty(outputJSON, outputJSONL, outputXML, outputXLSX) > 1 {
 			logger.Error("Error: You can only choose one output format at a time.")
 			os.Exit(1)
 		}
 		if outputJSON != "" {
 			err = output.SetOutput("json", outputJSON)
+		}
+		if outputJSONL != "" {
+			err = output.SetOutput("jsonl", outputJSONL)
 		}
 		if outputXML != "" {
 			err = output.SetOutput("xml", outputXML)
@@ -166,11 +171,11 @@ func countNonEmpty(values ...string) int {
 }
 
 func init() {
-	PrintBanner()
 	RootCmd.Flags().StringP("url", "u", "", "Specify the recognized target,example: https://www.example.com")
 	RootCmd.Flags().StringP("file", "f", "", "Read assets from local files for fingerprint recognition, with one target per line")
 	RootCmd.Flags().StringP("listen", "l", "", "Using a proxy resource collector to retrieve targets, example: 127.0.0.1:6789")
 	RootCmd.Flags().StringP("output-json", "j", "", "Output all results to a JSON file")
+	RootCmd.Flags().String("output-jsonl", "", "Output all results to a JSONL file for LLM/agent pipelines")
 	RootCmd.Flags().StringP("output-xml", "x", "", "Output all results to a XML file")
 	RootCmd.Flags().StringP("output-xlsx", "s", "", "Output all results to a Excel file")
 	RootCmd.Flags().StringP("proxy", "p", "", "Specify the proxy for accessing the target, supporting HTTP and SOCKS, example: http://127.0.0.1:8080")
@@ -196,6 +201,7 @@ func init() {
 	RootCmd.AddCommand(rulesCmd)
 	RootCmd.AddCommand(passiveCmd)
 	RootCmd.AddCommand(tlsCmd)
+	RootCmd.AddCommand(llmCmd)
 }
 
 var rulesCmd = &cobra.Command{
@@ -211,6 +217,51 @@ var passiveCmd = &cobra.Command{
 var tlsCmd = &cobra.Command{
 	Use:   "tls",
 	Short: "Inspect TLS and TLCP capabilities",
+}
+
+var llmCmd = &cobra.Command{
+	Use:   "llm",
+	Short: "Expose machine-readable metadata for LLM and agent integrations",
+}
+
+var llmManifestCmd = &cobra.Command{
+	Use:   "manifest",
+	Short: "Print HFinger capability manifest as JSON",
+	Run: func(cmd *cobra.Command, args []string) {
+		manifest := map[string]interface{}{
+			"name":        "hfinger",
+			"version":     config.Version,
+			"description": "Deterministic server-side fingerprinting tool for penetration testing and asset analysis.",
+			"rule_schema": "schemas/rule.schema.json",
+			"inputs": []string{
+				"single URL via -u",
+				"URL list or httpx JSONL via -f",
+				"passive MITM via -l",
+				"external YAML rules via --rules",
+			},
+			"outputs": []string{"terminal", "json", "jsonl", "xml", "xlsx", "passive-jsonl"},
+			"capabilities": []string{
+				"http-header", "cookie", "html-body", "html-meta", "script-src",
+				"script-hash", "favicon-mmh3-md5-sha1-sha256", "active-probe",
+				"api-endpoint", "error-page", "status-redirect", "tls-cert",
+				"tls-alpn-version-cipher", "http-behavior", "waf-cdn",
+				"framework", "cms-middleware", "version-extraction",
+				"confidence-evidence", "honeypot-detection",
+			},
+			"recommended_agent_flow": []string{
+				"run hfinger with --output-jsonl for streaming analysis",
+				"group results by category, confidence, and evidence",
+				"send high-confidence technologies to nuclei/ffuf/katana/nmap workflows",
+				"use rules doctor and schema before accepting generated rules",
+			},
+		}
+		data, err := json.MarshalIndent(manifest, "", "  ")
+		if err != nil {
+			logger.Error("Error: %v", err)
+			os.Exit(1)
+		}
+		fmt.Println(string(data))
+	},
 }
 
 var tlsCapabilitiesCmd = &cobra.Command{
@@ -478,4 +529,6 @@ func init() {
 	passiveCmd.AddCommand(passiveQueryCmd)
 
 	tlsCmd.AddCommand(tlsCapabilitiesCmd)
+
+	llmCmd.AddCommand(llmManifestCmd)
 }

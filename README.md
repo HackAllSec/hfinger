@@ -8,7 +8,7 @@ HFinger 是一个面向安全测试场景的服务端指纹识别工具，用于
 
 工具内置核心指纹规则，开箱即用；同时支持通过外置 YAML 规则扩展企业内部系统、社区规则和私有化产品识别能力。
 
-当前内置指纹规则 **1730** 条，覆盖产品、Web 框架、CMS、中间件、CDN/WAF 等服务端组件 **1460** 种。
+当前内置指纹规则 **1735** 条，覆盖产品、Web 框架、CMS、中间件、CDN/WAF、蜜罐等服务端组件 **1465** 种。
 
 ## 工具定位
 
@@ -18,7 +18,7 @@ HFinger 的目标不是替代漏洞扫描器，而是成为安全测试链路中
 
 - 核心规则内置，部署后无需额外携带规则文件
 - 外置 YAML 规则，方便社区贡献和企业私有规则维护
-- Header、Body、Cookie、Favicon、JSON/API、TLS、Server banner 等多证据融合
+- Header、Cookie、HTML、JS、Favicon、JSON/API、TLS、HTTP 行为、Server banner 等多证据融合
 - 输出证据和置信度，便于复核和自动化编排
 - 主动识别与被动代理识别同时覆盖
 
@@ -31,7 +31,7 @@ HFinger 的设计重点是把服务端指纹识别做成可治理、可复核、
 - 主动与被动结合：既支持批量主动识别，也支持作为 HTTP/HTTPS 代理被动沉淀访问过程中的服务端组件。
 - 国密场景覆盖：主动侧支持标准 TLS 与 TLCP auto/gm/std 模式，被动 MITM 可在同一监听端口自适应标准 TLS / TLCP 握手。
 - 规则质量治理：提供 `rules lint/test/stats`，支持正负样本回放，便于持续压低误报和漏报。
-- 工具链集成：支持 httpx JSONL 输入、JSON/JSONL/XLSX 输出，可接入 ASM、Burp Suite、mitmproxy、nuclei、SIEM 等安全流程。
+- 工具链集成：支持 httpx JSONL 输入、JSON/JSONL/XLSX 输出和 LLM manifest，可接入 ASM、Burp Suite、mitmproxy、nuclei、SIEM 与外部 Agent/Skill 工作流。
 
 ## 主要能力
 
@@ -40,15 +40,39 @@ HFinger 的设计重点是把服务端指纹识别做成可治理、可复核、
 - 内置核心规则，开箱即用
 - 外置 YAML 规则加载
 - Header、Body、Title、Cookie、Status、Redirect、Favicon 等多来源匹配
-- Regex、路径探测、脚本资源、HTML Meta、JSON/API、TLS 证书和 Server banner 特征匹配
+- HTML Meta、Script src、JS Hash、Favicon mmh3/MD5/SHA1/SHA256、JSON/API、TLS 证书/ALPN/版本/Cipher、HTTP 行为和 Server banner 特征匹配
+- 主动探测常见路径、API 接口、错误页、404 页面和 OPTIONS 行为
+- WAF/CDN、框架、CMS、中间件、版本提取和蜜罐识别
 - 识别结果包含证据与置信度
-- 支持 JSON、XML、XLSX 输出
+- 支持 JSON、JSONL、XML、XLSX 输出
 - 支持被动模式 JSONL 结构化落盘与查询
 - 支持 HTTP/1.1、HTTP/2
 - 主动请求支持标准 TLS、TLCP 回退连接和客户端证书认证
 - 被动 MITM 支持标准 TLS / TLCP 自适应握手
 - 支持代理、随机 UA、多线程
 - 提供规则校验命令，方便维护自定义规则
+- 提供 LLM/Agent 机器可读能力清单，方便外部 Skill 编排渗透测试任务
+
+## 能力覆盖
+
+| 能力 | 当前支持方式 |
+| --- | --- |
+| HTTP Header 指纹 | `header.contains`、`header.regex` |
+| Cookie 指纹 | `cookie.contains` |
+| HTML 内容指纹 | `body.contains`、`body.regex` |
+| HTML 标签 / Meta | `html.meta.contains`、`script.src.contains`、Body/Regex |
+| JavaScript 引用路径 | `script.src.contains`、`body.contains` |
+| JavaScript Hash | `script.hash.md5`、`script.hash.sha1`、`script.hash.sha256` |
+| Favicon 指纹 | `favicon.hash`、`favicon.hash.md5`、`favicon.hash.sha1`、`favicon.hash.sha256` |
+| 静态资源路径 | 主动 probe、`path.exists`、`script.src.contains`、Body/Regex |
+| 404 / 错误页指纹 | 默认 error-page 探测与规则级 probe |
+| TLS/HTTPS 指纹 | 证书 Subject/Issuer/DNSNames、ALPN、TLS 版本、Cipher、JA3S 风格摘要 |
+| HTTP 协议行为 | HTTP 版本、OPTIONS Allow、压缩、ETag、Accept-Ranges、状态码、重定向 |
+| 主动探测 / API 指纹 | 规则 `probes.request` 支持 method/path/header/body |
+| WAF/CDN / 框架 / CMS / 中间件 | 内置分类规则与多证据融合 |
+| 版本特征 | `extract` 正则提取版本 |
+| 综合识别 | score/any/all、negative、confidence、evidence |
+| 蜜罐识别 | 明确蜜罐产品规则 + 多产品冲突/异常响应启发式识别 |
 
 ## 项目结构
 
@@ -60,7 +84,7 @@ HFinger 的设计重点是把服务端指纹识别做成可治理、可复核、
 ├── icon_hash/           favicon hash 辅助工具
 ├── logger/              日志输出
 ├── models/              主动扫描与被动代理识别逻辑
-├── output/              JSON、XML、XLSX 输出
+├── output/              JSON、JSONL、XML、XLSX 输出
 ├── rules/               内置规则、YAML 加载、规则校验与匹配引擎
 ├── rulesets/            内置 YAML 规则源，发布时内置到二进制
 ├── utils/               HTTP、证书、升级等通用能力
@@ -110,6 +134,7 @@ http://192.168.1.10
 ```bash
 httpx -l domains.txt -json -silent > alive.jsonl
 hfinger -f alive.jsonl -j fingerprint-results.json
+hfinger -f alive.jsonl --output-jsonl fingerprint-results.jsonl
 ```
 
 ### 指定代理
@@ -476,6 +501,7 @@ metadata:
     --gm-client-enc-key string  TLCP 双证书加密客户端私钥
     --tls-mode string      主动请求 TLS 模式：auto、gm、std
 -j, --output-json string   输出 JSON 文件
+    --output-jsonl string  输出 JSONL 文件，便于 LLM/Agent/脚本流水线消费
 -x, --output-xml string    输出 XML 文件
 -s, --output-xlsx string   输出 XLSX 文件
 -c, --check-update         检查工具更新
@@ -494,6 +520,33 @@ hfinger passive query [jsonl-file]
     --min-confidence int     按最低置信度过滤
     --limit int              限制返回记录数量
 ```
+
+### LLM / Agent / Skill 集成
+
+HFinger 不把 LLM 放进最终指纹判定链路。LLM/Agent 应该把 HFinger 当作确定性工具调用：HFinger 负责扫描、匹配、输出证据和置信度，LLM/Skill 负责读取结构化结果并完成普通 CLI 参数无法直接完成的编排、分诊和解释任务。
+
+查看机器可读能力清单：
+
+```text
+hfinger llm manifest
+```
+
+批量扫描并输出 JSONL，供 LLM/Agent 流式消费：
+
+```bash
+hfinger -f alive.jsonl --output-jsonl hfinger-results.jsonl
+```
+
+典型 LLM/Skill 场景：
+
+- 资产分诊：读取 `hfinger-results.jsonl`，按 `category`、`cms`、`version`、`confidence` 和 `evidence` 归类，输出优先测试目标。
+- 工具链编排：把高置信度 API 网关、DevOps、管理后台、安全设备等结果转换为 nuclei、ffuf、katana、nmap 的输入。
+- 规则生成：根据 HTTP Header、Cookie、Body、Favicon、TLS 证书、JS Hash 等证据生成 YAML 规则草案，再由 `rules lint/test/doctor` 校验。
+- 规则审查：检查规则是否依赖泛化关键词、是否缺少 strong evidence、negative 和 positive/negative 样本。
+- 蜜罐研判：当结果出现 `category: honeypot`、`Potential Honeypot` 或多个冲突技术栈时，降低主动探测强度并生成低风险确认建议。
+- 报告解释：把 evidence 和 confidence 转换为面向安全报告的可审计说明。
+
+Skill 是外部 Agent 的工作流能力，不是 HFinger 仓库必须携带的运行时目录。仓库不提交 `.trae/`；用户可以在自己的 Agent 环境中编写 Skill，让 Skill 调用 `hfinger llm manifest`、`hfinger --output-jsonl`、`hfinger rules lint/test/doctor` 等命令完成更复杂的渗透测试任务。
 
 ## 合法使用与免责声明
 

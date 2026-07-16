@@ -1,7 +1,11 @@
 package rules
 
 import (
+	"crypto/md5"
+	"crypto/sha1"
+	"crypto/sha256"
 	"encoding/binary"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"hash/maphash"
@@ -71,8 +75,24 @@ type preparedResponse struct {
 	lowerTLSDNS     string
 	tlsALPN         string
 	lowerTLSALPN    string
+	tlsVersion      string
+	lowerTLSVersion string
+	tlsCipher       string
+	lowerTLSCipher  string
+	tlsJA3S         string
 
-	faviconHash string
+	faviconMMH3   string
+	faviconMD5    string
+	faviconSHA1   string
+	faviconSHA256 string
+	scriptHashes  []ResourceHash
+
+	httpVersion         string
+	lowerHTTPVersion    string
+	allowedMethods      string
+	lowerAllowedMethods string
+	compression         string
+	lowerCompression    string
 
 	jsonParsed bool
 	jsonOK     bool
@@ -167,7 +187,9 @@ func compileMatcher(matcher Matcher) compiledMatcher {
 
 	switch cm.matcherType {
 	case "body.contains", "header.contains", "title.contains", "cookie.contains", "redirect.to", "server.banner.contains",
-		"tls.cert.subject.contains", "tls.cert.issuer.contains", "tls.cert.dns.contains", "tls.alpn.contains":
+		"tls.cert.subject.contains", "tls.cert.issuer.contains", "tls.cert.dns.contains", "tls.alpn.contains",
+		"tls.version.contains", "tls.cipher.contains", "http.version.contains", "http.method.allowed",
+		"response.compression.contains":
 		automatonValues := cm.values
 		if !isCaseSensitive(matcher) {
 			automatonValues = cm.lowerValues
@@ -175,7 +197,7 @@ func compileMatcher(matcher Matcher) compiledMatcher {
 		if len(automatonValues) > 1 && !containsEmptyString(automatonValues) {
 			cm.contains = newContainsAutomaton(automatonValues)
 		}
-	case "body.regex", "header.regex", "server.banner.regex":
+	case "body.regex", "header.regex", "title.regex", "server.banner.regex":
 		cm.regexps = compileRegexps(values)
 	case "script.src.contains":
 		cm.regexps = compileRegexps(scriptPatterns(values))
@@ -396,6 +418,7 @@ func writeProbeCacheKey(cacheHash *maphash.Hash, probe Probe) {
 	writeCachePart(cacheHash, probe.ID)
 	writeCachePart(cacheHash, probe.Request.Method)
 	writeCachePart(cacheHash, probe.Request.Path)
+	writeCachePart(cacheHash, probe.Request.Body)
 	headerKeys := make([]string, 0, len(probe.Request.Headers))
 	for key := range probe.Request.Headers {
 		headerKeys = append(headerKeys, key)
@@ -476,11 +499,17 @@ func prepareResponseSet(responses []Response) preparedResponses {
 	for _, response := range responses {
 		body := string(response.Body)
 		tlsDNS := strings.Join(response.TLS.DNSNames, ",")
-		faviconHash := ""
+		faviconMMH3 := ""
+		faviconMD5 := ""
+		faviconSHA1 := ""
+		faviconSHA256 := ""
 		if len(response.Favicon) > 0 {
+			// 同一响应只计算一次 favicon 摘要，避免多个 matcher 重复消耗 CPU。
 			hash := int32(murmur3.SeedSum32(0, response.Favicon))
-			faviconHash = strconv.FormatInt(int64(hash), 10)
+			faviconMMH3 = strconv.FormatInt(int64(hash), 10)
+			faviconMD5, faviconSHA1, faviconSHA256 = contentHashes(response.Favicon)
 		}
+		allowedMethods := strings.Join(response.Behavior.Allowed, ",")
 		item := &preparedResponse{
 			response: response,
 
@@ -506,8 +535,23 @@ func prepareResponseSet(responses []Response) preparedResponses {
 			lowerTLSDNS:     strings.ToLower(tlsDNS),
 			tlsALPN:         response.TLS.ALPN,
 			lowerTLSALPN:    strings.ToLower(response.TLS.ALPN),
+			tlsVersion:      response.TLS.Version,
+			lowerTLSVersion: strings.ToLower(response.TLS.Version),
+			tlsCipher:       response.TLS.CipherSuite,
+			lowerTLSCipher:  strings.ToLower(response.TLS.CipherSuite),
+			tlsJA3S:         response.TLS.JA3S,
 
-			faviconHash: faviconHash,
+			faviconMMH3:         faviconMMH3,
+			faviconMD5:          faviconMD5,
+			faviconSHA1:         faviconSHA1,
+			faviconSHA256:       faviconSHA256,
+			scriptHashes:        response.Scripts,
+			httpVersion:         response.Behavior.HTTPVersion,
+			lowerHTTPVersion:    strings.ToLower(response.Behavior.HTTPVersion),
+			allowedMethods:      allowedMethods,
+			lowerAllowedMethods: strings.ToLower(allowedMethods),
+			compression:         response.Behavior.Compression,
+			lowerCompression:    strings.ToLower(response.Behavior.Compression),
 		}
 		prepared.items = append(prepared.items, item)
 		if response.ProbeID != "" {
@@ -669,6 +713,8 @@ func matchPreparedResponse(response *preparedResponse, matcher compiledMatcher) 
 		return matchPreparedHeaderRegex(response.header, matcher, response.response.URL)
 	case "title.contains":
 		return matchPreparedText("title", matcher, response.title, response.lowerTitle, response.response.URL)
+	case "title.regex":
+		return matchPreparedRegex("title", matcher, response.title, response.response.URL)
 	case "cookie.contains":
 		cookieMatcher := matcher
 		cookieMatcher.matcher.Key = "Set-Cookie"
@@ -678,18 +724,23 @@ func matchPreparedResponse(response *preparedResponse, matcher compiledMatcher) 
 			return evidence("status", matcher.matcher, strconv.Itoa(response.response.StatusCode), response.response.URL), true
 		}
 	case "favicon.hash":
-		if response.faviconHash == "" {
-			return Evidence{}, false
-		}
-		for _, value := range matcher.values {
-			if response.faviconHash == value {
-				return evidence("favicon", matcher.matcher, response.faviconHash, response.response.URL), true
-			}
-		}
+		return matchPreparedExact("favicon", matcher, response.faviconMMH3, response.response.URL)
+	case "favicon.hash.md5":
+		return matchPreparedExact("favicon.md5", matcher, response.faviconMD5, response.response.URL)
+	case "favicon.hash.sha1":
+		return matchPreparedExact("favicon.sha1", matcher, response.faviconSHA1, response.response.URL)
+	case "favicon.hash.sha256":
+		return matchPreparedExact("favicon.sha256", matcher, response.faviconSHA256, response.response.URL)
 	case "redirect.to":
 		return matchPreparedText("redirect", matcher, response.redirect, response.lowerRedirect, response.response.URL)
 	case "script.src.contains":
 		return matchPreparedRegex("script.src", matcher, response.body, response.response.URL)
+	case "script.hash.md5":
+		return matchPreparedResourceHash("script.md5", matcher, response.scriptHashes, func(item ResourceHash) string { return item.MD5 }, response.response.URL)
+	case "script.hash.sha1":
+		return matchPreparedResourceHash("script.sha1", matcher, response.scriptHashes, func(item ResourceHash) string { return item.SHA1 }, response.response.URL)
+	case "script.hash.sha256":
+		return matchPreparedResourceHash("script.sha256", matcher, response.scriptHashes, func(item ResourceHash) string { return item.SHA256 }, response.response.URL)
 	case "html.meta.contains":
 		return matchPreparedRegex("html.meta", matcher, response.body, response.response.URL)
 	case "path.exists":
@@ -712,6 +763,73 @@ func matchPreparedResponse(response *preparedResponse, matcher compiledMatcher) 
 		return matchPreparedText("tls.cert.dns", matcher, response.tlsDNS, response.lowerTLSDNS, response.response.URL)
 	case "tls.alpn.contains":
 		return matchPreparedText("tls.alpn", matcher, response.tlsALPN, response.lowerTLSALPN, response.response.URL)
+	case "tls.version.contains":
+		return matchPreparedText("tls.version", matcher, response.tlsVersion, response.lowerTLSVersion, response.response.URL)
+	case "tls.cipher.contains":
+		return matchPreparedText("tls.cipher", matcher, response.tlsCipher, response.lowerTLSCipher, response.response.URL)
+	case "tls.ja3s.hash":
+		return matchPreparedExact("tls.ja3s", matcher, response.tlsJA3S, response.response.URL)
+	case "http.version.contains":
+		return matchPreparedText("http.version", matcher, response.httpVersion, response.lowerHTTPVersion, response.response.URL)
+	case "http.method.allowed":
+		return matchPreparedText("http.allow", matcher, response.allowedMethods, response.lowerAllowedMethods, response.response.URL)
+	case "response.compression.contains":
+		return matchPreparedText("response.compression", matcher, response.compression, response.lowerCompression, response.response.URL)
+	case "response.etag.exists":
+		if value := headerValue(response.response.Header, "ETag"); value != "" {
+			return evidence("response.etag", matcher.matcher, value, response.response.URL), true
+		}
+	case "response.accept_ranges.exists":
+		if value := headerValue(response.response.Header, "Accept-Ranges"); value != "" {
+			return evidence("response.accept_ranges", matcher.matcher, value, response.response.URL), true
+		}
+	}
+	return Evidence{}, false
+}
+
+func headerValue(headers http.Header, key string) string {
+	if value := headers.Get(key); value != "" {
+		return value
+	}
+	for headerKey, values := range headers {
+		if strings.EqualFold(headerKey, key) && len(values) > 0 {
+			return values[0]
+		}
+	}
+	return ""
+}
+
+func contentHashes(data []byte) (string, string, string) {
+	md5Sum := md5.Sum(data)
+	sha1Sum := sha1.Sum(data)
+	sha256Sum := sha256.Sum256(data)
+	return hex.EncodeToString(md5Sum[:]), hex.EncodeToString(sha1Sum[:]), hex.EncodeToString(sha256Sum[:])
+}
+
+func matchPreparedExact(source string, matcher compiledMatcher, actual string, responseURL string) (Evidence, bool) {
+	if actual == "" {
+		return Evidence{}, false
+	}
+	for _, expected := range matcher.values {
+		if strings.EqualFold(actual, expected) {
+			return evidence(source, matcher.matcher, actual, responseURL), true
+		}
+	}
+	return Evidence{}, false
+}
+
+func matchPreparedResourceHash(source string, matcher compiledMatcher, hashes []ResourceHash, value func(ResourceHash) string, responseURL string) (Evidence, bool) {
+	for _, item := range hashes {
+		actual := value(item)
+		for _, expected := range matcher.values {
+			if actual != "" && strings.EqualFold(actual, expected) {
+				matched := actual
+				if item.URL != "" {
+					matched = item.URL + " " + actual
+				}
+				return evidence(source, matcher.matcher, matched, responseURL), true
+			}
+		}
 	}
 	return Evidence{}, false
 }

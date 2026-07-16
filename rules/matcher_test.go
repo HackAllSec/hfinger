@@ -1,6 +1,8 @@
 package rules
 
 import (
+	"crypto/sha256"
+	"fmt"
 	"net/http"
 	"strings"
 	"testing"
@@ -330,10 +332,13 @@ func TestMatchResponseJSONAndTLS(t *testing.T) {
 		StatusCode: 401,
 		Body:       []byte(`{"error":{"code":"UNAUTHORIZED"},"request_id":"abc"}`),
 		TLS: TLSInfo{
-			Subject:  "CN=api.example.com",
-			Issuer:   "CN=Example CA",
-			DNSNames: []string{"api.example.com"},
-			ALPN:     "h2",
+			Subject:     "CN=api.example.com",
+			Issuer:      "CN=Example CA",
+			DNSNames:    []string{"api.example.com"},
+			ALPN:        "h2",
+			Version:     "TLS1.3",
+			CipherSuite: "TLS_AES_128_GCM_SHA256",
+			JA3S:        "abc123",
 		},
 	}
 
@@ -348,6 +353,59 @@ func TestMatchResponseJSONAndTLS(t *testing.T) {
 	}
 	if _, ok := MatchResponse(response, Matcher{Type: "tls.alpn.contains", Value: "h2"}); !ok {
 		t.Fatalf("tls.alpn.contains expected match")
+	}
+	if _, ok := MatchResponse(response, Matcher{Type: "tls.version.contains", Value: "TLS1.3"}); !ok {
+		t.Fatalf("tls.version.contains expected match")
+	}
+	if _, ok := MatchResponse(response, Matcher{Type: "tls.cipher.contains", Value: "AES_128_GCM"}); !ok {
+		t.Fatalf("tls.cipher.contains expected match")
+	}
+	if _, ok := MatchResponse(response, Matcher{Type: "tls.ja3s.hash", Value: "abc123"}); !ok {
+		t.Fatalf("tls.ja3s.hash expected match")
+	}
+}
+
+func TestMatchResponseResourceHashesAndBehavior(t *testing.T) {
+	favicon := []byte("favicon-data")
+	faviconSHA256 := sha256.Sum256(favicon)
+	response := Response{
+		URL:     "https://example.com/",
+		Favicon: favicon,
+		Scripts: []ResourceHash{{
+			URL:    "https://example.com/app.js",
+			SHA256: "script-sha256",
+		}},
+		Header: http.Header{
+			"ETag":          {`"abc"`},
+			"Accept-Ranges": {"bytes"},
+		},
+		Behavior: BehaviorInfo{
+			HTTPVersion: "HTTP/2.0",
+			Compression: "gzip",
+			Allowed:     []string{"GET", "POST", "OPTIONS"},
+		},
+	}
+
+	if _, ok := MatchResponse(response, Matcher{Type: "favicon.hash.sha256", Value: fmt.Sprintf("%x", faviconSHA256)}); !ok {
+		t.Fatalf("favicon.hash.sha256 expected match")
+	}
+	if _, ok := MatchResponse(response, Matcher{Type: "script.hash.sha256", Value: "script-sha256"}); !ok {
+		t.Fatalf("script.hash.sha256 expected match")
+	}
+	if _, ok := MatchResponse(response, Matcher{Type: "http.version.contains", Value: "HTTP/2"}); !ok {
+		t.Fatalf("http.version.contains expected match")
+	}
+	if _, ok := MatchResponse(response, Matcher{Type: "http.method.allowed", Value: "OPTIONS"}); !ok {
+		t.Fatalf("http.method.allowed expected match")
+	}
+	if _, ok := MatchResponse(response, Matcher{Type: "response.compression.contains", Value: "gzip"}); !ok {
+		t.Fatalf("response.compression.contains expected match")
+	}
+	if _, ok := MatchResponse(response, Matcher{Type: "response.etag.exists"}); !ok {
+		t.Fatalf("response.etag.exists expected match")
+	}
+	if _, ok := MatchResponse(response, Matcher{Type: "response.accept_ranges.exists"}); !ok {
+		t.Fatalf("response.accept_ranges.exists expected match")
 	}
 }
 

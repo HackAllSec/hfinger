@@ -182,13 +182,20 @@ Matcher 是具体匹配条件。
 | `header.contains` | 响应 header 名或值包含字符串 |
 | `header.regex` | 响应 header 命中正则 |
 | `title.contains` | 页面标题包含字符串 |
+| `title.regex` | 页面标题命中正则 |
 | `cookie.contains` | `Set-Cookie` 包含字符串 |
 | `status.eq` | 状态码等于指定值 |
 | `status.in` | 状态码在指定列表中 |
 | `favicon.hash` | favicon mmh3 hash 命中 |
+| `favicon.hash.md5` | favicon MD5 hash 命中 |
+| `favicon.hash.sha1` | favicon SHA1 hash 命中 |
+| `favicon.hash.sha256` | favicon SHA256 hash 命中 |
 | `path.exists` | 探测路径返回 2xx/3xx |
 | `redirect.to` | `Location` header 包含指定值 |
 | `script.src.contains` | script src 包含指定值 |
+| `script.hash.md5` | 外链 JavaScript 内容 MD5 hash 命中 |
+| `script.hash.sha1` | 外链 JavaScript 内容 SHA1 hash 命中 |
+| `script.hash.sha256` | 外链 JavaScript 内容 SHA256 hash 命中 |
 | `html.meta.contains` | meta 标签包含指定值 |
 | `json.key.exists` | JSON 响应中存在指定 key |
 | `json.path.eq` | JSON 点分路径等于指定值 |
@@ -198,6 +205,16 @@ Matcher 是具体匹配条件。
 | `tls.cert.issuer.contains` | TLS 证书 Issuer 包含指定值 |
 | `tls.cert.dns.contains` | TLS 证书 DNSNames 包含指定值 |
 | `tls.alpn.contains` | TLS ALPN 包含指定值 |
+| `tls.version.contains` | TLS 版本包含指定值，如 `TLS1.3` |
+| `tls.cipher.contains` | TLS Cipher Suite 包含指定值 |
+| `tls.ja3s.hash` | JA3S 风格摘要命中 |
+| `http.version.contains` | HTTP 协议版本包含指定值，如 `HTTP/2` |
+| `http.method.allowed` | `OPTIONS` 响应的 `Allow` 方法包含指定值 |
+| `response.compression.contains` | `Content-Encoding` 包含指定值 |
+| `response.etag.exists` | 响应存在 `ETag` |
+| `response.accept_ranges.exists` | 响应存在 `Accept-Ranges` |
+
+说明：`tls.ja3s.hash` 当前使用 Go 标准库可获得的 TLS 版本、Cipher Suite 和 ALPN 生成稳定摘要，属于 JA3S 风格摘要，不等同于完整标准 JA3S。
 
 ## 8. Negative 规则
 
@@ -384,7 +401,63 @@ negative:
     reason: 探测路径不存在
 ```
 
-## 11. AI 辅助生成规则提示词
+### JavaScript Hash 规则示例
+
+```yaml
+id: example-js-hash
+name: Example JS App
+category: framework
+match:
+  strategy: score
+  threshold: 80
+  matchers:
+    - type: script.src.contains
+      value: /static/app.
+      weight: 30
+      evidence: 页面引用默认前端资源路径
+    - type: script.hash.sha256
+      value: 2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824
+      weight: 70
+      evidence: 外链 JS 内容摘要命中
+```
+
+### 蜜罐规则示例
+
+```yaml
+id: example-honeypot
+name: Example Honeypot
+category: honeypot
+tags: [honeypot, deception]
+match:
+  strategy: score
+  threshold: 100
+  matchers:
+    - type: title.contains
+      value: Example Honeypot
+      weight: 50
+    - type: body.contains
+      value: example-honeypot-marker
+      weight: 50
+negative:
+  - type: body.contains
+    value: Example Honeypot Documentation
+    reason: 排除产品文档页面
+```
+
+HFinger 同时内置启发式蜜罐研判：当多个互斥产品/分类同时命中，或大量主动探测路径均返回 2xx 时，会输出 `Potential Honeypot` 作为风险提示。启发式结果用于辅助人工判断，不替代明确产品规则。
+
+## 11. LLM / Agent 集成
+
+HFinger 提供机器可读能力清单和 JSONL 输出，便于 LLM、Agent、ASM 或 SIEM 流水线消费：
+
+```bash
+hfinger llm manifest
+hfinger -f alive.jsonl --output-jsonl hfinger-results.jsonl
+```
+
+项目级 Skill 位于 `.trae/skills/`，覆盖规则生成、规则审查、结果分诊、工具链联动和蜜罐研判。LLM/Skill 只负责辅助编排与解释，不进入最终指纹判定链路。
+
+## 12. AI 辅助生成规则提示词
 
 AI 可以用于生成候选规则草案，但不建议直接把 AI 输出作为最终规则提交。推荐流程是：
 
@@ -431,7 +504,7 @@ Evidence:
 【Paste HTTP headers, status code, title, body summary, JSON error shape, TLS certificate info, favicon hash, etc.】
 ```
 
-## 12. 常见问题
+## 13. 常见问题
 
 ### 是否支持 JSON 规则文件？
 

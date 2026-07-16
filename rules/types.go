@@ -103,14 +103,32 @@ type Response struct {
 	Header     http.Header
 	Body       []byte
 	Favicon    []byte
+	Scripts    []ResourceHash
 	TLS        TLSInfo
+	Behavior   BehaviorInfo
 }
 
 type TLSInfo struct {
-	Subject  string   `json:"subject,omitempty" yaml:"subject,omitempty"`
-	Issuer   string   `json:"issuer,omitempty" yaml:"issuer,omitempty"`
-	DNSNames []string `json:"dns_names,omitempty" yaml:"dns_names,omitempty"`
-	ALPN     string   `json:"alpn,omitempty" yaml:"alpn,omitempty"`
+	Subject     string   `json:"subject,omitempty" yaml:"subject,omitempty"`
+	Issuer      string   `json:"issuer,omitempty" yaml:"issuer,omitempty"`
+	DNSNames    []string `json:"dns_names,omitempty" yaml:"dns_names,omitempty"`
+	ALPN        string   `json:"alpn,omitempty" yaml:"alpn,omitempty"`
+	Version     string   `json:"version,omitempty" yaml:"version,omitempty"`
+	CipherSuite string   `json:"cipher_suite,omitempty" yaml:"cipher_suite,omitempty"`
+	JA3S        string   `json:"ja3s,omitempty" yaml:"ja3s,omitempty"`
+}
+
+type ResourceHash struct {
+	URL    string `json:"url,omitempty" yaml:"url,omitempty"`
+	MD5    string `json:"md5,omitempty" yaml:"md5,omitempty"`
+	SHA1   string `json:"sha1,omitempty" yaml:"sha1,omitempty"`
+	SHA256 string `json:"sha256,omitempty" yaml:"sha256,omitempty"`
+}
+
+type BehaviorInfo struct {
+	HTTPVersion string   `json:"http_version,omitempty" yaml:"http_version,omitempty"`
+	Compression string   `json:"compression,omitempty" yaml:"compression,omitempty"`
+	Allowed     []string `json:"allowed,omitempty" yaml:"allowed,omitempty"`
 }
 
 type Evidence struct {
