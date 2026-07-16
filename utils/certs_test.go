@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"os"
 	"path/filepath"
 	"testing"
 
@@ -41,6 +42,20 @@ func TestEnsureCertsGeneratesSeparateGMCA(t *testing.T) {
 	}
 	if globalCA.RSACert.Subject.CommonName == globalCA.GMCert.Subject.CommonName {
 		t.Fatalf("RSA CA and GM CA should be separate certificates")
+	}
+	rsaKeyInfo, err := os.Stat(config.KeyPath)
+	if err != nil {
+		t.Fatalf("stat RSA key unexpected error: %v", err)
+	}
+	if rsaKeyInfo.Mode().Perm() != 0600 {
+		t.Fatalf("RSA key permission = %v, want 0600", rsaKeyInfo.Mode().Perm())
+	}
+	gmKeyInfo, err := os.Stat(config.GMKeyPath)
+	if err != nil {
+		t.Fatalf("stat GM key unexpected error: %v", err)
+	}
+	if gmKeyInfo.Mode().Perm() != 0600 {
+		t.Fatalf("GM key permission = %v, want 0600", gmKeyInfo.Mode().Perm())
 	}
 }
 
