@@ -34,9 +34,6 @@ jobs:
       - name: Build
         run: go build ./...
 
-      - name: Release metadata check
-        run: go run main.go dev release-check
-
       - name: Validate built-in rules
         run: go run main.go rules test rulesets/core
 

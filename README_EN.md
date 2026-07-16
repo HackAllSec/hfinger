@@ -365,14 +365,6 @@ hfinger rules doctor --max-rules 0
 
 `rules doctor` aggregates lint findings, prints the most common issue types, and lists rules that should be cleaned up first with suggested remediation directions. `--max-rules 0` prints summary output only and is suitable for CI baseline checks.
 
-Check release metadata and the rule schema before publishing:
-
-```bash
-hfinger dev release-check
-```
-
-This command checks `config.Version`, `CHANGELOG.md`, `winres/winres.json`, and `schemas/rule.schema.json` to avoid inconsistent version metadata in release assets.
-
 Validate external rules:
 
 ```bash
@@ -501,12 +493,6 @@ hfinger passive query [jsonl-file]
     --category string        Filter by category
     --min-confidence int     Filter by minimum confidence
     --limit int              Limit returned records
-```
-
-Developer maintenance command:
-
-```text
-hfinger dev release-check     Check version metadata and the rule schema
 ```
 
 ## Legal Use and Disclaimer

@@ -365,14 +365,6 @@ hfinger rules doctor --max-rules 0
 
 `rules doctor` 会聚合 lint 问题、输出高频问题类型，并列出最需要治理的规则及建议修复方向。`--max-rules 0` 只输出汇总，适合 CI 基线检查。
 
-发布前检查版本和规则 Schema：
-
-```bash
-hfinger dev release-check
-```
-
-该命令会校验 `config.Version`、`CHANGELOG.md`、`winres/winres.json` 和 `schemas/rule.schema.json`，避免发布资产中的版本元数据不一致。
-
 校验外置规则：
 
 ```bash
@@ -501,12 +493,6 @@ hfinger passive query [jsonl-file]
     --category string        按类别过滤
     --min-confidence int     按最低置信度过滤
     --limit int              限制返回记录数量
-```
-
-开发维护命令：
-
-```text
-hfinger dev release-check     检查版本元数据和规则 Schema
 ```
 
 ## 合法使用与免责声明
