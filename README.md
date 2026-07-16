@@ -160,6 +160,20 @@ hfinger -u https://www.example.com --gm-client-cert gm-client.crt --gm-client-ke
 
 如果只提供 `--client-cert/--client-key`，工具会优先将其用于标准 TLS，并尝试作为 GM/TLS 客户端证书加载；如果国密客户端证书与标准 TLS 证书不同，建议显式使用 `--gm-client-cert/--gm-client-key`。
 
+### 主动 TLS 模式
+
+主动请求默认使用 `auto` 模式，用户不需要额外指定参数。`auto` 会先尝试标准 TLS；如果标准 TLS 失败且错误特征符合 GM/TLS 场景，再自动尝试 GM/TLS。
+
+如果已经明确目标类型，可以强制指定模式：
+
+```bash
+# 只走 GM/TLS
+hfinger -u https://www.example.com --tls-mode gm
+
+# 只走标准 TLS，不做 GM/TLS fallback
+hfinger -u https://www.example.com --tls-mode std
+```
+
 查询被动模式 JSONL 结果：
 
 ```bash
@@ -296,6 +310,7 @@ metadata:
     --client-key string    双向 TLS 客户端私钥
     --gm-client-cert string 双向 GM/TLS 客户端证书
     --gm-client-key string  双向 GM/TLS 客户端私钥
+    --tls-mode string      主动请求 TLS 模式：auto、gm、std
 -j, --output-json string   输出 JSON 文件
 -x, --output-xml string    输出 XML 文件
 -s, --output-xlsx string   输出 XLSX 文件

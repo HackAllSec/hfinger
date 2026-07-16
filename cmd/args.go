@@ -47,6 +47,7 @@ var RootCmd = &cobra.Command{
 		clientKey, _ := cmd.Flags().GetString("client-key")
 		gmClientCert, _ := cmd.Flags().GetString("gm-client-cert")
 		gmClientKey, _ := cmd.Flags().GetString("gm-client-key")
+		tlsMode, _ := cmd.Flags().GetString("tls-mode")
 		thread, _ := cmd.Flags().GetInt("thread")
 		redirect, _ := cmd.Flags().GetInt("redirect")
 		outputJSON, _ := cmd.Flags().GetString("output-json")
@@ -70,6 +71,10 @@ var RootCmd = &cobra.Command{
 		}
 
 		utils.ConfigureClientCertificates(clientCert, clientKey, gmClientCert, gmClientKey)
+		if err := utils.ConfigureTLSMode(tlsMode); err != nil {
+			logger.Error("Error: %v", err)
+			os.Exit(1)
+		}
 		err := utils.InitializeHTTPClient(proxy, 30*time.Second, redirect)
 		if err != nil {
 			logger.Error("Error: %v", err)
@@ -165,6 +170,7 @@ func init() {
 	RootCmd.Flags().String("client-key", "", "TLS client private key for mutual TLS targets")
 	RootCmd.Flags().String("gm-client-cert", "", "GM/TLS client certificate for mutual TLS targets")
 	RootCmd.Flags().String("gm-client-key", "", "GM/TLS client private key for mutual TLS targets")
+	RootCmd.Flags().String("tls-mode", "auto", "TLS mode for active requests: auto, gm, or std")
 	RootCmd.Flags().StringArray("rules", nil, "Load external YAML rule file or directory; can be specified multiple times")
 	RootCmd.Flags().String("passive-store", "", "Write passive mode fingerprint results to a JSONL file")
 	RootCmd.Flags().IntP("thread", "t", 100, "Number of fingerprint recognition threads")

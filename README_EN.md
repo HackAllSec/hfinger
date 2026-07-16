@@ -160,6 +160,20 @@ hfinger -u https://www.example.com --gm-client-cert gm-client.crt --gm-client-ke
 
 When only `--client-cert/--client-key` is provided, HFinger uses it for standard TLS and also attempts to load it as a GM/TLS client certificate. If the GM/TLS client certificate is different, use `--gm-client-cert/--gm-client-key`.
 
+### Active TLS Mode
+
+Active requests use `auto` mode by default, so users do not need to specify an extra option. `auto` tries standard TLS first. If standard TLS fails with a GM/TLS-like error, HFinger automatically tries GM/TLS fallback.
+
+If the target type is already known, force the mode explicitly:
+
+```bash
+# GM/TLS only
+hfinger -u https://www.example.com --tls-mode gm
+
+# Standard TLS only, without GM/TLS fallback
+hfinger -u https://www.example.com --tls-mode std
+```
+
 Query passive mode JSONL results:
 
 ```bash
@@ -296,6 +310,7 @@ metadata:
     --client-key string    Mutual TLS client private key
     --gm-client-cert string Mutual GM/TLS client certificate
     --gm-client-key string  Mutual GM/TLS client private key
+    --tls-mode string      Active request TLS mode: auto, gm, std
 -j, --output-json string   Write JSON output
 -x, --output-xml string    Write XML output
 -s, --output-xlsx string   Write XLSX output

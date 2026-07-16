@@ -26,6 +26,7 @@ var (
 	clientKeyPath       string
 	gmClientCertPath    string
 	gmClientKeyPath     string
+	tlsMode             = TLSModeAuto
 	noScriptRe          = regexp.MustCompile(`(?is)<noscript[^>]*>.*?</noscript>`)
 	metaRefreshRe       = regexp.MustCompile(`(?is)<meta\b[^>]*http-equiv\s*=\s*['"]?refresh['"]?[^>]*>`)
 	jsLocationHrefRe    = regexp.MustCompile(`>window\.location\.href\s*=\s*['"]([^'"]+)['"]\s*;?\s*</script>`)
@@ -72,6 +73,12 @@ var (
 	connTrackMap   = make(map[string]int)
 )
 
+const (
+	TLSModeAuto = "auto"
+	TLSModeGM   = "gm"
+	TLSModeStd  = "std"
+)
+
 func init() {
 	rand.Seed(time.Now().UnixNano())
 }
@@ -85,6 +92,19 @@ func ConfigureClientCertificates(certPath, keyPath, gmCertPath, gmKeyPath string
 	clientKeyPath = keyPath
 	gmClientCertPath = gmCertPath
 	gmClientKeyPath = gmKeyPath
+}
+
+func ConfigureTLSMode(mode string) error {
+	if mode == "" {
+		mode = TLSModeAuto
+	}
+	switch mode {
+	case TLSModeAuto, TLSModeGM, TLSModeStd:
+		tlsMode = mode
+		return nil
+	default:
+		return fmt.Errorf("invalid tls mode %q, allowed values: auto, gm, std", mode)
+	}
 }
 
 func InitializeHTTPClient(proxy string, timeout time.Duration, maxRedirects int) error {
@@ -137,9 +157,16 @@ func createHybridTransport(proxy string) (*http.Transport, error) {
 	// 创建混合传输层
 	transport := &http.Transport{
 		DialTLS: func(network, addr string) (net.Conn, error) {
+			if tlsMode == TLSModeGM {
+				return connectWithGMTLS(network, addr, gmTLSConfig)
+			}
+
 			conn, err := tls.Dial(network, addr, stdTLSConfig)
 			if err == nil {
 				return conn, nil
+			}
+			if tlsMode == TLSModeStd {
+				return nil, err
 			}
 			if shouldFallbackToGMTLS(err) {
 				logger.Warn("Standard TLS connection failed for %s, trying GM/TLS fallback: %v", addr, err)

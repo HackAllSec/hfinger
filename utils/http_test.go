@@ -219,10 +219,39 @@ func TestShouldFallbackToGMTLS(t *testing.T) {
 	}
 }
 
+func TestConfigureTLSMode(t *testing.T) {
+	oldMode := tlsMode
+	t.Cleanup(func() {
+		tlsMode = oldMode
+	})
+
+	if err := ConfigureTLSMode(""); err != nil {
+		t.Fatalf("ConfigureTLSMode(empty) unexpected error: %v", err)
+	}
+	if tlsMode != TLSModeAuto {
+		t.Fatalf("tlsMode = %q, want auto", tlsMode)
+	}
+
+	for _, mode := range []string{TLSModeAuto, TLSModeGM, TLSModeStd} {
+		if err := ConfigureTLSMode(mode); err != nil {
+			t.Fatalf("ConfigureTLSMode(%q) unexpected error: %v", mode, err)
+		}
+		if tlsMode != mode {
+			t.Fatalf("tlsMode = %q, want %q", tlsMode, mode)
+		}
+	}
+
+	if err := ConfigureTLSMode("standard"); err == nil {
+		t.Fatalf("ConfigureTLSMode() expected error for unsupported mode")
+	}
+}
+
 func TestCreateHybridTransportProxyCredentialsDoNotMutateRequest(t *testing.T) {
 	ConfigureClientCertificates("", "", "", "")
+	ConfigureTLSMode(TLSModeAuto)
 	t.Cleanup(func() {
 		ConfigureClientCertificates("", "", "", "")
+		ConfigureTLSMode(TLSModeAuto)
 	})
 	transport, err := createHybridTransport("http://user:pass@127.0.0.1:8080")
 	if err != nil {
