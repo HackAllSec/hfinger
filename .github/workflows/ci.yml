@@ -23,13 +23,26 @@ jobs:
           cache: true
 
       - name: Test
-        run: go test ./...
+        run: go test -p 1 ./...
+
+      - name: Race test rules engine
+        run: go test -race ./rules
 
       - name: Vet
         run: go vet ./...
 
       - name: Build
         run: go build ./...
+
+      - name: Validate built-in rules
+        run: go run main.go rules test rulesets/core
+
+      - name: Check rule quality baseline
+        run: |
+          go run main.go rules stats | tee /tmp/hfinger-rules-stats.txt
+          grep -q '^lint.errors=0$' /tmp/hfinger-rules-stats.txt
+          warnings=$(awk -F= '/^lint.warnings=/{print $2}' /tmp/hfinger-rules-stats.txt)
+          test "${warnings}" -le 2491
 
       - name: Vulnerability scan
         run: go run golang.org/x/vuln/cmd/govulncheck@latest ./...

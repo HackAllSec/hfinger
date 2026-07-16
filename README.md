@@ -84,12 +84,6 @@ cd hfinger
 go build
 ```
 
-Windows 下可运行：
-
-```bash
-windows_build.bat
-```
-
 ## 使用方法
 
 ### 单目标识别
@@ -115,7 +109,7 @@ http://192.168.1.10
 
 ```bash
 httpx -l domains.txt -json -silent > alive.jsonl
-hfinger -f alive.jsonl -j hfinger.json
+hfinger -f alive.jsonl -j fingerprint-results.json
 ```
 
 ### 指定代理
@@ -224,13 +218,13 @@ HFinger 可以作为信息收集链路中的指纹识别层，与常见安全工
 httpx -l domains.txt -silent > alive.txt
 
 # 2. HFinger 对存活 URL 做证据化指纹识别
-hfinger -f alive.txt -j hfinger.json
+hfinger -f alive.txt -j fingerprint-results.json
 ```
 
 如果已有自研 ASM 或资产平台，只需要导出一行一个 URL 的文件即可：
 
 ```bash
-hfinger -f asm-alive-urls.txt -j hfinger.json -s hfinger.xlsx
+hfinger -f asm-alive-urls.txt -j fingerprint-results.json -s hfinger.xlsx
 ```
 
 ### katana / ffuf -> HFinger 多路径识别
@@ -274,14 +268,14 @@ HFinger 不替代漏洞扫描器。更推荐先识别组件，再按组件选择
 
 ```bash
 # 识别资产
-hfinger -f alive.txt -j hfinger.json
+hfinger -f alive.txt -j fingerprint-results.json
 
 # 示例：提取 Nacos 目标，再运行 Nacos 相关 nuclei 模板
-jq -r '.[] | select(.cms | test("Nacos"; "i")) | .url' hfinger.json > nacos-targets.txt
+jq -r '.[] | select(.cms | test("Nacos"; "i")) | .url' fingerprint-results.json > nacos-targets.txt
 nuclei -l nacos-targets.txt -tags nacos -o nuclei-nacos.txt
 
 # 示例：提取 Swagger / OpenAPI 目标
-jq -r '.[] | select(.cms | test("Swagger|OpenAPI"; "i")) | .url' hfinger.json > api-docs-targets.txt
+jq -r '.[] | select(.cms | test("Swagger|OpenAPI"; "i")) | .url' fingerprint-results.json > api-docs-targets.txt
 nuclei -l api-docs-targets.txt -tags exposure,swagger,openapi -o nuclei-api-docs.txt
 ```
 
@@ -311,11 +305,11 @@ HFinger 的 JSON 输出适合进入资产平台、SIEM 或自定义编排脚本�
 
 ```bash
 # 高置信度组件清单
-jq -r '.[] | select(.confidence >= 80) | [.url, .cms, .category, .confidence] | @tsv' hfinger.json
+jq -r '.[] | select(.confidence >= 80) | [.url, .cms, .category, .confidence] | @tsv' fingerprint-results.json
 
 # 按组件类型拆分任务
-jq -r '.[] | select(.category == "waf" or .category == "cdn") | .url' hfinger.json > edge-assets.txt
-jq -r '.[] | select(.category == "middleware") | .url' hfinger.json > middleware-assets.txt
+jq -r '.[] | select(.category == "waf" or .category == "cdn") | .url' fingerprint-results.json > edge-assets.txt
+jq -r '.[] | select(.category == "middleware") | .url' fingerprint-results.json > middleware-assets.txt
 ```
 
 ## 规则管理
@@ -481,6 +475,7 @@ hfinger passive query [jsonl-file]
     --cms string             按产品名过滤
     --category string        按类别过滤
     --min-confidence int     按最低置信度过滤
+    --limit int              限制返回记录数量
 ```
 
 ## 合法使用与免责声明

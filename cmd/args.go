@@ -228,11 +228,13 @@ var passiveQueryCmd = &cobra.Command{
 		cmsFilter, _ := cmd.Flags().GetString("cms")
 		categoryFilter, _ := cmd.Flags().GetString("category")
 		minConfidence, _ := cmd.Flags().GetInt("min-confidence")
+		limit, _ := cmd.Flags().GetInt("limit")
 		records, err := passive.Query(args[0], passive.QueryFilter{
 			URL:           urlFilter,
 			CMS:           cmsFilter,
 			Category:      categoryFilter,
 			MinConfidence: minConfidence,
+			Limit:         limit,
 		})
 		if err != nil {
 			logger.Error("Error: %v", err)
@@ -386,6 +388,7 @@ func init() {
 	passiveQueryCmd.Flags().String("cms", "", "Filter by product name")
 	passiveQueryCmd.Flags().String("category", "", "Filter by category")
 	passiveQueryCmd.Flags().Int("min-confidence", 0, "Filter by minimum confidence")
+	passiveQueryCmd.Flags().Int("limit", 0, "Limit returned passive records")
 	passiveCmd.AddCommand(passiveQueryCmd)
 
 	tlsCmd.AddCommand(tlsCapabilitiesCmd)

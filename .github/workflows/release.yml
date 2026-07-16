@@ -1,17 +1,4 @@
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
-
-# This workflow lets you compile your Go project using a SLSA3 compliant builder.
-# This workflow will generate a so-called "provenance" file describing the steps
-# that were performed to generate the final binary.
-# The project is an initiative of the OpenSSF (openssf.org) and is developed at
-# https://github.com/slsa-framework/slsa-github-generator.
-# The provenance file can be verified using https://github.com/slsa-framework/slsa-verifier.
-# For more information about SLSA and how it improves the supply-chain, visit slsa.dev.
-
-name: SLSA Go releaser
+name: Release
 on:
   workflow_dispatch:
   push:
@@ -21,15 +8,9 @@ on:
 permissions: read-all
 
 jobs:
-  # ========================================================================================================================================
-  #     Prerequesite: Create a .slsa-goreleaser.yml in the root directory of your project.
-  #       See format in https://github.com/slsa-framework/slsa-github-generator/blob/main/internal/builders/go/README.md#configuration-file
-  #=========================================================================================================================================
   build:
     permissions:
-      id-token: write # To sign.
       contents: write # To upload release assets.
-      actions: read   # To read workflow path.
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -42,7 +23,7 @@ jobs:
             goarch: arm
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
@@ -78,11 +59,12 @@ jobs:
               echo "Building for $GOOS/$GOARCH"
               if [ "$GOOS" = "windows" ]; then
                 GOOS=$GOOS GOARCH=$GOARCH CGO_ENABLED=0 go build -ldflags="-s -w" -o hfinger-$GOOS-$GOARCH.exe main.go
-                zip -r hfinger-$GOOS-$GOARCH.zip hfinger-$GOOS-$GOARCH.exe README.md README_EN.md docs/
+                zip -r hfinger-$GOOS-$GOARCH.zip hfinger-$GOOS-$GOARCH.exe README.md README_EN.md LICENSE NOTICE docs/
               else
                 GOOS=$GOOS GOARCH=$GOARCH CGO_ENABLED=0 go build -ldflags="-s -w" -o hfinger-$GOOS-$GOARCH main.go
-                zip -r hfinger-$GOOS-$GOARCH.zip hfinger-$GOOS-$GOARCH README.md README_EN.md docs/
+                zip -r hfinger-$GOOS-$GOARCH.zip hfinger-$GOOS-$GOARCH README.md README_EN.md LICENSE NOTICE docs/
               fi
+              sha256sum hfinger-$GOOS-$GOARCH.zip > hfinger-$GOOS-$GOARCH.zip.sha256
             done
           done
 
@@ -91,7 +73,7 @@ jobs:
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: hfinger-*.zip
+          file: hfinger-*.zip*
           tag: ${{ steps.parse_changelog.outputs.RELEASE_TAG }}
           body: ${{ steps.parse_changelog.outputs.RELEASE_NOTES }}
           overwrite: true

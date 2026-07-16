@@ -84,12 +84,6 @@ cd hfinger
 go build
 ```
 
-On Windows:
-
-```bash
-windows_build.bat
-```
-
 ## Usage
 
 ### Scan One Target
@@ -115,7 +109,7 @@ http://192.168.1.10
 
 ```bash
 httpx -l domains.txt -json -silent > alive.jsonl
-hfinger -f alive.jsonl -j hfinger.json
+hfinger -f alive.jsonl -j fingerprint-results.json
 ```
 
 ### Use Proxy
@@ -224,13 +218,13 @@ HFinger can be used as the fingerprinting layer in a broader reconnaissance and 
 httpx -l domains.txt -silent > alive.txt
 
 # 2. Run evidence-backed fingerprinting with HFinger
-hfinger -f alive.txt -j hfinger.json
+hfinger -f alive.txt -j fingerprint-results.json
 ```
 
 If an internal ASM or asset platform already exports reachable URLs, use one URL per line:
 
 ```bash
-hfinger -f asm-alive-urls.txt -j hfinger.json -s hfinger.xlsx
+hfinger -f asm-alive-urls.txt -j fingerprint-results.json -s hfinger.xlsx
 ```
 
 ### katana / ffuf -> HFinger Multi-Path Fingerprinting
@@ -274,14 +268,14 @@ HFinger does not replace vulnerability scanners. A better workflow is to identif
 
 ```bash
 # Fingerprint assets
-hfinger -f alive.txt -j hfinger.json
+hfinger -f alive.txt -j fingerprint-results.json
 
 # Example: extract Nacos targets and run Nacos-related nuclei templates
-jq -r '.[] | select(.cms | test("Nacos"; "i")) | .url' hfinger.json > nacos-targets.txt
+jq -r '.[] | select(.cms | test("Nacos"; "i")) | .url' fingerprint-results.json > nacos-targets.txt
 nuclei -l nacos-targets.txt -tags nacos -o nuclei-nacos.txt
 
 # Example: extract Swagger / OpenAPI targets
-jq -r '.[] | select(.cms | test("Swagger|OpenAPI"; "i")) | .url' hfinger.json > api-docs-targets.txt
+jq -r '.[] | select(.cms | test("Swagger|OpenAPI"; "i")) | .url' fingerprint-results.json > api-docs-targets.txt
 nuclei -l api-docs-targets.txt -tags exposure,swagger,openapi -o nuclei-api-docs.txt
 ```
 
@@ -311,11 +305,11 @@ Examples:
 
 ```bash
 # High-confidence component inventory
-jq -r '.[] | select(.confidence >= 80) | [.url, .cms, .category, .confidence] | @tsv' hfinger.json
+jq -r '.[] | select(.confidence >= 80) | [.url, .cms, .category, .confidence] | @tsv' fingerprint-results.json
 
 # Split tasks by component type
-jq -r '.[] | select(.category == "waf" or .category == "cdn") | .url' hfinger.json > edge-assets.txt
-jq -r '.[] | select(.category == "middleware") | .url' hfinger.json > middleware-assets.txt
+jq -r '.[] | select(.category == "waf" or .category == "cdn") | .url' fingerprint-results.json > edge-assets.txt
+jq -r '.[] | select(.category == "middleware") | .url' fingerprint-results.json > middleware-assets.txt
 ```
 
 ## Rule Management
@@ -481,6 +475,7 @@ hfinger passive query [jsonl-file]
     --cms string             Filter by product name
     --category string        Filter by category
     --min-confidence int     Filter by minimum confidence
+    --limit int              Limit returned records
 ```
 
 ## Legal Use and Disclaimer

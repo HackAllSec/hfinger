@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"os"
 	"strings"
+	"sync"
 	"time"
 
 	"hfinger/config"
@@ -16,20 +17,29 @@ type Record struct {
 }
 
 var storePath string
+var storeMu sync.Mutex
 
 func SetStorePath(path string) {
+	storeMu.Lock()
+	defer storeMu.Unlock()
 	storePath = strings.TrimSpace(path)
 }
 
 func StorePath() string {
+	storeMu.Lock()
+	defer storeMu.Unlock()
 	return storePath
 }
 
 func Append(result config.Result) error {
-	if storePath == "" {
+	storeMu.Lock()
+	defer storeMu.Unlock()
+
+	path := storePath
+	if path == "" {
 		return nil
 	}
-	file, err := os.OpenFile(storePath, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0600)
+	file, err := os.OpenFile(path, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0600)
 	if err != nil {
 		return err
 	}
@@ -68,6 +78,9 @@ func Query(path string, filter QueryFilter) ([]Record, error) {
 		}
 		if filter.Match(record) {
 			records = append(records, record)
+			if filter.Limit > 0 && len(records) >= filter.Limit {
+				break
+			}
 		}
 	}
 	return records, scanner.Err()
@@ -78,6 +91,7 @@ type QueryFilter struct {
 	CMS           string
 	Category      string
 	MinConfidence int
+	Limit         int
 }
 
 func (f QueryFilter) Match(record Record) bool {
