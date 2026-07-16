@@ -554,6 +554,10 @@ rules:
                   value: /core/auth/password/forgot/
                   weight: 100
                   evidence: Migrated response body evidence for JumpServer 堡垒机
+      negative:
+        - type: body.contains
+          value: JumpServer vulnerability
+          reason: Vulnerability writeups can quote JumpServer static paths without being a deployed bastion host.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -582,6 +586,10 @@ rules:
                   value: login
                   weight: 100
                   evidence: Migrated response body evidence for 锐捷 SSLVPN
+      negative:
+        - type: body.contains
+          value: 锐捷 SSLVPN 漏洞
+          reason: Vulnerability articles can quote Ruijie SSLVPN login markers without being a deployed VPN gateway.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -610,6 +618,10 @@ rules:
                   value: login
                   weight: 100
                   evidence: Migrated response body evidence for 网御 安全网关
+      negative:
+        - type: body.contains
+          value: 网御 安全网关 漏洞
+          reason: Vulnerability articles can quote Leadsec gateway login markers without being a deployed security gateway.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -634,6 +646,10 @@ rules:
                   value: login
                   weight: 100
                   evidence: Migrated response body evidence for Citrix Access Gateway
+      negative:
+        - type: body.contains
+          value: Citrix Access Gateway vulnerability
+          reason: Vulnerability writeups can quote Citrix Access Gateway login titles without being a deployed gateway.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -658,6 +674,10 @@ rules:
                   value: 安恒云堡垒机
                   weight: 100
                   evidence: Migrated response body evidence for 安恒云堡垒机
+      negative:
+        - type: body.contains
+          value: 安恒云堡垒机 漏洞
+          reason: Vulnerability articles can quote DBAPPSecurity bastion markers without being a deployed bastion host.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -678,6 +698,10 @@ rules:
                   value: 明御安全网关
                   weight: 100
                   evidence: Migrated HTML title evidence for 安恒明御安全网关
+      negative:
+        - type: body.contains
+          value: 明御安全网关 漏洞
+          reason: Vulnerability articles can mention this title without being a deployed DBAPPSecurity gateway.
       metadata:
         references:
             - builtin:migrated-legacy-rule

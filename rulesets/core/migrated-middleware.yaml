@@ -1822,6 +1822,10 @@ rules:
                   value: images/general/zabbix.ico
                   weight: 100
                   evidence: Migrated response body evidence for Zabbix
+      negative:
+        - type: body.contains
+          value: Zabbix vulnerability
+          reason: Vulnerability writeups can quote Zabbix copyright and favicon paths without being a deployed Zabbix console.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -1850,6 +1854,10 @@ rules:
                   value: redirect
                   weight: 100
                   evidence: Migrated response body evidence for 联软准入
+      negative:
+        - type: body.contains
+          value: 联软准入 漏洞
+          reason: Vulnerability articles can quote Leagsoft access-control markers without being a deployed NAC system.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -1922,6 +1930,10 @@ rules:
                   value: <frame src="./page/blank.html" name="mainframe" id="mainframe" scrolling="no" noresize="false"></frame>
                   weight: 100
                   evidence: Migrated response body evidence for 浪潮服务器IPMI管理口
+      negative:
+        - type: body.contains
+          value: Inspur IPMI vulnerability
+          reason: Vulnerability writeups can quote Inspur IPMI frame markup without being a deployed management port.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -1946,6 +1958,10 @@ rules:
                   value: id="loginbtnarea"
                   weight: 100
                   evidence: Migrated response body evidence for Inspur-as5600
+      negative:
+        - type: body.contains
+          value: Inspur AS5600 vulnerability
+          reason: Vulnerability writeups can quote storage login fields without being a deployed Inspur AS5600 console.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -1966,6 +1982,10 @@ rules:
                   value: '"productname": "inspur as5500g2"'
                   weight: 100
                   evidence: Migrated response body evidence for Inspur-AS5500G2
+      negative:
+        - type: body.contains
+          value: Inspur AS5500G2 vulnerability
+          reason: Vulnerability writeups can quote product JSON fragments without being a deployed Inspur storage system.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -1990,6 +2010,10 @@ rules:
                   value: langchao.ecgap.outportal
                   weight: 100
                   evidence: Migrated response body evidence for Inspur-EC-Government-Approval-Platform
+      negative:
+        - type: body.contains
+          value: Inspur ECGAP vulnerability
+          reason: Vulnerability writeups can quote government approval platform paths without being a deployed Inspur ECGAP system.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -2030,6 +2054,10 @@ rules:
                   value: class="easyui-layout
                   weight: 100
                   evidence: Migrated response body evidence for EasyUI
+      negative:
+        - type: body.contains
+          value: EasyUI documentation
+          reason: EasyUI layout class examples commonly appear in documentation and demos that are not product fingerprints.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -2050,6 +2078,10 @@ rules:
                   value: <td align="left">浪潮存储 您身边的存储专家</td>
                   weight: 100
                   evidence: Migrated response body evidence for Inspur-Storage-
+      negative:
+        - type: body.contains
+          value: 浪潮存储 漏洞
+          reason: Vulnerability articles can quote Inspur storage slogans without being a deployed storage console.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -2070,6 +2102,10 @@ rules:
                   value: RegentApi_v2.0
                   weight: 100
                   evidence: Migrated response body evidence for RegentApi_v2.0
+      negative:
+        - type: body.contains
+          value: RegentApi_v2.0 vulnerability
+          reason: Vulnerability writeups can quote RegentApi version strings without being a live Regent API endpoint.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -4778,6 +4814,10 @@ rules:
                   value: powered by <a href="http://www.redmine.org/
                   weight: 100
                   evidence: Migrated response body evidence for Redmine
+      negative:
+        - type: body.contains
+          value: Redmine vulnerability
+          reason: Vulnerability writeups can quote Redmine form fields and powered-by text without being a deployed Redmine instance.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -4862,6 +4902,10 @@ rules:
                   value: Powered by Jetty
                   weight: 100
                   evidence: Migrated response body evidence for Jetty
+      negative:
+        - type: body.contains
+          value: Jetty vulnerability
+          reason: Vulnerability writeups can quote Jetty default banner strings without being a deployed Jetty server.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -10054,6 +10098,10 @@ rules:
                   value: cgi-bin/tamper_admin.cgi
                   weight: 100
                   evidence: Migrated response body evidence for 深信服WEB防篡改管理系统
+      negative:
+        - type: body.contains
+          value: 深信服WEB防篡改 漏洞
+          reason: Vulnerability articles can quote Sangfor tamper-management paths without being a deployed console.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -10114,6 +10162,10 @@ rules:
                   value: Public/static
                   weight: 100
                   evidence: Migrated response body evidence for WeiPHP
+      negative:
+        - type: body.contains
+          value: WeiPHP 漏洞
+          reason: Vulnerability articles can quote WeiPHP static paths without being a deployed WeiPHP application.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -10142,6 +10194,10 @@ rules:
                   value: Nagios
                   weight: 100
                   evidence: Migrated response body evidence for Nagios XI
+      negative:
+        - type: body.contains
+          value: Nagios XI vulnerability
+          reason: Vulnerability writeups can quote Nagios XI login markers without being a deployed monitoring console.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -10190,6 +10246,10 @@ rules:
                   value: lanproxy-config
                   weight: 100
                   evidence: Migrated response body evidence for LanProxy
+      negative:
+        - type: body.contains
+          value: LanProxy vulnerability
+          reason: Vulnerability writeups can quote LanProxy configuration markers without being a deployed LanProxy service.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -10218,6 +10278,10 @@ rules:
                   value: ManageEngine
                   weight: 100
                   evidence: Migrated response body evidence for ManageEngine ADManager Plus
+      negative:
+        - type: body.contains
+          value: ManageEngine ADManager Plus vulnerability
+          reason: Vulnerability writeups can quote ADManager assets without being a deployed ManageEngine console.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -10242,6 +10306,10 @@ rules:
                   value: include/js/global.js
                   weight: 100
                   evidence: Migrated response body evidence for phpshe 商城系统
+      negative:
+        - type: body.contains
+          value: phpshe 漏洞
+          reason: Vulnerability articles can quote phpshe powered-by and script paths without being a deployed shop system.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -10294,6 +10362,10 @@ rules:
                   value: js/app
                   weight: 100
                   evidence: Migrated response body evidence for Canal Admin
+      negative:
+        - type: body.contains
+          value: Canal Admin vulnerability
+          reason: Vulnerability writeups can quote Canal Admin frontend assets without being a deployed Canal Admin console.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -10318,6 +10390,10 @@ rules:
                   value: /ruoyi/
                   weight: 100
                   evidence: Migrated response body evidence for 若依(RuoYi)-管理系统
+      negative:
+        - type: body.contains
+          value: RuoYi 漏洞
+          reason: Vulnerability articles can quote RuoYi static paths without being a deployed RuoYi management system.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -10346,6 +10422,10 @@ rules:
                   value: useusbkey
                   weight: 100
                   evidence: Migrated response body evidence for 中新金盾信息安全管理系统
+      negative:
+        - type: body.contains
+          value: 中新金盾信息安全管理系统 漏洞
+          reason: Vulnerability articles can quote USB-key login markers without being a deployed security management system.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -10394,6 +10474,10 @@ rules:
                   value: download
                   weight: 100
                   evidence: Migrated response body evidence for VMware vCenter
+      negative:
+        - type: body.contains
+          value: VMware vCenter vulnerability
+          reason: Vulnerability writeups can quote vCenter download and VISDK markers without being a deployed vCenter instance.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -10470,6 +10554,10 @@ rules:
                   value: login
                   weight: 100
                   evidence: Migrated response body evidence for 深信服 NGAF
+      negative:
+        - type: body.contains
+          value: 深信服 NGAF 漏洞
+          reason: Vulnerability articles can quote NGAF login markers without being a deployed Sangfor firewall.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -10494,6 +10582,10 @@ rules:
                   value: Support
                   weight: 100
                   evidence: Migrated response body evidence for IBM HTTP Server
+      negative:
+        - type: body.contains
+          value: IBM HTTP Server vulnerability
+          reason: Vulnerability writeups can quote IBM HTTP Server default support text without being a deployed server default page.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -10546,6 +10638,10 @@ rules:
                   value: session_login
                   weight: 100
                   evidence: Migrated response body evidence for Webmin
+      negative:
+        - type: body.contains
+          value: Webmin vulnerability
+          reason: Vulnerability writeups can quote Webmin session login paths without being a deployed Webmin console.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -10574,6 +10670,10 @@ rules:
                   value: modules
                   weight: 100
                   evidence: Migrated response body evidence for 群晖 DiskStation
+      negative:
+        - type: body.contains
+          value: Synology DiskStation vulnerability
+          reason: Vulnerability writeups can quote DiskStation module text without being a deployed Synology console.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -10602,6 +10702,10 @@ rules:
                   value: apps
                   weight: 100
                   evidence: Migrated response body evidence for 深信服安全感知平台
+      negative:
+        - type: body.contains
+          value: 深信服安全感知平台 漏洞
+          reason: Vulnerability articles can quote Sangfor login scripts without being a deployed security analytics platform.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -10650,6 +10754,10 @@ rules:
                   value: cas/login
                   weight: 100
                   evidence: Migrated response body evidence for CAS 单点登录
+      negative:
+        - type: body.contains
+          value: CAS vulnerability
+          reason: Vulnerability writeups can quote CAS login paths without being a deployed Central Authentication Service.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -10678,6 +10786,10 @@ rules:
                   value: login
                   weight: 100
                   evidence: Migrated response body evidence for 海康威视 流媒体管理服务器
+      negative:
+        - type: body.contains
+          value: 海康威视 流媒体管理服务器 漏洞
+          reason: Vulnerability articles can quote Hikvision streaming server login markers without being a deployed media server.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -10726,6 +10838,10 @@ rules:
                   value: hikvision v2.3控件网页demo
                   weight: 100
                   evidence: Migrated response body evidence for Hikvision--V2.3-Control
+      negative:
+        - type: body.contains
+          value: Hikvision V2.3 control vulnerability
+          reason: Vulnerability writeups can quote Hikvision control demo strings without being a deployed surveillance console.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -10754,6 +10870,10 @@ rules:
                   value: host
                   weight: 100
                   evidence: Migrated response body evidence for noVNC 远程访问
+      negative:
+        - type: body.contains
+          value: noVNC vulnerability
+          reason: Vulnerability writeups can quote noVNC HTML fragments without being a deployed remote access console.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -10778,6 +10898,10 @@ rules:
                   value: index.jsp
                   weight: 100
                   evidence: Migrated response body evidence for MessageSolution Enterprise Email Archiving (EEA)
+      negative:
+        - type: body.contains
+          value: MessageSolution vulnerability
+          reason: Vulnerability writeups can quote MessageSolution JSP paths without being a deployed email archiving system.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -10802,6 +10926,10 @@ rules:
                   value: channelList
                   weight: 100
                   evidence: Migrated response body evidence for 阿里巴巴otter manager
+      negative:
+        - type: body.contains
+          value: Otter Manager vulnerability
+          reason: Vulnerability writeups can quote Otter Manager channel paths without being a deployed Otter console.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -10830,6 +10958,10 @@ rules:
                   value: Identity Manager
                   weight: 100
                   evidence: Migrated response body evidence for VMware vRealize Operations Manager
+      negative:
+        - type: body.contains
+          value: VMware vRealize Operations Manager vulnerability
+          reason: Vulnerability writeups can quote vRealize identity markers without being a deployed VMware operations console.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -11118,6 +11250,10 @@ rules:
                   value: Fumasoft
                   weight: 100
                   evidence: Migrated response body evidence for 孚盟云 CRM
+      negative:
+        - type: body.contains
+          value: 孚盟云 CRM 漏洞
+          reason: Vulnerability articles can quote Fumasoft product markers without being a deployed CRM system.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -11146,6 +11282,10 @@ rules:
                   value: navbar-toggle
                   weight: 100
                   evidence: Migrated response body evidence for FastAdmin 框架
+      negative:
+        - type: body.contains
+          value: FastAdmin 漏洞
+          reason: Vulnerability articles can quote FastAdmin frontend assets without being a deployed FastAdmin application.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -11174,6 +11314,10 @@ rules:
                   value: fastadmin
                   weight: 100
                   evidence: Migrated response body evidence for FastAdmin 框架
+      negative:
+        - type: body.contains
+          value: FastAdmin 漏洞
+          reason: Vulnerability articles can quote FastAdmin upload paths without being a deployed FastAdmin application.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -11194,6 +11338,10 @@ rules:
                   value: <a title="imo云办公室"
                   weight: 100
                   evidence: Migrated response body evidence for imo云办公室
+      negative:
+        - type: body.contains
+          value: imo云办公室 漏洞
+          reason: Vulnerability articles can quote imo office title fragments without being a deployed office system.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -11218,6 +11366,10 @@ rules:
                   value: imo_setup.exe
                   weight: 100
                   evidence: Migrated response body evidence for imo云办公室
+      negative:
+        - type: body.contains
+          value: imo云办公室 漏洞
+          reason: Vulnerability articles can quote imo installer links without being a deployed office system.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -11242,6 +11394,10 @@ rules:
                   value: www.yozodcs.com
                   weight: 100
                   evidence: Migrated response body evidence for 永中DCS
+      negative:
+        - type: body.contains
+          value: 永中DCS 漏洞
+          reason: Vulnerability articles can quote YOZO DCS titles without being a deployed document preview service.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -11266,6 +11422,10 @@ rules:
                   value: polyfill_
                   weight: 100
                   evidence: Migrated response body evidence for JeecgBoot
+      negative:
+        - type: body.contains
+          value: JeecgBoot 漏洞
+          reason: Vulnerability articles can quote JeecgBoot bundle markers without being a deployed JeecgBoot system.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -11290,6 +11450,10 @@ rules:
                   value: ReportServer?op
                   weight: 100
                   evidence: Migrated response body evidence for 帆软数据决策系统
+      negative:
+        - type: body.contains
+          value: 帆软数据决策系统 漏洞
+          reason: Vulnerability articles can quote ReportServer paths without being a deployed FineReport decision platform.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -11314,6 +11478,10 @@ rules:
                   value: iepngfix/iepngfix_tilebg.js
                   weight: 100
                   evidence: Migrated response body evidence for 金山TimeOn云杀毒
+      negative:
+        - type: body.contains
+          value: 金山TimeOn 漏洞
+          reason: Vulnerability articles can quote TimeOn static assets without being a deployed antivirus management console.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -11342,6 +11510,10 @@ rules:
                   value: iepngfix/iepngfix_tilebg.js
                   weight: 100
                   evidence: Migrated response body evidence for 金山终端安全
+      negative:
+        - type: body.contains
+          value: 金山终端安全 漏洞
+          reason: Vulnerability articles can quote client download paths without being a deployed endpoint security console.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -11370,6 +11542,10 @@ rules:
                   value: login
                   weight: 100
                   evidence: Migrated response body evidence for 微擎 - 公众平台自助引擎
+      negative:
+        - type: body.contains
+          value: 微擎 漏洞
+          reason: Vulnerability articles can quote WeEngine login markers without being a deployed WeEngine application.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -11398,6 +11574,10 @@ rules:
                   value: login/createQRCode.do
                   weight: 100
                   evidence: Migrated response body evidence for 好视通视频会议系统
+      negative:
+        - type: body.contains
+          value: 好视通视频会议系统 漏洞
+          reason: Vulnerability articles can quote login QR paths without being a deployed video conference system.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -11478,6 +11658,10 @@ rules:
                   value: /ueditor.css
                   weight: 100
                   evidence: Migrated response body evidence for Ueditor编辑器
+      negative:
+        - type: body.contains
+          value: Ueditor 漏洞
+          reason: Vulnerability articles can quote Ueditor static paths without being a deployed editor endpoint.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -11530,6 +11714,10 @@ rules:
                   value: 欢迎登陆系统
                   weight: 100
                   evidence: Migrated response body evidence for Kyan 监控设备
+      negative:
+        - type: body.contains
+          value: Kyan 监控设备 漏洞
+          reason: Vulnerability articles can quote Kyan login asset markers without being a deployed monitoring device.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -11558,6 +11746,10 @@ rules:
                   value: login
                   weight: 100
                   evidence: Migrated response body evidence for Hue 大数据框架
+      negative:
+        - type: body.contains
+          value: Apache Hue vulnerability
+          reason: Vulnerability writeups can quote Hue welcome strings without being a deployed Hue service.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -11586,6 +11778,10 @@ rules:
                   value: tpl/user
                   weight: 100
                   evidence: Migrated response body evidence for 亿邮邮件系统
+      negative:
+        - type: body.contains
+          value: 亿邮邮件系统 漏洞
+          reason: Vulnerability articles can quote eYou login templates without being a deployed mail system.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -11614,6 +11810,10 @@ rules:
                   value: tpl/user
                   weight: 100
                   evidence: Migrated response body evidence for 亿邮邮件系统
+      negative:
+        - type: body.contains
+          value: 亿邮邮件系统 漏洞
+          reason: Vulnerability articles can quote eYou help templates without being a deployed mail system.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -11658,6 +11858,10 @@ rules:
                   value: ClientDownload.xgi
                   weight: 100
                   evidence: Migrated response body evidence for 新软科技-极通EWEBS
+      negative:
+        - type: body.contains
+          value: 极通EWEBS 漏洞
+          reason: Vulnerability articles can quote EWEBS client download paths without being a deployed EWEBS gateway.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -11686,6 +11890,10 @@ rules:
                   value: language
                   weight: 100
                   evidence: Migrated response body evidence for Igenus邮件系统
+      negative:
+        - type: body.contains
+          value: Igenus vulnerability
+          reason: Vulnerability writeups can quote Igenus login fields without being a deployed mail system.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -11710,6 +11918,10 @@ rules:
                   value: self.location.href
                   weight: 100
                   evidence: Migrated response body evidence for 图创图书馆集群管理系统
+      negative:
+        - type: body.contains
+          value: 图创图书馆集群管理系统 漏洞
+          reason: Vulnerability articles can quote Interlib redirect fragments without being a deployed library management system.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -11734,6 +11946,10 @@ rules:
                   value: Cluster
                   weight: 100
                   evidence: Migrated response body evidence for Apache Hadoop
+      negative:
+        - type: body.contains
+          value: Hadoop vulnerability
+          reason: Vulnerability writeups can quote Hadoop static resource names without being a deployed Hadoop web UI.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -11762,6 +11978,10 @@ rules:
                   value: tamronos.com
                   weight: 100
                   evidence: Migrated response body evidence for TamronOS IPTV系统
+      negative:
+        - type: body.contains
+          value: TamronOS 漏洞
+          reason: Vulnerability articles can quote TamronOS login markers without being a deployed IPTV system.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -11818,6 +12038,10 @@ rules:
                   value: china_logo.jpg
                   weight: 100
                   evidence: Migrated response body evidence for H3C Web网管
+      negative:
+        - type: body.contains
+          value: H3C Web网管 漏洞
+          reason: Vulnerability articles can quote H3C web management login assets without being a deployed device.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -11846,6 +12070,10 @@ rules:
                   value: login
                   weight: 100
                   evidence: Migrated response body evidence for H3C ER6300G2
+      negative:
+        - type: body.contains
+          value: H3C ER6300G2 vulnerability
+          reason: Vulnerability writeups can quote H3C ER6300G2 login markers without being a deployed router.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -11874,6 +12102,10 @@ rules:
                   value: login
                   weight: 100
                   evidence: Migrated response body evidence for H3C ER3100
+      negative:
+        - type: body.contains
+          value: H3C ER3100 vulnerability
+          reason: Vulnerability writeups can quote H3C ER3100 login markers without being a deployed router.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -11902,6 +12134,10 @@ rules:
                   value: 网络视频监控系统
                   weight: 100
                   evidence: Migrated response body evidence for 天迈科技网络视频监控系统
+      negative:
+        - type: body.contains
+          value: 天迈科技网络视频监控系统 漏洞
+          reason: Vulnerability articles can quote Tianmai surveillance login markers without being a deployed video monitoring system.
       metadata:
         references:
             - builtin:migrated-legacy-rule

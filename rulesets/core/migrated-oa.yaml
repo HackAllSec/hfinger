@@ -1830,6 +1830,10 @@ rules:
                   value: loginsubmit
                   weight: 100
                   evidence: Migrated response body evidence for IBOS酷办公OA系统
+      negative:
+        - type: body.contains
+          value: IBOS OA 漏洞
+          reason: Vulnerability articles can quote IBOS login panel markers without being a deployed OA system.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -1870,6 +1874,10 @@ rules:
                   value: scripts/cnoa.extra.js
                   weight: 100
                   evidence: Migrated response body evidence for 协众OA
+      negative:
+        - type: body.contains
+          value: 协众OA 漏洞
+          reason: Vulnerability articles can quote CNOA script paths without being a deployed Xiezhong OA system.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -1894,6 +1902,10 @@ rules:
                   value: PassWord.aspx
                   weight: 100
                   evidence: Migrated response body evidence for 金合OA
+      negative:
+        - type: body.contains
+          value: 金合OA 漏洞
+          reason: Vulnerability articles can quote Jinher OA login paths without being a deployed OA system.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -1918,6 +1930,10 @@ rules:
                   value: 蓝凌软件
                   weight: 100
                   evidence: Migrated response body evidence for 蓝凌EIS智慧协同平台
+      negative:
+        - type: body.contains
+          value: 蓝凌EIS 漏洞
+          reason: Vulnerability articles can quote Landray script paths without being a deployed EIS collaboration platform.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -1946,6 +1962,10 @@ rules:
                   value: login
                   weight: 100
                   evidence: Migrated response body evidence for 中腾OA
+      negative:
+        - type: body.contains
+          value: 中腾OA 漏洞
+          reason: Vulnerability articles can quote Zhongteng OA login markers without being a deployed OA system.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -1970,6 +1990,10 @@ rules:
                   value: window.location
                   weight: 100
                   evidence: Migrated response body evidence for 华天动力OA
+      negative:
+        - type: body.contains
+          value: 华天动力OA 漏洞
+          reason: Vulnerability articles can quote Huatian OA redirect paths without being a deployed OA system.
       metadata:
         references:
             - builtin:migrated-legacy-rule

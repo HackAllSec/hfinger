@@ -1102,6 +1102,10 @@ rules:
                   value: login
                   weight: 100
                   evidence: Migrated response body evidence for 蜂网企业流控云路由器
+      negative:
+        - type: body.contains
+          value: 蜂网企业流控云路由器 漏洞
+          reason: Vulnerability articles can quote IFW8 router login markers without being a deployed flow-control router.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -1190,6 +1194,10 @@ rules:
                   value: <form action="/goform/formcobralogin
                   weight: 100
                   evidence: Migrated response body evidence for Hikvision-Cameras-and-Surveillance
+      negative:
+        - type: body.contains
+          value: Hikvision vulnerability
+          reason: Vulnerability writeups can quote Hikvision ActiveX and login fragments without being a deployed camera or surveillance system.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -1218,6 +1226,10 @@ rules:
                   value: h3c.com
                   weight: 100
                   evidence: Migrated response body evidence for H3C-ER3200 路由器
+      negative:
+        - type: body.contains
+          value: H3C ER3200 vulnerability
+          reason: Vulnerability writeups can quote ER3200 login paths without being a deployed H3C router.
       metadata:
         references:
             - builtin:migrated-legacy-rule

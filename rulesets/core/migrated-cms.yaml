@@ -354,6 +354,10 @@ rules:
                   value: qscms.root
                   weight: 100
                   evidence: Migrated response body evidence for 骑士 74CMS
+      negative:
+        - type: body.contains
+          value: 74CMS 漏洞
+          reason: Vulnerability articles can quote 74CMS template paths without being a deployed 74CMS site.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -378,6 +382,10 @@ rules:
                   value: yzm-common.css
                   weight: 100
                   evidence: Migrated response body evidence for YzmCMS
+      negative:
+        - type: body.contains
+          value: YzmCMS 漏洞
+          reason: Vulnerability articles can quote YzmCMS static assets without being a deployed YzmCMS site.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -402,6 +410,10 @@ rules:
                   value: template/
                   weight: 100
                   evidence: Migrated response body evidence for Jspxcms
+      negative:
+        - type: body.contains
+          value: Jspxcms 漏洞
+          reason: Vulnerability articles can quote Jspxcms template markers without being a deployed Jspxcms site.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -426,6 +438,10 @@ rules:
                   value: wp-content/
                   weight: 100
                   evidence: Migrated response body evidence for WordPress
+      negative:
+        - type: body.contains
+          value: WordPress vulnerability
+          reason: Vulnerability writeups and tutorials can quote wp-admin and wp-content paths without being a deployed WordPress site.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -450,6 +466,10 @@ rules:
                   value: shortcut icon
                   weight: 100
                   evidence: Migrated response body evidence for JEECMS
+      negative:
+        - type: body.contains
+          value: JEECMS 漏洞
+          reason: Vulnerability articles can quote JEECMS resource paths without being a deployed JEECMS site.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -474,6 +494,10 @@ rules:
                   value: login
                   weight: 100
                   evidence: Migrated response body evidence for SDCMS神盾内容管理系统
+      negative:
+        - type: body.contains
+          value: SDCMS 漏洞
+          reason: Vulnerability articles can quote SDCMS login markers without being a deployed SDCMS site.
       metadata:
         references:
             - builtin:migrated-legacy-rule

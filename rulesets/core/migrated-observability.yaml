@@ -166,6 +166,10 @@ rules:
                   value: grafana-app
                   weight: 100
                   evidence: Migrated response body evidence for Grafana
+      negative:
+        - type: body.contains
+          value: Grafana vulnerability
+          reason: Vulnerability writeups can quote Grafana login assets without being a deployed Grafana instance.
       metadata:
         references:
             - builtin:migrated-legacy-rule
