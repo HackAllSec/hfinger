@@ -38,6 +38,10 @@ rules:
                   value: assets/gitlab_logo
                   weight: 100
                   evidence: Migrated response body evidence for Gitlab
+      negative:
+        - type: body.contains
+          value: GitLab vulnerability
+          reason: Vulnerability writeups can quote GitLab asset paths without being a deployed GitLab instance.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -182,6 +186,10 @@ rules:
                   value: bower_components/PACE/pace.min.js
                   weight: 100
                   evidence: Migrated response body evidence for xxl-job
+      negative:
+        - type: body.contains
+          value: xxl-job 漏洞
+          reason: Vulnerability articles can quote xxl-job static asset paths without being a deployed admin console.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -206,6 +214,10 @@ rules:
                   value: <span>airflow</span>
                   weight: 100
                   evidence: Migrated response body evidence for Apache-Airflow
+      negative:
+        - type: body.contains
+          value: Apache Airflow vulnerability
+          reason: Vulnerability writeups can quote Airflow UI fragments without being a deployed Airflow webserver.
       metadata:
         references:
             - builtin:migrated-legacy-rule

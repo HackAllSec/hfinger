@@ -226,6 +226,10 @@ rules:
                   value: jboss.css
                   weight: 100
                   evidence: Migrated response body evidence for Jboss
+      negative:
+        - type: body.contains
+          value: JBoss jboss.css 漏洞
+          reason: Vulnerability articles can quote JBoss asset names without being a deployed JBoss server.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -250,6 +254,10 @@ rules:
                   value: /manager/html
                   weight: 100
                   evidence: Migrated response body evidence for Tomcat默认页面
+      negative:
+        - type: body.contains
+          value: Tomcat manager 漏洞
+          reason: Vulnerability articles can quote Tomcat manager paths without being a deployed Tomcat default page.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -314,6 +322,10 @@ rules:
                   value: <h1>HTTP Status 404 –
                   weight: 100
                   evidence: Migrated response body evidence for Apache Tomcat
+      negative:
+        - type: body.contains
+          value: Apache Tomcat documentation
+          reason: Documentation and vulnerability writeups can quote Tomcat default error fragments without being a deployed server.
       metadata:
         references:
             - builtin:migrated-legacy-rule

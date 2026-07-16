@@ -1298,6 +1298,10 @@ rules:
                   value: sys/ui/extend/theme/default/style/profile.css
                   weight: 100
                   evidence: Migrated response body evidence for 蓝凌 OA
+      negative:
+        - type: body.contains
+          value: 蓝凌 OA 漏洞
+          reason: Vulnerability articles can quote Landray theme asset paths without being a deployed OA system.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -1322,6 +1326,10 @@ rules:
                   value: App_Themes/Login
                   weight: 100
                   evidence: Migrated response body evidence for 蓝凌 OA
+      negative:
+        - type: body.contains
+          value: 蓝凌软件 漏洞
+          reason: Vulnerability articles can quote Landray login theme paths without being a deployed OA system.
       metadata:
         references:
             - builtin:migrated-legacy-rule
@@ -1346,6 +1354,10 @@ rules:
                   value: /ClientBin/Kingdee.BOS.XPF.App.xap
                   weight: 100
                   evidence: Migrated response body evidence for 金蝶云星空
+      negative:
+        - type: body.contains
+          value: 金蝶云星空 漏洞
+          reason: Vulnerability articles can quote Kingdee client asset paths without being a deployed Kingdee system.
       metadata:
         references:
             - builtin:migrated-legacy-rule
