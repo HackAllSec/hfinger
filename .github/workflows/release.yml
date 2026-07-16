@@ -50,6 +50,10 @@ jobs:
         uses: actions/setup-go@v5
         with:
           go-version-file: go.mod
+
+      - name: Release metadata check
+        if: steps.parse_changelog.outputs.RELEASE_TAG != ''
+        run: go run main.go dev release-check
   
       - name: Build
         if: steps.parse_changelog.outputs.RELEASE_TAG != ''
